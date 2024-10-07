@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@serialport/parser-readline": "^12.0.0",
+    "axios": "^1.7.7",
+    "cookie-parse": "^0.4.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.21.0",
+    "modbus-serial": "^8.0.17",
+    "node-fetch": "^3.3.2",
+    "serialport": "^12.0.0",
+    "sqlite3": "^5.1.7",
+    "ws": "^8.18.0"
+  }
+}

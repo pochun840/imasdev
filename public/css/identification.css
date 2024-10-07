@@ -1,0 +1,1007 @@
+.container-ms
+{
+    margin: 0 auto;
+    padding: 0px;
+    overflow: hidden;
+    width: calc(100%);
+    position: static;
+    padding-left: 68px;
+}
+
+header
+{
+    background-color: red;
+    font-size: 24px;
+    width: 100%;
+    color: white;
+    height:50px;
+    margin-bottom: 0px;
+    align-items: center;
+}
+
+.identification
+{
+    float: left;
+    margin-left: 10px;
+    font-size: 26px;
+    vertical-align: middle;
+}
+
+#header-img
+{
+    width: auto;
+    height:37px;
+    margin: 2px;
+    padding-right: 5px;
+    margin-left: 10px;
+    float: left;
+    color:white;
+}
+
+.personnel
+{
+    float: right;
+    margin: 0 15px;
+    font-size: 24px;
+    vertical-align: middle;
+    padding: 4px;
+    bottom: 0;
+}
+
+/* Start Notification */
+.notification
+{
+    float: right;
+    font-size: 24px;
+    margin-right: 20px;
+    padding: 4px;
+    vertical-align: middle;
+    bottom: 0;
+}
+
+.topnav-message
+{
+    width: 100%;
+    overflow: hidden;
+    background-color:#fff;
+    border: 1px solid #BBBBBB;
+    border-radius: 5px;
+    padding: 0px;
+}
+
+.messageBox
+{
+    display: none;
+    position: absolute; /* Thay vi position: fixed */
+    border-radius: 10px;
+    right: 10px;
+    top: 45px;
+    float: right;
+    width: 400px;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
+    background-color: #fff;
+    border: 0px solid #000;
+    padding: 0px;
+    z-index: 1000;
+}
+
+.notification .badge
+{
+    position: absolute;
+    height: auto;
+    width: auto;
+    text-align: center;
+    top: -3px;
+    right: 8px;
+    padding: 2px 8px;
+    border-radius: 50%;
+    color: white;
+}
+
+**
+* Checkbox Four
+*/
+.checkboxFour
+{
+    width: 0px;
+    height: 0px;
+    background: #ddd;
+    margin: 0px 0px;
+    border-radius: 100%;
+    position: relative;
+}
+
+/**
+* Create the online and offline button
+*/
+.checkboxFour label
+{
+    display: block;
+    position: fixed;
+    width: 11px;
+    height: 11px;
+    border-radius: 100px;
+    transition: all .5s ease;
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    z-index: 1;
+    background: #CFCFCF;
+}
+
+/**
+* Create the checked state
+*/
+.checkboxFour input[type=checkbox]:checked + label
+{
+    background: #0083FF;
+}
+
+/* scrollbar Notification Mess */
+.scrollbar-message
+{
+    float: left;
+    height: calc(100vh - 300px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.force-overflow-message
+{
+    min-height: 60vh;
+}
+
+/**  STYLE Message */
+#style-message::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-message::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-message::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-message::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+#messageCount
+{
+    text-align: center;
+}
+
+.close-message
+{
+    color: #4F576D;
+    float: right;
+    margin: 0 auto;
+    padding: 0px;
+    top: 0;
+    margin-right: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.close-message:hover,
+.close-message:focus
+{
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+.recyclebox{color: #14A800; background-color: #E8F9F1; border-radius: 10px; padding-right: 5%; padding: 0 5px;}
+.workstation{color: #555555; background-color: #DDDDDD; border-radius: 10px; padding: 0 5px}
+/* End Notification */
+
+/* Clearfix to clear the float */
+header::after
+{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.topnav
+{
+    width: 100%;
+    overflow: hidden;
+    background-color: #F2F1F1;
+    border-bottom: #383800;
+    padding: 0px;
+}
+
+#button_AddDevice
+{
+    height: 50px;
+    width: auto;
+    background-color: #008B8B;
+    border-radius: 5px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.main-content
+{
+}
+
+.center-content
+{
+    width: 100%;
+    padding: 5px 10px;
+}
+
+@media (max-width: 768px)
+{
+    .center-content
+    {
+        width: 100%;
+    }
+}
+
+#button_return
+{
+    height: 50px;
+    width: 120px;
+    background-color: #444E66;
+    border-radius: 8px;
+    color: #fff;
+    border: 0px solid #444E66;
+    margin-left: 5px;
+}
+
+/* menu button setting */
+.wrapper
+{
+    position: absolute;
+    padding: 0px 10px;
+    border: 0px solid #444E66;
+}
+
+.navbutton
+{
+    position: relative;
+    display: inline-block;
+    font-family: 'Arial', sans-serif;
+    padding: 3px 12px 3px 33px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 24px;
+    letter-spacing: 1px;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.navbutton span
+{
+    position: absolute;
+    top: 0;
+    left: 0px;
+    width: 3px;
+    height: 100%;
+    color: #000;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    transform-origin: top right;
+    transform: skewX(30deg);
+    transition: width 0.8s cubic-bezier(0.59, 0.05, 0.16, 0.99);
+    z-index: 1;
+}
+
+.navbutton span:before
+{
+    content: attr(data-content);
+    display: block;
+    transform: skewX(-30deg);
+    white-space: nowrap;
+    padding: 3px 10px 2px 15px;
+}
+
+.navbutton:hover span
+{
+    width: calc(100% - 25px);
+    color: #fff;
+}
+
+.navbutton.active span
+{
+    width: calc(100% - 25px);
+    color: #fff;
+}
+
+.content
+{
+    padding: 38px 10px;
+}
+
+/* table user */
+.table-container
+{
+    overflow-y: auto;
+}
+
+table
+{
+    width: 100%;
+    border-collapse: collapse;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    vertical-align: middle;
+}
+
+th, td
+{
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#header-table
+{
+    position: sticky;
+    top: 0;
+    background-color: #A3A3A3;
+    z-index: 2;
+    font-size: 2vmin;
+}
+
+
+/* scrollbar style */
+.scrollbar
+{
+    float: left;
+    height: calc(100vh - 228px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.force-overflow
+{
+    min-height: 50vh;
+}
+
+#wrapper
+{
+    text-align: center;
+    margin: auto;
+}
+
+/**  STYLE Member */
+#style-member::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-member::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-member::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-member::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+
+/*  STYLE Super admin setting */
+#style-RoleEdit::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-RoleEdit:-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-RoleEdit::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-RoleEdit::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+
+.w3-panel
+{
+    height: 60px;
+    border: 1px solid #BEBEBE;
+    padding:0;
+}
+
+#Filter
+{
+    height: 45px;
+    width: auto;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: right;
+    vertical-align: middle;
+}
+
+#img-filter
+{
+    font-size: 26px;
+    width:30px;
+    height: 30px;
+    float: left;
+    line-height:30px;
+    color:white;
+}
+
+#add-memberlist
+{
+    height: 45px;
+    width: auto;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: right;
+    vertical-align: middle;
+}
+
+#img-add-member
+{
+    font-size: 26px;
+    width:30px;
+    height: 30px;
+    float: left;
+    line-height:30px;
+    color:white;
+}
+
+#delete-member
+{
+    height: 46px;
+    width: auto;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: right;
+    vertical-align: middle;
+}
+
+#img-delete-member
+{
+    font-size: 26px;
+    width:30px;
+    height: 30px;
+    float: left;
+    line-height:30px;
+    color:white;
+}
+
+#button-menulist
+{
+    height: 45px;
+    width: 55px;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: center;
+    vertical-align: middle;
+}
+
+#img-menulist
+{
+    font-size: 26px;
+    width:30px;
+    height: 30px;
+    line-height:30px;
+    color:white;
+}
+
+/* Role Setting */
+#role-permission-setting
+{
+    height: 46px;
+    width: 50px;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: center;
+    vertical-align: middle;
+}
+
+#img-user-setting
+{
+    font-size: 30px;
+    width:35px;
+    height: 35px;
+    float: right;
+    line-height:31px;
+    color:white;
+}
+
+#delete-button
+{
+    height: 46px;
+    width: 50px;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+}
+
+#img-delete-role
+{
+    width:30px;
+    height: 30px;
+    color:white;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+#add-roleName
+{
+    height: 40px;
+    width: 70px;
+    background-color: #AAAAAA;
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 1px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: center;
+    vertical-align: middle;
+}
+
+#roleList
+{
+    list-style-type: none;
+    padding: 0;
+}
+
+#roleList li
+{
+    margin-bottom: 5px;
+}
+
+.rolelist li
+{
+    border: 0px solid #444E66;
+    background-color: #E8E8E8;
+    padding: 5px;
+}
+
+.rolelist li:hover
+{
+    background-color: lightgray;
+}
+
+/* scrollbar style Role list */
+.scrollbar-addRole
+{
+    float: left;
+    height: 50vh;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.AddRole-force-overflow
+{
+    min-height: 50vh;
+}
+
+#wrapper
+{
+    text-align: center;
+    margin: auto;
+}
+
+/**  STYLE role list */
+#style-addRole::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-addRole::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-addRole::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-addRole::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+#back-setting
+{
+    height: 45px;
+    width: auto;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: right;
+    vertical-align: middle;
+}
+
+#img-back
+{
+    font-size: 18px;
+    width:30px;
+    height: 30px;
+    float: left;
+    line-height:31px;
+    color:white;
+}
+
+#Bulk-Change
+{
+    height: 46px;
+    width: auto;
+    margin: 6px;
+    float: right;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:20px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: center;
+    vertical-align: middle;
+}
+
+#delete-role
+{
+    height: 35px;
+    width: 35px;
+    margin: 3px;
+    font-size:30px;
+    border: none;
+    border-radius: 5px;
+}
+
+/* The Modal (background) */
+.modal
+{
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 3; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    overflow: auto; /* Enable scroll if needed */
+    padding-top: 10px;
+}
+
+/* Modal Content/Box */
+.modal-content
+{
+    background-color: #AAAAAA;
+    margin: 0% auto 0% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+}
+
+.modal-header
+{
+    background-color: #444E66; /* Replace with your desired background color */
+    height: 70px;
+    color: #FFFFFF;
+    font-size: 2vmin;
+    text-align: center;
+}
+
+.modal-body
+{
+    background-color: #F2F1F1; /* Replace with your desired background color */
+}
+
+.modal-footer
+{
+    background-color: #444E66; /* Replace with your desired background color */
+    height: 70px;
+    font-size: 2vmin;
+    text-align: center;
+}
+
+/* Clear floats */
+.clearfix::after
+{
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* button save, cancel in modal */
+.button
+{
+    background-color: #888888; /* Green */
+    border:  1px outset #CCFFFF;
+    border-radius: 8px;;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    height: 40px;
+    width: 80px;
+}
+
+.button:hover
+{
+    cursor: pointer;
+    background:#336699;
+    color: white;
+}
+
+/* Select */
+.select-block
+{
+    width: 150px;
+    margin: 1px auto 0px;
+}
+
+select
+{
+    height: 35px;
+    width: 150px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 0px;
+    color: #000;
+    transition: color 0.s ease, background-color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.selectIcon
+{
+    top: 18px;
+    right: 15px;
+    width: 30px;
+    height: 36px;
+    padding-left: 0px;
+    position: absolute;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.selectIcon svg.icon
+{
+    transition: fill 0.3s ease;
+    fill: white;
+}
+
+select:hover,
+select:focus
+{
+    color: #000000;
+    background-color: white;
+}
+
+select:hover~.selectIcon,
+select:focus~.selectIcon
+{
+    background-color: white;
+}
+
+select:hover~.selectIcon svg.icon,
+select:focus~.selectIcon svg.icon
+{
+    fill: #1A33FF;
+}
+
+.checkboxFive
+{
+    position: relative;
+}
+
+.checkboxFive input[type=checkbox]
+{
+    display: none; /* Hide the actual checkbox */
+}
+
+/* table permissions setting */
+.Permissions_setting
+{
+    height: 100%;
+    overflow-y: auto;
+    padding: 2px 10px;
+}
+
+.saveButton
+{
+    background-color: #555;
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    bottom: 28px;
+    right: 30px;
+    height: 50px;
+    width: 100px;
+    border-radius: 5px;
+}
+
+/* Station Setting Authority */
+.checkboxFive
+{
+    position: relative;
+}
+
+.checkboxFive input[type=checkbox]
+{
+    display: none; /* Hide the actual checkbox */
+}
+
+
+.checkboxFive label
+{
+    cursor: pointer;
+    position: absolute;
+    width: 45px;
+    height: 28px;
+    top: 0;
+    left: 0;
+    background: #fff;
+    border-radius: 5px;
+    border: 1px solid #A3A3A3;
+}
+
+.checkboxFive label:after
+{
+    /*content: '';
+    position: absolute;
+    width: 13px;
+    height: 8px;
+    background: transparent;
+    top: 5px;
+    left: 15px;
+    border: 2px solid #333;
+    border-top: none;
+    border-right: none;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);*/
+}
+
+.checkboxFive input[type=checkbox]:checked + label:after
+{
+    content: '';
+    position: absolute;
+    width: 13px;
+    height: 8px;
+    background: transparent;
+    top: 5px;
+    left: 15px;
+    border: 2px solid #333;
+    border-top: none;
+    border-right: none;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    opacity: 1;
+}
+
+/* scrollbar style permissions setting*/
+.scrollbar-Permissions
+{
+    float: left;
+    height: calc(100vh - 300px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.Permissions-force-overflow
+{
+    min-height: 52vh;
+}
+
+/**  STYLE Permissions */
+#style-Permissions::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-Permissions::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-Permissions::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-Permissions::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+.t1{font-size: 17px; margin: 5px 0px; display: flex; align-items: center;}
+.t2{font-size: 17px; margin: 5px 0px;}
+.t3{font-size: 17px; margin: 3px 0px;}
+
+
+

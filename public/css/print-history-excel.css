@@ -1,0 +1,113 @@
+body
+{
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.excel-sheet
+{
+    width: 21cm;
+    height: 29.7cm;
+    margin: auto;
+    background-color: #fff;
+}
+
+header
+{
+    text-align: left;
+    padding: 0px;
+}
+
+.border-bottom
+{
+    border-bottom: 1px solid #ddd;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header h2
+{
+    margin: 0;
+}
+
+header img
+{
+    width: 130px;
+    height: 50px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+header p
+{
+    text-align: center;
+    margin: 0px 0;
+    font-size: 16px;
+}
+
+/* scrollbar style */
+.scrollbar
+{
+    float: left;
+    height: calc(100vh - 400px);
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.force-overflow
+{
+}
+
+#style-chart::-webkit-scrollbar
+{
+    width: 15px;
+    display: none;
+}
+
+/**  STYLE chart */
+#style-chart::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-chart::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-chart::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+/*report history chart*/
+#jobtime{
+    width: 40%;
+    height: 400px;
+    margin: 0 auto; 
+}
+
+#main{
+    width: 60%;
+    height: 400px;
+    margin: 0 auto; 
+}
+
+#fastening_status_chart{
+    width: 40%;
+    height: 400px;
+    margin: 0 auto; 
+}
+
+#chart{
+    width: 600px;
+    height: 400px;
+    margin: 0 auto; 
+}
+
