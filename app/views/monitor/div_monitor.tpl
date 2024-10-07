@@ -20,7 +20,7 @@
                                     for ($i=$position_count; $i < $value['position']; $i++) { 
                                         echo '<div class="station" tabindex="1" style="margin-right: 9px; margin-bottom: 7px;">';
                                         echo     '<label style="background: #BDBABA; color: #fff; text-align: left; padding-left: 3%;">';
-                                        echo         '<div>'.$i.','.$value['position'].'</div>';
+                                        echo         '<div></div>';
                                         echo         '<div></div>';
                                         echo         '<div></div>';
                                         echo         '<div></div>';
@@ -156,8 +156,9 @@
 
 <!-- monitor server ws link -->
 <script type="text/javascript">
-    // const wsServer = 'ws://192.168.0.115:9527';
-    const wsServer = 'ws://192.168.0.115:3000';
+    // const wsServer = 'ws://192.168.0.115:3000';
+    const server_ip = '<?php echo $data['monitor_server_ip']; ?>';
+    const wsServer = 'ws://'+server_ip+':3000';
     const websocket = new WebSocket(wsServer);
 
     websocket.onopen = function (evt) {

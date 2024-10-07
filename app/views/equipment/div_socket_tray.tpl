@@ -284,7 +284,7 @@
                     log.innerText = momo + ' response: connect fail';
                 }
 
-                log.innerText = momo + ' response: connect success ';
+                // log.innerText = momo + ' response: connect success ';
                 log_div.insertBefore(log,log_div.childNodes[0]);
 
 
@@ -297,6 +297,6 @@
                 log_div.insertBefore(log,log_div.childNodes[0]);
 
                 // history.go(0);//失敗就重新整理
-            });;
+            });
         }
     </script>

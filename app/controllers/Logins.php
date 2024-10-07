@@ -30,6 +30,10 @@ class Logins extends Controller
             if($url[0] == 'Mains' && $url[1] == 'change_language' ){
                 $exception = true;
             }
+            if($url[0] == 'Monitors' && $url[1] == 'GetMonitorInfo' ){// monitor get info
+                $exception = true;
+            }
+
         }
 
         //判斷有沒有post password

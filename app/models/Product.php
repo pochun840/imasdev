@@ -178,12 +178,6 @@ class Product{
         $stmt->bindValue(':job_id', $job_id);
         $results = $stmt->execute();
 
-        //刪除 task_message 
-        $stmt = $this->db->prepare('DELETE FROM task_message WHERE job_id = :job_id');
-        $stmt->bindValue(':job_id', $job_id);
-        $results = $stmt->execute();
-
-
         //刪除其他關聯
         //刪除ccs_normalstep、ccs_advancedstep
         //delete ccs_normalstep
@@ -192,6 +186,11 @@ class Product{
         $results = $statement->execute();
         //delete ccs_advancedstep
         $statement = $this->db->prepare('DELETE FROM ccs_advancedstep WHERE job_id = :job_id ');
+        $statement->bindValue(':job_id', $job_id);
+        $results = $statement->execute();
+
+        //刪除task_message
+        $statement = $this->db->prepare('DELETE FROM task_message WHERE job_id = :job_id ');
         $statement->bindValue(':job_id', $job_id);
         $results = $statement->execute();
 
@@ -303,31 +302,6 @@ class Product{
         #用from_job_id
         #找出有為對應的資料 
         $sql= " SELECT *  FROM task WHERE job_id = ? ";
-        $statement = $this->db->prepare($sql);
-        $statement->execute([$from_job_id]);
-        return $statement->fetchall();
-
-    }
-
-    
-    public function check_task_meaaage_by_job_id($from_job_id,$to_job_id){
-        #用$to_job_id 
-        #找出有為對應的資料 如果有的話就要刪除
-
-        $query = "SELECT  COUNT(*) AS count FROM  task_meaaage WHERE job_id = ?";
-        $statement_select = $this->db->prepare($query);
-        $statement_select->execute([$to_job_id]);
-        $row = $statement_select->fetch(PDO::FETCH_ASSOC);
-
-        if ($row['count'] > 0) {
-            $sql_delete = "DELETE FROM task_meaaage WHERE job_id = ?";
-            $statement_delete = $this->dbs->prepare($sql_delete);
-            $results = $statement_delete->execute([$from_job_id]);
-        }
-
-        #用from_job_id
-        #找出有為對應的資料 
-        $sql= " SELECT *  FROM task_meaaage WHERE job_id = ? ";
         $statement = $this->db->prepare($sql);
         $statement->execute([$from_job_id]);
         return $statement->fetchall();
@@ -641,6 +615,46 @@ class Product{
         
     
         return $insertedCount;
+    }
+
+
+    public function check_task_message_by_id($from_job_id){
+
+        $sql= "SELECT * FROM `task_message` WHERE job_id = :job_id ";
+        $statement = $this->db->prepare($sql);
+        $statement->bindValue(':job_id', $from_job_id);
+      
+       
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC); 
+      
+        return $rows;
+    }
+
+    public function get_task_message_data($new_temp_task_message){
+        $sql = "INSERT INTO `task_message` (job_id, seq_id, task_id, img, type, text, timeout)
+                VALUES (:job_id, :seq_id, :task_id, :img, :type, :message, :message_timeout)";
+        
+        $statement = $this->db->prepare($sql);
+
+        foreach ($new_temp_task_message as $task_message) {
+  
+            if (isset($task_message['job_id'], $task_message['seq_id'], $task_message['task_id'], $task_message['img'], $task_message['type'], $task_message['text'], $task_message['timeout'])) {
+              
+                $statement->bindValue(':job_id', $task_message['job_id']);
+                $statement->bindValue(':seq_id', $task_message['seq_id']);
+                $statement->bindValue(':task_id', $task_message['task_id']);
+                $statement->bindValue(':img', $task_message['img']);
+                $statement->bindValue(':message', $task_message['text']);
+                $statement->bindValue(':type', $task_message['type']);
+                $statement->bindValue(':message_timeout', $task_message['timeout']);
+
+                $results = $statement->execute();
+    
+            } 
+        }
+
+        return $results;
     }
     
     

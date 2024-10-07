@@ -411,6 +411,7 @@ if(!empty($data['tower_light_switch'])) {
                 'buzzer': buzzer
             },
             dataType: "json",
+            timeout: 3000,
             beforeSend: function(){
                 const timeElapsed = Date.now();
                 const today = new Date(timeElapsed);
@@ -454,6 +455,15 @@ if(!empty($data['tower_light_switch'])) {
             error: function(xhr, status, error) {
                 // console.log("fail");
             }
+        }).fail(function() {
+            // $('#overlay').addClass('hidden');
+            let log = document.createElement('div');
+            let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
+            log.className = 'col t3';
+            log.innerText = momo + ' response: connect fail';
+            log_div.insertBefore(log,log_div.childNodes[0]);
+
+            // history.go(0);//失敗就重新整理
         });
     }
 

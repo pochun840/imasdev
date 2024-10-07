@@ -819,7 +819,7 @@ svg
     z-index: 100; /* Sit on top */
     left:0px;
     top: 0px;
-    width: 80%; /* Full width */
+    width: 100%; /* Full width */
     padding-top: 0px;
 }
 

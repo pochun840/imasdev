@@ -571,7 +571,6 @@ window.onclick = function(event) {
 }
 </script>
 
-<script>
 
 
 <script type="text/javascript">
@@ -721,4 +720,39 @@ function change_job(seq_id,direction=''){
         history.go(0);
     });
 }
+
+
+function barcode_change_job(argument) {
+    let barcode = document.getElementById('barcode').value
+
+    $.ajax({
+        url: '?url=Operations/Barcode_ChangeJob', // 指向服務器端檢查更新的 PHP 腳本
+        method: 'POST',
+        data: { 'barcode': barcode },
+        dataType: "json"
+    }).done(function(response) { //成功且有回傳值才會執行
+        if(response.result == 'yes'){
+            history.go(0);
+        }
+        barcode_input.value = '';
+    });
+}
+
+var barcode_input = document.getElementById("barcode");
+
+barcode_input.addEventListener("keypress", function(event) {
+  // If the user presses the "Enter" key on the keyboard
+  if (event.key === "Enter") {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    barcode_change_job();
+    // function_auth_check('barcode')
+    // alert(document.getElementById('barcode').value)
+    
+  }
+});
+
+
+
 </script>

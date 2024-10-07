@@ -1182,65 +1182,68 @@ tt.set('start_time',new Date())
                                        
                                         afterward();
 
-
-                                        var element = document.getElementById('VirtualMessage');
-                                        var task_message_list_nn = JSON.parse(task_message_list);
-                                        var nn_task_id_first = task_id-1;
-                                        var nn_task_id_str_f = String(nn_task_id_first);
-                                        var task_f = task_message_list_nn[nn_task_id_str_f];
-                                        var e_timeStr1 = task_f.timeout +'000';
-                                        var e_time1 = parseInt(e_timeStr1, 10);
-                                        
-                    
-                                        if(task_f.timeout !== '0'){
-                                            force_switch_tool(0);
-                                            
-                                            document.getElementById('VirtualMessage').style.display = 'block';
-                                            document.getElementById('w3review').value = task_f.text;
-
-                                            if(task_f.img == ""){
-                                                const element_11 = document.querySelector('.scrollbar-Message_text');
-                                                if (element_11) {
-                                                    element_11.className = 'scrollbar-Message_text_s';
-                                                }
-                               
-                                            }else{
-                                                if(task_f.type ==="video"){
-                                                    document.getElementById('myvideo').style.display = 'block';
-                                                    document.getElementById('myimage').style.display = 'none';
-                                                    var videoElement = document.getElementById('myvideo');
-                                                    var sourceElement = document.getElementById('video_source');
-                                                    sourceElement.src = task_f.img;
-                                                    videoElement.load();
-                                                }else{
-                                                    document.getElementById('myvideo').style.display = 'none';
-                                                    document.getElementById('myimage').style.display = 'block';
-                                                    document.getElementById('myimage').src = task_f.img;
-                                                }
-                                            
-                                            }
-
-                               
-                                           
-                                            
-
-                                         
-                                            element.style.display = 'block';
-                                            
-                                            setTimeout(function() {
-                                                element.style.display = 'none';
-                                                //force_switch_tool(1);    
-                                                call_job();
-                                            }, e_time1); 
-
-                                        }else{
+                                        if(task_message_list == ''){ //完全沒有virtual message
                                             call_job();
-                                            //alert('eeeeeeeeeeeeewwwww');
-                                            //force_switch_tool(1); 
-                                            
+                                        }else{ //至少有一個virtaul message
+                                            try{
+                                                var element = document.getElementById('VirtualMessage');
+                                                var task_message_list_nn = JSON.parse(task_message_list);
+                                                var nn_task_id_first = task_id-1;
+                                                var nn_task_id_str_f = String(nn_task_id_first);
 
+                                                if (typeof task_message_list_nn[nn_task_id_str_f] !== 'undefined') {
+                                                    var task_f = task_message_list_nn[nn_task_id_str_f];
+                                                    var e_timeStr1 = task_f.timeout +'000';
+                                                    var e_time1 = parseInt(e_timeStr1, 10);
 
-                                            //force_switch_tool(0); 
+                                                    if(task_f.timeout !== '0'){
+                                                        force_switch_tool(0);
+                                                        
+                                                        document.getElementById('VirtualMessage').style.display = 'block';
+                                                        document.getElementById('w3review').value = task_f.text;
+
+                                                        if(task_f.img == ""){
+                                                            const element_11 = document.querySelector('.scrollbar-Message_text');
+                                                            if (element_11) {
+                                                                element_11.className = 'scrollbar-Message_text_s';
+                                                            }
+                                           
+                                                        }else{
+                                                            if(task_f.type ==="video"){
+                                                                document.getElementById('myvideo').style.display = 'block';
+                                                                document.getElementById('myimage').style.display = 'none';
+                                                                var videoElement = document.getElementById('myvideo');
+                                                                var sourceElement = document.getElementById('video_source');
+                                                                sourceElement.src = task_f.img;
+                                                                videoElement.load();
+                                                            }else{
+                                                                document.getElementById('myvideo').style.display = 'none';
+                                                                document.getElementById('myimage').style.display = 'block';
+                                                                document.getElementById('myimage').src = task_f.img;
+                                                            }
+                                                        
+                                                        }
+
+                                                        element.style.display = 'block';
+                                                        
+                                                        setTimeout(function() {
+                                                            element.style.display = 'none';
+                                                            //force_switch_tool(1);    
+                                                            call_job();
+                                                        }, e_time1); 
+
+                                                    }else{
+                                                        call_job();
+                                                    
+                                                        //force_switch_tool(0); 
+                                                    }
+                                                }else{
+                                                    call_job();
+                                                }
+
+                                            }catch (e) {
+                                                console.log(e)
+                                            }
                                         }
                                                                                 
                                 }else{
@@ -1533,15 +1536,13 @@ tt.set('start_time',new Date())
 
                                         light_signal = 'okall';
                                         afterward();
-
-
-
-
                                        
                                 }
 
                                 
                             }else if(data.fasten_status == 7 || data.fasten_status == 8){
+                                let fs_status = data.fasten_status
+                                let err_status = data.error_message
                                 //NG、NG-STOP
                                 //播放NG 語音
                                 var path =  '../public/voice/';
@@ -1556,25 +1557,22 @@ tt.set('start_time',new Date())
                                 
 
                                 save_result(data);
+
                                 current_circle.childNodes[1].classList.add('running')
                                 current_circle.classList.add('ng');
                                 retry_time = retry_time + 1;
                                 document.getElementById('step'+task_id).style.backgroundColor = 'red';
                                 document.getElementById('tightening_status_div').style.backgroundColor = 'red';
-                              
 
                                 document.getElementById('screw_info').innerHTML = retry_time + ' / '+ stop_on_ng;
                                 document.getElementById('modbus_switch').value = 1;
 
-                                document.getElementById('error1').innerHTML = 'Error : ' + fasten_status[data.fasten_status].status;
-                                document.getElementById('error2').innerHTML = 'Error : ' + error_message[data.error_message].status;
-
+                                // console.log(data.fasten_status)
+                                // console.log(fasten_status[7].status)
+                                document.getElementById('error1').innerHTML = 'Error : ' + fasten_status[fs_status].status;
+                                document.getElementById('error2').innerHTML = 'Error : ' + error_message[err_status].status;
                                 light_signal = 'ng';
                                 afterward();
-                              
-                                
-                              
-
 
                                 if( +retry_time == +stop_on_ng && +stop_on_ng != 0 ){
                                     // force_switch_tool(0);

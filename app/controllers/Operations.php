@@ -567,8 +567,10 @@ class Operations extends Controller
             $post['light_signal'] = $light_signal;
             $post['IO'] = $IO;
             $post['TowerLightSetting'] = $TowerLightSetting;
+
+            $url_split = explode('/',$_SERVER['PHP_SELF']);
             
-            $url = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['SERVER_NAME'].'/CC/api/set_io_signal.php';
+            $url = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['SERVER_NAME'].'/'.$url_split[1].'/api/set_io_signal.php';
 
             $curl = curl_init();
             // $post['test'] = 'examples daata'; // our data todo in received
@@ -753,8 +755,9 @@ class Operations extends Controller
         if( isset($_POST['Socket_Hole']) ){
             $post['light_signal'] = 'sockect_hole';
             $post['hole_id'] = $_POST['hole_id'];
+            $url_split = explode('/',$_SERVER['PHP_SELF']);
 
-            $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].'/CC/api/set_io_signal.php';
+            $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].'/'.$url_split[1].'/api/set_io_signal.php';
 
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);

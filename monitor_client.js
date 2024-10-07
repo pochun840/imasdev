@@ -1,7 +1,6 @@
 const WebSocket = require('ws');
 const sqlite3 = require('sqlite3').verbose();
-const os = require('os'); // 引入 os 模組以獲取本機 IP
-
+const os = require('os');
 
 // 連接到 SQLite 資料庫
 const db = new sqlite3.Database('./cc.db', (err) => {
@@ -12,16 +11,17 @@ const db = new sqlite3.Database('./cc.db', (err) => {
     }
 });
 
+let ip = 'localhost';
 let url = ''; // default 替換為您的 WebSocket server URL
-let ip = '192.168.0.115';
 let localIpAddress = ''; // 儲存本機 IP 地址
+let reconnectInterval = 5000;  // 重新連接間隔時間 (毫秒)
+let ws; // 將 WebSocket 定義在外部作用域，便於重連時重用
 
 // 獲取本機 IP 地址的函數
 const getLocalIpAddress = () => {
     const interfaces = os.networkInterfaces();
     for (const interfaceName in interfaces) {
         for (const interfaceInfo of interfaces[interfaceName]) {
-            // 濾除內部地址和 IPv6 地址
             if (interfaceInfo.family === 'IPv4' && !interfaceInfo.internal) {
                 return interfaceInfo.address;
             }
@@ -34,7 +34,6 @@ const getLocalIpAddress = () => {
 localIpAddress = getLocalIpAddress();
 console.log(`Local IP Address: ${localIpAddress}`);
 
-
 // 撈取 WebSocket URL 的函數
 const fetchWebSocketUrl = () => {
     return new Promise((resolve, reject) => {
@@ -42,7 +41,6 @@ const fetchWebSocketUrl = () => {
             if (err) {
                 return reject(err);
             }
-            console.log(row[0].value);
             ip = row[0].value;
             url = 'ws://' + ip + ':3000';
             resolve(url);
@@ -50,45 +48,55 @@ const fetchWebSocketUrl = () => {
     });
 };
 
-// 使用撈取到的 URL 建立 WebSocket 連接
-fetchWebSocketUrl().then(url => {
-    const ws = new WebSocket(url);
-    console.log(`Connecting to: ${url}`);
+// 建立 WebSocket 連接的函數，帶有自動重連邏輯
+const connectWebSocket = () => {
+    fetchWebSocketUrl().then(url => {
+        console.log(`Connecting to: ${url}`);
+        ws = new WebSocket(url);
 
-    // 每秒撈取一次最新資料並發送給 server
-    setInterval(async () => {
-        try {
-            const rows = await fetchLatestData();
-            // 將資料轉換成 JSON 格式並發送給 server
-            if (rows.length > 0) {
-                // ws.send(JSON.stringify(rows)); // 確保這裡發送的是字符串
-                const messageToSend = {
-                    clientIp: localIpAddress, // 使用已獲取的本機 IP 地址
-                    data: rows // 將撈取到的資料加入
-                };
-                ws.send(JSON.stringify(messageToSend)); // 發送包含 IP 和資料
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error.message);
-        }
-    }, 1000); // 每1000毫秒（1秒）執行一次
+        ws.on('open', () => {
+            console.log('Connected to server');
 
-    ws.on('open', () => {
-        console.log('Connected to server');
+            // 每秒撈取一次最新資料並發送給 server
+            setInterval(async () => {
+                try {
+                    const rows = await fetchLatestData();
+                    if (rows.length > 0) {
+                        const messageToSend = {
+                            clientIp: localIpAddress, // 使用本機 IP 地址
+                            data: rows // 將撈取到的資料加入
+                        };
+                        ws.send(JSON.stringify(messageToSend));
+                    }
+                } catch (error) {
+                    console.error('Error fetching data:', error.message);
+                }
+            }, 1000); // 每1000毫秒（1秒）執行一次
+        });
+
+        ws.on('message', (data) => {
+            console.log(`Received from server: ${data}`);
+        });
+
+        ws.on('close', () => {
+            console.log('Disconnected from server');
+            console.log('連線已關閉，正在重新連線...');
+            setTimeout(connectWebSocket, reconnectInterval);  // 延遲後重新連線
+        });
+
+        ws.on('error', (err) => {
+            console.error('WebSocket 發生錯誤:', err.message);
+            ws.close();  // 關閉連線以觸發重連
+        });
+
+    }).catch(error => {
+        console.error('Error fetching WebSocket URL:', error.message);
+        setTimeout(connectWebSocket, reconnectInterval);  // 若撈取 URL 失敗，也設定延遲重試
     });
+};
 
-    ws.on('message', (data) => {
-        // 確保接收到的數據是文字
-        console.log(`Received from server: ${data}`);
-    });
-
-    ws.on('close', () => {
-        console.log('Disconnected from server');
-    });
-
-}).catch(error => {
-    console.error('Error fetching WebSocket URL:', error.message);
-});
+// 初始化 WebSocket 連接
+connectWebSocket();
 
 // 撈取最新資料的函數
 const fetchLatestData = () => {

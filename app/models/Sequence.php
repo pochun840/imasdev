@@ -228,6 +228,14 @@ class Sequence{
         $stmt->bindValue(':seq_id', $seq_id);
         $results = $stmt->execute();
 
+
+        //刪除task_message
+        $stmt = $this->db->prepare('DELETE FROM task_message WHERE job_id = :job_id AND seq_id = :seq_id');
+        $stmt->bindValue(':job_id', $job_id);
+        $stmt->bindValue(':seq_id', $seq_id);
+        $results = $stmt->execute();
+
+
         //更新seq_id
         $sql2= "UPDATE sequence SET seq_id = seq_id - 1 WHERE job_id = :job_id AND seq_id > :seq_id";
         $stmt = $this->db->prepare($sql2);
@@ -243,22 +251,12 @@ class Sequence{
         $stmt->bindValue(':job_id', $job_id);
         $stmt->bindValue(':seq_id', $seq_id);
         $results = $stmt->execute();
-
-        //刪除task_meaasge
-        $stmt = $this->db->prepare('DELETE FROM task_message WHERE job_id = :job_id AND seq_id = :seq_id');
-        $stmt->bindValue(':job_id', $job_id);
-        $stmt->bindValue(':seq_id', $seq_id);
-        $results = $stmt->execute();
-
-
         //更新task的seq_id
         $sql2= "UPDATE task SET seq_id = seq_id - 1 WHERE job_id = :job_id AND seq_id > :seq_id";
         $stmt = $this->db->prepare($sql2);
         $stmt->bindValue(':job_id', $job_id);
         $stmt->bindValue(':seq_id', $seq_id);
         $results2 = $stmt->execute();
-
-
 
         //刪除其他關聯
         //delete ccs_normalstep
@@ -389,6 +387,56 @@ class Sequence{
 
 
     }
+
+
+    public function check_task_message_by_id($from_job_id, $from_seq_id) {
+   
+        $sql = "SELECT * FROM `task_message` WHERE job_id = :job_id AND seq_id = :seq_id";
+        $statement = $this->db->prepare($sql);
+        $statement->bindValue(':job_id', $from_job_id);
+        $statement->bindValue(':seq_id', $from_seq_id);
+        
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+    
+    
+        return $rows; 
+    }
+    
+
+
+    public function cover_data($new_temp_task_message) {
+        $sql = "INSERT INTO `task_message` (job_id, seq_id, task_id, img, type, text, timeout)
+                VALUES (:job_id, :seq_id, :task_id, :img, :type, :message, :message_timeout)";
+        
+        $statement = $this->db->prepare($sql);
+
+        foreach ($new_temp_task_message as $task_message) {
+  
+            if (isset($task_message['job_id'], $task_message['seq_id'], $task_message['task_id'], $task_message['img'], $task_message['type'], $task_message['text'], $task_message['timeout'])) {
+              
+                $statement->bindValue(':job_id', $task_message['job_id']);
+                $statement->bindValue(':seq_id', $task_message['seq_id']);
+                $statement->bindValue(':task_id', $task_message['task_id']);
+                $statement->bindValue(':img', $task_message['img']);
+                $statement->bindValue(':message', $task_message['text']);
+                $statement->bindValue(':type', $task_message['type']);
+                $statement->bindValue(':message_timeout', $task_message['timeout']);
+
+                $results = $statement->execute();
+    
+            } 
+        }
+
+        return $results;
+    }
+
+
+
+
+
+
 
 
     

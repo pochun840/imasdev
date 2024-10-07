@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../public/img/cc_icon.png" type="image/x-icon">
-    <link rel="apple-touch-icon" sizes="60x60" href="../public/img/icon.svg">
-    <link rel="icon" type='image' sizes="192x192" href="../public/img/icon.svg">
+    <link rel="apple-touch-icon" sizes="60x60" href="../public/img/cc_icon.png">
+    <link rel="icon" sizes="192x192" href="../public/img/192.png">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">

@@ -58,8 +58,6 @@ class Controller
             }else{//預設
                 $_SESSION['language'] = 'zh-tw';
             }
-        }else{
-            $_SESSION['language'] = 'zh-tw';
         }
 
     }

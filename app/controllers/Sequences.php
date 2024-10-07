@@ -369,6 +369,24 @@ class Sequences extends Controller
                     }
 
                 }
+                //文字訊息(task_message) 的copy 
+                //$from_job_id,$from_seq_id,
+                $res_tmp = $this->SequenceModel->check_task_message_by_id($from_job_id,$from_seq_id);
+                if(!empty($res_tmp)){
+                    
+                    foreach($res_tmp as $k_m =>$v_m){
+                        $new_temp_task_message[$k_m]['job_id']  = $v_m['job_id'];
+                        $new_temp_task_message[$k_m]['seq_id']  = $to_seq_id;
+                        $new_temp_task_message[$k_m]['task_id'] = $v_m['task_id'];
+                        $new_temp_task_message[$k_m]['type']    = $v_m['type'];
+                        $new_temp_task_message[$k_m]['text']    = $v_m['text'];
+                        $new_temp_task_message[$k_m]['img']     = $v_m['img'];
+                        $new_temp_task_message[$k_m]['timeout'] = $v_m['timeout'];
+                        $new_temp_task_message[$k_m]['status']  = $v_m['status'];
+                       
+                    }
+                    $count = $this->SequenceModel->cover_data($new_temp_task_message);
+                }
             }
             echo json_encode(array('error' => ''));
             exit();
