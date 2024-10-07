@@ -28,6 +28,10 @@ class Calibrations extends Controller
         $torque_type = $this->CalibrationModel->details('torque');
         $tools_sn = $this->CalibrationModel->get_tools_sn();
 
+        
+        $ktm = $this->CalibrationModel->details('torquemeter');
+       
+      
         $job_id = 221;
 
         $echart_data = $this->CalibrationModel->datainfo_search($job_id);
@@ -57,7 +61,6 @@ class Calibrations extends Controller
             $count = 0;
         }
 
-
         
         $data = array(
             'isMobile' => $isMobile,
@@ -72,14 +75,11 @@ class Calibrations extends Controller
             'count' =>$count,
             'torque_type ' => $torque_type,
             'tools_sn' => $tools_sn['device_sn'],
+            'current_torquemeter' => $ktm[$_SESSION['torqueMeter']]
             
         );
 
 
-       
-     
-
-        
         $this->view('calibration/index', $data);
 
 
@@ -428,6 +428,7 @@ class Calibrations extends Controller
             $input_check = false;
         }
         $job_id = 221;
+        
         if($input_check){
             $dataset = $this->CalibrationModel->datainfo_search($job_id);
             if(!empty($dataset)){

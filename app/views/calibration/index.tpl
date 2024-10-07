@@ -288,7 +288,7 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Item_text'];?>:</div>
                                         <div class="col-5 t1">
-                                            <input id="item" type="text" class="t2 form-control" value="KTM-100(N.m)">
+                                            <input id="item" type="text" class="t2 form-control" value="<?php echo $data['current_torquemeter'].'(N.m)';?>">
                                         </div>
                                     </div>
                                     <div class="row t1">
