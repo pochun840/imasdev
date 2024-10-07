@@ -1,0 +1,494 @@
+.container-ms
+{
+    margin: 0 auto;
+    padding: 0px;
+    overflow: hidden;
+    width: calc(100%);
+    position: static;
+    padding-left: 68px;
+}
+
+header
+{
+    background-color: red;
+    font-size: 24px;
+    width: 100%;
+    color: white;
+    height:50px;
+    margin-bottom: 0px;
+    align-items: center;
+}
+
+#header-img
+{
+    width: auto;
+    height:39px;
+    margin: 2px;
+    padding-right: 5px;
+    margin-left: 10px;
+    float: left;
+    color:white;
+}
+
+.setting
+{
+    float: left;
+    margin-left: 10px;
+    margin: 3px;
+    font-size: 26px;
+    vertical-align: middle;
+}
+
+.personnel
+{
+    float: right;
+    margin: 0 15px;
+    font-size: 24px;
+    vertical-align: middle;
+    padding: 4px;
+    bottom: 0;
+}
+
+/* Start Notification */
+.notification
+{
+    float: right;
+    font-size: 24px;
+    margin-right: 20px;
+    padding: 4px;
+    vertical-align: middle;
+    bottom: 0;
+}
+
+.topnav-message
+{
+    width: 100%;
+    overflow: hidden;
+    background-color:#fff;
+    border: 1px solid #BBBBBB;
+    border-radius: 5px;
+    padding: 0px;
+}
+
+.messageBox
+{
+    display: none;
+    position: absolute; /* Thay vi position: fixed */
+    border-radius: 10px;
+    right: 10px;
+    top: 45px;
+    float: right;
+    width: 400px;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
+    background-color: #fff;
+    border: 0px solid #000;
+    padding: 0px;
+    z-index: 1000;
+}
+
+.notification .badge
+{
+    position: absolute;
+    height: auto;
+    width: auto;
+    text-align: center;
+    top: -3px;
+    right: 8px;
+    padding: 2px 8px;
+    border-radius: 50%;
+    color: white;
+}
+
+**
+* Checkbox Four
+*/
+.checkboxFour
+{
+    width: 0px;
+    height: 0px;
+    background: #ddd;
+    margin: 0px 0px;
+    border-radius: 100%;
+    position: relative;
+}
+
+/**
+* Create the online and offline button
+*/
+.checkboxFour label
+{
+    display: block;
+    position: fixed;
+    width: 11px;
+    height: 11px;
+    border-radius: 100px;
+    transition: all .5s ease;
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    z-index: 1;
+    background: #CFCFCF;
+}
+
+/**
+* Create the checked state
+*/
+.checkboxFour input[type=checkbox]:checked + label
+{
+    background: #0083FF;
+}
+
+/* scrollbar Notification Mess */
+.scrollbar-message
+{
+    float: left;
+    height: calc(100vh - 300px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.force-overflow-message
+{
+    min-height: 60vh;
+}
+
+/**  STYLE Message */
+#style-message::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-message::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-message::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-message::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+#messageCount
+{
+    text-align: center;
+}
+
+.close-message
+{
+    color: #4F576D;
+    float: right;
+    margin: 0 auto;
+    padding: 0px;
+    top: 0;
+    margin-right: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.close-message:hover,
+.close-message:focus
+{
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+.recyclebox{color: #14A800; background-color: #E8F9F1; border-radius: 10px; padding-right: 5%; padding: 0 5px;}
+.workstation{color: #555555; background-color: #DDDDDD; border-radius: 10px; padding: 0 5px}
+/* End Notification */
+
+/* Clearfix to clear the float */
+header::after
+{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.main-content
+{
+    width: 100%;
+    height: calc(100vh - 50px);
+}
+
+.center-content
+{
+    width: 100%;
+    padding: 1px 0px;
+}
+
+@media (max-width: 768px)
+{
+    .center-content
+    {
+        width: 100%;
+    }
+}
+
+/* menu button setting */
+.wrapper
+{
+    position: absolute;
+    width: 100%;
+    padding: 2px 10px;
+    border: 0px solid #444E66;
+}
+
+.navbutton
+{
+    position: relative;
+    display: inline-block;
+    font-family: 'Arial', sans-serif;
+    padding: 3px 12px 3px 33px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 20px;
+    letter-spacing: 1px;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.navbutton span
+{
+    position: absolute;
+    top: 0;
+    left: 0px;
+    width: 3px;
+    height: 100%;
+    color: #000;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    transform-origin: top right;
+    transform: skewX(30deg);
+    transition: width 0.8s cubic-bezier(0.59, 0.05, 0.16, 0.99);
+    z-index: 1;
+}
+
+.navbutton span:before
+{
+    content: attr(data-content);
+    display: block;
+    transform: skewX(-30deg);
+    white-space: nowrap;
+    padding: 3px 10px 2px 15px;
+}
+
+.navbutton:hover span
+{
+    width: calc(100% - 25px);
+    color: #fff;
+}
+
+.navbutton.active span
+{
+    width: calc(100% - 25px);
+    color: #fff;
+}
+
+.content
+{
+    padding: 5px 20px;
+}
+
+#Operation_Setting
+{
+    position: relative;
+    padding: 10px 0px;
+    background-color: #FCFCFC;
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.2);
+    height: calc(100vh - 120px);
+}
+
+#System_Setting
+{
+    position: relative;
+    padding: 10px 50px;
+    background-color: #FCFCFC;
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.2);
+    height: calc(100vh - 120px);
+}
+
+select
+{
+    height: 29px;
+    width: 150px;
+    font-size: 18px;
+    border: 1px solid #CCCCCC;
+    cursor: pointer;
+    border-radius: 5px;
+    color: #000;
+    transition: color 0.s ease, background-color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.ExportButton
+{
+    height: 35px;
+    width: auto;
+    padding: 0 10px;
+    margin-top: 3px;
+    background: linear-gradient(to left top, #00688B, #2C3752);
+    border-radius: 5px;
+    font-size:18px;
+    color: #fff;
+    border: 0px solid #444E66;
+    box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.2);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.saveButton
+{
+    background-color: #555;
+    color: white;
+    border-radius: 5px;
+    font-size: 20px;
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    margin: 10px;
+    opacity: 0.8;
+    height: 50px;
+    width: 100px;
+}
+
+
+/* ON/OFF button */
+
+/* Menu Checkbox */
+.switch
+{
+    margin: 50px auto;
+    position: relative;
+}
+
+.switch label
+{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: block;
+}
+
+.switch input
+{
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    z-index: 100;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.switch.menu
+{
+    width: 80px;
+    height: 20px;
+}
+
+.switch.menu label
+{
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #a5a39d;
+    border-radius: 40px;
+    box-shadow:
+        inset 0 5px 10px 2px rgba(0,0,0,0.2),
+        1px 2px 1px rgba(131,139,131,0.5);
+}
+
+.switch.menu label i
+{
+    display: block;
+    height: 100%;
+    width: 50%;
+    border-radius: inherit;
+    background: silver;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    background: #b2ac9e;
+    background: -moz-linear-gradient(#f7f2f6, #b2ac9e);
+    background: -ms-linear-gradient(#f7f2f6, #b2ac9e);
+    background: -o-linear-gradient(#f7f2f6, #b2ac9e);
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#f7f2f6), to(#b2ac9e));
+    background: -webkit-linear-gradient(#f7f2f6, #b2ac9e);
+    background: linear-gradient(#f7f2f6, #b2ac9e);
+    box-shadow:
+            inset 0 1px 0 white,
+            0 0 8px rgba(0,0,0,0.3),
+            0 5px 5px rgba(0,0,0,0.2);
+}
+
+.switch.menu label i:after
+{
+    content: "";
+    position: absolute;
+    left: 15%;
+    top: 25%;
+    width: 70%;
+    height: 50%;
+    background: #d2cbc3;
+    background: -moz-linear-gradient(#cbc7bc, #d2cbc3);
+    background: -ms-linear-gradient(#cbc7bc, #d2cbc3);
+    background: -o-linear-gradient(#cbc7bc, #d2cbc3);
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#cbc7bc), to(#d2cbc3));
+    background: -webkit-linear-gradient(#cbc7bc, #d2cbc3);
+    background: linear-gradient(#cbc7bc, #d2cbc3);
+    border-radius: inherit;
+}
+
+.switch.menu label i:before
+{
+    content: "off";
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: bold;
+    color: rgba(0,0,0,0.4);
+    text-shadow: 0 1px 0 #696969, 0 -1px 0 #696969;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    position: absolute;
+    top: 40%;
+    right: -79%;
+    margin-top: -5px;
+}
+
+.switch.menu input:checked ~ label
+{
+    background: #00CC00;
+    color: #696969;
+}
+
+.switch.menu input:checked ~ label i
+{
+    right: -1%;
+}
+
+.switch.menu input:checked ~ label i:before
+{
+    content: "on";
+    right: 115%;
+    color: #696969;
+    text-shadow:
+        0 1px 0 #afcb9b,
+        0 -1px 0 #00CC00;
+}
+/* END ON/OFF button */

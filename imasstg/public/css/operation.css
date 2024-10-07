@@ -1,0 +1,704 @@
+.container-ms
+{
+    margin: 0 auto;
+    padding: 0px;
+    overflow: hidden;
+    width: calc(100%);
+    position: static;
+    padding-left: 68px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+header, footer, .center-content
+{
+    width: 100%;
+}
+
+header
+{
+    background-color: red;
+    font-size: 24px;
+    width: 100%;
+    color: white;
+    height:50px;
+    margin-bottom: 0px;
+    align-items: center;
+}
+
+.operation
+{
+    float: left;
+    margin-left: 10px;
+    margin: 3px;
+    font-size: 26px;
+    vertical-align: middle;
+}
+
+#header-img
+{
+    width: auto;
+    height:37px;
+    margin: 2px;
+    padding-right: 5px;
+    margin-left: 10px;
+    float: left;
+    color:white;
+}
+
+.ipconnection
+{
+    float: right;
+    margin: 3px 15px;
+    margin-top: 5px;
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+.personnel
+{
+    float: right;
+    margin: 3px 15px;
+    margin-top: 5px;
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+.notification
+{
+    float: right;
+    font-size: 24px;
+    margin: 0px 0px;
+    margin-top: 5px;
+    margin-right: 20px;
+    vertical-align: middle;
+}
+
+.topnav-message
+{
+    width: 100%;
+    overflow: hidden;
+    background-color:#fff;
+    border: 1px solid #BBBBBB;
+    border-radius: 5px;
+    padding: 0px;
+}
+
+.messageBox
+{
+    display: none;
+    position: absolute; /* Thay vi position: fixed */
+    border-radius: 10px;
+    right: 10px;
+    top: 45px;
+    float: right;
+    width: 400px;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
+    background-color: #fff;
+    border: 0px solid #000;
+    padding: 0px;
+    z-index: 1000;
+}
+
+.notification .badge
+{
+    position: absolute;
+    height: auto;
+    width: auto;
+    text-align: center;
+    top: -3px;
+    right: 8px;
+    padding: 2px 8px;
+    border-radius: 50%;
+    color: white;
+}
+
+**
+* Checkbox Four
+*/
+.checkboxFour
+{
+    width: 0px;
+    height: 0px;
+    background: #ddd;
+    margin: 0px 0px;
+    border-radius: 100%;
+    position: relative;
+}
+
+/**
+* Create the online and offline button
+*/
+.checkboxFour label
+{
+    display: block;
+    position: fixed;
+    width: 11px;
+    height: 11px;
+    border-radius: 100px;
+    transition: all .5s ease;
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    z-index: 1;
+    background: #CFCFCF;
+}
+
+/**
+* Create the checked state
+*/
+.checkboxFour input[type=checkbox]:checked + label
+{
+    background: #0083FF;
+}
+
+/* scrollbar Notification Mess */
+.scrollbar-message
+{
+    float: left;
+    height: calc(100vh - 300px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.force-overflow-message
+{
+    min-height: 60vh;
+}
+
+/**  STYLE Communication log */
+#style-message::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-message::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-message::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-message::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+#messageCount
+{
+    text-align: center;
+}
+
+.topnav
+{
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    margin: 0 auto;
+    padding: 0px;
+    top: 0;
+    color: #000;
+    border: 1px solid #000;
+    background-color: #D9D9D9;
+    vertical-align: middle;
+}
+
+.virtual-message
+{
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
+    background-color: #F2F1F1;
+    border: 1px solid #000;
+    padding: 0px;
+    z-index: 1000;
+}
+
+#Message_text
+{
+    padding: 10px 5px;
+}
+
+.identity-verify
+{
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 310px;
+    height: calc(100vh - 500px);
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
+    background-color: #F2F1F1;
+    border: 1px solid #000;
+    padding: 0px;
+    z-index: 1000;
+}
+
+.close
+{
+    color: #4F576D;
+    float: right;
+    margin: 0 auto;
+    padding: 0px;
+    top: 0;
+    margin-right: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.close:hover,
+.close:focus
+{
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.identity-input
+{
+    padding: 10px 30px;
+}
+
+.identity-input input
+{
+    width: 100%;
+    margin: 10px 0;
+    padding: 5px;
+}
+
+.VerifyButton
+{
+    background-color: #4F576D;
+    border: 0px solid #444E66;
+    border-radius: 5px;
+    color: white;
+    font-size: 18px;
+    position: absolute;
+    bottom: 15px;
+    right: 10px;
+    margin: 10px;
+    height: 35px;
+    width: auto;
+}
+
+/* scrollbar style */
+.scrollbar-Message_text
+{
+    float: left;
+    height: calc(100vh - 380px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.scrollbar-Message_text_s
+{
+    float: left;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+
+.force-overflow-Message_text
+{
+    min-height: 40vh;
+}
+
+/**  STYLE Message Text */
+#style-Message_text::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-Message_text::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-Message_text::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-Message_text::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+
+/* Clearfix to clear the float */
+header::after
+{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.main-content
+{
+    width: 100%;
+}
+
+.center-content
+{
+    float: left;
+    padding: 0px;
+    width: 100%;
+    position: relative;
+    height: 61vh;
+}
+
+.center-content img
+{
+   width: 100%;
+   height: 54vh;
+}
+
+/*** Operation Setting ****/
+.operation_setting
+{
+    margin: 0;
+    display: flex;
+    padding: 0 10px;
+    flex-direction: column;
+    width: 100%;
+}
+
+.img_task
+{
+    display: flex;
+    width: 100%;
+    margin: 1px 0;
+    margin-bottom: 2px;
+}
+
+/* Button Setting */
+.btn-menu
+{
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: 100;
+}
+
+.btn-menu button
+{
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    background-color:#9FA9AE;
+    font-size: 26px;
+    height: 45px;
+    width: 45px;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    box-shadow: 0 3px 7px 1px #AAA;
+}
+
+#SeqNameSelect
+{
+    width: 260px;
+    font-size: 16px;
+    float: center;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: Opx;
+    background-color: #fff;
+    border: none;
+    border: 1px solid;
+    border-radius: 2px;
+    color: #000;
+    appearance: none;
+    padding: 0px 0px 0px 0px;
+    transition: color 0.s ease, background-color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.target_sensor
+{
+    display: flex;
+    width: 100%;
+    margin: 1px 0;
+}
+
+.column
+{
+    width: 100%;
+    padding: 2px;
+    margin-right: 5px;
+    justify-content: center;
+    align-items: center;
+    border: 0px solid #ccc;
+}
+
+/** Task  Step **/
+#task-setting
+{
+    padding: 0 20px;
+}
+
+.btn-calljob
+{
+    display: inline-block;
+    background-color:#AAA;
+    font-size: 18px;
+    float: right;
+    border-radius: 5px;
+    height: 30px;
+    width: auto;
+    border: none;
+    color: #000;
+    box-shadow: 0 3px 7px 1px #AAA;
+}
+
+ol
+{
+    counter-reset: li;
+    font: 16px 'trebuchet MS', 'lucida sans';
+    padding: 0 20px;
+    margin: 0;
+    list-style: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+.ol a
+{
+    position: relative;
+    display: block;
+    padding: .4em .4em .4em 2em;
+    margin: .7em 0;
+    background: #fff;
+    border: 1px solid #26D0F5;
+    color: #444;
+    text-decoration: none;
+    border-radius: .3em;
+    transition: all .3s ease-out;
+}
+
+.ol a:hover{
+    background: #CCCC99;
+}
+
+.ol a:hover:before{
+    transform: rotate(360deg);
+}
+
+.ol a:before
+{
+    content: counter(li);
+    counter-increment: li;
+    position: absolute;
+    left: -1.3em;
+    top: 55%;
+    margin-top: -1.7em;
+    background: #A1B8AE;
+    height: 3em;
+    width: 3em;
+    line-height: 2.5em;
+    border: .3em solid #F2F1F1;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 2em;
+    transition: all .3s ease-out;
+}
+
+#step1 a
+{
+    color: #000;
+}
+
+.dropdown-content
+{
+    display: none;
+    margin-left: 37px;
+    padding-left: 3%;
+    font-size: 14px;
+    width: 79%;
+    border-radius: 5px;
+    z-index: 10; /* Sit on top */
+    text-align: left;
+    background-color: #F2F1F1;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.2);
+}
+
+/* scrollbar tasklist style */
+.scrollbar-tasklist
+{
+    float: left;
+    height: 335px;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.force-overflow-tasklist
+{
+    min-height: 300px;
+}
+
+/**  STYLE Tasklist Text */
+#style-tasklist::-webkit-scrollbar
+{
+    display: none;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+#style-tasklist::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background: linear-gradient(left, #96A6BF, #63738C);
+    box-shadow: inset 0 0 1px 1px #5C6670;
+}
+
+#style-tasklist::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background: #eee;
+    box-shadow: 0 0 1px 1px #bbb, inset 0 0 7px rgba(0,0,0,0.3)
+}
+
+#style-tasklist::-webkit-scrollbar-thumb:hover
+{
+    background: linear-gradient(left, #8391A6, #536175);
+}
+
+.btn-secondary
+{
+    display: inline-block;
+    background-color:#AAA;
+    font-size: 18px;
+    float: right;
+    border-radius: 5px;
+    height: 35px;
+    width: 35px;
+    border: none;
+    color: #000;
+    box-shadow: 0 3px 7px 1px #AAA;
+}
+
+/* The Modal (background) */
+.modal
+{
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0%;
+    top: 0%;
+    overflow: auto; /* Enable scroll if needed */
+    padding-top: 0px;
+}
+
+.modal-header
+{
+    border-radius: 0;
+    padding: 0;
+    height: 50px;
+    background-color: #9FA9AE;
+}
+
+/* Modal Content/Box */
+.modal-content
+{
+    background-color: #fff;
+    margin: 0% auto 0% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+}
+
+.modal-footer
+{
+    border-radius: 0;
+    height: 55px;
+    padding: 0;
+    background-color: #9FA9AE;
+}
+
+.modal-footer button
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+/* Clear floats */
+.clearfix::after
+{
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/*** Target Sensor Style **/
+.column-target
+{
+    width: 20%;
+    padding: 0 20px;
+    margin-right: -5px;
+    justify-content: center;
+    align-items: center;
+    border: 0px solid #ccc;
+    float: left;
+}
+
+.target_style
+{
+    height: 14vh;
+    background-color: #B5BBBE;
+    margin-bottom: 5px;
+    padding: 0 5px;
+    border-radius: 10px;
+}
+
+.column-sensor
+{
+    width: 20%;
+    padding: 0 20px;
+    justify-content: center;
+    align-items: center;
+    border: 0px solid #ccc;
+    float: left;
+}
+
+.sensor_style
+{
+    height: 9vh;
+    background-color: #C6D5DC;
+    margin-bottom: 5px;
+    padding: 0 5px;
+    border-radius: 10px;
+}
+
+.custom-checkbox {
+    font-size: 1.8vmin;
+    text-align: left;
+    padding-left: 25px;
+}
+
+/* Custom styling for the checkbox input */
+.custom-checkbox input[type="checkbox"]
+{
+    width: 20px; /* Adjust size as needed */
+    height: 20px; /* Adjust size as needed */
+    background-color: green; /* Change background color */
+}
+

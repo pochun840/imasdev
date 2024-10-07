@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_圖層_1" data-name="圖層 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 3px;
+      }
+    </style>
+  </defs>
+  <polyline class="cls-1" points="125.61 123.68 34.39 123.68 34.39 36.32"/>
+  <circle class="cls-1" cx="49.64" cy="85.69" r="6.61"/>
+  <circle class="cls-1" cx="71.63" cy="64.21" r="6.61"/>
+  <path class="cls-1" d="m100.23,103.27c0,3.65-2.96,6.61-6.61,6.61-3.65,0-6.61-2.96-6.61-6.61,0-3.65,2.96-6.61,6.61-6.61s6.61,2.96,6.61,6.61Z"/>
+  <path class="cls-1" d="m122.22,58.35c0,3.65-2.96,6.61-6.61,6.61-3.65,0-6.61-2.96-6.61-6.61s2.96-6.61,6.61-6.61,6.61,2.96,6.61,6.61Z"/>
+  <line class="cls-1" x1="54.95" y1="81.78" x2="66.12" y2="67.86"/>
+  <line class="cls-1" x1="74.89" y1="69.96" x2="90.5" y2="97.45"/>
+  <line class="cls-1" x1="96.18" y1="97.03" x2="112.56" y2="64.21"/>
+</svg>

@@ -1,0 +1,103 @@
+body
+{
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.excel-sheet
+{
+    width: 21cm;
+    height: 29.7cm;
+    margin: auto;
+    background-color: #fff;
+}
+
+header
+{
+    text-align: left;
+    padding: 0px;
+}
+
+.border-bottom
+{
+    border-bottom: 1px solid #ddd;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header h2
+{
+    margin: 0;
+}
+
+header img
+{
+    width: 130px;
+    height: 50px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+header p
+{
+    text-align: center;
+    margin: 0px 0;
+    font-size: 16px;
+}
+
+.container-table
+{
+    display: flex;
+    padding: 0 0px;
+    padding-bottom: 10px;
+}
+
+.column
+{
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.column-left
+{
+    flex: 20%;
+    margin-right: 4px;
+}
+
+.column-right
+{
+    flex: 80%;
+}
+
+table
+{
+    width: 100%;
+    border: 0px solid #ddd;
+    margin-top: 0px;
+    font-size: 14px;
+}
+
+th, td
+{
+    border: 0px solid #ddd;
+    padding: 3px;
+    text-align: center;
+}
+
+th
+{
+    background-color: #f2f2f2;
+}
+
+.tbody-text td
+{
+    text-align: left;
+}
+
+
+
+
+
+
