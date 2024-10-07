@@ -1,6 +1,7 @@
 
 //需要執行這段指令
 //npm install express cookie-parser serialport fs
+//20241007-update 
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
