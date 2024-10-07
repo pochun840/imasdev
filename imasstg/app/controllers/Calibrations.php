@@ -162,7 +162,7 @@ class Calibrations extends Controller
         
     
         // 文件路徑
-        $file_path = "C:/web/mywebsite.com/imasdev/api/final_val.txt";
+        $file_path = "C:/web/mywebsite.com/imasstg/api/final_val.txt";
     
         // 檢查文件是否存在
         if (!file_exists($file_path)) {

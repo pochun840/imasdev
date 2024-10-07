@@ -26,7 +26,7 @@ app.get('/read-cookie', (req, res) => {
 
 // 寫入文件的函數
 async function writeToFile(asciiData) {
-    const dirPath = path.join(__dirname, '../imasdev/api');
+    const dirPath = path.join(__dirname, '../imasstg/api');
     const filePath = path.join(dirPath, 'final_val.txt');
 
     console.log("目錄路徑:", dirPath);

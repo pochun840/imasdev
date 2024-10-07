@@ -729,8 +729,8 @@ function undo() {
 
 
 async function fetchData() {
-        const url1 = 'http://192.168.0.161/imasdev/public/index.php?url=Calibrations/get_val';
-        //const url2 = 'http://192.168.0.161/imasdev/public/index.php?url=Calibrations/get_data';
+        const url1 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_val';
+        //const url2 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_data';
 
         try {
             

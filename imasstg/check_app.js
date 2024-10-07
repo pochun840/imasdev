@@ -3,7 +3,7 @@ const fs = require('fs'); // 引入文件系统模块
 const path = require('path'); // 引入路径模块
 
 async function writeToFile(asciiData) {
-    const dirPath = path.join(__dirname, '../imasdev/api'); // 构建目录路径
+    const dirPath = path.join(__dirname, '../imasstg/api'); // 构建目录路径
     const filePath = path.join(dirPath, 'final_val.txt'); // 构建文件路径
 
     console.log("目錄路徑:", dirPath);
@@ -18,7 +18,7 @@ async function writeToFile(asciiData) {
 }
 
 async function sendToApi(asciiData) {
-    const url = 'http://192.168.0.161/imasdev/public/index.php?url=Calibrations/get_val';
+    const url = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_val';
 
     const { default: fetch } = await import('node-fetch');
 
