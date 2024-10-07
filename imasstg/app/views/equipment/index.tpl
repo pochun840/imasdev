@@ -433,7 +433,7 @@
                         <!-- KTM   -->
                         <div class="row epuipment-row">
                             <div class="col-1">
-                                <img class="images" src="" alt="">
+                                <img class="images" src="./img/ktm.png" alt="">
                             </div>
                             <div class="col-3" style="line-height: 32px; padding-left: 5%">
                                 <div style="font-size: 20px"><b><?php echo "KTM"; ?></b></div>
