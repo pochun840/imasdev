@@ -380,6 +380,9 @@ class Calibrations extends Controller
         #echarts
         $echart_data = $this->CalibrationModel->echarts_data();
 
+
+        $tools_sn = $this->CalibrationModel->get_tools_sn();
+
         $meter = $this->val_traffic();
 
         if(!empty($echart_data)){
@@ -401,6 +404,7 @@ class Calibrations extends Controller
             'job_arr' => $job_arr,
             'meter' =>$meter,
             'count' =>count($meter['res_total']),
+            'tools_sn' => $tools_sn['device_sn'],
             
         );
 
