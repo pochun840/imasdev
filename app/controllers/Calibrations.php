@@ -61,6 +61,9 @@ class Calibrations extends Controller
             $count = 0;
         }
 
+        if(empty($_SESSION['torqueMeter'])){
+            $_SESSION['torqueMeter'] = 0;
+        }
         
         $data = array(
             'isMobile' => $isMobile,
@@ -78,7 +81,6 @@ class Calibrations extends Controller
             'current_torquemeter' => $ktm[$_SESSION['torqueMeter']]
             
         );
-
 
         $this->view('calibration/index', $data);
 
