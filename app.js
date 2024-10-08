@@ -10,6 +10,8 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+const comport = process.argv[2] || 'COM4';
+
 app.use(cookieParser()); // 使用 cookie-parser 來解析 cookie
 
 // 定義路由來讀取 cookie
@@ -93,7 +95,7 @@ async function connectComPort(port, baudRate, dataBits, stopBits, parity) {
 }
 
 // 使用示例，連接 COM 端口
-connectComPort('COM4', 19200, 8, 2, 'none');
+connectComPort(comport, 19200, 8, 2, 'none');
 
 // 啟動伺服器
 app.listen(3000, () => {
