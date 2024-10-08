@@ -20,10 +20,11 @@
                             </div>
                             <div class="row t4">
                                 <div class="col-3 t3"><?php echo $text['Status_text']; ?>:
-                                    <label id="service_status_device" style="color: red; padding-left: 5%"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
+                                    <label id="service_status_device_1" style="color: red; padding-left: 5%; display: block;"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
+                                    <label id="service_status_device_2" style="color: green; padding-left: 5%; display: none;"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
                                 </div>
                                 <div class="col">
-                                    <button type="button" class="btn btn-Reconnect" id="runApp" onclick="connect_test_ktm()"><?php echo $text['Connect_Test_text']; ?></button>
+                                    <button type="button" class="btn btn-Reconnect"  onclick="connect_test_ktm()"><?php echo $text['Connect_Test_text']; ?></button>
                                 </div>
                             </div>
                             <div class="row t4">
@@ -45,19 +46,43 @@
 
     <script type="text/javascript">
 
-        function connect_test_ktm() {
+       function connect_test_ktm() {
+            var comPort = 'COM4'; 
             $.ajax({
                 type: 'POST',
                 url: '?url=Equipments/ktm_connect',
+                data: { comport: comPort },
                 dataType: 'json',
                 success: function(response) {
-                    // 显示返回的结果
-                    $('#output').text(response.output || response.error);
+                    console.log(response); 
+                    
+                    // 处理输出
+                    let message = response.result || response.error;
+                    if (response.output) {
+                        message += "\nOutput: " + response.output; // 添加 Node.js 输出
+                    }
+                    
+                  
+                    
+                    // 隐藏 service_status_device_1
+                    document.getElementById('service_status_device_1').style.display = 'none';
+                    
+                    // 显示 service_status_device_2
+                    document.getElementById('service_status_device_2').style.display = 'block'; 
                 },
-                error: function() {
-                    $('#output').text('An error occurred while trying to run the command.');
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Error Status: " + textStatus); 
+                    console.error("Error Thrown: " + errorThrown); 
+
+                    // 隐藏 service_status_device_1
+                    document.getElementById('service_status_device_1').style.display = 'none';
+                    
+                    // 显示 service_status_device_2
+                    document.getElementById('service_status_device_2').style.display = 'block'; 
                 }
             });
+
+  
         }
 
     </script>

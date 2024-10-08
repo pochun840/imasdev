@@ -512,9 +512,7 @@ class Equipments extends Controller
         }   
     }
 
-
     public function ktm_connect() {
-
         header('Content-Type: application/json'); 
         error_reporting(E_ALL);
         ini_set('display_errors', 1); 
@@ -524,6 +522,8 @@ class Equipments extends Controller
     
         // 构建命令行
         $cmd = "node $nodeScript $comPort"; 
+
+        //echo $cmd;die();
     
         // 执行命令并捕获输出
         $output = shell_exec($cmd . " 2>&1"); 
@@ -533,11 +533,16 @@ class Equipments extends Controller
             exit();
         }
     
+        // 可以在此处添加逻辑以检查输出中的错误信息
+        if (strpos($output, 'Error:') !== false) {
+            echo json_encode(array('error' => 'An error occurred: ' . $output));
+            exit();
+        }
+    
         $message = "嘗試開啟服務";
-        echo json_encode(array('result' => $message, 'service_status' => 'yes', 'output' => $output));
+        echo json_encode(array('result' => $message, 'service_status' => 'yes', 'output' => trim($output)));
         exit();
     }
-    
     
 
     
