@@ -515,11 +515,17 @@ class Equipments extends Controller
 
     public function ktm_connect(){
      
-        $output = shell_exec('node ../app.js 2>&1');
-        echo "<pre>$output</pre>"; // 顯示輸出
-
-
+        $currentDir = __DIR__; 
+        $appPath = 'C:\\web\\mywebsite.com\\imasstg\\app.js';  
+        $command = 'node ' . escapeshellarg($appPath);
+        
+        echo $command;//die();
+        $output = shell_exec($command);
         var_dump($output);
+         
+        return $output;
+
+        
         
     }
 

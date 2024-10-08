@@ -431,6 +431,41 @@
                         </div>
 
 
+                        <!-- ktm  -->
+                        <div class="row epuipment-row">
+                            <div class="col-1">
+                                <img class="images" src="./img/ktm.png" alt="">
+                            </div>
+                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
+                                <div style="font-size: 20px"><b><?php echo "KTM"; ?></b></div>
+                                <div>V.1.1.0</div>
+                                <!-- <div>Nov 11.23 10:55</div> -->
+                            </div>
+
+                            <!-- Message  -->
+                            <div class="col-4" style="font-size:18px">
+                                <form action="" id="Recycle-box_Status">
+                                    <div class="mt-1" style="text-align: center;line-height: 55px">
+                                        ---
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col">
+                                <div class="simple-toggle">
+                                    <label class="tgl" style="font-size:28px; float: right;">
+                                        <input type="checkbox"  checked />
+                                        <span data-on="&#10003;" data-off="&#10005;"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <a><i id="Remove" class="fa fa-minus-square-o"></i></a>
+                                <a><i id="Edit" class="fa fa-edit" onclick="ShowKtmSettingMode()"></i></a>
+                            </div>
+                        </div>
+
+
                     </div>
 
                     </div>
@@ -463,6 +498,11 @@
         }
         if(file_exists('../app/views/'.$data['div_add_device_modal'].'.tpl')){
             require_once '../app/views/'.$data['div_add_device_modal'].'.tpl';
+        }
+
+        if(file_exists('../app/views/'.$data['div_ktm'].'.tpl')){
+            echo "eeeert";
+            require_once '../app/views/'.$data['div_ktm'].'.tpl';
         }
     ?>
 
@@ -583,6 +623,17 @@ function ShowSockettraySettingMode()
     // Hide Equipment Setting
     document.getElementById('Equipment_Setting').style.display = 'none';
 }
+
+
+function ShowKtmSettingMode()
+{
+    // Show Socket tray Setting
+    document.getElementById('Ktm_Edit_Setting').style.display = 'block';
+
+    // Hide Equipment Setting
+    document.getElementById('Equipment_Setting').style.display = 'none';
+}
+
 
 function cancelSetting()
 {
