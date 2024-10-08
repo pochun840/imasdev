@@ -284,7 +284,7 @@ class Equipments extends Controller
 
             $comPort = escapeshellarg($_POST['comport']);
             // $nodeScript = 'C:/Users/User/Desktop/nodejs/project/tt.js';
-            $nodeScript = dirname(dirname(dirname(__FILE__))).'/tt.js';
+            $nodeScript = dirname(dirname(dirname(__FILE__))).'/relink.js';
 
             // 构建命令行
             $cmd = "node $nodeScript $comPort";
@@ -513,21 +513,32 @@ class Equipments extends Controller
     }
 
 
-    public function ktm_connect(){
-     
-        $currentDir = __DIR__; 
-        $appPath = 'C:\\web\\mywebsite.com\\imasstg\\app.js';  
-        $command = 'node ' . escapeshellarg($appPath);
-        
-        echo $command;//die();
-        $output = shell_exec($command);
-        var_dump($output);
-         
-        return $output;
+    public function ktm_connect() {
 
-        
-        
+        header('Content-Type: application/json'); 
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1); 
+    
+        $comPort = escapeshellarg($_POST['comport']);
+        $nodeScript = dirname(dirname(dirname(__FILE__))).'/app.js';
+    
+        // 构建命令行
+        $cmd = "node $nodeScript $comPort"; 
+    
+        // 执行命令并捕获输出
+        $output = shell_exec($cmd . " 2>&1"); 
+    
+        if ($output === null) {
+            echo json_encode(array('error' => 'Failed to execute command.'));
+            exit();
+        }
+    
+        $message = "嘗試開啟服務";
+        echo json_encode(array('result' => $message, 'service_status' => 'yes', 'output' => $output));
+        exit();
     }
+    
+    
 
     
 }
