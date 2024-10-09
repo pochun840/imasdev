@@ -93,26 +93,29 @@
                         <?php
                             $count = 0;
                             foreach ($data['rows'] as $key => $value) {
-                                if( in_array($value['controller'], $data['permissions']) ){//有權限才顯示
-                                // if( in_array($value['controller'], $data['permissions']) || $value['name'] == 'home' ){//有權限才顯示
-                                    // echo $value['name'] . ' ';
-                                    echo '<button class="menu-item" onclick="window.location.href=\''.$value['link'].'\'">';
-                                    echo '<img src="'.$value['img'].'" alt="" style="margin-bottom: 10px">';
-                                    echo '<span style="font-size: 18px; line-height: 1.5">'. $text['main_'.$value['name'].'_text'] .'</span>';
+                                if (in_array($value['controller'], $data['permissions'])) { // 有權限才顯示
+                                    echo '<button class="menu-item" onclick="window.location.href=\'' . $value['link'] . '\'">';
+                                    echo '<img src="' . $value['img'] . '" alt="" style="margin-bottom: 10px">';
+                                    echo '<span style="font-size: 18px; line-height: 1.5">' . $text['main_' . $value['name'] . '_text'] . '</span>';
                                     echo '</button>';
+                                    
                                     $count += 1;
+
+                                    // 在 $key = 4 和 $key = 5 之間插入GTCS 同步功能
+                                    if ($key == 4) {
+                                        echo '<button class="menu-item" onclick="DB2GTCS()">';
+                                        echo '<img src="./img/database.svg" alt="" style="margin-bottom: 10px;">';
+                                        echo '<span style="font-size: 18px; line-height: 1.5px">' . $text['main_DB_SYNC_text'] . '</span>';
+                                        echo '</button>';
+                                    }
+
                                     if ($count % 4 == 0) {
                                         echo '<br><br>';
                                     }
                                 }
-                                // echo($key);
                             }
                         ?>
 
-                        <button class="menu-item"  onclick="DB2GTCS()">
-                            <img src="./img/database.svg" alt="" style="margin-bottom: 10px;">
-                            <span style="font-size: 18px; line-height: 1.5px"><?php echo $text['main_DB_SYNC_text'] ?></span>
-                        </button>
                     </div>
                 </div>
             </div>
