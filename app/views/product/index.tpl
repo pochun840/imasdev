@@ -416,12 +416,12 @@
                         <table class="table table-bordered table-hover" id="barcode-table">
                             <thead id="header-table" style="text-align: center; vertical-align: middle">
                                 <tr>
+                                    <th><i class="fa fa-trash-o" style="font-size:26px;color:black"></i></th>
                                     <th><?php echo $text['Job_ID_text']; ?></th>
                                     <th><?php echo $text['Job_Name_text']; ?></th>
                                     <th><?php echo $text['Seq_ID_text']; ?></th>
                                     <th><?php echo $text['Seq_Name_text']; ?></th>
                                     <th><?php echo $text['Barcode_text']; ?></th>
-                                    <th><?php echo $text['Action_text']; ?></th>
                                     <th style="display:none;">Match From</th>
                                     <th style="display:none;">Match To</th>
                                 </tr>
@@ -429,12 +429,12 @@
 
                             <tbody id="tbody1" style="background-color: #F2F1F1; font-size: 1.8vmin; text-align: center; vertical-align: middle;">
                                 <tr>
+                                    <td><i class="fa fa-times" style="font-size:22px"></i></td>
                                     <td>1</td>
                                     <td>nor-ac-12</td>
                                     <td>-</td>
                                     <td>2</td>
                                     <td>12345678</td>
-                                    <td><i class="fa fa-times" style="font-size:22px"></i></td>
                                     <td style="display:none;">666</td>
                                     <td style="display:none;">666</td>
                                 </tr>
@@ -1081,13 +1081,13 @@ function updateCircleSize(value)
                     let delete_td = document.createElement("td");
                     delete_td.innerHTML = '<i class="fa fa-times" style="font-size:22px" onclick="delete_barcode('+option.id+')"></i>';
 
+                    trElement.appendChild(delete_td)                    
                     trElement.appendChild(create_td(option.barcode_selected_job))
                     trElement.appendChild(create_td(option.job_name))
                     trElement.appendChild(create_td(option.barcode_selected_seq))
                     trElement.appendChild(create_td(option.seq_name))
                     trElement.appendChild(create_td(option.barcode))
                     // trElement.appendChild(create_td(option.action))//
-                    trElement.appendChild(delete_td)
                     trElement.appendChild(create_td(option.barcode_mask_from,'none'))
                     trElement.appendChild(create_td(option.barcode_mask_count,'none'))
                     trElement.appendChild(create_td(option.barcode,'none'))
@@ -1097,7 +1097,7 @@ function updateCircleSize(value)
                     let sub = option.barcode.substring(start-1, end);
 
                     //加上*號
-                    trElement.childNodes[4].textContent = replaceWithAsterisks(option.barcode.toString(),start-1,end-start+1)
+                    trElement.childNodes[5].textContent = replaceWithAsterisks(option.barcode.toString(),start-1,end-start+1)
 
                     tbody1.appendChild(trElement)
                 });

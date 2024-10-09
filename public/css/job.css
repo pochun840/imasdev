@@ -831,6 +831,7 @@ select:focus~.selectIcon svg.icon
     height: calc(100vh - 500px);
     width: 100%;
     overflow-y: scroll;
+    overflow-x: scroll;
 }
 
 .force-overflow-barcode-table
@@ -841,7 +842,6 @@ select:focus~.selectIcon svg.icon
 /*  STYLE Barcode Table */
 #style-barcode-table::-webkit-scrollbar
 {
-    display: none;
     width: 12px;
     background-color: #F5F5F5;
 }
