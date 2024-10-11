@@ -94,20 +94,16 @@
                 <div class="navbutton" onclick="handleButtonClick(this, 'import_export_setting')">
                     <span data-content="<?php echo $text['Import/Export_Setting_text']; ?>" onclick="showContent('import_export_setting')"></span><?php echo $text['Import/Export_Setting_text']; ?>
                 </div>
-
-               
-                
-                
             </div>
 
-            <!-- System Operation -->
+            <!-- Operation Setting -->
             <div id="operationContent" class="content">
                 <div id="Operation_Setting" style="margin-top: 40px">
                     <div class="t1">
-                        <div class="col-2 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['Manager_Verify_text']; ?>:</div>
+                        <div class="col-4 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['Manager_Verify_text']; ?>:</div>
 
                         <?php foreach ($data['all_roles'] as $key => $value) {
-                            echo '<div class="t2 form-check form-check-inline" style="margin-left: -5px">';
+                            echo '<div class="t2 form-check form-check-inline">';
                             if (in_array($value['ID'], $data['button_auth']['role_checked'])) {
                                 echo '<input class="form-check-input" type="checkbox" name="manager_role" id="Leader'.$key.'" value="'.$value['ID'].'" style="zoom:1.1; vertical-align: middle;" checked>';
                             }else{
@@ -119,21 +115,21 @@
                         }?>
                     </div>
                     <div class="row t1">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo $text['Skip_Button_Access_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Skip_Button_Access_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="switch_next_seq" type="checkbox" <?php if($data['button_auth']['switch_next_seq']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                     </div>
                     <div class="row t1">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo $text['Back_Button_Access_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Back_Button_Access_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="switch_previous_seq" type="checkbox" <?php if($data['button_auth']['switch_previous_seq']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                     </div>
                     <div class="row t1">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo $text['Task_Reset_Button_Access_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Task_Reset_Button_Access_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="task_reset" type="checkbox" <?php if($data['button_auth']['task_reset']){ echo 'checked';} ?>>
                             <label><i></i></label>
@@ -141,21 +137,21 @@
                     </div>
 
                     <div class="row t1" style="">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo $text['Job_Selection_Access_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Job_Selection_Access_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="switch_job" type="checkbox" <?php if($data['button_auth']['switch_job']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                     </div>
                     <div class="row t1" style="padding-bottom: 2%">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo $text['Seq_Selection_Access_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Seq_Selection_Access_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="switch_seq" type="checkbox" <?php if($data['button_auth']['switch_seq']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                     </div>
                     <div class="row t1">
-                        <div class="col-3 t3" style="padding-left: 0%; font-weight: bold"><?php echo $text['Stop_On_NG_text']; ?>:</div>
+                        <div class="col-4 t3" style="padding-left: 0%; font-weight: bold"><?php echo $text['Stop_On_NG_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="stop_on_ng" type="checkbox" <?php if($data['button_auth']['stop_on_ng']){ echo 'checked';} ?>>
                             <label><i></i></label>
@@ -163,11 +159,10 @@
                     </div>
 
                     <div class="t1">
-                        <div class="col-2 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['Sensor_Enable_Step_text']; ?>:</div>
-
+                        <div class="col-3 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['Sensor_Enable_Step_text']; ?>:</div>
                     </div>
                     <div class="row t1">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo  $text['Automatic Speech_Setting_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%;font-weight: bold"><?php echo  $text['Automatic Speech_Setting_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="auto_switch" type="checkbox" <?php if($data['button_auth']['auto_switch']){ echo 'checked';} ?>>
                             <label><i></i></label>
@@ -175,10 +170,14 @@
                     </div>
 
                     <div class="t1">
-                        <div class="col-3 t2" style="padding-left: 5%"><a href="#" onclick="showModal(); return false;" style="text-decoration: none; color: inherit; font-weight: bold;" ><?php echo $text['Voice_Playback_Sound_text']; ?>:</a></div>
+                        
+                        <div class="col-4 t2" style="padding-left: 6%">
+                            <img id="img-audio" src="./img/audio.png" href="#"onclick="showModal(); return false;" style="height: 40px; width: 40px">
+                            <a style="text-decoration: none; color: inherit;" ><?php echo $text['Voice_Playback_Sound_text']; ?>:</a>
+                        </div>
 
                         <?php foreach ($data['count_gender'] as $key => $value) {
-                            echo '<div class="t2 form-check form-check-inline" style="margin-left: -5px">';
+                            echo '<div class="t2 form-check form-check-inline">';
                             if($key == $data['button_auth']['gender_switch']) {
                                 echo '<input class="form-check-input" type="radio" name="gender_switch" id="gender'.$key.'" value="'.$key.'" style="zoom:1.1; vertical-align: middle;" checked>';
                             } else {
@@ -192,35 +191,33 @@
 
 
                     <div class="row t1">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo $text['Tower_Light_Setting_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Tower_Light_Setting_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="tower_light_switch" type="checkbox" <?php if($data['button_auth']['tower_light_switch']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                     </div>
                     <div class="row t1">
-                        <div class="col-3 t2" style="padding-left: 5%"><?php echo $text['Buzzer_Setting_text']; ?>:</div>
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Buzzer_Setting_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="buzzer_switch" type="checkbox" <?php if($data['button_auth']['buzzer_switch']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                         
                     </div>
-
-                    
-                    <button class="saveButton" onclick="save_manager_verify()"><?php echo $text['Save_text']; ?></button>
                 </div>
+                <button class="saveButton" onclick="save_manager_verify()"><?php echo $text['Save_text']; ?></button>
             </div>
             
-            <!-- system Setting -->
+            <!-- System Setting -->
             <div id="system_settingContent" class="content" style="display: none">
                 <div id="System_Setting" style="margin-top: 40px">
 
                     <div class="t1">
-                        <div class="col-2 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['select_language_text']; ?>:</div>
+                        <div class="col-3 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['select_language_text']; ?>:</div>
 
                         <?php foreach ($data['language_setting'] as $key => $value) {
-                            echo '<div class="t2 form-check form-check-inline" style="margin-left: -5px">';
+                            echo '<div class="t2 form-check form-check-inline">';
                 
                             if($key == $data['button_auth']['language_setting']){
                                 echo '<input class="form-check-input" type="radio" name="language_setting" id="Leader'.$key.'" value="'.$key.'" style="zoom:1.1; vertical-align: middle;" checked>';
@@ -234,10 +231,10 @@
                     </div>
 
                     <div class="t1">
-                        <div class="col-2 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['Counting_Method_text']; ?>:</div>
+                        <div class="col-3 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['Counting_Method_text']; ?>:</div>
 
                         <?php foreach ($data['count_method'] as $key => $value) {
-                            echo '<div class="t2 form-check form-check-inline" style="margin-left: -5px">';
+                            echo '<div class="t2 form-check form-check-inline">';
                             
                             if($key == $data['button_auth']['count_method_setting']){
                                 echo '<input class="form-check-input" type="radio" name="count_method_setting" id="Leader'.$key.'" value="'.$key.'" style="zoom:1.1; vertical-align: middle;" checked>';
@@ -248,9 +245,101 @@
                             echo '</div>';
                         }?>
                     </div>
-            
-                    <button class="saveButton" onclick="save_manager_verify_system()"><?php echo $text['Save_text']; ?></button>
-                </div>
+
+                    <div class="t1">
+                        <div class="col-2 t2" style="font-weight: bold">Recovery:</div>
+                    </div>                    
+                    <div class="t1">
+                        <div class="col-3 t2" style="margin-left: 1%"> iAMS default setting reset:</div>
+                        <div class="switch menu t4" style="width: 60px">
+                            <input id="iAMSReset_switch" type="checkbox"} ?>
+                            <label><i></i></label>
+                        </div>
+                    </div>
+
+                    <div class="t1">
+                        <div class="col-2 t2" style="font-weight: bold">Plugin:</div>
+                    </div>   
+                    <div class="scrollbar-plugin" id="style-plugin">
+                        <div class="force-overflow-plugin">
+                            <div style="padding: 0px 40px">                 
+                                <table class="table table-bordered table-hover" id="plugin-table">
+                                    <thead id="header-table" style="text-align: center; vertical-align: middle">
+                                        <tr>
+                                            <th><img id="add_plugin" src="./img/add-plugin.png"></th>
+                                            <th>Device Name</th>
+                                            <th>Version</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody1" style="background-color: #F2F1F1; font-size: 1.8vmin;text-align: center; vertical-align: middle;">
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                        <tr>
+                                            <td></td>
+                                            <td>GTCS</td>
+                                            <td>V.1.1.0</td>
+                                            <td>Nov 10.24 10:33</td>
+                                        </tr>     
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> 
+                    </div>  
+            </div>           
+                <button class="saveButton" onclick="save_manager_verify_system()"><?php echo $text['Save_text']; ?></button>
             </div>
 
             <!-- import_export Setting -->
@@ -340,10 +429,11 @@
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content w3-animate-zoom" style="width:100%;">
                         <header class="w3-container modal-header">
-                            <span onclick="document.getElementById('auto_language').style.display='none'" class="w3-button w3-red w3-xxlarge w3-display-topright" style="padding: 7px; width: 60px">×</span>
+                            <span onclick="document.getElementById('auto_language').style.display='none'"
+                            class="w3-button w3-red w3-xxlarge w3-display-topright" style="padding: 7px; width: 60px">&times;</span>
                             <h3 id="modal_head"></h3>
                         </header>
-
+                        
                         <div class="modal-body">
                                 <div id="Torque_Parameter">
                                     <div class="scrollbar-modal" id="style-y">
@@ -367,14 +457,9 @@
                                     </div>
                                 </div>
                         </div>
-                        
                     </div>
                 </div>
             </div>
-            
-
-
-
          
         </div>
     </div>
