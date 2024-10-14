@@ -516,11 +516,13 @@ class Calibrations extends Controller
                 $data_rpm = array($data['rpm']);
                 $data_offset = array($data['joint_offset']);
                 $data_job = array(221);
+                $data_open = array(1);
 
                 
 
                 $dataTypes = array("INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT");
 
+                $modbus->writeMultipleRegister(0, 1135, $data_open, $dataTypes);
                 $modbus->writeMultipleRegister(0, 1147, $data_targqt_q, $dataTypes);
                 $modbus->writeMultipleRegister(0, 1152, $data_offset, $dataTypes);
                 $modbus->writeMultipleRegister(0, 1151, $data_rpm, $dataTypes);

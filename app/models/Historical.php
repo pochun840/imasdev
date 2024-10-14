@@ -665,13 +665,7 @@ class Historical{
                 //echo $sql;die();
             break;
 
-            /*case "statistics_ok":
-                $sql = "SELECT substr(data_time, 1, 8) AS date, fasten_status, COUNT(*) AS status_count FROM fasten_data WHERE data_time BETWEEN '".$before_date."' AND '".$after_date."' AND on_flag = '0' AND fasten_status IN ('4') GROUP BY substr(data_time, 1, 10), fasten_status";
-            break;
-
-            case "statistics_okall":
-                $sql = "SELECT substr(data_time, 1, 8) AS date, fasten_status, COUNT(*) AS status_count FROM fasten_data WHERE data_time BETWEEN '".$before_date."' AND '".$after_date."' AND on_flag = '0' AND fasten_status IN ('5','6') GROUP BY substr(data_time, 1, 10), fasten_status";
-            break;*/
+          
 
             case "job_time":
                 $sql = "SELECT 

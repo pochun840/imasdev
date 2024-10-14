@@ -365,6 +365,7 @@ class Historicals extends Controller
             
         }
 
+       
 
         if(!empty($_GET['type'])){
             if($_GET['type'] =="download"){
@@ -374,6 +375,7 @@ class Historicals extends Controller
         }else{
             $data['type'] = '';
         }
+
         
         $this->view('historicals/index_report_history',$data);
     }
@@ -732,11 +734,7 @@ class Historicals extends Controller
     }
 
 
-    public function test(){
-        $this->view('historicals/index_test');
-        
-    }
-
+ 
     
 
 }

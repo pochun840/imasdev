@@ -9,9 +9,13 @@
     <link rel="icon" sizes="192x192" href="../public/img/icon.svg>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="<?php echo URLROOT; ?>css/print-styles.css">
-    <link rel="stylesheet" type="text/css" href="<?php echo URLROOT; ?>css/datatables.min.css">
-    <script src="<?php echo URLROOT;?>js/echarts.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/print-styles.css">
+    <link rel="stylesheet" type="text/css" href="css/datatables.min.css">
+    <script src="js/echarts.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
 
     <title><?php echo SITENAME; ?></title>
     <style>
@@ -29,7 +33,8 @@
 
     <div class="excel-sheet">
         <header class="border-bottom">
-            <h2><img src="../public/img/logo.jpg" alt="Logo"></h2>
+            <?php $base_url = "http://" . $_SERVER['SERVER_NAME'] . "/imasstg/public/img/logo.jpg"; ?>
+            <h2><img src="<?php echo $base_url; ?>" alt="Logo"></h2>
             <p style="font-weight: bold; font-size: 34px; padding-bottom: 5px">Certificate of Calibration</p>
             <p>Kilews Industrial Co., Ltd.</p>
             <p>No. 30, Lane 83, Hwa Cheng Rd., Hsin Chuang Dist., New Taipei City, Taiwan, R.O.C</p>
@@ -209,51 +214,100 @@
 
 </script>
 <script>
-if ("<?php echo $data['type']; ?>" == "download") {
+var type = '<?php echo $data['type']; ?>';
+if (type  == "download") {
 
-        var today = new Date();
-        var day = String(today.getDate()).padStart(2, '0');
-        var month = String(today.getMonth() + 1).padStart(2, '0'); 
-        var year = today.getFullYear();
+    var today = new Date();
+    var day = String(today.getDate()).padStart(2, '0');
+    var month = String(today.getMonth() + 1).padStart(2, '0'); 
+    var year = today.getFullYear();
+    today = year + month + day;
 
-        today = year + month + day;
-        
-        document.getElementById('mychart').style.marginLeft  = "auto";
-        document.getElementById('mychart').style.marginRight = "auto";
+    var zip = new JSZip();
+    var pageContent = document.documentElement.outerHTML;
+
+    // 获取当前文件所在路径
+    var baseUrl = window.location.origin + '/'; // 根路径
+
+    var images = document.getElementsByTagName('img');
+    var imagePromises = [];
+
+    Array.from(images).forEach(function(image, index) {
+        var imageUrl = image.src;
+        if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+            imageUrl = baseUrl + imageUrl;
+        }
+
+        var imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+
+        var imagePromise = fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                zip.file('img/' + imageName, blob);
+            });
+
+        imagePromises.push(imagePromise);
+    });
+
+    var stylesheets = document.getElementsByTagName('link');
+    var cssPromises = [];
+
+    Array.from(stylesheets).forEach(function(stylesheet, index) {
+        var cssUrl = stylesheet.href;
+        if (!cssUrl.startsWith(baseUrl)) {
+            cssUrl = baseUrl + cssUrl;
+        }
+
+        var cssName = cssUrl.substring(cssUrl.lastIndexOf("/") + 1);
+        var cssPromise = fetch(cssUrl)
+            .then(response => response.text())
+            .then(text => {
+                zip.file('css/' + cssName, text); 
+            })
+            .catch(error => {
+                console.error('Failed to fetch CSS:', cssUrl, error);
+            });
+
+        cssPromises.push(cssPromise);
+    });
+
+    var scripts = document.getElementsByTagName('script');
+    var jsPromises = [];
+
+    Array.from(scripts).forEach(function(script, index) {
+        if (script.src) {
+            var jsUrl = script.src;
+            if (!jsUrl.startsWith(baseUrl)) {
+                jsUrl = baseUrl + jsUrl;
+            }
+
+            var jsName = jsUrl.substring(jsUrl.lastIndexOf("/") + 1);
+            var jsPromise = fetch(jsUrl)
+                .then(response => response.text())
+                .then(text => {
+                    zip.file('js/' + jsName, text);  
+                })
+                .catch(error => {
+                    console.error('Failed to fetch JS:', jsUrl, error);
+                });
+
+            jsPromises.push(jsPromise);
+        }
+    });
 
     
-        var images = document.getElementsByTagName('img');
-        var baseUrl = window.location.origin;
-      
+    Promise.all([...imagePromises, ...cssPromises, ...jsPromises]).then(function() {
+        var htmlFileName = 'calibration_chart_' + today + '.html';
+        pageContent = pageContent.replace(/href="css\//g, 'href="css/');
+        pageContent = pageContent.replace(/src="js\//g, 'src="js/');
+        pageContent = pageContent.replace(/src="img\//g, 'src="img/'); 
 
-        var imagesHTML = Array.from(images)
-            .map(image => {
-                var src = image.src.startsWith(baseUrl) ? image.src : baseUrl + image.src;
-                return `<img src="${src}" alt="${image.alt}">`;
-            })
-            .join('\n');
-            
+        zip.file(htmlFileName, pageContent); 
 
-
-        var stylesheets = document.getElementsByTagName('link');
-        var cssString = Array.from(stylesheets)
-            .map(stylesheet => `<link rel="stylesheet" href="${stylesheet.href}">`)
-            .join('\n');
-        var newContent = ["<head>"];
-
-        Array.from(stylesheets).forEach(function(stylesheet) {
-            newContent.push(`<link rel="stylesheet" href="${stylesheet.href}">`);
+        // 生成 ZIP 文件并触发下载
+        zip.generateAsync({ type: 'blob' }).then(function(content) {
+            saveAs(content, 'all_calibration' + today + '.zip');
         });
-
-        newContent.push("</head><body>");
-        newContent.push(document.documentElement.innerHTML);
-
-        newContent.push("</body>");
-        var blob = new Blob([newContent.join('\n')], { type: 'text/html' });
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'calibrations_chart_' + today + '.html';
-        link.click();
-
+    });
 }
 </script>
