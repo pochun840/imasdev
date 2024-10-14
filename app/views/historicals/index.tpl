@@ -1031,6 +1031,9 @@ addMessage();
     var x_title = '<?php echo $data['chart_info']['x_title'];?>';
     var y_title = '<?php echo $data['chart_info']['y_title'];?>';
 
+    //alert(max_val);
+
+
 
     var option = {
             
@@ -1057,7 +1060,9 @@ addMessage();
             yAxis: {
                 type: 'value',
                 name: y_title,
-                boundaryGap: [0, '10%']
+                boundaryGap: [0, '10%'],
+                min: min_val - 0.005,
+                max: max_val + 0.005, 
             },
         dataZoom: generateDataZoom(),
         series: [

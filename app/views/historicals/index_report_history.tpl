@@ -55,7 +55,7 @@
         <label style="font-weight: bold">Screw Time</label> 
         <div style="padding-bottom: 20px">
             
-            <div  align='center' id="main" style="width: 60%;height:400px;"></div>
+            <div  align='center' id="main" style="width: 100%;height:400px;"></div>
             <div  align='center' id="jobtime" style="width: 40%;height:400px;"></div>
         </div>
         <hr>
@@ -192,40 +192,43 @@
     fChart.setOption(option);
 
     var maimchart = echarts.init(document.getElementById('main'));
-    var job_name  =<?php echo $data['job_info']['job_name']; ?>;
-    var fasten_time  =<?php echo $data['job_info']['fasten_time']; ?>;
+    var job_name = <?php echo $data['job_info']['job_name']; ?>;
+    var fasten_time = <?php echo $data['job_info']['fasten_time']; ?>;
 
     var option = {
         tooltip: {
-            trigger:'axis',
+            trigger: 'axis',
             formatter: '{b0}({a0}): {c0}'
         },
         legend: {
-            data:['']
+            data: ['']
         },
         xAxis: {
-            data: job_name
+            data: job_name,
+            axisLabel: {
+                rotate: 0,  // 旋转 X 轴标签，避免重叠
+                interval: 0,  // 让所有标签都显示
+                formatter: function(value) {
+                    // 如果标签过长，进行截断或添加省略号
+                    return value.length > 5 ? value.substring(0, 5) + '...' : value;
+                }
+            }
         },
-        yAxis: [ {
+        yAxis: [{
             type: 'value',
             name: '毫秒',
-            show:true,
-            interval: 10,
+            show: true,
+            interval: 500, 
             axisLine: {
                 lineStyle: {
                     color: '#5e859e',
                     width: 2
                 }
             }
-        },{
+        }, {
             type: 'value',
             name: '',
-            //min: 0,
-            //max: 100,
             interval: 10,
-            axisLabel: {
-                //formatter: '{value} %'
-            },
             axisLine: {
                 lineStyle: {
                     color: '#5e859e',
@@ -236,12 +239,16 @@
         series: [{
             name: '毫秒',
             type: 'bar',
-            barWidth : '50%',
+            barWidth: '50%',  // 控制条形图的宽度
             data: fasten_time
         }]
     };
 
+   
+
     maimchart.setOption(option);
+
+
 
     var lineChart = echarts.init(document.getElementById('lineChart'));
 

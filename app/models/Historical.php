@@ -644,6 +644,15 @@ class Historical{
                 $sql = "SELECT fasten_time, job_name FROM `fasten_data` WHERE on_flag = '0' ORDER BY data_time DESC";
             break;
 
+            case "job_info_new":
+                $sql = "SELECT job_name, SUM(fasten_time) AS fasten_time 
+                        FROM `fasten_data` 
+                        WHERE on_flag = '0' 
+                        GROUP BY job_name 
+                        ORDER BY data_time DESC";
+            break;
+            
+
             case "statistics_ng":
                                 $sql = "SELECT 
                     substr(data_time, 1, 8) AS date, 
@@ -669,19 +678,17 @@ class Historical{
 
             case "job_time":
                 $sql = "SELECT 
-                            COUNT(fasten_data.job_id) AS duplicate_count, 
-                            fasten_data.job_name, 
-                            fasten_data.fasten_time, 
-                            SUM(fasten_data.fasten_time) AS total_fasten_time, 
-                            AVG(fasten_data.fasten_time) AS average_fasten_time 
-                        FROM fasten_data 
-                        WHERE fasten_data.on_flag = 0 
-                        AND fasten_data.step_targettype IN ('1', '2') 
-                        AND fasten_data.job_name != ''
-                        GROUP BY fasten_data.job_id, fasten_data.job_name, fasten_data.fasten_time 
-                        HAVING COUNT(fasten_data.job_id) > 1 
-                        ORDER BY fasten_data.data_time DESC;
-                        ";
+                    COUNT(fasten_data.job_name) AS duplicate_count, 
+                    fasten_data.job_name, 
+                    SUM(fasten_data.fasten_time) AS total_fasten_time, 
+                    AVG(fasten_data.fasten_time) AS average_fasten_time 
+                FROM fasten_data 
+                WHERE fasten_data.on_flag = 0 
+                AND fasten_data.step_targettype IN ('1', '2') 
+                AND fasten_data.job_name != '' 
+                GROUP BY fasten_data.job_name
+                HAVING COUNT(fasten_data.job_name) > 1 
+                ORDER BY fasten_data.data_time DESC ";
             break;
             default:
                 

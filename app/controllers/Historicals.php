@@ -242,21 +242,29 @@ class Historicals extends Controller
 
             if($val=="job_info"){
                 $job_info_temp = $this->Historicals_newModel->for_history($val); 
+                $val_temp = "job_info_new";
+                $job_info_tmp = $this->Historicals_newModel->for_history($val_temp);
+              
                 if(!empty($job_info_temp)){
                     $job_info = array();
-                    $job_info = array_slice($job_info_temp,0,6);
+                    $job_info = $job_info_tmp;
                     
                     #柱狀圖
                     $job_names = array();
                     $fasten_time = array();
-                    foreach ($job_info as $item) {
+                    foreach ( $job_info  as $item) {
                         $job_names[] = $item['job_name'];
-                        $fasten_time[] = $item['fasten_time'];
+                        $fasten_time[] = $item['total_fasten_time'];
                     }
+
+              
+
                     $job_name_json = json_encode($job_names);
                     $fasten_time_json = json_encode($fasten_time);
                     $data['job_info']['job_name'] = $job_name_json;
                     $data['job_info']['fasten_time'] =$fasten_time_json;
+
+
 
 
                     #圓餅圖
