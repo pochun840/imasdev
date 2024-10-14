@@ -48,15 +48,15 @@
         <!--<label style="font-weight: bold; margin-left: 50%">Fastening Status</label>-->
         <div style="padding-bottom: 20px">
     
-            <div  align='center' id="lineChart" style="width: 950px;height:400px;"></div>
-            <div  align='center' id="fastening_status_chart" style="width: 40%; height: 400px;"></div>
+            <div  align='center' id="lineChart" style="width: 100%;height:400px;"></div>
+            <div  align='center' id="fastening_status_chart" style="width: 100%; height: 400px;"></div>
         </div>
         <hr>
         <label style="font-weight: bold">Screw Time</label> 
         <div style="padding-bottom: 20px">
             
             <div  align='center' id="main" style="width: 100%;height:400px;"></div>
-            <div  align='center' id="jobtime" style="width: 40%;height:400px;"></div>
+            <div  align='center' id="jobtime" style="width:100%;height:400px;"></div>
         </div>
         <hr>
         <!--<label style="font-weight: bold">Station Time</label>
@@ -66,7 +66,7 @@
         
         
         <div style="padding-bottom: 40px">
-            <div id="chart" style="width: 600px; height: 400px;"></div>
+            <div id="chart" style="width: 100%; height: 400px;"></div>
         </div>
         <hr>
         <!--<label style="font-weight: bold">NG Error v.s Operator</label>

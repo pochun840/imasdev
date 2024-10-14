@@ -254,7 +254,7 @@ class Historicals extends Controller
                     $fasten_time = array();
                     foreach ( $job_info  as $item) {
                         $job_names[] = $item['job_name'];
-                        $fasten_time[] = $item['total_fasten_time'];
+                        $fasten_time[] = $item['fasten_time'];
                     }
 
               
