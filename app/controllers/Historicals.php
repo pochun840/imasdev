@@ -241,6 +241,7 @@ class Historicals extends Controller
             }
 
             if($val=="job_info"){
+
                 $job_info_temp = $this->Historicals_newModel->for_history($val); 
                 $val_temp = "job_info_new";
                 $job_info_tmp = $this->Historicals_newModel->for_history($val_temp);
@@ -257,7 +258,6 @@ class Historicals extends Controller
                         $fasten_time[] = $item['fasten_time'];
                     }
 
-              
 
                     $job_name_json = json_encode($job_names);
                     $fasten_time_json = json_encode($fasten_time);
