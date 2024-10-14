@@ -212,8 +212,9 @@ class Equipments extends Controller
             $post['yellow_light'] = $yellow_light;
             $post['buzzer'] = $buzzer;
 
+            $url_split = explode('/',$_SERVER['PHP_SELF']);
             
-            $url = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['SERVER_NAME'].'/CC/api/set_io_signal.php';
+            $url = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['SERVER_NAME'].'/'.$url_split[1].'/api/set_io_signal.php';
          
 
             $curl = curl_init();
@@ -241,8 +242,16 @@ class Equipments extends Controller
             //curl_exec($curl);
             curl_close($curl);
 
-            echo json_encode(array('result' => true));
-            exit();
+            if($ee){
+                echo json_encode(array('result' => true));
+                exit();
+            }else{
+                echo json_encode(array('result' => false));
+                exit();
+            }
+
+            // echo json_encode(array('result' => true));
+            // exit();
 
         }
 
@@ -295,6 +304,8 @@ class Equipments extends Controller
 
             // 关闭管道
             pclose($process);
+
+            sleep(3);
 
             $message = "嘗試開啟服務";
             echo json_encode(array('result' => $message, 'service_status' => 'no'));
@@ -431,7 +442,9 @@ class Equipments extends Controller
                 $post['light_signal'] = 'clear';
             }
             
-            $url = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['SERVER_NAME'].'/CC/api/set_io_signal.php';
+            $url_split = explode('/',$_SERVER['PHP_SELF']);
+            
+            $url = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['SERVER_NAME'].'/'.$url_split[1].'/api/set_io_signal.php';
 
             $curl = curl_init();
             // $post['test'] = 'examples daata'; // our data todo in received
@@ -450,7 +463,7 @@ class Equipments extends Controller
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
             curl_setopt($curl, CURLOPT_DNS_CACHE_TIMEOUT, 100);
             curl_setopt($curl, CURLOPT_NOSIGNAL, 1);
-            curl_setopt($curl, CURLOPT_TIMEOUT_MS, 50);
+            curl_setopt($curl, CURLOPT_TIMEOUT_MS, 5000);
 
             curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
 

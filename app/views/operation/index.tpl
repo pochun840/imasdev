@@ -1446,76 +1446,7 @@ tt.set('start_time',new Date())
 
                                         
                                         //這邊要執行 文字訊息的動作
-                                        var task_message_list_nn = JSON.parse(task_message_list);
-                                        var nn_task_id = task_id - 1;
-                                        var nn_task_id_str = String(nn_task_id);
-                                        var task = task_message_list_nn[nn_task_id_str];
-                                        if (task) {
-                                            let type = task.type ? task.type.trim() : '';
-
-                                            document.getElementById('VirtualMessage').style.display = 'block';
-                                            document.getElementById('w3review').value = task.text;
-
-                                            if(task.img == '') {
-                                                const element = document.querySelector('.scrollbar-Message_text');
-                                                if (element) {
-                                                    document.getElementById('myvideo').style.display = 'none';
-                                                    document.getElementById('myimage').style.display = 'none';
-
-                                                    document.getElementById('myvideo').removeAttribute('id');
-                                                    document.getElementById('myimage').removeAttribute('id');
-
-                                                    element.className = 'scrollbar-Message_text_s';
-                                                }
-                                            }
-
-                                            if(type ==="image"){
-                                       
-                                                document.getElementById('myvideo').style.display = 'none';
-                                                document.getElementById('myimage').style.display = 'block';
-                                                document.getElementById('myimage').src = task.img + '?t=' + new Date().getTime();
-
-                                            }
-
-                                            if(type ==="video"){
-                                                document.getElementById('myvideo').style.display = 'block';
-                                                document.getElementById('myimage').style.display = 'none';
-                                                var videoElement = document.getElementById('myvideo');
-                                                var sourceElement = document.getElementById('video_source');
-                                                sourceElement.src = task.img;
-                                                videoElement.load();
-                                            }
-
-                                            var e_timeStr = task.timeout +'000';
-                                            var e_time = parseInt(e_timeStr, 10); 
-                
-                                            var element = document.getElementById('VirtualMessage');
-                                            element.style.display = 'block';
-                                           
-                                            force_switch_tool(0);// 起子disable
-
-                                            setTimeout(() => {
-                                                element.style.display = 'none';
-                                    
-                                                document.getElementById('modbus_switch').value = 0;
-                                                
-                                                //setTimeout(() => { websocket.send('disable'); }, 1000);
-                                                
-                                                let current_seq_id = +document.getElementById('seq_id').value;
-                                                let max_seq_id = +document.getElementById('max_seq_id').value;
-                                                
-                                                if (current_seq_id < max_seq_id) {
-                                                    setTimeout(() => { change_job(current_seq_id + 1, 'next'); }, 500);
-                                                } else {
-                                                    setTimeout(() => { force_switch_tool(0); }, 1000);
-                                                    document.getElementById('modbus_switch').value = 0;
-                                                }
-
-                                            }, e_time);
-
-
-                                        }else{
-                                            
+                                        if(task_message_list == ''){//如果沒有virtual message
                                             document.getElementById('modbus_switch').value = 0;
                                             // setTimeout(() => { websocket.send('disable'); }, 1000);
                                             
@@ -1530,7 +1461,185 @@ tt.set('start_time',new Date())
                                                 setTimeout(() => { force_switch_tool(0); }, 1000);
                                                 document.getElementById('modbus_switch').value = 0;
                                             }
+                                        }else{
+                                            try{
+                                                var task_message_list_nn = JSON.parse(task_message_list);
+                                                var nn_task_id = task_id - 1;
+                                                var nn_task_id_str = String(nn_task_id);
+                                                var task = task_message_list_nn[nn_task_id_str];
+
+                                                if (typeof task_message_list_nn[nn_task_id_str_f] !== 'undefined') {
+                                                    if (task) {
+                                                        let type = task.type ? task.type.trim() : '';
+
+                                                        document.getElementById('VirtualMessage').style.display = 'block';
+                                                        document.getElementById('w3review').value = task.text;
+
+                                                        if(task.img == '') {
+                                                            const element = document.querySelector('.scrollbar-Message_text');
+                                                            if (element) {
+                                                                document.getElementById('myvideo').style.display = 'none';
+                                                                document.getElementById('myimage').style.display = 'none';
+
+                                                                document.getElementById('myvideo').removeAttribute('id');
+                                                                document.getElementById('myimage').removeAttribute('id');
+
+                                                                element.className = 'scrollbar-Message_text_s';
+                                                            }
+                                                        }
+
+                                                        if(type ==="image"){
+                                                   
+                                                            document.getElementById('myvideo').style.display = 'none';
+                                                            document.getElementById('myimage').style.display = 'block';
+                                                            document.getElementById('myimage').src = task.img + '?t=' + new Date().getTime();
+
+                                                        }
+
+                                                        if(type ==="video"){
+                                                            document.getElementById('myvideo').style.display = 'block';
+                                                            document.getElementById('myimage').style.display = 'none';
+                                                            var videoElement = document.getElementById('myvideo');
+                                                            var sourceElement = document.getElementById('video_source');
+                                                            sourceElement.src = task.img;
+                                                            videoElement.load();
+                                                        }
+
+                                                        var e_timeStr = task.timeout +'000';
+                                                        var e_time = parseInt(e_timeStr, 10); 
+                            
+                                                        var element = document.getElementById('VirtualMessage');
+                                                        element.style.display = 'block';
+                                                       
+                                                        force_switch_tool(0);// 起子disable
+
+                                                        setTimeout(() => {
+                                                            element.style.display = 'none';
+                                                
+                                                            document.getElementById('modbus_switch').value = 0;
+                                                            
+                                                            //setTimeout(() => { websocket.send('disable'); }, 1000);
+                                                            
+                                                            let current_seq_id = +document.getElementById('seq_id').value;
+                                                            let max_seq_id = +document.getElementById('max_seq_id').value;
+                                                            
+                                                            if (current_seq_id < max_seq_id) {
+                                                                setTimeout(() => { change_job(current_seq_id + 1, 'next'); }, 500);
+                                                            } else {
+                                                                setTimeout(() => { force_switch_tool(0); }, 1000);
+                                                                document.getElementById('modbus_switch').value = 0;
+                                                            }
+
+                                                        }, e_time);
+
+                                                    }
+                                                }else{
+                                                    document.getElementById('modbus_switch').value = 0;
+                                                    // setTimeout(() => { websocket.send('disable'); }, 1000);
+                                                    
+                                                    // isSendingRequest = true;
+                                                    let current_seq_id = +document.getElementById('seq_id').value;
+                                                    let max_seq_id = +document.getElementById('max_seq_id').value;
+                                                    if(current_seq_id < max_seq_id){
+                                                        // change to next seq
+                                                        // change_job(current_seq_id + 1);
+                                                        setTimeout(() => { change_job(current_seq_id + 1,'next'); }, 500);
+                                                    }else{
+                                                        setTimeout(() => { force_switch_tool(0); }, 1000);
+                                                        document.getElementById('modbus_switch').value = 0;
+                                                    }
+                                                }
+
+                                            }catch (e) {
+                                                console.log(e)
+                                            }
                                         }
+
+                                        // var task_message_list_nn = JSON.parse(task_message_list);
+                                        // var nn_task_id = task_id - 1;
+                                        // var nn_task_id_str = String(nn_task_id);
+                                        // var task = task_message_list_nn[nn_task_id_str];
+                                        // if (task) {
+                                        //     let type = task.type ? task.type.trim() : '';
+
+                                        //     document.getElementById('VirtualMessage').style.display = 'block';
+                                        //     document.getElementById('w3review').value = task.text;
+
+                                        //     if(task.img == '') {
+                                        //         const element = document.querySelector('.scrollbar-Message_text');
+                                        //         if (element) {
+                                        //             document.getElementById('myvideo').style.display = 'none';
+                                        //             document.getElementById('myimage').style.display = 'none';
+
+                                        //             document.getElementById('myvideo').removeAttribute('id');
+                                        //             document.getElementById('myimage').removeAttribute('id');
+
+                                        //             element.className = 'scrollbar-Message_text_s';
+                                        //         }
+                                        //     }
+
+                                        //     if(type ==="image"){
+                                       
+                                        //         document.getElementById('myvideo').style.display = 'none';
+                                        //         document.getElementById('myimage').style.display = 'block';
+                                        //         document.getElementById('myimage').src = task.img + '?t=' + new Date().getTime();
+
+                                        //     }
+
+                                        //     if(type ==="video"){
+                                        //         document.getElementById('myvideo').style.display = 'block';
+                                        //         document.getElementById('myimage').style.display = 'none';
+                                        //         var videoElement = document.getElementById('myvideo');
+                                        //         var sourceElement = document.getElementById('video_source');
+                                        //         sourceElement.src = task.img;
+                                        //         videoElement.load();
+                                        //     }
+
+                                        //     var e_timeStr = task.timeout +'000';
+                                        //     var e_time = parseInt(e_timeStr, 10); 
+                
+                                        //     var element = document.getElementById('VirtualMessage');
+                                        //     element.style.display = 'block';
+                                           
+                                        //     force_switch_tool(0);// 起子disable
+
+                                        //     setTimeout(() => {
+                                        //         element.style.display = 'none';
+                                    
+                                        //         document.getElementById('modbus_switch').value = 0;
+                                                
+                                        //         //setTimeout(() => { websocket.send('disable'); }, 1000);
+                                                
+                                        //         let current_seq_id = +document.getElementById('seq_id').value;
+                                        //         let max_seq_id = +document.getElementById('max_seq_id').value;
+                                                
+                                        //         if (current_seq_id < max_seq_id) {
+                                        //             setTimeout(() => { change_job(current_seq_id + 1, 'next'); }, 500);
+                                        //         } else {
+                                        //             setTimeout(() => { force_switch_tool(0); }, 1000);
+                                        //             document.getElementById('modbus_switch').value = 0;
+                                        //         }
+
+                                        //     }, e_time);
+
+                                        // }else{
+                                            
+                                        //     document.getElementById('modbus_switch').value = 0;
+                                        //     // setTimeout(() => { websocket.send('disable'); }, 1000);
+                                            
+                                        //     // isSendingRequest = true;
+                                        //     let current_seq_id = +document.getElementById('seq_id').value;
+                                        //     let max_seq_id = +document.getElementById('max_seq_id').value;
+                                        //     if(current_seq_id < max_seq_id){
+                                        //         // change to next seq
+                                        //         // change_job(current_seq_id + 1);
+                                        //         setTimeout(() => { change_job(current_seq_id + 1,'next'); }, 500);
+                                        //     }else{
+                                        //         setTimeout(() => { force_switch_tool(0); }, 1000);
+                                        //         document.getElementById('modbus_switch').value = 0;
+                                        //     }
+                                        //     alert(456)
+                                        // }
 
                                         
 

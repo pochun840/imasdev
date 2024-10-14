@@ -26,18 +26,17 @@ class Mains extends Controller
         $user_permissions =  $this->NavModel->GetPermissionsByUserId($uid);
         $rows = $this->NavModel->GetNav();
 
-        //把當前的語系 寫入db
+        $permissions = array();
+        foreach ($user_permissions as $key => $value) {
+            $permissions[] = $value['Route'];
+        }
+
+        
         if(!empty($_SESSION['language'])){
             $language = $_SESSION['language'];
             $this->OperationModel->SetConfigValue('language_setting',$language);
         }
 
-
-
-        $permissions = array();
-        foreach ($user_permissions as $key => $value) {
-            $permissions[] = $value['Route'];
-        }
 
         $data = [
             'isMobile' => $isMobile,
@@ -61,10 +60,6 @@ class Mains extends Controller
 
         // session_start();
         $_SESSION['language'] = $language;
-
-
-        //$this->OperationModel->GetConfigValue($_SESSION['language']);
-
 
         $response = array(
             'language' => $language,

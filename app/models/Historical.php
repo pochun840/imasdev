@@ -603,7 +603,10 @@ class Historical{
             } else {
                 $position = (int)$chat_mode;
     
-                foreach ($csv_array as $subarray) {
+                foreach ($csv_array as $key => $subarray) {
+                    if (0 === ($key)) { // skip members with even key
+                        continue;
+                    }
                     if(isset($subarray[1])){
                         if($chat_mode =="5" || $chat_mode =="6"){
                             if($position === 5 || $position === 6) {

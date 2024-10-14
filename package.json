@@ -1,11 +1,6 @@
 {
   "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "express": "^4.21.0",
-    "fs": "^0.0.1-security",
     "modbus-serial": "^8.0.17",
-    "puppeteer": "^23.5.3",
-    "serialport": "^12.0.0",
     "ws": "^8.18.0"
   }
 }

@@ -276,4 +276,17 @@ class Setting{
         return $results;
     }
 
+    //補充空白欄位
+    public function ColumnReplenish($replenish)
+    {
+        foreach ($replenish as $table_name => $value) {
+            foreach ($value as $column_name => $default) {
+                $sql = "UPDATE $table_name SET $column_name = '".strval($default)."'";
+                $statement = $this->db_gtcs->prepare($sql);
+                
+                $results = $statement->execute();
+            }
+        }
+    }
+
 }

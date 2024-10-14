@@ -146,8 +146,8 @@ class Settings extends Controller
         $conn_id = ftp_connect($controller_ip);
 
         ### 登入 FTP, 帳號是 USERNAME, 密碼是 PASSWORD
-        $USERNAME = 'kls';
-        $PASSWORD = '12345678rd';
+        $USERNAME = FTP_USER;
+        $PASSWORD = FTP_PASSWORD;
         $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
 
         // 用ssh2連接
@@ -178,8 +178,8 @@ class Settings extends Controller
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);
 
         $ftp_server = $controller_ip;
-        $ftp_username = "kls";
-        $ftp_password = "12345678rd";
+        $ftp_username = FTP_USER;
+        $ftp_password = FTP_PASSWORD;
 
         $local_file = '../localfile.db'; // 本地文件路径
         $remote_file = '/mnt/ramdisk/FTP/cc.cfg'; // 远程文件路径
@@ -334,6 +334,25 @@ class Settings extends Controller
         if($device_id != '' && $device_name != ''){
             $this->SettingModel->SetDeviceSetting($device_id,$device_name);
         }
+
+        //因應gtcs db升級，table欄位補0或空白
+        // $replenish[table_name][column] = defalut_value
+        // $replenish['job']['rev_acc_mode'] = 0;
+        $replenish = array();
+        $replenish['job']['rev_acc_mode'] = 0;
+        $replenish['job']['rev_acc_type'] = 0;
+        $replenish['job']['rev_th_ang'] = 0;
+        $replenish['job']['job_to'] = 0;
+        $replenish['sequence']['sc_inter_time'] = 0;
+        $replenish['normalstep']['step_extra_mode'] = 0;
+        $replenish['normalstep']['step_extra_dir'] = 0;
+        $replenish['normalstep']['step_extra_ang'] = 0;
+        $replenish['normalstep']['step_msg'] = '';
+        $replenish['advancedstep']['step_pnf_set'] = 1;
+        $replenish['advancedstep']['step_tor_hold'] = 0;
+        $replenish['advancedstep']['step_msg'] = '';
+
+        $this->SettingModel->ColumnReplenish($replenish);
         
     }
 

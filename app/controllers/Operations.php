@@ -664,20 +664,22 @@ class Operations extends Controller
         $conn_id = ftp_connect($controller_ip);
 
         ### 登入 FTP, 帳號是 USERNAME, 密碼是 PASSWORD
-        $USERNAME = 'kls';
-        $PASSWORD = '12345678rd';
+        $USERNAME = FTP_USER;
+        $PASSWORD = FTP_PASSWORD;
         $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
 
         $remoteFilePaths = ftp_nlist($conn_id, $remote_Dir);
 
         foreach ($file_arr as $key => $value) {
-            if(in_array( '/mnt/ramdisk/'.$filename.$value.'.csv'  ,$remoteFilePaths)){
-                $remote_file = '/mnt/ramdisk/'.$filename.$value.'.csv';
-                $local_file = $local_Dir.$filename.$value.'.csv';
-                if (ftp_get($conn_id, $local_file, $remote_file, FTP_BINARY)) {
-                    echo "下載成功\n";
-                } else {
-                    echo "下載 $remote_file 到 $local_file 失敗\n";
+            foreach($remoteFilePaths as $key=>$val ){
+                if (strstr( $val , $system_sn.$value ) !== false ){
+                    $remote_file = $val;
+                    $local_file = $local_Dir.$filename.$value.'.csv';
+                    if (ftp_get($conn_id, $local_file, $remote_file, FTP_BINARY)) {
+                        // echo "下載成功\n";
+                    } else {
+                        // echo "下載 $remote_file 到 $local_file 失敗\n";
+                    }
                 }
             }
         }
