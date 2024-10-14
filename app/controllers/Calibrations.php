@@ -65,6 +65,8 @@ class Calibrations extends Controller
             $_SESSION['torqueMeter'] = 0;
         }
         
+        //$res_session = $this->saveSessionData();
+
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
@@ -570,14 +572,43 @@ class Calibrations extends Controller
         }
     
         if (isset($_POST['torqueMeter']) && isset($_POST['controller'])) {
+            
+            // 清理不必要的 Session 資料，避免 Session 資料過多
+            if (isset($_SESSION['torqueMeter'])) {
+                unset($_SESSION['torqueMeter']);
+            }
+            if (isset($_SESSION['controller'])) {
+                unset($_SESSION['controller']);
+            }
+    
+
             $_SESSION['torqueMeter'] = $_POST['torqueMeter'];
             $_SESSION['controller'] = $_POST['controller'];
-
-            echo json_encode(['success' => true, 'message' => 'Session data saved.']);
+    
+            $this->cleanupSessionData();
+    
+            echo json_encode(['success' => true, 'message' => 'Session data saved and cleaned up.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid data.']);
         }
     }
+    
+    // 自動清理 Session 資料的函數
+    private function cleanupSessionData() {
+        // 如果 Session 中的資料超過某個條件，可以進行清理
+        // 這裡舉例為清理存儲時間過長的資料
+        if (isset($_SESSION['lastActivity']) && (time() - $_SESSION['lastActivity']) > 1800) {  // 超過 30 分鐘
+            // 若資料超過 30 分鐘未更新，則清除 Session 資料
+            session_unset();
+            session_destroy();
+            echo json_encode(['success' => false, 'message' => 'Session expired and cleaned up.']);
+            exit();
+        }
+    
+        // 更新最後活動時間
+        $_SESSION['lastActivity'] = time();
+    }
+    
 
 
     public function stopNodeApp() {

@@ -12,9 +12,9 @@
     <link rel="stylesheet" type="text/css" href="css/print-styles.css">
     <link rel="stylesheet" type="text/css" href="css/datatables.min.css">
     <script src="js/echarts.min.js"></script>
+    <script src="js/jszip.min.js"></script>
+    <script src="js/FileSaver.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 
     <title><?php echo SITENAME; ?></title>

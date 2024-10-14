@@ -5,16 +5,13 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href=css/print-history-excel.css?v=202405131030">
+<link rel="stylesheet" type="text/css" href="css/print-history-excel.css">
 <link rel="stylesheet" type="text/css" href="css/datatables.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
-
-
+<script src="js/jszip.min.js"></script>
+<script src="js/FileSaver.min.js"></script>
 
 <script src="js/echarts.min.js"></script>
-<script src="js/historical.js?v=202405021000"></script>
+<script src="js/historical.js"></script>
 
 </head>
 
