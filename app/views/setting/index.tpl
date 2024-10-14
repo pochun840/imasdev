@@ -266,7 +266,7 @@
                                 <table class="table table-bordered table-hover" id="plugin-table">
                                     <thead id="header-table" style="text-align: center; vertical-align: middle">
                                         <tr>
-                                            <th><img id="add_plugin" src="./img/add-plugin.png"></th>
+                                            <th><img id="add_plugin" src="./img/add-plugin.png" onclick="document.getElementById('AddPlugin').style.display='block'"></th>
                                             <th>Device Name</th>
                                             <th>Version</th>
                                             <th>Date</th>
@@ -368,7 +368,7 @@
                             </div>
                         </div>
                     </form>
-
+    
                     <div class="row t1">
                         <div class="col-7 t1" style="padding-left: 3%"><?php echo $text['Export_iAMS_data_text']; ?>:</div>
                         <div class="col-1 t2">
@@ -423,6 +423,38 @@
                 </div>
             </div>
 
+            <!-- Add Plugins Modal -->
+            <div id="AddPlugin" class="modal" style="top: 20%">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content w3-animate-zoom" style="width: 70%;">
+                        <header class="w3-container modal-header">
+                            <span onclick="document.getElementById('AddPlugin').style.display='none'"
+                                class="w3-button w3-red w3-xxlarge w3-display-topright" style="padding: 7px; width: 60px">&times;</span>
+                            <h2>Add Plugins</h2>
+                        </header>
+
+                        <div class="modal-body">
+                            <form id="add_plugins_form">
+                                <div style="font-size: 20px; margin: 5px 0px 5px;"><b>Upload new software</b></div>
+                                <div class="add-plugin">
+                   		            <div class="row" style="width: 230px; height: 210px; background-color: #EEEED1;box-shadow: none; margin-bottom: 10px">
+                  				        <div class="col" style="display: flex; flex-direction: column; align-items: center">
+                  				            <img src="./img/upload.svg" alt="" style="width: 80px; height: 75px; margin-top: 50px">
+                                            <label>upload plugins</label>
+                   				        </div>
+                   				    </div>
+                                </div>
+               		            <div class="row" style="box-shadow: none; border: none">
+                                    <div class="col-5" style="font-size: 18px; padding-top: 5px">Upload progress: 1/5</div>
+               				        <div class="col">
+               				            <img id="img-progress" src="./img/progress.svg" alt="" style="font-size:40px; width: 40px; height: 40px">
+               				        </div>
+              				    </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!----auto 語言包------>
             <div id="auto_language" class="modal" style="display: none;">
@@ -752,7 +784,8 @@ function toggleIcon(element, audioId, fileName) {
         element.classList.add('line-md--play-filled-to-pause-transition', 'active');
         element.style.color = '#3CBA8D';
         audio.play();
-    } else {
+    } else 
+    {
         element.classList.remove('line-md--play-filled-to-pause-transition', 'active');
         element.classList.add('gravity-ui--play-fill');
         element.style.color = '#F24E1E';
@@ -763,7 +796,8 @@ function toggleIcon(element, audioId, fileName) {
     //var fileNameElement = document.querySelector('.file-name');
     //fileNameElement.textContent = fileName;
 
-    audio.addEventListener('ended', function() {
+    audio.addEventListener('ended', function() 
+    {
         element.classList.remove('line-md--play-filled-to-pause-transition', 'active');
         element.classList.add('gravity-ui--play-fill');
         element.style.color = '#F24E1E'; 
@@ -771,9 +805,8 @@ function toggleIcon(element, audioId, fileName) {
 
 }
 
-
-
-function showModal() {
+function showModal() 
+    {
         document.getElementById('auto_language').style.display = 'block';
     }
 </script>
