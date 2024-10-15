@@ -50,6 +50,7 @@ async function writeToFile(asciiData) {
     }
 }
 
+
 // 連接 COM 端口並保持連接
 async function connectComPort(port, baudRate, dataBits, stopBits, parity) {
     const portInstance = new SerialPort({
