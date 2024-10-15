@@ -65,6 +65,7 @@ class Calibrations extends Controller
             $_SESSION['torqueMeter'] = 0;
         }
         
+        //
         //$res_session = $this->saveSessionData();
 
         $data = array(
@@ -166,7 +167,7 @@ class Calibrations extends Controller
         
     
         // 文件路徑
-        $file_path = "C:/web/mywebsite.com/imasstg/api/final_val.txt";
+        $file_path = "C:\web\mywebsite.com\iAMS_git\iAMS\api\final_val.txt";
     
         // 檢查文件是否存在
         if (!file_exists($file_path)) {
@@ -288,6 +289,10 @@ class Calibrations extends Controller
             $torque_type = $this->CalibrationModel->details('torque');
             $controller_type = $this->CalibrationModel->details('controller');
             $ktm_type = $this->CalibrationModel->details('torquemeter');
+
+           
+
+
     
             $xml = new XMLWriter();
             $xml->openMemory();
@@ -300,7 +305,7 @@ class Calibrations extends Controller
                 foreach ($row as $key => $value) {
                     $xml->startElement($key);
                     if ($key == 'unit') {
-                        $value = $torque_type[$value];
+                        $value = "N.m";
                     }
     
                     if ($key == 'high_percent' ||  $key == 'low_percent') {
@@ -310,7 +315,7 @@ class Calibrations extends Controller
                         $value = $controller_type[$value];
                     }   
                     if($key == 'ktm_type'){
-                        $value = $ktm_type[$value];
+                        $value = $ktm_type[3];
                     }  
     
                     $xml->writeCData($value);
@@ -437,22 +442,32 @@ class Calibrations extends Controller
         }
         $job_id = 221;
         
-        if($input_check){
+        if($job_id){
+            //echo "eeew";die();
             $dataset = $this->CalibrationModel->datainfo_search($job_id);
             if(!empty($dataset)){
 
                 $torque_type = $this->CalibrationModel->details('torque');
                 $controller = $this->CalibrationModel->details('controller');
-                $ktm = $this->CalibrationModel->details('torquemeter');
+                $ktm_total = $this->CalibrationModel->details('torquemeter');
 
                 #資料整理 
                 foreach($dataset as $key =>$val){
+
+                
                     $dataset[$key]['unit'] = $torque_type[$val['unit']];
                     $dataset[$key]['high_percent'] = $val['high_percent']."%";
                     $dataset[$key]['low_percent'] = $val['low_percent']."%";
                     $dataset[$key]['controller_type'] = $controller[$val['controller_type']];
-                    $dataset[$key]['ktm_type'] = $ktm[$val['ktm_type']];
+                    $dataset[$key]['ktm_type'] = $ktm_total[$val['ktm_type']];
+
+                    
                 }
+                echo "<pre>";
+                print_r($dataset);
+                echo "</pre>";
+                die();
+
              
                 $csv_headers = array_keys($dataset[0]);
                 header('Content-Type: text/csv; charset=utf-8');

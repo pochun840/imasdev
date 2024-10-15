@@ -1,7 +1,38 @@
-<?php require APPROOT . 'views/inc/header.tpl'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/img/cc_icon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="60x60" href="/img/cc_icon.png">
+    <link rel="icon" sizes="192x192" href="/img/192.png">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
 
 
-<script src="<?php echo URLROOT; ?>js/echarts.min.js"></script>
+
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js/sweetalert2.js"></script>
+    <script src="js/moment.min.js"></script>
+
+    <link rel="stylesheet" href="css/w3.css" type="text/css">
+    <link rel="stylesheet" href="css/nav.css" type="text/css">
+    <link rel="stylesheet" href="css/datatables.min.css">
+    
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jszip.min.js"></script>
+    <script src="js/FileSaver.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/calibration.css">
+    <script src="js/calibrations.js"></script>
+    <title><?php echo SITENAME; ?></title>
+
+    
+</head>
+<body>
+
 <?php echo $data['nav']; ?>
 
 <div class="container-ms">
@@ -729,31 +760,29 @@ function undo() {
 
 
 async function fetchData() {
-        const url1 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_val';
-        //const url2 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_data';
-
-        try {
-            
-            const response1 = await fetch(url1, {
-                method: 'GET', 
-            });
-
-            if (response1.ok) {
-                const data = await response1.json(); 
-                console.log('API 返回:', data);
-                //document.getElementById('result').innerText = JSON.stringify(data, null, 2); 
-            } else {
-                console.error('请求失败，状态码:', response1.status);
-                //document.getElementById('result').innerText = '请求失败，状态码: ' + response1.status;
-            }
-
+    const url1 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_val';
+    try {
         
-        } catch (error) {
-            console.error('发生错误:', error);
-            //document.getElementById('result').innerText = '发生错误: ' + error.message;
-            //document.getElementById('datainfo').innerHTML = '发生错误: ' + error.message;
+        const response1 = await fetch(url1, {
+            method: 'GET', 
+        });
+
+        if (response1.ok) {
+            const data = await response1.json(); 
+            console.log('API 返回:', data);
+            //document.getElementById('result').innerText = JSON.stringify(data, null, 2); 
+        } else {
+            console.error('请求失败，状态码:', response1.status);
+            //document.getElementById('result').innerText = '请求失败，状态码: ' + response1.status;
         }
+
+    
+    } catch (error) {
+        console.error('发生错误:', error);
+        //document.getElementById('result').innerText = '发生错误: ' + error.message;
+        //document.getElementById('datainfo').innerHTML = '发生错误: ' + error.message;
     }
+}
 
 // 每 3 秒调用一次 fetchData
 
