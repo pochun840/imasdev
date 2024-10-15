@@ -33,7 +33,7 @@
 
     <div class="excel-sheet">
         <header class="border-bottom">
-            <?php $base_url = "../img/logo.jpg"; ?>
+            <?php $base_url = "../public/img/logo.jpg"; ?>
             <h2><img src="<?php echo $base_url; ?>" alt="Logo"></h2>
             <p style="font-weight: bold; font-size: 34px; padding-bottom: 5px">Certificate of Calibration</p>
             <p>Kilews Industrial Co., Ltd.</p>
@@ -301,6 +301,7 @@ if (type  == "download") {
         pageContent = pageContent.replace(/href="css\//g, 'href="css/');
         pageContent = pageContent.replace(/src="js\//g, 'src="js/');
         pageContent = pageContent.replace(/src="img\//g, 'src="img/'); 
+        pageContent = pageContent.replace(/src="\.\.\/public\//g, 'src="');
 
         zip.file(htmlFileName, pageContent); 
 

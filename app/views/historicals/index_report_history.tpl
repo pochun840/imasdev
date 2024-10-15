@@ -427,6 +427,7 @@ if (type  == "download") {
         pageContent = pageContent.replace(/href="css\//g, 'href="css/');
         pageContent = pageContent.replace(/src="js\//g, 'src="js/');
         pageContent = pageContent.replace(/src="img\//g, 'src="img/'); 
+        pageContent = pageContent.replace(/src="\.\.\/public\//g, 'src="');
 
         zip.file(htmlFileName, pageContent); 
 
