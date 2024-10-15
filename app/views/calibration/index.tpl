@@ -774,7 +774,8 @@ function undo() {
 
 
 async function fetchData() {
-    const url1 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_val';
+    //const url1 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_val';
+    const url1 = '?url=Calibrations/get_val';
     try {
         
         const response1 = await fetch(url1, {
