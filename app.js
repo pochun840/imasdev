@@ -9,6 +9,8 @@ const { SerialPort } = require('serialport');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const currentDir = process.cwd();
+const dirName = path.basename(currentDir);
 
 const comport = process.argv[2] || 'COM4';
 
@@ -29,11 +31,14 @@ app.get('/read-cookie', (req, res) => {
 
 // 寫入文件的函數
 async function writeToFile(asciiData) {
-    const dirPath = path.join(__dirname, '../imasstg/api');
+    const dirPath = path.join(__dirname, `../${dirName}/api`);
     const filePath = path.join(dirPath, 'final_val.txt');
 
     console.log("目錄路徑:", dirPath);
     console.log("文件路徑:", filePath);
+    console.log("當前工作目錄:", dirName);
+    //console.log("程式碼所在目錄:", __dirname);
+
 
     await fs.promises.mkdir(dirPath, { recursive: true });
 
