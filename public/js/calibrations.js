@@ -106,7 +106,7 @@ function html_download() {
      
     }else if(save_type3 === "xml") {
         // 下載 XML 檔案
-        fetch('/imasstg/public/index.php?url=Calibrations/get_xml')
+        fetch('../public/index.php?url=Calibrations/get_xml')
             .then(response => response.text())
             .then(xmlData => {
                 var blob = new Blob([xmlData], { type: 'text/xml' });
