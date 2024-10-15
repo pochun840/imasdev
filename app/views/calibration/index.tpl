@@ -501,44 +501,58 @@ function exportCSV(modalId)
 }
 
 
-function NextToAnalysisSystemKTM()
-{
+function NextToAnalysisSystemKTM() {
 
-    //紀錄ktm  及 controller 型號
+    // 紀錄ktm及controller型號
+    const torqueMeter = document.getElementById('TorqueMeter').value;
+    const controller = document.getElementById('controller_info').value;
 
-    var torqueMeterValue = document.getElementById('TorqueMeter').value;
-    var controllerInfoValue = document.getElementById('controller_info').value;
-
-    console.log('Selected Torque Meter ID:', torqueMeterValue);
-    console.log('Selected Controller ID:', controllerInfoValue);
-
+    console.log('Selected Torque Meter ID:', torqueMeter);
+    console.log('Selected Controller ID:', controller);
+    
     $.ajax({
         url: '?url=Calibrations/saveSessionData', 
         method: 'POST',
         data: {
-            torqueMeter: torqueMeterValue,
-            controller: controllerInfoValue
+            torqueMeter: torqueMeter,
+            controller: controller
         },
-        success: function(response) {
-            console.log('Session data saved successfully:', response);
-            
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+               
+                window.location.reload();
+                document.getElementById('analysis-system-KTM').style.display = 'block';
+                document.getElementById('Torque-Collection').style.display = 'none';
+            } else {
+                console.error(data.message);
+                // 处理错误情况
+                //alert(data.message);
+            }
         },
         error: function(xhr, status, error) {
             console.error('Error saving session data:', error);
+            //alert('请求失败，请稍后重试。');
         }
     });
 
-    // Show analysis-system-KTM
+
+    const details = [
+        'KTM-6',
+        'KTM-150',
+        'KTM-250',
+        'kKTM-100'
+    ];
+
+    // 显示分析系统KTM
     document.getElementById('analysis-system-KTM').style.display = 'block';
-
-    // Hide Torque-Collection
+    // 隐藏Torque-Collection
     document.getElementById('Torque-Collection').style.display = 'none';
+    document.getElementById('item').value = details[torqueMeter] + '(N.m)';
+
+    
+
 }
-
-
-
-
-
 
 function backSetting()
 {

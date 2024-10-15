@@ -65,9 +65,6 @@ class Calibrations extends Controller
             $_SESSION['torqueMeter'] = 0;
         }
         
-        //
-        //$res_session = $this->saveSessionData();
-
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
@@ -442,8 +439,6 @@ class Calibrations extends Controller
 
                 #資料整理 
                 foreach($dataset as $key =>$val){
-
-                
                     $dataset[$key]['unit'] = $torque_type[$val['unit']];
                     $dataset[$key]['high_percent'] = $val['high_percent']."%";
                     $dataset[$key]['low_percent'] = $val['low_percent']."%";
@@ -456,12 +451,7 @@ class Calibrations extends Controller
 
                     
                 }
-                echo "<pre>";
-                print_r($dataset);
-                echo "</pre>";
-                die();
-
-             
+          
                 $csv_headers = array_keys($dataset[0]);
                 header('Content-Type: text/csv; charset=utf-8');
                 header('Content-Disposition: attachment; filename=data.csv');
@@ -578,26 +568,33 @@ class Calibrations extends Controller
         if (session_status() == PHP_SESSION_NONE) {
             session_start(); 
         }
-    
+        
+
+        echo "ewwer";
+        echo "<pre>";
+        print_r($_POST);
+        echo "</pre>";
+
         if (isset($_POST['torqueMeter']) && isset($_POST['controller'])) {
             
             // 清理不必要的 Session 資料，避免 Session 資料過多
-            if (isset($_SESSION['torqueMeter'])) {
+            /*if (isset($_SESSION['torqueMeter'])) {
                 unset($_SESSION['torqueMeter']);
             }
             if (isset($_SESSION['controller'])) {
                 unset($_SESSION['controller']);
-            }
-    
+            }*/
+            
+            echo "ewewwe";
 
             $_SESSION['torqueMeter'] = $_POST['torqueMeter'];
             $_SESSION['controller'] = $_POST['controller'];
     
-            $this->cleanupSessionData();
+            //$this->cleanupSessionData();
     
             echo json_encode(['success' => true, 'message' => 'Session data saved and cleaned up.']);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Invalid data.']);
+            echo json_encode(['success' => false, 'message' => 'empty data.']);
         }
     }
     
