@@ -221,12 +221,8 @@ header::after
     overflow: hidden;
     background-color: #F2F1F1;
     border-bottom: #383800;
-    margin-top: 2.8%;
+    margin-top: 3%;
     padding: 2px 0;
-}
-
-.main-content
-{
 }
 
 .center-content
@@ -307,61 +303,6 @@ header::after
 .content
 {
     padding: 3px 5px;
-}
-
-/* Select */
-.select-block
-{
-    width: 150px;
-    margin: 1px auto 0px;
-}
-
-select
-{
-    height: 29px;
-    width: 150px;
-    font-size: 18px;
-    border: 1px solid #CCCCCC;
-    cursor: pointer;
-    border-radius: 5px;
-    color: #000;
-    transition: color 0.s ease, background-color 0.3s ease, border-bottom-color 0.3s ease;
-}
-
-.selectIcon
-{
-    top: 18px;
-    right: 15px;
-    width: 30px;
-    height: 36px;
-    padding-left: 0px;
-    position: absolute;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.selectIcon svg.icon
-{
-    transition: fill 0.3s ease;
-    fill: white;
-}
-
-select:hover,
-select:focus
-{
-    color: #000000;
-    background-color: white;
-}
-
-select:hover~.selectIcon,
-select:focus~.selectIcon
-{
-    background-color: white;
-}
-
-select:hover~.selectIcon svg.icon,
-select:focus~.selectIcon svg.icon
-{
-    fill: #1A33FF;
 }
 
 .checkboxFive
@@ -517,7 +458,6 @@ select:focus~.selectIcon svg.icon
     overflow: hidden;
     background-color: #F5F5F5;
     margin-bottom: 2px;
-
 }
 
 .topnav-right
@@ -740,15 +680,6 @@ table
     border: 1px solid #A3A3A3;
     float: right;
     border-radius: 5px;
-}
-
-.Select-All
-{
-    border: 1px solid #A3A3A3;
-    float: right;
-    width: 116px;
-    font-size: 15px;
-    vertical-align: middle;
 }
 
 #Save-info

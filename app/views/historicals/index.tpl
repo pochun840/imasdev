@@ -213,7 +213,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                     <span data-content="<?php echo $text['Fastening_Record_text']; ?>" onclick="showContent('fastening')"></span><?php echo $text['Fastening_Record_text']; ?>
                 </div>
                 <div class="navbutton" onclick="handleButtonClick(this, 'workflowlog')">
-                    <span data-content="<?php echo $text['Work_Flow_Log_text']; ?>" onclick="showContent('workflowlog')"></span></span><?php echo $text['Work_Flow_Log_text']; ?>
+                    <span data-content="<?php echo $text['Work_Flow_Log_text']; ?>" onclick="showContent('workflowlog')"></span><?php echo $text['Work_Flow_Log_text']; ?>
                 </div>
                 <div class="navbutton" onclick="handleButtonClick(this, 'useraccess')">
                     <span data-content="<?php echo $text['User_Access_Logging_text']; ?>" onclick="showContent('useraccess')"></span><?php echo $text['User_Access_Logging_text']; ?>
@@ -223,6 +223,54 @@ if(!empty($_COOKIE['chat_mode_change'])){
             <!-- Fastening Setting -->
             <div id="fasteningContent" class="content">
                 <div id="FasteningDisplay" style="margin-top: 40px">
+                    <!-- Lana Edit input-group date 2024/10/15 -->
+                    <div class="mt-2" style="margin-right: 20%; margin-left: 3%">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><?php echo $text['BarcodeSN_text']; ?>:</span>
+                            <input type="text" id="barcodesn" name="barcodesn" class="form-control input-ms" style="margin-right: 7px">
+
+                            <span class="input-group-text"><?php echo $text['Operator_text']; ?>:</span>
+                            <input type="text" id="Operator" class="form-control input-ms" style="margin-right: 7px">
+
+                            <span class="input-group-text"><?php echo $text['Select_Job_text']; ?>:</span>
+                            <input type="text" class="form-control input-ms" id="JobSelect" placeholder="<?php echo $text['Click_here_text']; ?>.." onfocus="openModal('JobSelect')" onclick="this.blur()">    
+                        </div>
+
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><?php echo $text['From_text']; ?>:</span>
+                            <input type="datetime-local" id="FromDate" name="FromDate" class="form-control input-ms" style="margin-right: 7px">
+
+                            <span class="input-group-text"><?php echo $text['To_text']; ?>:</span>
+                            <input type="datetime-local" id="ToDate" name="ToDate" class="form-control input-ms" style="margin-right: 7px">
+                        </div>
+
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><?php echo $text['Result_Status_text']; ?>:</span>
+                            <select id="status" class="form-select" name="" style="margin-right: 7px">
+                                <?php foreach($data['res_status_arr'] as $key_res =>$val_res){?>
+                                    <option value="<?php echo $key_res;?>"><?php echo $val_res;?></option>
+                                <?php }?>
+                            </select>
+
+                            <span class="input-group-text"><?php echo $text['Controller_text']; ?>:</span>
+                            <select id="Controller" class="form-select" name="" style="margin-right: 7px">
+                                <?php foreach($data['res_controller_arr'] as $key_res_1 =>$val_res_1){?>
+                                    <option value="<?php echo $key_res_1;?>"><?php echo $val_res_1;?></option>
+                                <?php }?>
+                            </select>
+
+                            <span class="input-group-text"><?php echo $text['Program_text']; ?>:</span>
+                            <select id="Program" class="form-select" name="">
+                                <option value="-1"><?php echo "select";?></option>
+                                <?php foreach($data['res_program'] as $key_res_2 => $val_res_2){?>
+                                    <option value="<?php echo $val_res_2['template_program_id'];?>"><?php echo $val_res_2['template_program_id'];?></option>
+                                <?php }?>
+                            </select>
+                        </div>
+                        
+                    </div>                
+
+<!--                
                     <div style="padding-left: 2%">
                         <div class="row">
                             <div for="BarcodeSN" class="col-2 t1"><?php echo $text['BarcodeSN_text']; ?>:</div>
@@ -237,7 +285,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                     <?//php foreach($data['all_roles'] as $key =>$val){ ?>
                                             <!--<option value='<?//php echo $val['ID'];?>'> <?//php echo $val['Title'];?> </option>
                                     <?//php } ?>
-                               </select>-->
+                               </select>
                             </div>
 
                             <div for="SelectJob" class="col-2 t1"><?php echo $text['Select_Job_text']; ?>:</div>
@@ -289,7 +337,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                             </div>
                         </div>
                     </div>
-
+-->
                     <div class="topnav-menu">
                         <div class="search-container">
                             <input type="text" placeholder="<?php echo $text['Search_text']; ?>.." name="sname" id="search_name" size="40" style="height: 35px">&nbsp;
@@ -413,90 +461,92 @@ if(!empty($_COOKIE['chat_mode_change'])){
                         </button>
                     </div>
                     <div id ="jobinfo">
-                    <table class="table" style="font-size: 15px;">
-                        <tr style="padding: 0 10px">
-                            <td><?php echo $text['Index_text']; ?>: <?php echo $data['job_info'][0]['system_sn'];?></td>
-                            <td><?php echo $text['Job_info_text']; ?>: <?php echo $data['job_info'][0]['job_name'];?> / <?php echo $data['job_info'][0]['sequence_name']. "/". $data['job_info'][0]['cc_task_name'];?></td>
-                            <td><?php echo $text['Controller_text']; ?>: </td>
-                            <td><?php echo $text['Error_code_text']; ?>: <?php echo  $data['status_arr']['error_msg'][$data['job_info'][0]['error_message']];?></td>
-                            <td><?php echo $text['Status_text']; ?> : <a style="background-color: <?php echo $data['status_arr']['status_color'][$data['job_info'][0]['fasten_status']];?>; padding: 0 10px"><?php echo $data['status_arr']['status_type'][$data['job_info'][0]['fasten_status']];?></a></td>
-                        </tr>
-                        <tr>
-                            <td><?php echo $text['Actual_Torque_text']; ?>: <?php echo $data['job_info'][0]['fasten_torque'];?> N.m</td>
-                            <td><?php echo $text['BarcodeSN_text']; ?>: <?php echo $data['job_info'][0]['cc_barcodesn'];?></td>
-                            <td><?php echo $text['Direction_text']; ?>: <?php echo  $data['status_arr']['direction'][$data['job_info'][0]['count_direction']];?></td>
-                            <td><?php echo $text['Program_text']; ?>: <?php echo $data['job_info'][0]['cc_program_id'];?></td>
-                            <td><?php echo $text['Time_text']; ?>: <?php echo $data['job_info'][0]['data_time'];?></td>
-                        </tr>
-                        <tr  style="vertical-align: middle;">
-                            <td><?php echo $text['Member_text']; ?>: <!--<input class="t6" type="text" size="10" value="Esther" disabled="disabled" style="background-color: #F5F5F5">--></td>
-                            <td><?php echo $text['Note_text']; ?>: <!--<input class="t6" type="text" value="arm (444,215)[200]" disabled="disabled" style="background-color: #F5F5F5; width: 15vw"></td>-->
-                            <td>
-                                <input class="form-check-input" type="checkbox" id="myCheckbox" onchange="check_limit(this)"  <?php if($limit_val=="1"){ echo "checked"; }else{}?>  style="zoom:1.2; float: left">&nbsp; <?php echo $text['Display_lilo_text']; ?>
-                            </td>
-                            </td>
-                        </tr>
-                        <tr style="vertical-align: middle">
-                            <td>
-                                <?php echo $text['Chart_Setting_text']; ?>:  
-                                <select id="chartseting" class="t6 Select-All" style="float: none"  onchange="chat_mode_change(this)">
-                                    <?php foreach($data['chat_mode_arr'] as $k_chat => $v_chat){?>
-                                        <option  value="<?php echo $k_chat;?>"  <?php if($chat_mode_change == $k_chat){echo "selected";}else{echo "";}?>  > <?php echo $text[$v_chat];?> </option>
-                                    <?php } ?>                             
-                                </select>
-                            </td>
-                            <td>
-                                <?php echo $text['Torque_Unit_text']; ?>:  
-                                <select id="Torque-Unit" class="Select-All" style="float: none; width: 100px" onchange="unit_change(this)">
-                                    <?php foreach($data['torque_mode_arr'] as $k_torque =>$v_torque){?>
-                                            <option  value="<?php echo $k_torque;?>" <?php if($data['unitvalue'] == $k_torque){echo "selected";}else{echo "";}?> > <?php echo $text[$v_torque]; ?> </option>
-                                    <?php } ?>
-                                </select>
-                            </td>
-                            <!--<td>
-                                Angle:  <select id="Angle" class="t6 Select-All" id='angle_type' style="float: none; width: 100px" onchange="angle_select(this)">
-                                            <?php foreach($data['angle_mode_arr'] as $ke =>$ve){?>
-                                                <option value="<?php echo $ke;?>" <?php if($data['anglevalue'] == $ke){ echo "selected";}?>><?php echo $ve;?></option>
-                                            <?php } ?>
-                                        </select>
-                            </td>-->
-                           <!--<td>
-                                Sampling:  
-                                <select id="SelectOutputSampling" class="t6 Select-All" id='file_type'>
-                                            <option value="1">1(ms)</option>
-                                            <option value="2">0.5(ms)</option>
-                                            <option value="3">2(ms)</option>
-                                </select>
-                            </td>-->
-                            <td>
-                                <!--<button id="Export-Excel" type="button" class="ExportButton" style="margin-top: 0">Export Excel</button>-->
-                                <!--<button id="Save-info" type="button" style="margin-top: 0">Save</button>-->
-                            </td>
-                        </tr>
-                    </table>
+                        <table class="table" style="font-size: 15px;">
+                            <tr style="padding: 0 10px">
+                                <td><?php echo $text['Index_text']; ?>: <?php echo $data['job_info'][0]['system_sn'];?></td>
+                                <td><?php echo $text['Job_info_text']; ?>: <?php echo $data['job_info'][0]['job_name'];?> / <?php echo $data['job_info'][0]['sequence_name']. "/". $data['job_info'][0]['cc_task_name'];?></td>
+                                <td><?php echo $text['Controller_text']; ?>: </td>
+                                <td><?php echo $text['Error_code_text']; ?>: <?php echo  $data['status_arr']['error_msg'][$data['job_info'][0]['error_message']];?></td>
+                                <td><?php echo $text['Status_text']; ?> : <a style="background-color: <?php echo $data['status_arr']['status_color'][$data['job_info'][0]['fasten_status']];?>; padding: 0 10px"><?php echo $data['status_arr']['status_type'][$data['job_info'][0]['fasten_status']];?></a></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $text['Actual_Torque_text']; ?>: <?php echo $data['job_info'][0]['fasten_torque'];?> N.m</td>
+                                <td><?php echo $text['BarcodeSN_text']; ?>: <?php echo $data['job_info'][0]['cc_barcodesn'];?></td>
+                                <td><?php echo $text['Direction_text']; ?>: <?php echo  $data['status_arr']['direction'][$data['job_info'][0]['count_direction']];?></td>
+                                <td><?php echo $text['Program_text']; ?>: <?php echo $data['job_info'][0]['cc_program_id'];?></td>
+                                <td><?php echo $text['Time_text']; ?>: <?php echo $data['job_info'][0]['data_time'];?></td>
+                            </tr>
+                            <tr  style="vertical-align: middle;">
+                                <td><?php echo $text['Member_text']; ?>: <!--<input class="t6" type="text" size="10" value="Esther" disabled="disabled" style="background-color: #F5F5F5">--></td>
+                                <td><?php echo $text['Note_text']; ?>: <!--<input class="t6" type="text" value="arm (444,215)[200]" disabled="disabled" style="background-color: #F5F5F5; width: 15vw"></td>-->
+                                <td>
+                                    <input class="form-check-input" type="checkbox" id="myCheckbox" onchange="check_limit(this)"  <?php if($limit_val=="1"){ echo "checked"; }else{}?>  style="zoom:1.2; float: left">&nbsp; <?php echo $text['Display_lilo_text']; ?>
+                                </td>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr style="vertical-align: middle">
+                                <td>
+                                    <?php echo $text['Chart_Setting_text']; ?>:  
+                                    <select id="chartseting" class="t6 Select-All" style="float: none"  onchange="chat_mode_change(this)">
+                                        <?php foreach($data['chat_mode_arr'] as $k_chat => $v_chat){?>
+                                            <option  value="<?php echo $k_chat;?>"  <?php if($chat_mode_change == $k_chat){echo "selected";}else{echo "";}?>  > <?php echo $text[$v_chat];?> </option>
+                                        <?php } ?>                             
+                                    </select>
+                                </td>
+                                <td>
+                                    <?php echo $text['Torque_Unit_text']; ?>:  
+                                    <select id="Torque-Unit" class="Select-All" style="float: none; width: 100px" onchange="unit_change(this)">
+                                        <?php foreach($data['torque_mode_arr'] as $k_torque =>$v_torque){?>
+                                                <option  value="<?php echo $k_torque;?>" <?php if($data['unitvalue'] == $k_torque){echo "selected";}else{echo "";}?> > <?php echo $text[$v_torque]; ?> </option>
+                                        <?php } ?>
+                                    </select>
+                                </td>
+                                <!--<td>
+                                    Angle:  <select id="Angle" class="t6 Select-All" id='angle_type' style="float: none; width: 100px" onchange="angle_select(this)">
+                                                <?php foreach($data['angle_mode_arr'] as $ke =>$ve){?>
+                                                    <option value="<?php echo $ke;?>" <?php if($data['anglevalue'] == $ke){ echo "selected";}?>><?php echo $ve;?></option>
+                                                <?php } ?>
+                                            </select>
+                                </td>-->
+                               <!--<td>
+                                    Sampling:  
+                                    <select id="SelectOutputSampling" class="t6 Select-All" id='file_type'>
+                                                <option value="1">1(ms)</option>
+                                                <option value="2">0.5(ms)</option>
+                                                <option value="3">2(ms)</option>
+                                    </select>
+                                </td>-->
+                                <td>
+                                    <!--<button id="Export-Excel" type="button" class="ExportButton" style="margin-top: 0">Export Excel</button>-->
+                                    <!--<button id="Save-info" type="button" style="margin-top: 0">Save</button>-->
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
 
-                    <?php if(!empty($data['chart_info'])){?>
-                        <div>
-                            <div style="text-align: center">
-                                <label style="float: left" id='DiagramDisplay'><b><?php echo $text['Diagram_Display_text']; ?></b></label>
-                                <label><?php echo $text[$data['chat']['chat_name']];?></label>
-                            </div>
-                        
+                        <?php if(!empty($data['chart_info'])){?>
+                            <div>
+                                <div style="text-align: center">
+                                    <label style="float: left" id='DiagramDisplay'><b><?php echo $text['Diagram_Display_text']; ?></b></label>
+                                    <label><?php echo $text[$data['chat']['chat_name']];?></label>
+                                </div>
 
-                            <div id="chart-setting">
-                                <div class="chart-container">
-                                    <div class="menu-chart"  id="menu-chart" onclick="toggleMenu()">
-                                        <i class="fa fa-bars" style="font-size: 26px"></i>
-                                        <div class="menu-content" id="myMenu">
-                                            <a  id="downloadchartbtn"><?php echo $text['Download_text']; ?> HTML</a>
-                                        </div> 
+                                <div id="chart-setting">
+                                    <div class="chart-container">
+                                        <div class="menu-chart"  id="menu-chart" onclick="toggleMenu()">
+                                            <i class="fa fa-bars" style="font-size: 26px"></i>
+                                            <div class="menu-content" id="myMenu">
+                                                <a id="downloadchartbtn"><?php echo $text['Download_text']; ?> HTML</a>
+                                            </div> 
+                                        </div>
+                                        <div id="chartinfo" style="width: 1500px; height: 400px; z-index: 1;"></div>
                                     </div>
-                                    <div id="chartinfo" style="width: 1500px; height: 400px; z-index: 1;"></div>
                                 </div>
                             </div>
-                        </div>
-                    <?php } ?>
-
+                        <?php } ?>
                     </div>
                 </div>
 
@@ -1031,9 +1081,6 @@ addMessage();
     var x_title = '<?php echo $data['chart_info']['x_title'];?>';
     var y_title = '<?php echo $data['chart_info']['y_title'];?>';
 
-    //alert(max_val);
-
-
 
     var option = {
             
@@ -1060,9 +1107,7 @@ addMessage();
             yAxis: {
                 type: 'value',
                 name: y_title,
-                boundaryGap: [0, '10%'],
-                min: min_val - 0.005,
-                max: max_val + 0.005, 
+                boundaryGap: [0, '10%']
             },
         dataZoom: generateDataZoom(),
         series: [
