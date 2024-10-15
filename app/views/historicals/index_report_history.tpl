@@ -19,7 +19,7 @@
     
     <div class="excel-sheet" id='excelsheet'>
         <header class="border-bottom">
-            <?php $base_url = "http://" . $_SERVER['SERVER_NAME'] . "/imasstg/public/img/logo.jpg"; ?>
+            <?php $base_url = "../public/img/logo.jpg"; ?>
             <h2><img src="<?php echo $base_url; ?>" alt="Logo"></h2>
             <p  style="font-weight: bold; font-size: 34px; padding-bottom: 5px">Fastening Statistics Report</p>
         </header>
