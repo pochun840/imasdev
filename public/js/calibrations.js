@@ -119,35 +119,8 @@ function html_download() {
                 //console.error('获取 XML 数据时出错:', error);
             });
     }else if(save_type3 === "csv") {
-        var job_id = getCookie('job_id');
-        if (job_id) {
-            $.ajax({
-                type: "POST",
-                data: { job_id: job_id },
-                xhrFields: {
-                    responseType: 'blob'
-                },
-                url: '?url=Calibrations/csv_download',
-                success: function (response) {
-                    var filename = fileName3 + '.csv';
-                    var blob = new Blob([response], { type: 'text/csv' });
-                    var link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
-                    link.setAttribute('download', filename);
-    
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                },
-                error: function (error) {
-                    //console.error('下载 CSV 数据时出错:', error);
-                    //alert('下载 CSV 数据时出错，请稍后重试');
-                }
-            });
-        }else{
-            //alert('未找到有效的 job_id，请检查您的设置。');
-        }
-
+        var job_id = 221;
+        downloadCSV(job_id, fileName3);
 
     }else if(save_type3 === "jpg"){
         downloadChartAsImage(chartDataURL, fileName3, 'jpg');
@@ -261,5 +234,35 @@ function getCookie(cookieName) {
         }
     }
     return '';
+}
+
+
+function downloadCSV(job_id, fileName3) {
+    if (job_id) {
+        $.ajax({
+            type: "POST",
+            data: { job_id: job_id },
+            xhrFields: {
+                responseType: 'blob'
+            },
+            url: '?url=Calibrations/csv_download',
+            success: function (response) {
+                var blob = new Blob([response], { type: 'text/csv' });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.setAttribute('download', fileName3 + '.csv');
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function (error) {
+                console.error('下载 CSV 数据时出错:', error);
+                alert('下载 CSV 数据时出错，请稍后重试');
+            }
+        });
+    } else {
+        alert('无效的 job_id，请检查您的设置。');
+    }
 }
 

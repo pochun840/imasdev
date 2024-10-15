@@ -288,11 +288,7 @@ class Calibrations extends Controller
             $info = $this->CalibrationModel->datainfo();
             $torque_type = $this->CalibrationModel->details('torque');
             $controller_type = $this->CalibrationModel->details('controller');
-            $ktm_type = $this->CalibrationModel->details('torquemeter');
-
-           
-
-
+            $ktm_total = $this->CalibrationModel->details('torquemeter');
     
             $xml = new XMLWriter();
             $xml->openMemory();
@@ -312,10 +308,10 @@ class Calibrations extends Controller
                         $value = $value ." % ";
                     }
                     if($key == 'controller_type'){
-                        $value = $controller_type[$value];
+                        $value = isset($controller_type[$value]) ? $controller_type[$value] : ''; 
                     }   
                     if($key == 'ktm_type'){
-                        $value = $ktm_type[3];
+                        $value = isset($ktm_total[$value]) ? $ktm_total[$value] : ''; 
                     }  
     
                     $xml->writeCData($value);
@@ -434,16 +430,9 @@ class Calibrations extends Controller
 
     public function csv_download(){
         
-        $input_check = true;
-        if (!empty($_POST['job_id']) && isset($_POST['job_id'])) {
-            $job_id = $_POST['job_id'];
-        } else {
-            $input_check = false;
-        }
         $job_id = 221;
         
         if($job_id){
-            //echo "eeew";die();
             $dataset = $this->CalibrationModel->datainfo_search($job_id);
             if(!empty($dataset)){
 
@@ -459,7 +448,11 @@ class Calibrations extends Controller
                     $dataset[$key]['high_percent'] = $val['high_percent']."%";
                     $dataset[$key]['low_percent'] = $val['low_percent']."%";
                     $dataset[$key]['controller_type'] = $controller[$val['controller_type']];
-                    $dataset[$key]['ktm_type'] = $ktm_total[$val['ktm_type']];
+                    if (isset($ktm_total[$val['ktm_type']])) {
+                        $dataset[$key]['ktm_type'] = $ktm_total[$val['ktm_type']];
+                    } else {
+                        $dataset[$key]['ktm_type'] = '';
+                    }
 
                     
                 }
