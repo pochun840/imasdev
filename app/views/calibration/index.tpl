@@ -188,12 +188,7 @@
 
                 <div class="w3-center" style="font-size: 18px; color: #000"><?php echo $text['Instant_data_setting_text'];?></div>
                 <div class="border-bottom">
-                    <div class="row t1" style="padding-left: 3%">
-                        <div class="col t1 form-check form-check-inline">
-                            <input class="t1 form-check-input" type="checkbox" checked="checked" name="auto-record" id="auto-record" value="1" style="zoom:1.0; vertical-align: middle;">&nbsp;&nbsp;
-                            <label class="t1 form-check-label" for="auto-record"><?php echo $text['Auto_Record_text'];?></label>
-                        </div>
-                    </div>
+                    
                     <div class="row t1" style="padding-left: 3%">
                         <div class="col t1 form-check form-check-inline">
                             <input class="t1 form-check-input" type="checkbox" checked="checked" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxCookie()">&nbsp;&nbsp;
@@ -742,7 +737,7 @@ function current_save() {
         success: function(response) {
             //alert('保存成功！');
             console.log('Success:', response);
-            //document.getElementById('target-torque').value = targetQ;
+            document.getElementById('target-torque').value = targetQ;
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
