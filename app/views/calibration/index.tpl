@@ -470,10 +470,9 @@
 <script>
 let lastData = null; 
 var myChart; 
-
 $(document).ready(function() {
     fetchLatestInfo();
-    setInterval(fetchLatestInfo, 10000); // 每 10 秒更新
+    setInterval(fetchLatestInfo, 1000); // 每 1 秒更新
    
 });
 
@@ -799,9 +798,8 @@ async function fetchData() {
     }
 }
 
-// 每 3 秒调用一次 fetchData
-
-setInterval(fetchData, 3000);
+// 每 0.5 秒调用一次 fetchData
+setInterval(fetchData, 500);
 fetchData();
 
 function fetchLatestInfo() {
