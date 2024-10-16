@@ -80,10 +80,22 @@ async function connectComPort(port, baudRate, dataBits, stopBits, parity) {
                 const asciiData = Buffer.from(Ans, 'hex').toString('ascii');
                 console.log("數據的十六進制表示:", hexData);
                 console.log("轉換為 ASCII:", asciiData);
+                console.log("test:", slicedData);
+
+
+                //取得 是正轉 還是 反轉 
+                const result = hexData.substring(12, 14);
+                const asciiValue = String.fromCharCode(parseInt(result, 16));
+                //
 
                 if (asciiData) {
+
+                    const combinedValue = `${asciiValue} ${asciiData}`.replace(/\s+/g, ' ').trim();
+
+
                     console.log("準備寫入的 ASCII 數據:", asciiData);
-                    await writeToFile(asciiData);
+                    console.log("test:", combinedValue);
+                    await writeToFile(combinedValue);
                 }
 
                 dataBuffer = dataBuffer.slice(21);

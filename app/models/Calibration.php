@@ -29,8 +29,7 @@ class Calibration{
             $details = array(
                 0 => 'KTM-6',
                 1 => 'KTM-150',
-                2 => 'KTM-250',
-                3 => 'kKTM-100'
+                2 => 'KTM-250'
 
             );
 

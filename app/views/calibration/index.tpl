@@ -156,10 +156,11 @@
                 <button class="btn" id="back-btn" type="button" onclick="backSetting()">
                     <img id="img-back" src="./img/back.svg" alt=""><?php echo $text['Back_text']; ?>
                 </button>
-
+                
                 <button class="btn" id="export-report" type="button" onclick="openModal('Export_Report')"><?php echo $text['Export_text'];?></button>
-                <!--<button class="btn" id="export-chart" type="button" onclick="openModal('Export_Chart')">Export Chart</button>-->
                 <button class="btn" id="export-excel" type="button"  onclick="window.location.href = '?url=Calibrations/export_excel';"><?php echo $text['Export_Report_text'];?></button>
+                <button class="btn" id="export-report" type="button" onclick="undo()"><?php echo $text['Undo_text'];?></button>
+       
             </div>
         </div>
 
@@ -195,7 +196,7 @@
                     </div>
                     <div class="row t1" style="padding-left: 3%">
                         <div class="col t1 form-check form-check-inline">
-                            <input class="t1 form-check-input" type="checkbox" checked="checked" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;">&nbsp;&nbsp;
+                            <input class="t1 form-check-input" type="checkbox" checked="checked" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxCookie()">&nbsp;&nbsp;
                             <label class="t1 form-check-label" for="skip-turn-rev"><?php echo $text['Skip_Turn_Rev_text'];?></label>
                         </div>
                     </div>
@@ -220,17 +221,39 @@
                 <div class="row t1">
                     <div class="col-7 t1"><b><?php echo $text['Tolerance_text'];?>(+/- %)</b></div>
                     <div class="col-4 t1">
-                        <input id="tolerance" type="text" class="t2 form-control" value="+ 0.5">
+                        <input id="tolerance" type="text" class="t2 form-control" value="">
                     </div>
                 </div>
 
+                <div class="row t1">
+                    <div class="col-7 t1"><b><?php echo $text['Joint_Offset_text'];?></b></div>
+                    <div class="col-4 t1">
+                        <input id="current_offset" type="text" class="t2 form-control" value="">
+                    </div>
+                </div>
+
+                <div class="row t1">
+                    <div class="col-7 t1"><b><?php echo $text['RPM_text'];?></b></div>
+                    <div class="col-4 t1">
+                        <input id="current_rpm" type="text" class="t2 form-control" value="">
+                    </div>
+                </div>
+
+                <div class="row t1" style="display: flex; justify-content: flex-end; margin-top: 15px;">
+                    <button class="btn" id="export-report" type="button" onclick="current_save()"><?php echo $text['Save_text'];?></button>
+                </div>
+
+
+
+
+              
             
             </div>
 
 
             <!-- Right -->
             <div class="column column-right">
-                <div id="column-right-header">
+                <!--<div id="column-right-header">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text"><?php echo $text['Target_Q_text'];?>:</span>
                         <input type="text" id= 'current_tarque'  name='current_tarque' class="form-control" style="margin-right: 5px">
@@ -238,17 +261,13 @@
                         <span class="input-group-text"><?php echo $text['RPM_text'];?>:</span>
                         <input type="text" id= 'current_rpm'  name= 'current_rpm'  class="form-control" style="margin-right: 5px">
 
-                        <span class="input-group-text"><?php echo $text['Joint_Offset_text'];?>:</span>
-                        <input type="text" id= 'current_offset'  name= 'current_offset'  class="form-control" style="margin-right: 5px">
-
+                       
                         <button id="Save-btn" type="button" class="btn-save-reset-undo" onclick='current_save()' style="margin-right: 5%"><?php echo $text['Save_text'];?></button>
-                        <!--<button id="Reset" type="button" class="btn-save-reset-undo"><?php echo $text['Reset_text']."_1";?></button>-->
-                        <button id="Undo" type="button" class="btn-save-reset-undo" onclick="undo()" ><?php echo $text['Undo_text'];?></button>
 
-                        <span class="input-group-text"><?php echo $text['Time_text'];?>:</span>
-                        <input type="text" class="form-control">
+
+                
                     </div>
-                </div>
+                </div>-->
 
                 <div id="table-setting">
                     <div class="scrollbar-table" id="style-table">
@@ -325,13 +344,13 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Target_Torque_text'];?>:</div>
                                         <div class="col-5 t1">
-                                            <input id="target-torque" type="text" class="t2 form-control" value="0.6">
+                                            <input id="target-torque" type="text" class="t2 form-control" value="">
                                         </div>
                                     </div>
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Bias_text'];?> (+/-%):</div>
                                         <div class="col-5 t1">
-                                            <input id="bias" type="text" class="t2 form-control" value="10">
+                                            <input id="bias" type="text" class="t2 form-control" value="">
                                         </div>
                                     </div>
                                     <div class="row t1">
@@ -741,6 +760,7 @@ function current_save() {
             console.log('Success:', response);
 
             document.getElementById('standard-torque').value = targetQ;
+            document.getElementById('target-torque').value = targetQ;
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
@@ -944,6 +964,33 @@ function renderChart(x_val, y_val) {
 
     myChart.setOption(option, true); 
 }
+
+
+
+function setCheckboxCookie() {
+    const checkbox = document.getElementById('skip-turn-rev');
+    const isChecked = checkbox.checked ? '1' : '0';
+    
+    // 設定 cookie，有效期 7 天
+    const expirationDays = 7;
+    const d = new Date();
+    d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + d.toUTCString();
+    
+    document.cookie = "skipTurnRev=" + isChecked + ";" + expires + ";path=/";
+}
+
+// 在頁面加載時檢查 cookie 狀態
+window.onload = function() {
+    const cookieArr = document.cookie.split(';');
+    for (let i = 0; i < cookieArr.length; i++) {
+        const cookiePair = cookieArr[i].split('=');
+        if (cookiePair[0].trim() === 'skipTurnRev') {
+            document.getElementById('skip-turn-rev').checked = (cookiePair[1] === '1');
+        }
+    }
+};
+
 
 </script>
 
