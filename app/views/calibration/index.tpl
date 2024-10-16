@@ -214,7 +214,7 @@
                 <div class="row t1">
                     <div class="col-7 t1"><b><?php echo $text['Target_Torque_text'];?></b></div>
                     <div class="col-4 t1">
-                        <input id="standard-torque" type="text" class="t2 form-control">
+                        <input id="current_tarque" type="text" class="t2 form-control">
                     </div>
                 </div>
 
@@ -253,22 +253,7 @@
 
             <!-- Right -->
             <div class="column column-right">
-                <!--<div id="column-right-header">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text"><?php echo $text['Target_Q_text'];?>:</span>
-                        <input type="text" id= 'current_tarque'  name='current_tarque' class="form-control" style="margin-right: 5px">
-
-                        <span class="input-group-text"><?php echo $text['RPM_text'];?>:</span>
-                        <input type="text" id= 'current_rpm'  name= 'current_rpm'  class="form-control" style="margin-right: 5px">
-
-                       
-                        <button id="Save-btn" type="button" class="btn-save-reset-undo" onclick='current_save()' style="margin-right: 5%"><?php echo $text['Save_text'];?></button>
-
-
                 
-                    </div>
-                </div>-->
-
                 <div id="table-setting">
                     <div class="scrollbar-table" id="style-table">
                         <div class="force-overflow-table">
@@ -380,7 +365,7 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Avg_Torque_text'];?></div>
                                         <div class="col-5 t1">
-                                            <input id="avg_torque" type="text" class="t2 form-control" value="<?php echo !empty($data['meter']['avg_torque']) ? $data['meter']['avg_torque'] : ''; ?>">
+                                            <input id="avg_torque" type="text" class="t2 form-control" value="<?php echo !empty($data['avg_torque']) ? $data['avg_torque'] : ''; ?>">
                                         </div>
                                     </div>
                                     <div class="row t1">
@@ -559,7 +544,6 @@ function NextToAnalysisSystemKTM() {
         'KTM-6',
         'KTM-150',
         'KTM-250',
-        'kKTM-100'
     ];
 
     // 显示分析系统KTM
@@ -736,7 +720,7 @@ function updateCookie(name, value, days) {
 
 
 function current_save() {
- 
+    
     let targetQ = document.getElementById('current_tarque').value;
     const rpm = document.getElementById('current_rpm').value;
     const offset = document.getElementById('current_offset').value;
@@ -758,9 +742,7 @@ function current_save() {
         success: function(response) {
             //alert('保存成功！');
             console.log('Success:', response);
-
-            document.getElementById('standard-torque').value = targetQ;
-            document.getElementById('target-torque').value = targetQ;
+            //document.getElementById('target-torque').value = targetQ;
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
@@ -844,8 +826,12 @@ function fetchLatestInfo() {
             //console.log(data.meter);
 
             //更新最大和最小扭力值
-            $('#max-torque').val(data.meter['max-torque'].torque); // 获取 max-torque 的值
-            $('#min-torque').val(data.meter['min-torque'].torque); // 获取 min-torque 的值
+            $('#max-torque').val(data.meter['max-torque'].torque); // 取得 max-torque 的值
+            $('#min-torque').val(data.meter['min-torque'].torque); // 取得 min-torque 的值
+
+            //更新扭力平均值//avg_torque
+            $('#avg_torque').val(data.meter['avg_torque'].torque);
+
         },
         error: function() {
             console.log('Error loading data');
@@ -978,6 +964,9 @@ function setCheckboxCookie() {
     const expires = "expires=" + d.toUTCString();
     
     document.cookie = "skipTurnRev=" + isChecked + ";" + expires + ";path=/";
+    //history.go(0);
+
+
 }
 
 // 在頁面加載時檢查 cookie 狀態
@@ -991,6 +980,19 @@ window.onload = function() {
     }
 };
 
+
+//輸入誤差範圍
+window.onload = function() {
+    document.getElementById('tolerance').value = 10;
+    document.getElementById('bias').value = 10;
+};
+
+document.getElementById('tolerance').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const toleranceValue = this.value; 
+        document.getElementById('bias').value = toleranceValue; 
+    }
+});
 
 </script>
 

@@ -27,14 +27,13 @@ class Calibrations extends Controller
         $job_arr = $this->CalibrationModel->getjobid();
         $torque_type = $this->CalibrationModel->details('torque');
         $tools_sn = $this->CalibrationModel->get_tools_sn();
-
-        
         $ktm = $this->CalibrationModel->details('torquemeter');
-       
-      
         $job_id = 221;
 
         $echart_data = $this->CalibrationModel->datainfo_search($job_id);
+
+        //取得最後一筆的平均扭力
+        $avg_torque = $this->CalibrationModel->get_last_record();
         $meter = $this->val_traffic();
         if(!empty($echart_data)){
             #整理圖表所需要的資料
@@ -64,6 +63,12 @@ class Calibrations extends Controller
         if(empty($_SESSION['torqueMeter'])){
             $_SESSION['torqueMeter'] = 0;
         }
+
+
+        echo "<pre>";
+        print_r($_COOKIE);
+        echo "</pre>";
+        
         
         $data = array(
             'isMobile' => $isMobile,
@@ -71,6 +76,7 @@ class Calibrations extends Controller
             'res_controller_arr' => $this->CalibrationModel->details('controller'),
             'res_Torquemeter_arr' => $this->CalibrationModel->details('torquemeter'),
             'res_Torquetype' => $this->CalibrationModel->details('torque'),
+            'avg_torque' => $avg_torque,
             'info' => $info,
             'echart'=> $tmp,
             'job_arr' => $job_arr,
@@ -81,6 +87,8 @@ class Calibrations extends Controller
             'current_torquemeter' => $ktm[$_SESSION['torqueMeter']]
             
         );
+
+
 
         $this->view('calibration/index', $data);
 
@@ -93,6 +101,7 @@ class Calibrations extends Controller
         $echart_data = $this->CalibrationModel->datainfo_search($job_id);
 
         $temp = $info;
+        $avg_torque = $this->CalibrationModel->get_last_record();
       
 
         $temp = array_map(function($item) {
@@ -121,7 +130,8 @@ class Calibrations extends Controller
             'meter' => [
                 'torque' => $temp,
                 'max-torque' => $max_torque,
-                'min-torque' => $min_torque
+                'min-torque' => $min_torque,
+                'avg-torque' => $avg_torque
             ]
         );
     
@@ -186,19 +196,19 @@ class Calibrations extends Controller
         // 清理文件內容
         foreach ($fileContent as $data) {
             $cleanedData = trim($data); 
-            if (is_numeric($cleanedData)) { 
-                $cleanedDataArray[] = $cleanedData;
+
+            if (preg_match('/^[+-]?(\s*\d+(\.\d+)?|\s+\d+(\.\d+)?)$/', $cleanedData)) {
+                $cleanedDataArray[] = trim(str_replace(' ', '', $cleanedData)); 
             }
         }
-    
+
         // 獲取工具序列號
         $tools_sn = $this->CalibrationModel->get_tools_sn();
-        
+    
         // 如果清理後的數據數組不為空
         if (!empty($cleanedDataArray)) {
             $lastValue = end($cleanedDataArray); 
-            $final = (float)$lastValue; 
-            
+            $final = $lastValue;             
             // 整理數據
             $res = $this->CalibrationModel->tidy_data($final, $tools_sn);
     
@@ -503,6 +513,7 @@ class Calibrations extends Controller
 
         $input = file_get_contents('php://input');
         $data = json_decode($input, true);
+
         if (isset($data['target_q'], $data['rpm'], $data['joint_offset'])) {
 
             $controller_ip = $this->EquipmentModel->GetControllerIP(1);
@@ -520,6 +531,7 @@ class Calibrations extends Controller
                 $data_offset = array($data['joint_offset']);
                 $data_job = array(221);
                 $data_open = array(1);
+                
 
                 
 
@@ -572,12 +584,6 @@ class Calibrations extends Controller
             session_start(); 
         }
         
-
-        echo "ewwer";
-        echo "<pre>";
-        print_r($_POST);
-        echo "</pre>";
-
         if (isset($_POST['torqueMeter']) && isset($_POST['controller'])) {
             
             // 清理不必要的 Session 資料，避免 Session 資料過多
@@ -627,6 +633,11 @@ class Calibrations extends Controller
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to stop Node.js application.']);
         }
+    }
+
+    public function test_temp(){
+        $dataset = $this->CalibrationModel->get_last_record();
+        var_dump($dataset);die();
     }
 
 
