@@ -406,10 +406,7 @@ class Historicals extends Controller
 
             $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
             $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
-            // echo "<pre>";
-            // print_r($data['job_info']);
-            // echo "</pre>";
-            // die();
+ 
 
     
             #檢查chat_mode cookie
@@ -608,6 +605,10 @@ class Historicals extends Controller
                     $yValues = json_decode($data["chart{$key}_ycoordinate"], true);
                     $data["chart{$key}_ycoordinate_max"] = max($yValues);
                     $data["chart{$key}_ycoordinate_min"] = min($yValues);
+
+                    $data["chart{$key}_ycoordinate_max_correct"] = $data['info_final'][$key]['step_hightorque'];
+                    $data["chart{$key}_ycoordinate_min_correct"] = $data['info_final'][$key]['step_lowtorque'];
+
                 
                     if (isset($chart['y_angle'])) {
                         $data["chart{$key}_ycoordinate_angle"] = json_encode($chart['y_angle']);
@@ -663,6 +664,10 @@ class Historicals extends Controller
             $data['final_label'] = $final_label;
             $data['id_count'] = count($info_final) - 1;
             $data['torque_arr'] = $torque_arr;
+
+
+           
+
             $this->view('historicals/index', $data);
         
         }

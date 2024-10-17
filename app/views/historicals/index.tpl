@@ -1295,7 +1295,8 @@ addMessage();
             var check_limit_val = '<?php echo $data['check_limit_val'];?>';
             var max_count = '<?php echo $data['id_count'];?>';
             var myChart_combine = echarts.init(document.getElementById('chart_combine'));
-            
+
+   
             // 定義顏色調色盤
             var colorPalette = [
                 '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -1325,12 +1326,23 @@ addMessage();
                 return yData.length === xData.length ? yData : [];
             }).filter(data => data.length > 0);
 
-            // 从 $data 中获取最大值和最小值
+            // 获取最大值和最小值
             var maxValues = [];
             var minValues = [];
-            for (var i = 0; i <= max_count; i++) { // 假设只比较 0 和 1
-                var maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]);
-                var minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]);
+            for (var i = 0; i <= max_count; i++) {
+                // 根据 chat_mode 和 chart 条件选择不同的最大最小值
+                var maxVal, minVal;
+                if (chat_mode == 1) { // 如果 chat_mode 是 1 且是 chart 5
+                    maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
+                    minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
+                }else if(chat_mode == 5){
+                    maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
+                    minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
+                }else {
+                    maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]);
+                    minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]);
+                }
+                
                 maxValues.push(maxVal);
                 minValues.push(minVal);
                 console.log(`Chart ${i}: Min Value = ${minVal}, Max Value = ${maxVal}`);
@@ -1339,7 +1351,6 @@ addMessage();
             // 比较最大值和最小值
             var overallMax = Math.max(...maxValues);
             var overallMin = Math.min(...minValues);
-
             console.log("Overall Min Value:", overallMin);
             console.log("Overall Max Value:", overallMax);
 
@@ -1374,8 +1385,9 @@ addMessage();
                 },
                 yAxis: {
                     type: 'value',
-                    min:0,
-                    boundaryGap: [0, '10%']
+                    boundaryGap: [0, '10%'],
+                    min: overallMin, // 使用计算出的 overallMin
+                    max: overallMax, // 使用计算出的 overallMax
                 },
                 dataZoom: generateDataZoom(),
                 color: colorPalette,
@@ -1471,8 +1483,8 @@ addMessage();
                 var torqueKey = `chart${i}_ycoordinate`;
                 var angleKey = `chart${i}_ycoordinate_angle`;
 
-                var torque_max = chartData_s[`chart${i}_ycoordinate_max`] || null;
-                var torque_min = chartData_s[`chart${i}_ycoordinate_min`] || null;
+                var torque_max = chartData_s[`chart${i}_ycoordinate_max_correct`] || null;
+                var torque_min = chartData_s[`chart${i}_ycoordinate_min_correct`] || null;
                 var angle_max = chartData_s[`chart${i}_ycoordinate_max_angle`] || null;
                 var angle_min = chartData_s[`chart${i}_ycoordinate_min_angle`] || null;
 
@@ -1551,7 +1563,7 @@ addMessage();
                         axisLabel: { formatter: '{value}' },
                         axisLine: { lineStyle: { color: '#333' } },
                         min: Math.min(overallTorqueMin, 0), // 確保包括最小值
-                        //max: overallTorqueMax + 10 // 確保足夠的最大值範圍
+                        max: overallTorqueMax // 確保足夠的最大值範圍
                     },
                     {
                         type: 'value',
@@ -1590,7 +1602,7 @@ addMessage();
                     yAxisIndex: 0
                 });
 
-                option.series.push({
+                /*option.series.push({
                     name: 'Angle Limits',
                     type: 'line',
                     markLine: {
@@ -1602,7 +1614,7 @@ addMessage();
                     },
                     lineStyle: { width: 0 },
                     yAxisIndex: 1
-                });
+                });*/
             }
 
             myChart_combine.setOption(option);
