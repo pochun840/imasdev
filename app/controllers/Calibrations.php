@@ -27,20 +27,26 @@ class Calibrations extends Controller
         $job_arr = $this->CalibrationModel->getjobid();
         $torque_type = $this->CalibrationModel->details('torque');
         $tools_sn = $this->CalibrationModel->get_tools_sn();
-
-        
         $ktm = $this->CalibrationModel->details('torquemeter');
+<<<<<<< HEAD
 
+=======
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         $job_id = 221;
 
         $echart_data = $this->CalibrationModel->datainfo_search($job_id);
 
+<<<<<<< HEAD
 
         $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 1;
         
 
         $avg = $this->CalibrationModel->get_last_record();
 
+=======
+        //取得最後一筆的平均扭力
+        $avg_torque = $this->CalibrationModel->get_last_record();
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         $meter = $this->val_traffic();
         if(!empty($echart_data)){
             #整理圖表所需要的資料
@@ -71,14 +77,24 @@ class Calibrations extends Controller
             $_SESSION['torqueMeter'] = 0;
         }
 
+<<<<<<< HEAD
         $last_item = end($info);
 
+=======
+
+        echo "<pre>";
+        print_r($_COOKIE);
+        echo "</pre>";
+        
+        
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
             'res_controller_arr' => $this->CalibrationModel->details('controller'),
             'res_Torquemeter_arr' => $this->CalibrationModel->details('torquemeter'),
             'res_Torquetype' => $this->CalibrationModel->details('torque'),
+            'avg_torque' => $avg_torque,
             'info' => $info,
             'echart'=> $tmp,
             'job_arr' => $job_arr,
@@ -93,6 +109,8 @@ class Calibrations extends Controller
             
         );
 
+
+
         $this->view('calibration/index', $data);
 
 
@@ -105,6 +123,10 @@ class Calibrations extends Controller
 
         $temp = $info;
         $avg_torque = $this->CalibrationModel->get_last_record();
+<<<<<<< HEAD
+=======
+      
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
 
         $temp = array_map(function($item) {
             return ['torque' => $item['torque']];
@@ -133,7 +155,11 @@ class Calibrations extends Controller
                 'torque' => $temp,
                 'max-torque' => $max_torque,
                 'min-torque' => $min_torque,
+<<<<<<< HEAD
                 'avg_torque' => $avg_torque
+=======
+                'avg-torque' => $avg_torque
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
             ]
         );
     
@@ -215,6 +241,7 @@ class Calibrations extends Controller
         var_dump($cleanedDataArray);//die();
         if (!empty($cleanedDataArray)) {
             $lastValue = end($cleanedDataArray); 
+<<<<<<< HEAD
             $final_val = $lastValue;    
 
             $trimmedFinal = trim($final_val);
@@ -238,6 +265,9 @@ class Calibrations extends Controller
             }
             
 
+=======
+            $final = $lastValue;             
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
             // 整理數據
             $res = $this->CalibrationModel->tidy_data($final, $tools_sn);
     
@@ -544,7 +574,12 @@ class Calibrations extends Controller
 
         $input = file_get_contents('php://input');
         $data = json_decode($input, true);
+<<<<<<< HEAD
         if (isset($data['target_q'], $data['rpm'], $data['joint_offset'],$data['tolerance'])) {
+=======
+
+        if (isset($data['target_q'], $data['rpm'], $data['joint_offset'])) {
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
 
             $controller_ip = $this->EquipmentModel->GetControllerIP(1);
             require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
@@ -587,6 +622,7 @@ class Calibrations extends Controller
                 $upper_limit_arr = array(0,$upper_limit);
                 $data_job = array(221);
                 $data_open = array(1);
+                
 
                 $dataTypes = array("INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT");
 
@@ -640,8 +676,11 @@ class Calibrations extends Controller
             session_start(); 
         }
         
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         if (isset($_POST['torqueMeter']) && isset($_POST['controller'])) {
             
             // 清理不必要的 Session 資料，避免 Session 資料過多
@@ -691,6 +730,11 @@ class Calibrations extends Controller
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to stop Node.js application.']);
         }
+    }
+
+    public function test_temp(){
+        $dataset = $this->CalibrationModel->get_last_record();
+        var_dump($dataset);die();
     }
 
 

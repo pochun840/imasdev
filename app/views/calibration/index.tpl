@@ -191,8 +191,12 @@
                     
                     <div class="row t1" style="padding-left: 3%">
                         <div class="col t1 form-check form-check-inline">
+<<<<<<< HEAD
                         
                             <input class="t1 form-check-input" type="checkbox" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxSession()" >
+=======
+                            <input class="t1 form-check-input" type="checkbox" checked="checked" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxCookie()">&nbsp;&nbsp;
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
                             <label class="t1 form-check-label" for="skip-turn-rev"><?php echo $text['Skip_Turn_Rev_text'];?></label>
                         </div>
                     </div>
@@ -361,7 +365,11 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Avg_Torque_text'];?></div>
                                         <div class="col-5 t1">
+<<<<<<< HEAD
                                             <input id="avg-torque" type="text" class="t2 form-control" value="<?php echo $data['avg_torque']; ?> ">
+=======
+                                            <input id="avg_torque" type="text" class="t2 form-control" value="<?php echo !empty($data['avg_torque']) ? $data['avg_torque'] : ''; ?>">
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
                                         </div>
                                     </div>
                                     <div class="row t1">
@@ -744,6 +752,7 @@ function current_save() {
         success: function(response) {
    
             console.log('Success:', response);
+<<<<<<< HEAD
           
             document.getElementById('target-torque').value = targetQ;
             document.getElementById('high-limit-torque').value = upper_limit;
@@ -751,6 +760,9 @@ function current_save() {
             document.getElementById('bias').value = tolerance;
 
 
+=======
+            document.getElementById('target-torque').value = targetQ;
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
@@ -1011,6 +1023,14 @@ window.onload = function() {
 };
 
 
+<<<<<<< HEAD
+=======
+//輸入誤差範圍
+window.onload = function() {
+    document.getElementById('tolerance').value = 10;
+    document.getElementById('bias').value = 10;
+};
+>>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
 
 document.getElementById('tolerance').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
