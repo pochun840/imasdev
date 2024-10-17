@@ -404,6 +404,13 @@ class Historicals extends Controller
             }
 
 
+            $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
+            $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
+            // echo "<pre>";
+            // print_r($data['job_info']);
+            // echo "</pre>";
+            // die();
+
     
             #檢查chat_mode cookie
             $chat_mode = isset($_COOKIE['chat_mode_change']) ? $_COOKIE['chat_mode_change'] : "1";

@@ -1075,11 +1075,13 @@ addMessage();
     var x_data_val = <?php echo  $data['chart_info']['x_val']; ?>;
     var y_data_val = <?php echo  $data['chart_info']['y_val']; ?>;
 
-    var min_val = <?php echo  $data['chart_info']['min'];?>;
-    var max_val = <?php echo  $data['chart_info']['max'];?>;
+    var min_val = <?php echo  $data['chat_y_min_val'];?>;
+    var max_val = <?php echo  $data['chat_y_max_val'];?>;
 
     var x_title = '<?php echo $data['chart_info']['x_title'];?>';
     var y_title = '<?php echo $data['chart_info']['y_title'];?>';
+
+    var chat_mode = '<?php echo $data['chart_info']['chat_mode'];?>';
 
 
     var option = {
@@ -1107,7 +1109,8 @@ addMessage();
             yAxis: {
                 type: 'value',
                 name: y_title,
-                boundaryGap: [0, '10%']
+                boundaryGap: [0, '10%'],
+                ...(chat_mode == 1 || chat_mode == 5 ? { max: max_val } : {})
             },
         dataZoom: generateDataZoom(),
         series: [
@@ -1142,20 +1145,13 @@ addMessage();
     
     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
 
-    if(x_title  == "Time(MS)" && y_title =="Power"){
-        var limit_val = 0;
+   
+    if ((x_title === "Time(MS)" && (y_title === "Power" || y_title === "RPM")) ||chat_mode == 2) {
         document.cookie = "limit_val=" + limit_val + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
-        //history.go(0);
-    }
-
-    
-    if(x_title  == "Time(MS)" && y_title =="RPM"){
         var limit_val = 0;
-        document.cookie = "limit_val=" + limit_val + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
-        //history.go(0);
     }
     
-    if (limit_val == 1) {
+    if ( limit_val == 1) {
         
         if(x_title  == "Time(MS)" && y_title =="Angle"){
             var t1 = 'low angle';
@@ -1189,27 +1185,17 @@ addMessage();
 
     <script>
         var myChart = echarts.init(document.getElementById('chartinfo'));
-
-        
         var x_data_val = <?php echo $data['chart_info']['x_val']; ?>; // X轴数据
         var y_data_val = <?php echo $data['chart_info']['y_val']; ?>; // Y轴1 (torque) 数据
         var y_data_val_1 = <?php echo $data['chart_info']['y_val_1']; ?>; // Y轴2 (angle) 数据
 
-        var max_val = <?php echo $data['chart_info']['max']; ?>; // Y轴1的上限
-        var min_val = <?php echo $data['chart_info']['min']; ?>; // Y轴1的下限
+        var max_val = <?php echo $data['chat_y_max_val']; ?>; // Y轴1的上限
+        var min_val = <?php echo $data['chat_y_min_val']; ?>; // Y轴1的下限
 
         var max_val_1 = <?php echo $data['chart_info']['max1']; ?>; // Y轴2的上限
         var min_val_1 = <?php echo $data['chart_info']['min1']; ?>; // Y轴2的下限
-
-         function formatValue(value) {
-            // 如果值小於等於0.001，顯示為0
-            if (Math.abs(value) < 0.001) {
-                return '0';
-            } else {
-                return parseFloat(value).toFixed(3); // 保留小數點後3位
-            }
-        }
-
+        
+        
         var option = {
             grid: {
                 left: '10%',
@@ -1245,9 +1231,10 @@ addMessage();
                     min: min_val,
                     max: max_val,
                     alignTicks: true, 
+                    scale: true,
                     axisLabel: {
                         formatter: function (value) {
-                           return formatValue(value);
+                           return value.toFixed(1);
                         }
                     }
                 },

@@ -378,24 +378,6 @@ class Calibration{
         return $result;
     }
 
-<<<<<<< HEAD
-=======
-
-    public function get_last_record() {
-        $sql = "SELECT *  FROM calibrations ORDER BY id DESC LIMIT 1 "; 
-        $statement = $this->db->prepare($sql);
-        $statement->execute();
-        
-        $result = $statement->fetch(PDO::FETCH_ASSOC); 
-
-        if(!empty($result)){
-            $avg = $result['avg_torque'];
-        }
-        return $avg;        
-    }
-
-    /*public function get_count(){
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
 
     public function get_last_record() {
         $sql = "SELECT  avg_torque    FROM calibrations ORDER BY id desc limit 1 "; 

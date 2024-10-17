@@ -191,19 +191,15 @@
                     
                     <div class="row t1" style="padding-left: 3%">
                         <div class="col t1 form-check form-check-inline">
-<<<<<<< HEAD
                         
                             <input class="t1 form-check-input" type="checkbox" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxSession()" >
-=======
-                            <input class="t1 form-check-input" type="checkbox" checked="checked" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxCookie()">&nbsp;&nbsp;
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
                             <label class="t1 form-check-label" for="skip-turn-rev"><?php echo $text['Skip_Turn_Rev_text'];?></label>
                         </div>
                     </div>
                     <div class="row t1" style="padding-left: 1%">
                        <div class="col-5 t1"><?php echo $text['Count_text'];?>:</div>
                         <div class="col-4 t1">
-                            <input id="implement_count" type="text" class="t2 form-control" value="0">
+                            <input id="implement_count" type="text" class="t2 form-control" value=""  oninput="update_count()" onkeydown="checkEnter(event)" >
                         </div>
                     </div>
                 </div>
@@ -365,11 +361,7 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Avg_Torque_text'];?></div>
                                         <div class="col-5 t1">
-<<<<<<< HEAD
                                             <input id="avg-torque" type="text" class="t2 form-control" value="<?php echo $data['avg_torque']; ?> ">
-=======
-                                            <input id="avg_torque" type="text" class="t2 form-control" value="<?php echo !empty($data['avg_torque']) ? $data['avg_torque'] : ''; ?>">
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
                                         </div>
                                     </div>
                                     <div class="row t1">
@@ -752,7 +744,6 @@ function current_save() {
         success: function(response) {
    
             console.log('Success:', response);
-<<<<<<< HEAD
           
             document.getElementById('target-torque').value = targetQ;
             document.getElementById('high-limit-torque').value = upper_limit;
@@ -760,9 +751,6 @@ function current_save() {
             document.getElementById('bias').value = tolerance;
 
 
-=======
-            document.getElementById('target-torque').value = targetQ;
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
@@ -792,6 +780,9 @@ function undo() {
 }
 
 
+let report_count  = document.getElementById('implement_count').value; 
+let current_count = 0; 
+alert(report_count);
 
 
 async function fetchData() {
@@ -817,11 +808,27 @@ async function fetchData() {
         //document.getElementById('result').innerText = '发生错误: ' + error.message;
         //document.getElementById('datainfo').innerHTML = '发生错误: ' + error.message;
     }
+
+    current_count++;
+    // 如果当前计数达到 report_count，则停止定时器
+    if (current_count >= report_count) {
+        clearInterval(intervalId); // 停止定时器
+    }
+
+}
+// 设置定时器
+let intervalId;
+if (report_count > 0) {
+    intervalId = setInterval(fetchData, 500);
+}
+
+if (report_count === 0) {
+    fetchData();
 }
 
 // 每 0.5 秒调用一次 fetchData
-setInterval(fetchData, 500);
-fetchData();
+//setInterval(fetchData, 500);
+//fetchData();
 
 function fetchLatestInfo() {
     $.ajax({
@@ -994,11 +1001,26 @@ function setCheckboxSession() {
     }
 }
 
+function update_count() {
+    console.log("输入的值:", document.getElementById('implement_count').value);
+}
+
+function checkEnter(event) {
+    if (event.key === 'Enter') {
+        // 当按下 Enter 键时调用 update_count 或其他函数
+        update_count();
+        // 可选：阻止表单提交或其他默认行为
+        event.preventDefault();
+    }
+    var value = document.getElementById('implement_count').value;
+}
+
 window.onload = function() {
     document.getElementById('tolerance').value = 10;
     document.getElementById('bias').value = 10;
     
     const checkbox = document.getElementById('skip-turn-rev');
+    checkbox.checked = true;
 
     if (!document.cookie.includes('skipTurnRev=')) {
         const expirationDays = 7;
@@ -1023,14 +1045,6 @@ window.onload = function() {
 };
 
 
-<<<<<<< HEAD
-=======
-//輸入誤差範圍
-window.onload = function() {
-    document.getElementById('tolerance').value = 10;
-    document.getElementById('bias').value = 10;
-};
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
 
 document.getElementById('tolerance').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {

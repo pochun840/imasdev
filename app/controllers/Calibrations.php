@@ -76,7 +76,7 @@ class Calibrations extends Controller
             'res_controller_arr' => $this->CalibrationModel->details('controller'),
             'res_Torquemeter_arr' => $this->CalibrationModel->details('torquemeter'),
             'res_Torquetype' => $this->CalibrationModel->details('torque'),
-            'avg_torque' => $avg_torque,
+            'avg_torque' => $avg,
             'info' => $info,
             'echart'=> $tmp,
             'job_arr' => $job_arr,
@@ -105,10 +105,6 @@ class Calibrations extends Controller
 
         $temp = $info;
         $avg_torque = $this->CalibrationModel->get_last_record();
-<<<<<<< HEAD
-=======
-      
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
 
         $temp = array_map(function($item) {
             return ['torque' => $item['torque']];
@@ -137,11 +133,7 @@ class Calibrations extends Controller
                 'torque' => $temp,
                 'max-torque' => $max_torque,
                 'min-torque' => $min_torque,
-<<<<<<< HEAD
                 'avg_torque' => $avg_torque
-=======
-                'avg-torque' => $avg_torque
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
             ]
         );
     
@@ -168,22 +160,6 @@ class Calibrations extends Controller
         // 獲取 cookie 中的 skipTurnRev 的值
         $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 0;
 
-    
-        // 獲取 cookie 中的 implement_count 的值
-        $implement_count = isset($_COOKIE['implement_count']) ? intval($_COOKIE['implement_count']) : 0;
-    
-        // 計算總數
-        $total_count = intval($count) + intval($implement_count);
-    
-        // 檢查總數是否超過或等於當前計數
-       /* if ($total_count >= $count) {
-            // 如果未顯示過消息，則顯示並設置標誌
-            if (!isset($_SESSION['count_limit_reached'])) {
-                echo json_encode(array('success' => false, 'message' => '總計數超過或等於當前計數。操作無法繼續。'));
-                $_SESSION['count_limit_reached'] = true; // 設置標誌
-                return;
-            }
-        }*/
 
         
     
@@ -220,10 +196,8 @@ class Calibrations extends Controller
         $tools_sn = $this->CalibrationModel->get_tools_sn();
     
         // 如果清理後的數據數組不為空
-        var_dump($cleanedDataArray);//die();
         if (!empty($cleanedDataArray)) {
             $lastValue = end($cleanedDataArray); 
-<<<<<<< HEAD
             $final_val = $lastValue;    
 
             $trimmedFinal = trim($final_val);
@@ -234,22 +208,28 @@ class Calibrations extends Controller
                 $finalNumber = $trimmedFinal;
             }
 
-            //轉換福點數
+
+
+            //轉換浮點數
             $final = floatval($finalNumber);
+
+
+            // 删除文件的计数器
+            $unlinkCount = 0;
+
             if($skipTurnRev == 1){
 
                 // $final  小於 0 
                 if ($final < 0) {
                     unlink($file_path);
+                    $unlinkCount++;
+
                     echo json_encode(array('success123' => false, 'message' => '檔案已刪除，因為 final 值為負'));
                     return; // 終止後續程式動作
                 }
             }
             
 
-=======
-            $final = $lastValue;             
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
             // 整理數據
             $res = $this->CalibrationModel->tidy_data($final, $tools_sn);
     
@@ -265,6 +245,7 @@ class Calibrations extends Controller
                     'message' => '未找到數據'
                 );
             }
+            
             // 刪除文件
             unlink($file_path);
             echo json_encode($response);
@@ -273,8 +254,7 @@ class Calibrations extends Controller
         }
     }
 
-  
-
+    
     public function get_data() {
         $job_id = 221;
         if ($job_id) {
@@ -556,12 +536,7 @@ class Calibrations extends Controller
 
         $input = file_get_contents('php://input');
         $data = json_decode($input, true);
-<<<<<<< HEAD
         if (isset($data['target_q'], $data['rpm'], $data['joint_offset'],$data['tolerance'])) {
-=======
-
-        if (isset($data['target_q'], $data['rpm'], $data['joint_offset'])) {
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
 
             $controller_ip = $this->EquipmentModel->GetControllerIP(1);
             require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
@@ -658,11 +633,8 @@ class Calibrations extends Controller
             session_start(); 
         }
         
-<<<<<<< HEAD
 
 
-=======
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         if (isset($_POST['torqueMeter']) && isset($_POST['controller'])) {
             
             // 清理不必要的 Session 資料，避免 Session 資料過多
@@ -712,11 +684,6 @@ class Calibrations extends Controller
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to stop Node.js application.']);
         }
-    }
-
-    public function test_temp(){
-        $dataset = $this->CalibrationModel->get_last_record();
-        var_dump($dataset);die();
     }
 
 

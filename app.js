@@ -1,7 +1,6 @@
 
 //需要執行這段指令
 //npm install express cookie-parser serialport fs
-//20241007-update -22
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -37,9 +36,7 @@ async function writeToFile(asciiData) {
     console.log("目錄路徑:", dirPath);
     console.log("文件路徑:", filePath);
     console.log("當前工作目錄:", dirName);
-    //console.log("程式碼所在目錄:", __dirname);
-
-
+  
     await fs.promises.mkdir(dirPath, { recursive: true });
 
     try {
@@ -80,30 +77,13 @@ async function connectComPort(port, baudRate, dataBits, stopBits, parity) {
                 const asciiData = Buffer.from(Ans, 'hex').toString('ascii');
                 console.log("數據的十六進制表示:", hexData);
                 console.log("轉換為 ASCII:", asciiData);
-                console.log("test:", slicedData);
-
-
+            
                 //取得 是正轉 還是 反轉 
                 const result = hexData.substring(12, 14);
                 const asciiValue = String.fromCharCode(parseInt(result, 16));
-                //
-
-                //取得 是正轉 還是 反轉 
-                const result = hexData.substring(12, 14);
-                const asciiValue = String.fromCharCode(parseInt(result, 16));
-                //
-
                 if (asciiData) {
-
                     const combinedValue = `${asciiValue} ${asciiData}`.replace(/\s+/g, ' ').trim();
-
-
                     console.log("準備寫入的 ASCII 數據:", asciiData);
-<<<<<<< HEAD
-                    //console.log("test:", combinedValue);
-=======
-                    console.log("test:", combinedValue);
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
                     await writeToFile(combinedValue);
                 }
 
