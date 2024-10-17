@@ -30,11 +30,17 @@ class Calibrations extends Controller
 
         
         $ktm = $this->CalibrationModel->details('torquemeter');
-       
-      
+
         $job_id = 221;
 
         $echart_data = $this->CalibrationModel->datainfo_search($job_id);
+
+
+        $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 1;
+        
+
+        $avg = $this->CalibrationModel->get_last_record();
+
         $meter = $this->val_traffic();
         if(!empty($echart_data)){
             #整理圖表所需要的資料
@@ -64,7 +70,9 @@ class Calibrations extends Controller
         if(empty($_SESSION['torqueMeter'])){
             $_SESSION['torqueMeter'] = 0;
         }
-        
+
+        $last_item = end($info);
+
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
@@ -78,7 +86,10 @@ class Calibrations extends Controller
             'count' =>$count,
             'torque_type ' => $torque_type,
             'tools_sn' => $tools_sn['device_sn'],
-            'current_torquemeter' => $ktm[$_SESSION['torqueMeter']]
+            'avg_torque' => $last_item['avg_torque'],
+            'current_torquemeter' => $ktm[$_SESSION['torqueMeter']],
+            'user' => $_SESSION['user'],
+            'skipTurnRev' => $skipTurnRev
             
         );
 
@@ -93,7 +104,7 @@ class Calibrations extends Controller
         $echart_data = $this->CalibrationModel->datainfo_search($job_id);
 
         $temp = $info;
-      
+        $avg_torque = $this->CalibrationModel->get_last_record();
 
         $temp = array_map(function($item) {
             return ['torque' => $item['torque']];
@@ -121,14 +132,14 @@ class Calibrations extends Controller
             'meter' => [
                 'torque' => $temp,
                 'max-torque' => $max_torque,
-                'min-torque' => $min_torque
+                'min-torque' => $min_torque,
+                'avg_torque' => $avg_torque
             ]
         );
     
         echo json_encode($combinedData);
     }
 
-    
     public function get_val() {
 
         
@@ -144,6 +155,11 @@ class Calibrations extends Controller
         } else {
             $count = 0;
         }
+
+
+        // 獲取 cookie 中的 skipTurnRev 的值
+        $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 0;
+
     
         // 獲取 cookie 中的 implement_count 的值
         $implement_count = isset($_COOKIE['implement_count']) ? intval($_COOKIE['implement_count']) : 0;
@@ -186,19 +202,42 @@ class Calibrations extends Controller
         // 清理文件內容
         foreach ($fileContent as $data) {
             $cleanedData = trim($data); 
-            if (is_numeric($cleanedData)) { 
-                $cleanedDataArray[] = $cleanedData;
+
+            if (preg_match('/^[+-]?(\s*\d+(\.\d+)?|\s+\d+(\.\d+)?)$/', $cleanedData)) {
+                $cleanedDataArray[] = trim(str_replace(' ', '', $cleanedData)); 
             }
         }
-    
+
         // 獲取工具序列號
         $tools_sn = $this->CalibrationModel->get_tools_sn();
-        
+    
         // 如果清理後的數據數組不為空
+        var_dump($cleanedDataArray);//die();
         if (!empty($cleanedDataArray)) {
             $lastValue = end($cleanedDataArray); 
-            $final = (float)$lastValue; 
+            $final_val = $lastValue;    
+
+            $trimmedFinal = trim($final_val);
+            //使用正規化 移除 "+"
+            if (preg_match('/\+/', $trimmedFinal)) {
+                $finalNumber = preg_replace('/\+/', '', $trimmedFinal);
+            } else {
+                $finalNumber = $trimmedFinal;
+            }
+
+            //轉換福點數
+            $final = floatval($finalNumber);
+            if($skipTurnRev == 1){
+
+                // $final  小於 0 
+                if ($final < 0) {
+                    unlink($file_path);
+                    echo json_encode(array('success123' => false, 'message' => '檔案已刪除，因為 final 值為負'));
+                    return; // 終止後續程式動作
+                }
+            }
             
+
             // 整理數據
             $res = $this->CalibrationModel->tidy_data($final, $tools_sn);
     
@@ -221,6 +260,8 @@ class Calibrations extends Controller
             echo json_encode(array('success' => false, 'message' => '未找到有效數據'));
         }
     }
+
+  
 
     public function get_data() {
         $job_id = 221;
@@ -503,7 +544,7 @@ class Calibrations extends Controller
 
         $input = file_get_contents('php://input');
         $data = json_decode($input, true);
-        if (isset($data['target_q'], $data['rpm'], $data['joint_offset'])) {
+        if (isset($data['target_q'], $data['rpm'], $data['joint_offset'],$data['tolerance'])) {
 
             $controller_ip = $this->EquipmentModel->GetControllerIP(1);
             require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
@@ -513,23 +554,50 @@ class Calibrations extends Controller
                 $modbus->timeout_sec = 10;
 
                 $data['target_q'] = (int)((float)$data['target_q'] * 100);
+
+                $percentage = $data['tolerance'] / 100; 
+
+                $lower_limit = $data['target_q']  - ($data['target_q']  * $percentage); //下限
+                $upper_limit = $data['target_q']  + ($data['target_q']  * $percentage); // 上限
+
+
+                //如果 $data['joint_offset'] = +0.02 or -0.06  
+                if (preg_match('/([+-]?)(\d*\.?\d+)/', $data['joint_offset'], $matches)) {
+
+                    $sign = $matches[1];   // 取正負號
+                    $number = $matches[2]; // 取數字 
+
+                    if( $sign == '+'){
+                        $data_sign = array(0);
+                    }else{
+                        $data_sign = array(1);
+                    }
+
+                   
+                }
+
+                $number_val = (int)((float) $number * 100);
       
 
                 $data_targqt_q = array(0,$data['target_q']);
                 $data_rpm = array($data['rpm']);
-                $data_offset = array($data['joint_offset']);
+                $data_offset = array($number_val);
+
+                $lower_limit_arr = array(0,$lower_limit);
+                $upper_limit_arr = array(0,$upper_limit);
                 $data_job = array(221);
                 $data_open = array(1);
 
-                
-
                 $dataTypes = array("INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT");
 
-                $modbus->writeMultipleRegister(0, 1135, $data_open, $dataTypes);
-                $modbus->writeMultipleRegister(0, 1147, $data_targqt_q, $dataTypes);
-                $modbus->writeMultipleRegister(0, 1152, $data_offset, $dataTypes);
-                $modbus->writeMultipleRegister(0, 1151, $data_rpm, $dataTypes);
-                $modbus->writeMultipleRegister(0, 463, $data_job, $dataTypes);
+                $modbus->writeMultipleRegister(0, 1135, $data_open, $dataTypes); // 進階開啟
+                $modbus->writeMultipleRegister(0, 1147, $data_targqt_q, $dataTypes); //目標扭力
+                $modbus->writeMultipleRegister(0, 1151, $data_rpm, $dataTypes); //轉速
+                $modbus->writeMultipleRegister(0, 1152, $data_sign, $dataTypes); //補償值
+                $modbus->writeMultipleRegister(0, 1153, $data_offset, $dataTypes); //補償值(只有數值)
+                $modbus->writeMultipleRegister(0, 1155, $upper_limit_arr, $dataTypes); //上限
+                $modbus->writeMultipleRegister(0, 1157, $lower_limit_arr, $dataTypes); //下限
+                $modbus->writeMultipleRegister(0, 463, $data_job, $dataTypes); //切換job
 
 
                 echo $modbus->status;
@@ -573,10 +641,6 @@ class Calibrations extends Controller
         }
         
 
-        echo "ewwer";
-        echo "<pre>";
-        print_r($_POST);
-        echo "</pre>";
 
         if (isset($_POST['torqueMeter']) && isset($_POST['controller'])) {
             
@@ -626,6 +690,28 @@ class Calibrations extends Controller
             echo json_encode(['success' => true, 'message' => 'Node.js application stopped successfully.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to stop Node.js application.']);
+        }
+    }
+
+
+    public function get_session_now() {
+
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start(); 
+        }
+    
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (isset($_POST['skipTurnRev'])) {
+                $_SESSION['skipTurnRev'] = $_POST['skipTurnRev']; // 将值存入 session
+                echo "Session set to: " . $_SESSION['skipTurnRev']; // 返回消息
+            }
+        }else{
+            echo "eewe";
+        }
+        
+        // 输出 session 值
+        if (isset($_SESSION['skipTurnRev'])) {
+            echo "Current session value: " . $_SESSION['skipTurnRev'];
         }
     }
 

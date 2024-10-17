@@ -156,10 +156,11 @@
                 <button class="btn" id="back-btn" type="button" onclick="backSetting()">
                     <img id="img-back" src="./img/back.svg" alt=""><?php echo $text['Back_text']; ?>
                 </button>
-
+                
                 <button class="btn" id="export-report" type="button" onclick="openModal('Export_Report')"><?php echo $text['Export_text'];?></button>
-                <!--<button class="btn" id="export-chart" type="button" onclick="openModal('Export_Chart')">Export Chart</button>-->
                 <button class="btn" id="export-excel" type="button"  onclick="window.location.href = '?url=Calibrations/export_excel';"><?php echo $text['Export_Report_text'];?></button>
+                <button class="btn" id="export-report" type="button" onclick="undo()"><?php echo $text['Undo_text'];?></button>
+       
             </div>
         </div>
 
@@ -187,15 +188,11 @@
 
                 <div class="w3-center" style="font-size: 18px; color: #000"><?php echo $text['Instant_data_setting_text'];?></div>
                 <div class="border-bottom">
+                    
                     <div class="row t1" style="padding-left: 3%">
                         <div class="col t1 form-check form-check-inline">
-                            <input class="t1 form-check-input" type="checkbox" checked="checked" name="auto-record" id="auto-record" value="1" style="zoom:1.0; vertical-align: middle;">&nbsp;&nbsp;
-                            <label class="t1 form-check-label" for="auto-record"><?php echo $text['Auto_Record_text'];?></label>
-                        </div>
-                    </div>
-                    <div class="row t1" style="padding-left: 3%">
-                        <div class="col t1 form-check form-check-inline">
-                            <input class="t1 form-check-input" type="checkbox" checked="checked" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;">&nbsp;&nbsp;
+                        
+                            <input class="t1 form-check-input" type="checkbox" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxSession()" >
                             <label class="t1 form-check-label" for="skip-turn-rev"><?php echo $text['Skip_Turn_Rev_text'];?></label>
                         </div>
                     </div>
@@ -213,43 +210,46 @@
                 <div class="row t1">
                     <div class="col-7 t1"><b><?php echo $text['Target_Torque_text'];?></b></div>
                     <div class="col-4 t1">
-                        <input id="standard-torque" type="text" class="t2 form-control">
+                        <input id="current_tarque" type="text" class="t2 form-control">
                     </div>
                 </div>
 
                 <div class="row t1">
                     <div class="col-7 t1"><b><?php echo $text['Tolerance_text'];?>(+/- %)</b></div>
                     <div class="col-4 t1">
-                        <input id="tolerance" type="text" class="t2 form-control" value="+ 0.5">
+                        <input id="tolerance" type="text" class="t2 form-control" value="">
                     </div>
                 </div>
 
+                <div class="row t1">
+                    <div class="col-7 t1"><b><?php echo $text['Joint_Offset_text'];?></b></div>
+                    <div class="col-4 t1">
+                        <input id="current_offset" type="text" class="t2 form-control" value="">
+                    </div>
+                </div>
+
+                <div class="row t1">
+                    <div class="col-7 t1"><b><?php echo $text['RPM_text'];?></b></div>
+                    <div class="col-4 t1">
+                        <input id="current_rpm" type="text" class="t2 form-control" value="">
+                    </div>
+                </div>
+
+                <div class="row t1" style="display: flex; justify-content: flex-end; margin-top: 15px;">
+                    <button class="btn" id="export-report" type="button" onclick="current_save()"><?php echo $text['Save_text'];?></button>
+                </div>
+
+
+
+
+              
             
             </div>
 
 
             <!-- Right -->
             <div class="column column-right">
-                <div id="column-right-header">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text"><?php echo $text['Target_Q_text'];?>:</span>
-                        <input type="text" id= 'current_tarque'  name='current_tarque' class="form-control" style="margin-right: 5px">
-
-                        <span class="input-group-text"><?php echo $text['RPM_text'];?>:</span>
-                        <input type="text" id= 'current_rpm'  name= 'current_rpm'  class="form-control" style="margin-right: 5px">
-
-                        <span class="input-group-text"><?php echo $text['Joint_Offset_text'];?>:</span>
-                        <input type="text" id= 'current_offset'  name= 'current_offset'  class="form-control" style="margin-right: 5px">
-
-                        <button id="Save-btn" type="button" class="btn-save-reset-undo" onclick='current_save()' style="margin-right: 5%"><?php echo $text['Save_text'];?></button>
-                        <!--<button id="Reset" type="button" class="btn-save-reset-undo"><?php echo $text['Reset_text']."_1";?></button>-->
-                        <button id="Undo" type="button" class="btn-save-reset-undo" onclick="undo()" ><?php echo $text['Undo_text'];?></button>
-
-                        <span class="input-group-text"><?php echo $text['Time_text'];?>:</span>
-                        <input type="text" class="form-control">
-                    </div>
-                </div>
-
+                
                 <div id="table-setting">
                     <div class="scrollbar-table" id="style-table">
                         <div class="force-overflow-table">
@@ -325,25 +325,25 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Target_Torque_text'];?>:</div>
                                         <div class="col-5 t1">
-                                            <input id="target-torque" type="text" class="t2 form-control" value="0.6">
+                                            <input id="target-torque" type="text" class="t2 form-control" value="">
                                         </div>
                                     </div>
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Bias_text'];?> (+/-%):</div>
                                         <div class="col-5 t1">
-                                            <input id="bias" type="text" class="t2 form-control" value="10">
+                                            <input id="bias" type="text" class="t2 form-control" value="">
                                         </div>
                                     </div>
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Hi_Q_text'];?>:</div>
                                         <div class="col-5 t1">
-                                            <input id="high-limit-torque" type="text" class="t2 form-control" value="<?php echo htmlspecialchars($data['meter']['hi_limit_torque'] ?? '', ENT_QUOTES); ?>">
+                                            <input id="high-limit-torque" type="text" class="t2 form-control" value="">
                                         </div>
                                     </div>
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Lo_Q_text'];?>:</div>
                                         <div class="col-5 t1">
-                                            <input id="low-limit-torque" type="text" class="t2 form-control" value="<?php echo !empty($data['meter']['low_limit_torque']) ? $data['meter']['low_limit_torque'] : ''; ?>">
+                                            <input id="low-limit-torque" type="text" class="t2 form-control" value=" ">
                                         </div>
                                     </div>
                                     <div class="row t1">
@@ -361,7 +361,7 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Avg_Torque_text'];?></div>
                                         <div class="col-5 t1">
-                                            <input id="avg_torque" type="text" class="t2 form-control" value="<?php echo !empty($data['meter']['avg_torque']) ? $data['meter']['avg_torque'] : ''; ?>">
+                                            <input id="avg-torque" type="text" class="t2 form-control" value="<?php echo $data['avg_torque']; ?> ">
                                         </div>
                                     </div>
                                     <div class="row t1">
@@ -470,10 +470,9 @@
 <script>
 let lastData = null; 
 var myChart; 
-
 $(document).ready(function() {
     fetchLatestInfo();
-    setInterval(fetchLatestInfo, 10000); // 每 10 秒更新
+    setInterval(fetchLatestInfo, 1000); // 每 1 秒更新
    
 });
 
@@ -507,8 +506,6 @@ function NextToAnalysisSystemKTM() {
     const torqueMeter = document.getElementById('TorqueMeter').value;
     const controller = document.getElementById('controller_info').value;
 
-    console.log('Selected Torque Meter ID:', torqueMeter);
-    console.log('Selected Controller ID:', controller);
     
     $.ajax({
         url: '?url=Calibrations/saveSessionData', 
@@ -541,7 +538,6 @@ function NextToAnalysisSystemKTM() {
         'KTM-6',
         'KTM-150',
         'KTM-250',
-        'kKTM-100'
     ];
 
     // 显示分析系统KTM
@@ -718,18 +714,26 @@ function updateCookie(name, value, days) {
 
 
 function current_save() {
- 
+    
     let targetQ = document.getElementById('current_tarque').value;
     const rpm = document.getElementById('current_rpm').value;
     const offset = document.getElementById('current_offset').value;
+    const tolerance = document.getElementById('tolerance').value;
 
-    //const standardTorque = document.getElementById('standard-torque').value;
+    let percentage = tolerance / 100; 
+    let temp = targetQ  * percentage ;
+    let upper_limit = Number(targetQ) + Number(temp); 
+    let lower_limit = Number(targetQ) - Number(temp); 
 
-    //targetQ = standardTorque;
+
+
     const data = {
-        target_q: targetQ,
-        rpm: rpm,
-        joint_offset: offset
+        target_q: targetQ,  //目標扭力
+        rpm: rpm,           // 轉速
+        joint_offset: offset, //扭力補償值
+        tolerance: tolerance  //誤差範圍
+
+
     };
 
    $.ajax({
@@ -738,10 +742,15 @@ function current_save() {
         contentType: "application/json",
         data: JSON.stringify(data),
         success: function(response) {
-            //alert('保存成功！');
+   
             console.log('Success:', response);
+          
+            document.getElementById('target-torque').value = targetQ;
+            document.getElementById('high-limit-torque').value = upper_limit;
+            document.getElementById('low-limit-torque').value = lower_limit;
+            document.getElementById('bias').value = tolerance;
 
-            document.getElementById('standard-torque').value = targetQ;
+
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
@@ -774,7 +783,6 @@ function undo() {
 
 
 async function fetchData() {
-    //const url1 = 'http://192.168.0.161/imasstg/public/index.php?url=Calibrations/get_val';
     const url1 = '?url=Calibrations/get_val';
     try {
         
@@ -784,24 +792,23 @@ async function fetchData() {
 
         if (response1.ok) {
             const data = await response1.json(); 
-            console.log('API 返回:', data);
+            //console.log('API 返回:', data);
             //document.getElementById('result').innerText = JSON.stringify(data, null, 2); 
         } else {
-            console.error('请求失败，状态码:', response1.status);
+            //console.error('请求失败，状态码:', response1.status);
             //document.getElementById('result').innerText = '请求失败，状态码: ' + response1.status;
         }
 
     
     } catch (error) {
-        console.error('发生错误:', error);
+        //console.error('发生错误:', error);
         //document.getElementById('result').innerText = '发生错误: ' + error.message;
         //document.getElementById('datainfo').innerHTML = '发生错误: ' + error.message;
     }
 }
 
-// 每 3 秒调用一次 fetchData
-
-setInterval(fetchData, 3000);
+// 每 0.5 秒调用一次 fetchData
+setInterval(fetchData, 500);
 fetchData();
 
 function fetchLatestInfo() {
@@ -826,8 +833,12 @@ function fetchLatestInfo() {
             //console.log(data.meter);
 
             //更新最大和最小扭力值
-            $('#max-torque').val(data.meter['max-torque'].torque); // 获取 max-torque 的值
-            $('#min-torque').val(data.meter['min-torque'].torque); // 获取 min-torque 的值
+            $('#max-torque').val(data.meter['max-torque'].torque); // 取得 max-torque 的值
+            $('#min-torque').val(data.meter['min-torque'].torque); // 取得 min-torque 的值
+
+            //更新扭力平均值//avg_torque
+            $('#avg_torque').val(data.meter['avg_torque'].torque);
+
         },
         error: function() {
             console.log('Error loading data');
@@ -946,6 +957,67 @@ function renderChart(x_val, y_val) {
 
     myChart.setOption(option, true); 
 }
+
+
+let needsRefresh = false; 
+
+function setCheckboxSession() {
+    const checkbox = document.getElementById('skip-turn-rev');
+    const isChecked = checkbox.checked ? '1' : '0';
+
+    const expirationDays = 7;
+    const d = new Date();
+    d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + d.toUTCString();
+    
+    document.cookie = "skipTurnRev=" + isChecked + ";" + expires + ";path=/";
+
+    // 更新其他需要显示或隐藏的元素的状态
+    if (isChecked === '1') {
+        document.getElementById('analysis-system-KTM').style.display = 'block';
+        document.getElementById('Torque-Collection').style.display = 'none';
+    } else {
+        document.getElementById('analysis-system-KTM').style.display = 'none';
+        document.getElementById('Torque-Collection').style.display = 'block';
+    }
+}
+
+window.onload = function() {
+    document.getElementById('tolerance').value = 10;
+    document.getElementById('bias').value = 10;
+    
+    const checkbox = document.getElementById('skip-turn-rev');
+
+    if (!document.cookie.includes('skipTurnRev=')) {
+        const expirationDays = 7;
+        const d = new Date();
+        d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + d.toUTCString();
+        
+        document.cookie = "skipTurnRev=1;" + expires + ";path=/";
+        checkbox.checked = true; 
+    } else {
+        checkbox.checked = document.cookie.includes('skipTurnRev=1');
+    }
+
+    // 根据复选框的状态显示或隐藏相关元素
+    if (checkbox.checked) {
+        document.getElementById('analysis-system-KTM').style.display = 'block';
+        document.getElementById('Torque-Collection').style.display = 'none';
+    } else {
+        document.getElementById('analysis-system-KTM').style.display = 'none';
+        document.getElementById('Torque-Collection').style.display = 'block';
+    }
+};
+
+
+
+document.getElementById('tolerance').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const toleranceValue = this.value; 
+        document.getElementById('bias').value = toleranceValue; 
+    }
+});
 
 </script>
 

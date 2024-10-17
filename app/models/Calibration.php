@@ -29,8 +29,7 @@ class Calibration{
             $details = array(
                 0 => 'KTM-6',
                 1 => 'KTM-150',
-                2 => 'KTM-250',
-                3 => 'kKTM-100'
+                2 => 'KTM-250'
 
             );
 
@@ -379,22 +378,21 @@ class Calibration{
         return $result;
     }
 
-    /*public function get_count(){
 
-        $sql_count     = "SELECT COUNT(*) AS total_records FROM calibrations";
-        $stmt_count    = $this->db->query($sql_count);
-        $result_count  = $stmt_count->fetch(PDO::FETCH_ASSOC);
-        $total_records = $result_count['total_records'];    
+    public function get_last_record() {
+        $sql = "SELECT  avg_torque    FROM calibrations ORDER BY id desc limit 1 "; 
+        $statement = $this->db->prepare($sql);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC); 
 
-        $implement_count = isset($_COOKIE['implement_count']) ? intval($_COOKIE['implement_count']) : 0;
-
-        return [
-            'total_records' => $total_records,
-            'implement_count' => $implement_count,
-        ];
-    }*/
-    
-    
-    
+        if(!empty($result)){
+            $avg = $result['avg_torque'];
+            $avg = number_format($avg, 2, '.', '');
+        }else{
+            $avg = '';
+        }
+        return $avg;        
+    }
     
 }
