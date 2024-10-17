@@ -1182,27 +1182,22 @@ addMessage();
 <?php } ?>
 
 <?php if ($path == "nextinfo" && isset($data['chart_info']['chat_mode']) && $data['chart_info']['chat_mode'] == "6") { ?>
-
     <script>
         var myChart = echarts.init(document.getElementById('chartinfo'));
-        var x_data_val = <?php echo $data['chart_info']['x_val']; ?>; // X轴数据
-        var y_data_val = <?php echo $data['chart_info']['y_val']; ?>; // Y轴1 (torque) 数据
-        var y_data_val_1 = <?php echo $data['chart_info']['y_val_1']; ?>; // Y轴2 (angle) 数据
 
-        var max_val = <?php echo $data['chat_y_max_val']; ?>; // Y轴1的上限
-        var min_val = <?php echo $data['chat_y_min_val']; ?>; // Y轴1的下限
+        var x_data_val = <?php echo $data['chart_info']['x_val']; ?>; // X軸
+        var y_data_val = <?php echo $data['chart_info']['y_val']; ?>; // Y軸1(torque)
+        var y_data_val_1 = <?php echo $data['chart_info']['y_val_1']; ?>; // Y軸2(angle)
 
-        var max_val_1 = <?php echo $data['chart_info']['max1']; ?>; // Y轴2的上限
-        var min_val_1 = <?php echo $data['chart_info']['min1']; ?>; // Y轴2的下限
-        
-        
+        var max_val = <?php echo $data['chat_y_max_val']; ?>; // Y軸1的上限
+        var min_val = <?php echo $data['chat_y_min_val']; ?>; // Y軸1的下限
+
+        var max_val_1 = <?php echo $data['chart_info']['max1']; ?>; // Y軸2的上限
+        var min_val_1 = <?php echo $data['chart_info']['min1']; ?>; // Y軸2的上限
+
         var option = {
-            grid: {
-                left: '10%',
-                right: '10%',
-                top: '15%',
-                bottom: '15%'
-            },
+            grid: GridConfig.generate('90%', '70%', '3%', '20%'),
+
             tooltip: {
                 trigger: 'axis',
                 position: function (pt) {
@@ -1215,7 +1210,8 @@ addMessage();
                         '<span style="color:' + angleColor + '">Angle: ' + params[1].value + '</span>';
                 }
             },
-            title: {left: 'center', text: ''},
+
+            title: {left: 'center',text: ''},
             xAxis: {
                 type: 'category',
                 boundaryGap: false,
@@ -1231,10 +1227,9 @@ addMessage();
                     min: min_val,
                     max: max_val,
                     alignTicks: true, 
-                    scale: true,
-                    axisLabel: {
+                     axisLabel: {
                         formatter: function (value) {
-                           return Math.ceil(value * 10) / 10;
+                           return value === 0 ? '0' : value.toFixed(1);
                         }
                     }
                 },
@@ -1243,6 +1238,7 @@ addMessage();
                     name: 'Angle',
                     min: min_val_1,
                     max: max_val_1,
+                    alignTicks: true,
                     axisLabel: {
                         formatter: function (value) {
                            return parseFloat(value).toFixed(0);
@@ -1250,15 +1246,15 @@ addMessage();
                     }
                 }
             ],
-            dataZoom: [{ // 添加 dataZoom 配置，允许缩放
-                type: 'inside'
-            }],
+            dataZoom: generateDataZoom(), //曲線圖縮放
+
             series: [
                 {
                     name: 'Torque',
                     type: 'line',
                     yAxisIndex: 0,
                     symbol: 'none',
+                    sampling: 'average',
                     itemStyle: {
                         color: 'rgb(255,0,0)'
                     },
@@ -1270,6 +1266,7 @@ addMessage();
                     type: 'line',
                     yAxisIndex: 1,
                     symbol: 'none',
+                    sampling: 'average',
                     itemStyle: {
                         color: 'rgb(44,55,82)'
                     },
@@ -1279,7 +1276,21 @@ addMessage();
             ]
         };
 
-        // 设置图表选项
+        
+        //第一條曲線的上下限
+        if (limit_val == 1) {
+            option.series.push({
+                type: 'line',
+                markLine: {
+                    symbol: 'none',
+                    data: [
+                        { yAxis: min_val,name: '',label: {position: 'middle',formatter: 'low torque'},lineStyle: { type: 'dashed', color: 'rgb(255, 0, 0)' } }, 
+                        { yAxis: max_val,name: '',label: {position: 'middle',formatter: 'high torque'}, lineStyle: { type: 'dashed', color: 'rgb(255, 0, 0)' } }
+                    ]
+                }
+            });
+        }
+
         myChart.setOption(option);
     </script>
 <?php }?>
