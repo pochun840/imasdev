@@ -1234,7 +1234,7 @@ addMessage();
                     scale: true,
                     axisLabel: {
                         formatter: function (value) {
-                           return value.toFixed(1);
+                           return Math.ceil(value * 10) / 10;
                         }
                     }
                 },
