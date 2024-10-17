@@ -28,25 +28,16 @@ class Calibrations extends Controller
         $torque_type = $this->CalibrationModel->details('torque');
         $tools_sn = $this->CalibrationModel->get_tools_sn();
         $ktm = $this->CalibrationModel->details('torquemeter');
-<<<<<<< HEAD
-
-=======
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         $job_id = 221;
 
         $echart_data = $this->CalibrationModel->datainfo_search($job_id);
 
-<<<<<<< HEAD
 
         $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 1;
         
 
         $avg = $this->CalibrationModel->get_last_record();
 
-=======
-        //取得最後一筆的平均扭力
-        $avg_torque = $this->CalibrationModel->get_last_record();
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         $meter = $this->val_traffic();
         if(!empty($echart_data)){
             #整理圖表所需要的資料
@@ -77,17 +68,8 @@ class Calibrations extends Controller
             $_SESSION['torqueMeter'] = 0;
         }
 
-<<<<<<< HEAD
         $last_item = end($info);
 
-=======
-
-        echo "<pre>";
-        print_r($_COOKIE);
-        echo "</pre>";
-        
-        
->>>>>>> acda40078e3e8a08c55084eb7275228b00c162c5
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
