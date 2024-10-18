@@ -143,20 +143,21 @@
                             <label><i></i></label>
                         </div>
                     </div>
-                    <div class="row t1" style="padding-bottom: 2%">
+                    <div class="row t1" style="">
                         <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Seq_Selection_Access_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="switch_seq" type="checkbox" <?php if($data['button_auth']['switch_seq']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                     </div>
-                    <div class="row t1">
-                        <div class="col-4 t3" style="padding-left: 0%; font-weight: bold"><?php echo $text['Stop_On_NG_text']; ?>:</div>
+                    <div class="row t1" style="">
+                        <div class="col-4 t2" style="padding-left: 5%"><?php echo $text['Stop_On_NG_text']; ?>:</div>
                         <div class="switch menu col-3 t4">
                             <input id="stop_on_ng" type="checkbox" <?php if($data['button_auth']['stop_on_ng']){ echo 'checked';} ?>>
                             <label><i></i></label>
                         </div>
                     </div>
+                   
 
                     <div class="t1">
                         <div class="col-3 t2" style="font-weight: bold;margin-top: 15px"><?php echo $text['Sensor_Enable_Step_text']; ?>:</div>

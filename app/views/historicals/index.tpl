@@ -1143,28 +1143,17 @@ addMessage();
     };
 
     
-    //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
-
-   
-    if ((x_title === "Time(MS)" && (y_title === "Power" || y_title === "RPM")) ||chat_mode == 2) {
+    //只有chat_mode = 1 && 5 需要設置曲線圖的上下限
+    if (chat_mode == 2 || chat_mode == 3 || chat_mode == 4) {
         document.cookie = "limit_val=" + limit_val + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
         var limit_val = 0;
     }
-    
+     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
     if ( limit_val == 1) {
-        
-        if(x_title  == "Time(MS)" && y_title =="Angle"){
-            var t1 = 'low angle';
-            var t2 = 'high angle';
-        }else{
-            var t1 = 'low torque';
-            var t2 = 'high torque';
-        }
-
         option.series[0].markLine = {
             data: [
-                {yAxis: min_val, name: '',label: {position: 'middle',formatter: t1}}, 
-                {yAxis: max_val, name: '',label: {position: 'middle',formatter: t2}}  
+                {yAxis: min_val, name: '',label: {position: 'middle',formatter: 'low torque'}}, 
+                {yAxis: max_val, name: '',label: {position: 'middle',formatter: 'high torque'}}  
             ],
             symbol: 'none',
             lineStyle: {
@@ -1612,20 +1601,6 @@ addMessage();
                     lineStyle: { width: 0 },
                     yAxisIndex: 0
                 });
-
-                /*option.series.push({
-                    name: 'Angle Limits',
-                    type: 'line',
-                    markLine: {
-                        data: [
-                            { yAxis: overallAngleMin, name: 'Low Angle', label: { position: 'middle', formatter: 'Low Angle' }, lineStyle: { type: 'dashed', color: 'rgb(0, 0, 255)' } },
-                            { yAxis: overallAngleMax, name: 'High Angle', label: { position: 'middle', formatter: 'High Angle' }, lineStyle: { type: 'dashed', color: 'rgb(0, 0, 255)' } }
-                        ],
-                        symbol: 'none'
-                    },
-                    lineStyle: { width: 0 },
-                    yAxisIndex: 1
-                });*/
             }
 
             myChart_combine.setOption(option);
@@ -1786,17 +1761,5 @@ function reportWindowSize() {
 }
 
 window.onresize = reportWindowSize;
-
-
-function check_limit11(x_title,y_title){
-
-
-    // 這裡檢查 x_title 和 y_title 的值
-    if (x_title == "Time(MS)" && y_title == "Power") {
-        limit_val = '0'; // 強制設置 limit_val 為 '0'
-    }
-
-
-}
 
 </script>

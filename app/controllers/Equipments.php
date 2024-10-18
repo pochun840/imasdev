@@ -536,24 +536,16 @@ class Equipments extends Controller
         // 构建命令行
         $cmd = "node $nodeScript $comPort"; 
 
-        //echo $cmd;die();
-    
-        // 执行命令并捕获输出
-        $output = shell_exec($cmd . " 2>&1"); 
-    
-        if ($output === null) {
-            echo json_encode(array('error' => 'Failed to execute command.'));
-            exit();
-        }
-    
-        // 可以在此处添加逻辑以检查输出中的错误信息
-        if (strpos($output, 'Error:') !== false) {
-            echo json_encode(array('error' => 'An error occurred: ' . $output));
-            exit();
-        }
+        // 打开一个管道以非阻塞模式执行命令
+        $process = popen("start /B $cmd", "w");
+
+        // 关闭管道
+        pclose($process);
+
+        sleep(3);
     
         $message = "嘗試開啟服務";
-        echo json_encode(array('result' => $message, 'service_status' => 'yes', 'output' => trim($output)));
+        echo json_encode(array('result' => $message, 'service_status' => 'yes'));
         exit();
     }
     
