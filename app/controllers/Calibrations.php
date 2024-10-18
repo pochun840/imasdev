@@ -5,6 +5,7 @@ class Calibrations extends Controller
     private $DashboardModel;
     private $NavsController;
     private $mean;
+    private $SettingsController; 
 
     // 在建構子中將 Post 物件（Model）實例化
     public function __construct()
@@ -14,6 +15,7 @@ class Calibrations extends Controller
         $this->UserModel = $this->model('User');
         $this->CalibrationModel = $this->model('Calibration');
         $this->EquipmentModel = $this->model('Equipment');
+        $this->SettingsController = $this->controller_new('Settings'); 
     }
 
     // 取得所有Jobs
@@ -26,7 +28,16 @@ class Calibrations extends Controller
 
         $job_arr = $this->CalibrationModel->getjobid();
         $torque_type = $this->CalibrationModel->details('torque');
-        $tools_sn = $this->CalibrationModel->get_tools_sn();
+        
+        $data_json = $this->SettingsController->Get_Device_Name(); 
+        if(!empty($data_json)){
+            $dataArray = json_decode($data_json, true);  
+            $tools_sn=trim($dataArray['tool_sn']);
+        }else{
+            $tools_sn = '';
+        }
+ 
+
         $ktm = $this->CalibrationModel->details('torquemeter');
         $job_id = 221;
 
@@ -80,7 +91,7 @@ class Calibrations extends Controller
             $avg_torque = null; 
         }
 
-        
+
 
         $data = array(
             'isMobile' => $isMobile,
@@ -95,7 +106,7 @@ class Calibrations extends Controller
             'meter' =>$meter,
             'count' =>$count,
             'torque_type ' => $torque_type,
-            'tools_sn' => $tools_sn['device_sn'],
+            'tools_sn' => $tools_sn,
             'avg_torque' => $avg_torque,
             'current_torquemeter' => $ktm[$_SESSION['torqueMeter']],
             'user' => $_SESSION['user'],
@@ -199,7 +210,14 @@ class Calibrations extends Controller
         }
 
         // 獲取工具序列號
-        $tools_sn = $this->CalibrationModel->get_tools_sn();
+        $data_json = $this->SettingsController->Get_Device_Name(); 
+        if(!empty($data_json)){
+            $dataArray = json_decode($data_json, true);  
+            $tools_sn=trim($dataArray['tool_sn']);
+        }else{
+            $tools_sn = '';
+        }
+ 
     
         // 如果清理後的數據數組不為空
         if (!empty($cleanedDataArray)) {
@@ -425,7 +443,13 @@ class Calibrations extends Controller
         $echart_data = $this->CalibrationModel->echarts_data();
 
 
-        $tools_sn = $this->CalibrationModel->get_tools_sn();
+        $data_json = $this->SettingsController->Get_Device_Name(); 
+        if(!empty($data_json)){
+            $dataArray = json_decode($data_json, true);  
+            $tools_sn=trim($dataArray['tool_sn']);
+        }else{
+            $tools_sn = '';
+        }
 
         $meter = $this->val_traffic();
 
@@ -448,7 +472,7 @@ class Calibrations extends Controller
             'job_arr' => $job_arr,
             'meter' =>$meter,
             'count' =>count($meter['res_total']),
-            'tools_sn' => $tools_sn['device_sn'],
+            'tools_sn' => $tools_sn,
             
         );
 
@@ -713,6 +737,7 @@ class Calibrations extends Controller
             echo "Current session value: " . $_SESSION['skipTurnRev'];
         }
     }
+
 
 
 

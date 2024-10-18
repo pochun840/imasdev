@@ -441,6 +441,70 @@ class Settings extends Controller
         exit();
     }
 
+    public function Get_Device_Name() {
+
+        //get controller ip
+        $controller_ip = $this->EquipmentModel->GetControllerIP(1);
+
+        $remote_file = '/mnt/ramdisk/tcsdev.db';   ### 遠端檔案
+        $local_file = '../tcsdev.db';   ### 本機儲存檔案名稱
+
+        $tool_sn = '';
+        $error_message = '';
+
+        ### 連接的 FTP 伺服器是 localhost
+        $conn_id = ftp_connect($controller_ip,21,3);
+
+        if ($conn_id) {
+
+            $handle = fopen($local_file, 'w');
+            // code...
+            ### 登入 FTP, 帳號是 USERNAME, 密碼是 PASSWORD
+            $USERNAME = FTP_USER;
+            $PASSWORD = FTP_PASSWORD;
+            $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
+
+            if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
+                // echo "下載成功, 並儲存到 $local_file\n";
+            } else {
+                // echo "下載 $remote_file 到 $local_file 失敗\n";
+            }
+            ftp_close($conn_id);
+            fclose($handle);
+        }
+        
+        //----開始get sn name
+
+        $dbPath = '../tcsdev.db';
+        try {
+            // 创建 PDO 连接
+            $pdo = new PDO("sqlite:$dbPath");
+
+            // 设置 PDO 错误模式为异常
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            $sql = 'SELECT * FROM tool_info';
+            $statement = $pdo->prepare($sql);
+            $statement->execute();
+            $results = $statement->fetch(PDO::FETCH_ASSOC);
+
+            $tool_sn = $results['tool_sn'];
+
+            // 关闭连接
+            $pdo = null;
+
+        } catch(PDOException $e) {
+            // echo "Error: " . $e->getMessage();
+            $error_message = $e->getMessage();
+            // return 'null';
+        }
+
+        return  json_encode(array('tool_sn' => $tool_sn,'error_message' => $error_message));
+        
+        //exit();
+
+    }
+
 
     
 }
