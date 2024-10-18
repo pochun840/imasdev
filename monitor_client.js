@@ -1,9 +1,12 @@
 const WebSocket = require('ws');
 const sqlite3 = require('sqlite3').verbose();
 const os = require('os');
+const fs = require('fs');
+
+fs.writeFileSync(`..\\node_pid_client.txt`, process.pid.toString());
 
 // 連接到 SQLite 資料庫
-const db = new sqlite3.Database('./cc.db', (err) => {
+const db = new sqlite3.Database('..\\cc.db', (err) => {
     if (err) {
         console.error('Error opening database ' + err.message);
     } else {

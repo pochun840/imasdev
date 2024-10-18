@@ -48,7 +48,8 @@ class Navs extends Controller
             if( in_array($value['controller'], $permissions) || $value['name'] == 'home' ){//有權限才顯示
                 $nav_body .= '<li>';
                 $nav_body .= '<a href="'.$value['link'].'">';
-                $nav_body .= '<object class="nav-image" type="image/svg+xml" data="'.$value['img'].'" width="40" height="40">Edit Icon</object>';
+                // $nav_body .= '<object class="nav-image" type="image/svg+xml" data="'.$value['img'].'" width="40" height="40">Edit Icon</object>';
+                $nav_body .= '<img class="nav-image" src="'.$value['img'].'" alt="Home Icon" width="40" height="40"/>';
 
                 $nav_body .= '<span class="nav-text"> '.$text['main_'.$value['name'].'_text'].' </span>';
                 $nav_body .= '</a>';

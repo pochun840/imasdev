@@ -460,7 +460,7 @@
         let ip = document.getElementById('station-ip').value
 
         if (ip != '') {
-            let url = 'http://'+ip+'/CC2/public/index.php?url=Monitors/GetMonitorInfo';
+            let url = 'http://'+ip+'/KISS/public/index.php?url=Monitors/GetMonitorInfo';
             $.ajax({
                 type: "POST",
                 timeout: 3000, // 設定逾時時間為3000毫秒（3秒）
@@ -489,6 +489,7 @@
                 },
                 error: function(error) {
                     // 失敗回調函數，處理錯誤情況
+                    alert('連線失敗');
                     // console.error('Error:', error); // 在控制台輸出錯誤訊息
                 }
             }).fail(function () {

@@ -157,5 +157,156 @@ class Monitors extends Controller
         }
 
     }
+
+    public function MonitorService()
+    {
+        if (isset($_POST['action'])) {
+            $action = $_POST['action'];
+        }else{
+            echo json_encode(array('result' =>''));
+            exit();
+        }
+
+        $message = '';
+        $port = 3000;// monitor server websocket port
+
+        if($action == 'start'){
+
+            //開啟server
+            $pidFile = '..\node_pid_server.txt';
+            if (file_exists($pidFile)) { //先kill再開啟，避免重複開啟
+                $pid = file_get_contents($pidFile);
+                exec("taskkill /F /PID $pid", $output, $result);
+                sleep(1);
+            }
+
+            $nodeScript = dirname(dirname(dirname(__FILE__))).'/monitor_server.js';
+            // 构建命令行
+            $cmd = "node $nodeScript";
+            // 打开一个管道以非阻塞模式执行命令
+            pclose(popen("start /B $cmd", "w"));
+            
+            sleep(1);
+
+            $pidFile = '..\node_pid_client.txt';
+            if (file_exists($pidFile)) { //先kill再開啟，避免重複開啟
+                $pid = file_get_contents($pidFile);
+                exec("taskkill /F /PID $pid", $output, $result);
+                sleep(1);
+            }
+            $nodeScript = dirname(dirname(dirname(__FILE__))).'\monitor_client.js';
+            // 构建命令行
+            $cmd = "node $nodeScript";
+            // 打开一个管道以非阻塞模式执行命令
+            pclose(popen("start /B $cmd", "w"));
+
+            sleep(1);
+
+            $message = "嘗試開啟服務";
+            echo json_encode(array('result' => $message, 'service_status' => 'no'));
+            exit();
+        }
+
+        if($action == 'stop'){
+            // $pid = $this->getPidByPort($port);
+            $message = '';
+            $service_status = '';
+            $pidFile = '..\node_pid_server.txt';
+            if (file_exists($pidFile)) {
+                $pid = file_get_contents($pidFile);
+                // echo "Node process PID: $pid";
+                exec("taskkill /F /PID $pid", $output, $result);
+                $message .= $result;
+                exec("tasklist | findstr $pid", $output, $result);
+                if(empty($output)){
+                    $message = '服務已關閉';
+                }
+            } else {
+                echo "PID file not found.";
+            }
+
+            $pidFile = '..\node_pid_client.txt';
+            if (file_exists($pidFile)) {
+                $pid = file_get_contents($pidFile);
+                // echo "Node client process PID: $pid";
+                exec("taskkill /F /PID $pid", $output, $result);
+                $message .= $result;
+                exec("tasklist | findstr $pid", $output, $result);
+                if(empty($output)){
+                    var_dump(empty($output));
+                    $message = '服務已關閉';
+                }
+            } else {
+                echo "PID file not found.";
+            }
+            sleep(2);
+
+            echo json_encode(array('result' => $message, 'service_status' => $service_status));
+            exit();
+        }
+
+        if($action == 'check'){
+            $connection = @fsockopen('localhost', $port);
+            if (is_resource($connection)) {
+                fclose($connection);
+                $message = "服務執行中";
+                $service_status = 'yes';
+            } else {
+                $message = "未能找到服務";
+                $service_status = 'no';
+            }
+
+            // $pidFile = '..\node_pid_client.txt';
+            // if (file_exists($pidFile)) {
+            //     $pid = file_get_contents($pidFile);
+            //     // echo "Node client process PID: $pid";
+            //     exec("tasklist | findstr $pid", $output, $result);
+            //     var_dump($output);
+            //     var_dump($result);
+            //     $message .= $result;
+            // }
+
+            echo json_encode(array('result' => $message, 'service_status' => $service_status));
+            exit();
+        }
+
+
+        echo json_encode(array('result' =>''));
+        exit();
+    }
+
+    public function getPidByPort($port) 
+    {
+        $port = 3000;
+        $command = "netstat -ano | findstr :$port";
+        exec($command, $output, $result);
+        foreach ($output as $line) {
+            // 查找包含進程 ID 的行
+            if (preg_match('/\s+(\d+)$/', $line, $matches)) {
+                return $matches[1];
+            }
+        }
+        return null;
+    }
+
+    public function SaveMonitorServerIp($value='')
+    {
+        $input_check = true;
+        $error_message = '';
+        $data_array = array();
+        if( !empty($_POST['server_ip']) && isset($_POST['server_ip']) ){
+            $data_array['server_ip'] = $_POST['server_ip'];
+        }else{ 
+            $input_check = false;
+            $error_message .= "server_ip,";
+        }
+
+        if ($input_check) {
+            $this->OperationModel->SetConfigValue('monitor_server_ip',$data_array['server_ip']);
+        }
+
+        echo json_encode(array('error' => $error_message));
+        exit();
+    }
     
 }

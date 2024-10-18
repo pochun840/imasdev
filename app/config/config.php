@@ -8,7 +8,7 @@ define('APPROOT', dirname(dirname(__FILE__)) . '/');
 define('URLROOT', '../public/'); //local用
 
 // 網站名稱
-define('SITENAME', 'iAMS');
+define('SITENAME', 'KISS');
 
 // GTCS控制器FTP帳密
 define('FTP_USER', 'kls');

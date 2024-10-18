@@ -211,36 +211,44 @@
                   row.cells[9].textContent = '';
                   // row.classList.add("breathing-row");// 閃的css
                   
-                  //依據鎖附結果時間修改背景顏色
-                  if(+result_time_diff < 10){
-                    document.getElementById('station_'+data.clientIp).style.backgroundColor = '#14A800';
-                    document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_fastening_text']; ?>';
-                  }else if(+result_time_diff < 20){
-                    document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
-                    document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
-                  }else{
-                    document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
-                    document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
+                  if( document.getElementById(data.clientIp) !== null ){
+                      //依據鎖附結果時間修改背景顏色
+                      if(+result_time_diff < 10){
+                        document.getElementById('station_'+data.clientIp).style.backgroundColor = '#14A800';
+                        document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_fastening_text']; ?>';
+                      }else if(+result_time_diff < 20){
+                        document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
+                        document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
+                      }else{
+                        document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
+                        document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
+                      }
+
+                      setTimeout(() => {
+                          // row.className = "";
+                          row.classList.remove("breathing-row");
+                      }, "1000");
+
+                      // 更新其他单元格
+                      // document.getElementById('station_'+data.clientIp).childNodes[0].innerHTML = ''; //station_2_name
+                      document.getElementById('station_'+data.clientIp).childNodes[1].innerHTML = data.data[0].cc_barcodesn+'&nbsp;'; //station_2_barcode
+                      document.getElementById('station_'+data.clientIp).childNodes[2].innerHTML = data.data[0].job_name+'&nbsp;'; //station_2_jobname
+                      document.getElementById('station_'+data.clientIp).childNodes[3].innerHTML = ''+'&nbsp;'; //station_2_xxx
+                      document.getElementById('station_'+data.clientIp).childNodes[4].innerHTML = data.data[0].fasten_torque; //station_2_finaltorque
+                      document.getElementById('station_'+data.clientIp).childNodes[5].innerHTML = 'operator'; //station_2_operator
                   }
-
-                  setTimeout(() => {
-                      // row.className = "";
-                      row.classList.remove("breathing-row");
-                  }, "1000");
-
-                  // 更新其他单元格
-                  // document.getElementById('station_'+data.clientIp).childNodes[0].innerHTML = ''; //station_2_name
-                  document.getElementById('station_'+data.clientIp).childNodes[1].innerHTML = data.data[0].cc_barcodesn+'&nbsp;'; //station_2_barcode
-                  document.getElementById('station_'+data.clientIp).childNodes[2].innerHTML = data.data[0].job_name+'&nbsp;'; //station_2_jobname
-                  document.getElementById('station_'+data.clientIp).childNodes[3].innerHTML = ''+'&nbsp;'; //station_2_xxx
-                  document.getElementById('station_'+data.clientIp).childNodes[4].innerHTML = data.data[0].fasten_torque; //station_2_finaltorque
-                  document.getElementById('station_'+data.clientIp).childNodes[5].innerHTML = 'operator'; //station_2_operator
 
               } else {
                   if(data.clientIp != null){
 
                   //get station name
-                  let station_name = document.getElementById(data.clientIp).getAttribute('data-name')
+                  let station_name = ''
+                  // let station_name = document.getElementById(data.clientIp).getAttribute('data-name')
+                  if( document.getElementById(data.clientIp) !== null ){
+                    station_name = document.getElementById(data.clientIp).getAttribute('data-name')
+                  }else{
+                    station_name = 'not in row';
+                  }
 
                   // 如果IP不存在，创建一行
                   const table = document.getElementById("table-monitor").getElementsByTagName('tbody')[0];
@@ -257,33 +265,34 @@
                   row.insertCell(9).textContent = '';
                   row.insertCell(10).textContent = data.clientIp;
                   row.cells[10].style.display = 'none'//ip
+                  row.title = data.clientIp;
                   // // row.className = "breathing-row";// 閃的css
 
-                  //依據鎖附結果時間修改背景顏色
-                  if(+result_time_diff < 10){
-                    document.getElementById('station_'+data.clientIp).style.backgroundColor = '#14A800';
-                    document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_fastening_text']; ?>';
-                  }else if(+result_time_diff < 20){
-                    document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
-                    document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
-                  }else{
-                    document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
-                    document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
+                  if( document.getElementById(data.clientIp) !== null){
+                      //依據鎖附結果時間修改背景顏色
+                      if(+result_time_diff < 10){
+                        document.getElementById('station_'+data.clientIp).style.backgroundColor = '#14A800';
+                        document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_fastening_text']; ?>';
+                      }else if(+result_time_diff < 20){
+                        document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
+                        document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
+                      }else{
+                        document.getElementById('station_'+data.clientIp).style.backgroundColor = '#E9A759';
+                        document.getElementById('station_'+data.clientIp+'_status').innerText = '<?php echo $text['station_standby_text']; ?>';
+                      }
+
+                      // 更新其他单元格
+                      // document.getElementById('station_'+data.clientIp).childNodes[0].innerHTML = ''; //station_2_name
+                      document.getElementById('station_'+data.clientIp).childNodes[1].innerHTML = data.data[0].cc_barcodesn+'&nbsp;'; //station_2_barcode
+                      document.getElementById('station_'+data.clientIp).childNodes[2].innerHTML = data.data[0].job_name+'&nbsp;'; //station_2_jobname
+                      document.getElementById('station_'+data.clientIp).childNodes[3].innerHTML = ''+'&nbsp;'; //station_2_xxx
+                      document.getElementById('station_'+data.clientIp).childNodes[4].innerHTML = data.data[0].fasten_torque+'&nbsp;'; //station_2_finaltorque
+                      document.getElementById('station_'+data.clientIp).childNodes[5].innerHTML = 'operator'; //station_2_operator
                   }
 
                   // 将IP与表格行关联
                   ipToTableRow.set(data.clientIp, row);
                   // console.log(ipToTableRow);
-
-                  // table.row.add( row ).draw();
-
-                  // 更新其他单元格
-                  // document.getElementById('station_'+data.clientIp).childNodes[0].innerHTML = ''; //station_2_name
-                  document.getElementById('station_'+data.clientIp).childNodes[1].innerHTML = data.data[0].cc_barcodesn+'&nbsp;'; //station_2_barcode
-                  document.getElementById('station_'+data.clientIp).childNodes[2].innerHTML = data.data[0].job_name+'&nbsp;'; //station_2_jobname
-                  document.getElementById('station_'+data.clientIp).childNodes[3].innerHTML = ''+'&nbsp;'; //station_2_xxx
-                  document.getElementById('station_'+data.clientIp).childNodes[4].innerHTML = data.data[0].fasten_torque+'&nbsp;'; //station_2_finaltorque
-                  document.getElementById('station_'+data.clientIp).childNodes[5].innerHTML = 'operator'; //station_2_operator
 
                 }
 

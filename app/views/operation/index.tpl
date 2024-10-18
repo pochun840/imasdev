@@ -285,7 +285,7 @@
                             </div>
                         </div>
 
-                        <div class="scrollbar-tasklist" id="style-tasklist">
+                        <div class="scrollbar-tasklist" id="style-tasklist" style=" background-color: beige; border-radius: 10px; ">
                             <div class="force-overflow-tasklist">
                                 <div id="task_list" class="tasklist">
                                     <?php
@@ -427,24 +427,6 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div id="tool_div" class="row sensor_style">
-                            <h5 style="font-size: 2.3vmin; text-align: left;">
-                                <img class="t6 images" src="./img/torque.png"><?php echo $text['Tool_text']; ?> :<span id="tool_name" style="padding-left:5%">SGT-CS303</span>
-                            </h5>
-                            <div id="completedIcon" style="display:block; text-align: left;padding-left: 31px">
-                                <span id="tool_task_id" style="color: #000"></span>
-                                <span id="tool_status_icon"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div id="picking module" class="row sensor_style">
-                            <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><?php echo $text['Picking_Module_text']; ?></h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="column column-sensor">
-                    <div class="row">
                         <div id="arm_div" class="row sensor_style">
                             <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left">
                                 <img class="t6 images" src="./img/operation-arm.svg" style="">
@@ -465,6 +447,25 @@
                                     <input id="socket_hole_number" size="1" style="text-align: center; border-radius: 40%; border: 1px solid;border-color: green;" value="" disabled >
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="column column-sensor">
+                    <div class="row">
+                        <div id="tool_div" class="row sensor_style">
+                            <h5 style="font-size: 2.3vmin; text-align: left;">
+                                <img class="t6 images" src="./img/torque.png"><?php echo $text['Tool_text']; ?> :<span id="tool_name" style="padding-left:5%">SGT-CS303</span>
+                            </h5>
+                            <div id="completedIcon" style="display:block; text-align: left;padding-left: 31px">
+                                <span id="tool_task_id" style="color: #000"></span>
+                                <span id="tool_status_icon"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="picking module" class="row sensor_style">
+                            <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><?php echo $text['Picking_Module_text']; ?></h5>
                         </div>
                     </div>
                     <div class="row">
@@ -490,7 +491,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div id="" class="row sensor_style">
+                        <div id="button" class="row sensor_style">
                             <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left">
                                 <?php echo $text['Button_text']; ?>
                             </h5>
@@ -500,7 +501,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="row sensor_style">
+                        <div id="space" class="row sensor_style">
                             <div id="" class=""></div>
                         </div>
                     </div>
@@ -740,10 +741,12 @@ window.onclick = function(event) {
         //socket hole div
         if(document.getElementById('task_'+index+'_hole_id').value == '-1'){
             document.getElementById('socket_tray_div').classList.add('gray-out');
+            document.getElementById('socket_tray_div').style.display = 'flex';
             document.getElementById('socket_hole_number').value = '';
         }else{
             document.getElementById('socket_hole_number').value = document.getElementById('task_'+index+'_hole_id').value;
             document.getElementById('socket_tray_div').classList.remove('gray-out');
+            document.getElementById('socket_tray_div').style.display = 'flex';
         }
 
     }
@@ -774,6 +777,17 @@ $(document).ready(function () {
 });
 
 function initail() {
+    //隱藏右下div
+    document.getElementById('tool_div').style.display = 'none';
+    document.getElementById('picking module').style.display = 'none';
+    document.getElementById('arm_div').style.display = 'none';
+    document.getElementById('socket_tray_div').style.display = 'none';
+    document.getElementById('screw_feeder').style.display = 'none';
+    document.getElementById('recycle_box').style.display = 'none';
+    document.getElementById('button').style.display = 'none';
+    document.getElementById('space').style.display = 'none';
+
+
     // body...
     document.getElementById('barcode').value = '';
     document.getElementById('job_name').value = '<?php echo $data['job_data']['job_name']; ?>';
@@ -820,6 +834,8 @@ function initail() {
 
     ok_job_auto = '<?php echo $data['ok_job_auto']; ?>'; 
     ok_seq_auto = '<?php echo $data['ok_seq_auto'];?>';
+
+    
 }
    
 </script>
@@ -835,13 +851,17 @@ function initail() {
         console.log("Connected to WebSocket server.");
         let random = Math.floor(Math.random() * 100) + 1;
         document.getElementById('arm_div').classList.remove('gray-out');
+        document.getElementById('arm_div').style.display = 'flex';
         // send(random);
     };
 
     websocket.onclose = function (evt) {
         console.log("Disconnected");
         //把arm div反灰 gray-out
+        document.getElementById('arm_div').style.display = 'flex';
         document.getElementById('arm_div').classList.add('gray-out');
+        console.log(6666666)
+        // alert(555)
     };
 
     websocket.onmessage = function (evt) {

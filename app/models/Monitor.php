@@ -89,7 +89,7 @@ class Monitor{
 
     public function getUsersList($value='')
     {
-        $sql = "SELECT users.id,users.account from `users` WHERE 1 = 1 ";
+        $sql = "SELECT users.id,users.account from `users` WHERE 1 = 1 AND del = 0";
         $statement = $this->db->prepare($sql);
         $statement->execute();
 
