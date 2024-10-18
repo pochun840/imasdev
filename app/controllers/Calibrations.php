@@ -68,7 +68,19 @@ class Calibrations extends Controller
             $_SESSION['torqueMeter'] = 0;
         }
 
-        $last_item = end($info);
+        if(!empty($info)){
+            $last_item = end($info);
+        }else{
+            $last_item = '';
+        }
+
+        if (is_array($last_item) && isset($last_item['avg_torque'])) {
+            $avg_torque = $last_item['avg_torque'];
+        } else {
+            $avg_torque = null; 
+        }
+
+        
 
         $data = array(
             'isMobile' => $isMobile,
@@ -84,7 +96,7 @@ class Calibrations extends Controller
             'count' =>$count,
             'torque_type ' => $torque_type,
             'tools_sn' => $tools_sn['device_sn'],
-            'avg_torque' => $last_item['avg_torque'],
+            'avg_torque' => $avg_torque,
             'current_torquemeter' => $ktm[$_SESSION['torqueMeter']],
             'user' => $_SESSION['user'],
             'skipTurnRev' => $skipTurnRev
@@ -129,11 +141,11 @@ class Calibrations extends Controller
         $combinedData = array(
             'info' => $info,
             'echart_data' => $tmp,
+            'avg_torque' =>$avg_torque,
             'meter' => [
                 'torque' => $temp,
                 'max-torque' => $max_torque,
-                'min-torque' => $min_torque,
-                'avg_torque' => $avg_torque
+                'min-torque' => $min_torque
             ]
         );
     
@@ -148,13 +160,7 @@ class Calibrations extends Controller
             session_start(); 
         }
     
-        // 計算當前 table-calibrations 有幾筆資料 
-        $meter = $this->val_traffic();
-        if (!empty($meter['res_total'])) {
-            $count = count($meter['res_total']);
-        } else {
-            $count = 0;
-        }
+    
 
 
         // 獲取 cookie 中的 skipTurnRev 的值
@@ -215,14 +221,14 @@ class Calibrations extends Controller
 
 
             // 删除文件的计数器
-            $unlinkCount = 0;
+            //$unlinkCount = 0;
 
             if($skipTurnRev == 1){
 
                 // $final  小於 0 
                 if ($final < 0) {
                     unlink($file_path);
-                    $unlinkCount++;
+                    //$unlinkCount++;
 
                     echo json_encode(array('success123' => false, 'message' => '檔案已刪除，因為 final 值為負'));
                     return; // 終止後續程式動作

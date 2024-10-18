@@ -158,7 +158,7 @@
                 </button>
                 
                 <button class="btn" id="export-report" type="button" onclick="openModal('Export_Report')"><?php echo $text['Export_text'];?></button>
-                <button class="btn" id="export-excel" type="button"  onclick="window.location.href = '?url=Calibrations/export_excel';"><?php echo $text['Export_Report_text'];?></button>
+                <button class="btn" id="export-excel" type="button" onclick="window.open('?url=Calibrations/export_excel', '_blank');"><?php echo $text['Export_Report_text'];?></button>
                 <button class="btn" id="export-report" type="button" onclick="undo()"><?php echo $text['Undo_text'];?></button>
        
             </div>
@@ -192,7 +192,8 @@
                     <div class="row t1" style="padding-left: 3%">
                         <div class="col t1 form-check form-check-inline">
                         
-                            <input class="t1 form-check-input" type="checkbox" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;" onchange="setCheckboxSession()" >
+                            <input class="t1 form-check-input" type="checkbox" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;"  onchange="setCheckboxSession()" checked> 
+                            
                             <label class="t1 form-check-label" for="skip-turn-rev"><?php echo $text['Skip_Turn_Rev_text'];?></label>
                         </div>
                     </div>
@@ -379,7 +380,8 @@
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000">CMK:</div>
                                         <div class="col-5 t1">
-                                            <input id="cmk" type="text" class="t2 form-control" value="<?php  echo $data['meter']['cmk'];?>">
+                                            <input id="cmk" type="text" class="t2 form-control" value="<?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : ''; ?>">
+
                                         </div>
                                     </div>
                                     <div id="input-container">
@@ -528,7 +530,7 @@ function NextToAnalysisSystemKTM() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error saving session data:', error);
+            //console.error('Error saving session data:', error);
             //alert('请求失败，请稍后重试。');
         }
     });
@@ -722,8 +724,8 @@ function current_save() {
 
     let percentage = tolerance / 100; 
     let temp = targetQ  * percentage ;
-    let upper_limit = Number(targetQ) + Number(temp); 
-    let lower_limit = Number(targetQ) - Number(temp); 
+    let upper_limit = (Number(targetQ) + Number(temp)).toFixed(2);
+    let lower_limit = (Number(targetQ) - Number(temp)).toFixed(2); 
 
 
 
@@ -751,6 +753,14 @@ function current_save() {
             document.getElementById('bias').value = tolerance;
 
 
+            // 存入 localStorage
+            localStorage.setItem('targetTorque', targetQ);
+            localStorage.setItem('highLimitTorque', upper_limit);
+            localStorage.setItem('lowLimitTorque', lower_limit);
+            localStorage.setItem('bias', tolerance);
+
+
+
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
@@ -768,7 +778,10 @@ function undo() {
               },
         url: '?url=Calibrations/del_all',
         success: function(response) {
-            history.go(0);
+            //history.go(0);
+            document.getElementById('analysis-system-KTM').style.display = 'block';
+            document.getElementById('Torque-Collection').style.display = 'none';
+
         },
         error: function(error) {
         
@@ -776,14 +789,10 @@ function undo() {
     }).fail(function () {
 
     });
-    history.go(0); 
+
+
+    
 }
-
-
-let report_count  = document.getElementById('implement_count').value; 
-let current_count = 0; 
-alert(report_count);
-
 
 async function fetchData() {
     const url1 = '?url=Calibrations/get_val';
@@ -795,10 +804,10 @@ async function fetchData() {
 
         if (response1.ok) {
             const data = await response1.json(); 
-            //console.log('API 返回:', data);
+            console.log('API 返回:', data);
             //document.getElementById('result').innerText = JSON.stringify(data, null, 2); 
         } else {
-            //console.error('请求失败，状态码:', response1.status);
+            console.error('请求失败，状态码:', response1.status);
             //document.getElementById('result').innerText = '请求失败，状态码: ' + response1.status;
         }
 
@@ -808,27 +817,12 @@ async function fetchData() {
         //document.getElementById('result').innerText = '发生错误: ' + error.message;
         //document.getElementById('datainfo').innerHTML = '发生错误: ' + error.message;
     }
-
-    current_count++;
-    // 如果当前计数达到 report_count，则停止定时器
-    if (current_count >= report_count) {
-        clearInterval(intervalId); // 停止定时器
-    }
-
-}
-// 设置定时器
-let intervalId;
-if (report_count > 0) {
-    intervalId = setInterval(fetchData, 500);
-}
-
-if (report_count === 0) {
-    fetchData();
 }
 
 // 每 0.5 秒调用一次 fetchData
-//setInterval(fetchData, 500);
-//fetchData();
+setInterval(fetchData, 500);
+fetchData();
+
 
 function fetchLatestInfo() {
     $.ajax({
@@ -849,14 +843,14 @@ function fetchLatestInfo() {
 
             //更新右邊的扭力值(total)
             updateInputs(data.meter); 
-            //console.log(data.meter);
+            console.log(data.meter);
 
             //更新最大和最小扭力值
             $('#max-torque').val(data.meter['max-torque'].torque); // 取得 max-torque 的值
             $('#min-torque').val(data.meter['min-torque'].torque); // 取得 min-torque 的值
 
             //更新扭力平均值//avg_torque
-            $('#avg_torque').val(data.meter['avg_torque'].torque);
+            document.getElementById('avg-torque').value = data.avg_torque;
 
         },
         error: function() {
@@ -917,8 +911,8 @@ function updateInputs(meterData) {
 
 <script>
 
-var x_val = <?php echo $data['echart']['x_val']; ?>; 
-var y_val = <?php echo $data['echart']['y_val']; ?>; 
+var x_val = <?php echo isset($data['echart']['x_val']) ? json_encode($data['echart']['x_val']) : '[]'; ?>; 
+var y_val = <?php echo isset($data['echart']['y_val']) ? json_encode($data['echart']['y_val']) : '[]'; ?>; 
 
 renderChart(x_val, y_val);
 
@@ -978,7 +972,6 @@ function renderChart(x_val, y_val) {
 }
 
 
-let needsRefresh = false; 
 
 function setCheckboxSession() {
     const checkbox = document.getElementById('skip-turn-rev');
@@ -992,13 +985,13 @@ function setCheckboxSession() {
     document.cookie = "skipTurnRev=" + isChecked + ";" + expires + ";path=/";
 
     // 更新其他需要显示或隐藏的元素的状态
-    if (isChecked === '1') {
+    /*if (isChecked === '1') {
         document.getElementById('analysis-system-KTM').style.display = 'block';
         document.getElementById('Torque-Collection').style.display = 'none';
     } else {
         document.getElementById('analysis-system-KTM').style.display = 'none';
         document.getElementById('Torque-Collection').style.display = 'block';
-    }
+    }*/
 }
 
 function update_count() {
@@ -1015,11 +1008,13 @@ function checkEnter(event) {
     var value = document.getElementById('implement_count').value;
 }
 
+
+
 window.onload = function() {
     document.getElementById('tolerance').value = 10;
     document.getElementById('bias').value = 10;
     
-    const checkbox = document.getElementById('skip-turn-rev');
+    /*const checkbox = document.getElementById('skip-turn-rev');
     checkbox.checked = true;
 
     if (!document.cookie.includes('skipTurnRev=')) {
@@ -1041,7 +1036,7 @@ window.onload = function() {
     } else {
         document.getElementById('analysis-system-KTM').style.display = 'none';
         document.getElementById('Torque-Collection').style.display = 'block';
-    }
+    }*/
 };
 
 

@@ -178,6 +178,7 @@ class Calibration{
     
     public function tidy_data($final, $tools_sn) {
         $job_id = 221;
+
     
         // 獲取當前的最大、最小、總扭矩以及最新記錄ID
         $sql = "SELECT MAX(torque) AS max_torque, MIN(torque) AS min_torque, SUM(torque) AS total_torque,
@@ -243,11 +244,18 @@ class Calibration{
     
     // 绑定插入參數
     private function bindInsertParameters($statement, $count, $job_id, $tools_sn, $final, $max_torque, $min_torque, $average_torque, $high_percent, $low_percent, $datatime) {
+        
+        $controller_type = isset($_SESSION['torqueMeter']) ? $_SESSION['torqueMeter'] : '';
+        $ktm_type = isset($_SESSION['controller']) ? $_SESSION['controller'] : '';
+        $adapter_type = isset($_SESSION['adapter_type']) ? $_SESSION['adapter_type'] : '';
+
+
+        
         $statement->bindValue(':id', $count);
         $statement->bindValue(':job_id', $job_id);
-        $statement->bindValue(':controller_type', $_SESSION['torqueMeter']);
-        $statement->bindValue(':ktm_type', $_SESSION['controller']);
-        $statement->bindValue(':adapter_type', $_SESSION['adapter_type']);
+        $statement->bindValue(':controller_type', $controller_type);
+        $statement->bindValue(':ktm_type', $ktm_type );
+        $statement->bindValue(':adapter_type', $adapter_type);
         $statement->bindValue(':operator', $_SESSION['user']);
         $statement->bindValue(':toolsn', $tools_sn['device_sn']);
         $statement->bindValue(':torque', $final);

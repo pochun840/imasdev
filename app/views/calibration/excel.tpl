@@ -44,14 +44,14 @@
         <div style="font-size: 14px; padding-bottom: 10px; padding-top: 10px">
             <label for="Tool-SN" style="width: 24%">Tool model : <?php echo $data['tools_sn'];?></label>
             <label for="Serial-Number" style="width: 24%">Serial Number : TPS192865</label>
-            <label for="Target-Torque" style="width: 27%">Target Torque : <?php echo $data['meter']['avg_torque'];?> (N.m)</label>
+            <label for="Target-Torque" id="Target-Torque" style="width: 27%">Target Torque :  (N.m)</label>
             <label for="RPM" style="width: 11%">RPM : 100</label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px;">
-            <label for="Upper-Limit" style="width: 24%">Upper Limit : 0.54</label>
-            <label for="Lower-Limit" style="width: 24%">Lower Limit : 0.66</label>
-            <label for="Tolerance" style="width: 27%">Tolerance +/-% : 10%</label>
+            <label for="Upper-Limit" id="highLimitTorque" style="width: 24%">Upper Limit : </label>
+            <label for="Lower-Limit" id="lowLimitTorque" style="width: 24%">Lower Limit : </label>
+            <label for="Tolerance" id="bias" style="width: 27%">Tolerance +/-% : %</label>
             <label for="Offset" style="width: 16%">Offset : +0.5</label>
         </div>
 
@@ -155,7 +155,31 @@
 </html>
 <?php date_default_timezone_set('Asia/Taipei');?>
 <script>
-     var myChart = echarts.init(document.getElementById('mychart'));
+
+    //讀取 localstorge
+    let targetTorque = localStorage.getItem('targetTorque');
+    let highLimitTorque = localStorage.getItem('highLimitTorque');
+    let lowLimitTorque= localStorage.getItem('lowLimitTorque');
+    let bias = localStorage.getItem('bias');
+
+
+    if(targetTorque !== null){
+        document.getElementById('Target-Torque').innerText = `Target Torque : ${targetTorque} (N.m)`;
+    } 
+
+    if(highLimitTorque !== null){
+        document.getElementById('highLimitTorque').innerText = `Upper Limit : ${highLimitTorque} (N.m)`;
+    } 
+    if(lowLimitTorque !== null){
+        document.getElementById('lowLimitTorque').innerText = `Lower Limit : ${lowLimitTorque} (N.m)`; 
+    }
+
+    if(bias !== null){
+        document.getElementById('bias').innerText = `Tolerance +/-% : ${bias}%`;
+    }
+
+
+    var myChart = echarts.init(document.getElementById('mychart'));
 
     var x_val = <?php echo $data['echart']['x_val']; ?>;
     var y_val = <?php echo $data['echart']['y_val']; ?>;

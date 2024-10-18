@@ -207,6 +207,11 @@ class Historicals extends Controller
     #鎖附資料 圖表 
     public function history_result(){
         
+
+        $info_arr = array();
+        $info_arr = $_POST;
+
+
         $data = array();
         $status_arr = $this->Historicals_newModel->status_code_change();
         $mode_arr = array('ng_reason','fastening_status','job_info','statistics','bk');
@@ -698,7 +703,7 @@ class Historicals extends Controller
         
         if($nopage == '0'){
             $offset = 0;
-            $limit = 100000000;
+            $limit = 100;
         }
 
         return $this->Historicals_newModel->monitors_info("", $offset, $limit);

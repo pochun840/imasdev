@@ -536,6 +536,8 @@ class Equipments extends Controller
         // 构建命令行
         $cmd = "node $nodeScript $comPort"; 
 
+        //echo $cmd;die();
+
         // 打开一个管道以非阻塞模式执行命令
         $process = popen("start /B $cmd", "w");
 

@@ -31,7 +31,8 @@ app.get('/read-cookie', (req, res) => {
 // 寫入文件的函數
 async function writeToFile(asciiData) {
     const dirPath = path.join(__dirname, `../${dirName}/api`);
-    const filePath = path.join(dirPath, 'final_val.txt');
+    //const filePath = path.join(dirPath, 'final_val.txt');
+    const filePath = path.join('..\\api\\', 'final_val.txt');
 
     console.log("目錄路徑:", dirPath);
     console.log("文件路徑:", filePath);
