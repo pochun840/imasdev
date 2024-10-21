@@ -21,7 +21,7 @@ $text['main_setting_text'] = '设置';
 $text['main_calibration_text'] = '校准';
 $text['main_user_text'] = '用户';
 $text['main_historical_text'] = '历史';
-$text['main_template_text'] = '模板';
+$text['main_template_text'] = '组别';
 $text['main_DB_SYNC_text'] = '数据同步';
 
 //product page

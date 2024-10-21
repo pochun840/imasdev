@@ -21,7 +21,7 @@ $text['main_setting_text'] = 'Setting';
 $text['main_calibration_text'] = 'Calibration';
 $text['main_user_text'] = 'User';
 $text['main_historical_text'] = 'Historical';
-$text['main_template_text'] = 'Template'; //GTCS-DB Sync
+$text['main_template_text'] = 'Program'; //GTCS-DB Sync
 $text['main_DB_SYNC_text'] = 'GTCS-DB Sync';
 
 //product page
