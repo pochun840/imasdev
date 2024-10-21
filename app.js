@@ -6,6 +6,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const { SerialPort } = require('serialport');
 const fs = require('fs');
+fs.writeFileSync(`..\\app.txt`, process.pid.toString());
 const path = require('path');
 const app = express();
 const currentDir = process.cwd();

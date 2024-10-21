@@ -42,7 +42,18 @@ class Equipments extends Controller
 
 
 
-        
+        //判斷app.txt 在跟目錄是否存在
+        $folderPath  = dirname(__FILE__); 
+        $pidFile_app = $folderPath;
+        $pidFile_app = str_replace('app\controllers', '', $pidFile_app);
+        $pidFile_app = ltrim($pidFile_app, '/'); 
+        //echo $pidFile_app;
+
+        if (file_exists($pidFile_app."app.txt")) {
+            $pidFile_app_check ="Y";
+        } else {
+            $pidFile_app_check ="N";
+        }
 
         $data = [
             'isMobile' => $isMobile,
@@ -60,9 +71,11 @@ class Equipments extends Controller
             'comPorts' => $comPorts,
             'controller_ip' => $controller_ip,
             'tower_light_switch' => $tower_light_switch,
-            'buzzer_switch' => $buzzer_switch
+            'buzzer_switch' => $buzzer_switch,
+            'pidFile_app_check' =>$pidFile_app_check
         ];
-        
+
+       
         $this->view('equipment/index', $data);
 
     }
@@ -547,6 +560,50 @@ class Equipments extends Controller
         echo json_encode(array('result' => $message, 'service_status' => 'yes'));
         exit();
     }
+
+    public function ktm_aborted() {
+        $pidFile = '../app.txt';
+    
+        if (file_exists($pidFile)) {
+            $content = file_get_contents($pidFile);
+            if ($content === false) {
+                echo "無法讀取文件內容。";
+                exit();
+            }
+    
+            $pid = trim($content);
+    
+            if ($pid === '') {
+                echo "PID 為空。";
+            } else {
+                echo "讀取到的 PID: $pid";
+            }
+            
+            // 檢查 PID 是否為有效數字
+            if (is_numeric($pid)) {
+                exec("taskkill /F /PID $pid", $output, $result);
+                unlink($pidFile);
+                
+                if ($result == 0) {
+                    echo "進程 $pid 成功終止。";
+                } else {
+                    echo "無法終止進程 $pid。";
+                }
+            } else {
+                echo "文件中的 PID 無效。";
+            }
+            
+            sleep(1);
+        } else {
+            echo "PID 文件不存在。";
+        }
+    
+        exit();
+    }
+    
+    
+    
+    
     
 
     

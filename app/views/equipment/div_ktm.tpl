@@ -70,13 +70,18 @@
 
                             <div class="row t4">
                                 <div class="col-3 t3"><?php echo $text['Status_text']; ?>:
+
+                                    
                                     <label id="service_status_device_1" style="color: red; padding-left: 5%; display: block;"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
                                     <label id="service_status_device_2" style="color: green; padding-left: 5%; display: none;"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
                                 </div>
                                 
                                 <div class="col">
-                                    <button type="button" class="btn btn-Reconnect"  onclick="connect_test_ktm()"><?php echo $text['Connect_Test_text']; ?></button>
+                                    <button type="button" class="btn btn-Reconnect"  onclick="connect_test_ktm()"><?php echo $text['Service_Start_text']; ?></button>
+                                    <button type="button" class="btn btn-Reconnect"  onclick="abort_ktm()"><?php echo $text['Service_Stop_text'];?></button>
                                 </div>
+
+
                             </div>
                             <div class="row t4">
                                 <div class="col t3"><b><?php echo $text['Communication_log_text']; ?></b></div>
@@ -96,47 +101,97 @@
 
 
     <script type="text/javascript">
-
-       function connect_test_ktm() {
-            var selectElement = document.getElementById('comport');
-            var comport = selectElement.value;
-            
-            $.ajax({
-                type: 'POST',
-                url: '?url=Equipments/ktm_connect',
-                data: { comport: comport },
-                dataType: 'json',
-                success: function(response) {
-                    console.log(response); 
-                    
-                    // 处理输出
-                    let message = response.result || response.error;
-                    if (response.output) {
-                        message += "\nOutput: " + response.output; // 添加 Node.js 输出
-                    }
-                    
-                  
-                    
-                    // 隐藏 service_status_device_1
-                    document.getElementById('service_status_device_1').style.display = 'none';
-                    
-                    // 显示 service_status_device_2
-                    document.getElementById('service_status_device_2').style.display = 'block'; 
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error("Error Status: " + textStatus); 
-                    console.error("Error Thrown: " + errorThrown); 
-
-                    // 隐藏 service_status_device_1
-                    document.getElementById('service_status_device_1').style.display = 'none';
-                    
-                    // 显示 service_status_device_2
-                    document.getElementById('service_status_device_2').style.display = 'block'; 
-                }
-            });
-
-  
+     var pidFileAppCheck = '<?php echo $data['pidFile_app_check'] ?>';
+     window.onload = function() {
+        if (pidFileAppCheck) {
+            // 判斷是否為 "Y"
+            if (pidFileAppCheck === "Y") {
+                console.log("檔案檢查狀態：存在且為 'Y'");
+                document.getElementById('service_status_device_2').style.display = 'block';
+                 document.getElementById('service_status_device_1').style.display = 'none';
+            } else {
+                console.log("檔案檢查狀態：存在但不為 'Y'");
+               document.getElementById('service_status_device_1').style.display = 'block';
+                document.getElementById('service_status_device_2').style.display = 'none';
+            }
+        } else {
+            console.log("檔案檢查狀態：不存在");
+            document.getElementById('service_status_device_1').style.display = 'block';
+            document.getElementById('service_status_device_2').style.display = 'none';
         }
+    }
+
+    let currentComPort = '';
+    function connect_test_ktm() {
+        var selectElement = document.getElementById('comport');
+        currentComPort = selectElement.value
+        
+        $.ajax({
+            type: 'POST',
+            url: '?url=Equipments/ktm_connect',
+            data: { comport: currentComPort },
+            dataType: 'json',
+            success: function(response) {
+                console.log(response); 
+                
+                // 处理输出
+                let message = response.result || response.error;
+                if (response.output) {
+                    message += "\nOutput: " + response.output; // 添加 Node.js 输出
+                }
+                
+    
+                // 隐藏 service_status_device_1
+                document.getElementById('service_status_device_1').style.display = 'none';
+                
+                // 显示 service_status_device_2
+                document.getElementById('service_status_device_2').style.display = 'block'; 
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error Status: " + textStatus); 
+                console.error("Error Thrown: " + errorThrown); 
+
+                // 隐藏 service_status_device_1
+                document.getElementById('service_status_device_1').style.display = 'none';
+                
+                // 显示 service_status_device_2
+                document.getElementById('service_status_device_2').style.display = 'block'; 
+            }
+        });
+
+
+    }
+
+
+    function abort_ktm() {
+        $.ajax({
+            type: 'POST',
+            url: '?url=Equipments/ktm_aborted', 
+            data: { comport: currentComPort },
+            dataType: 'json',
+            success: function(response) {
+                console.log(response); 
+                let message = response.result || response.error;
+                alert(message); 
+                
+                // 隐藏 service_status_device_1
+                document.getElementById('service_status_device_1').style.display = 'block';
+                
+                // 显示 service_status_device_2
+                document.getElementById('service_status_device_2').style.display = 'none'; 
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                //console.error("Error Status: " + textStatus); 
+                //console.error("Error Thrown: " + errorThrown); 
+
+                // 隐藏 service_status_device_1
+                document.getElementById('service_status_device_1').style.display = 'block';
+                
+                // 显示 service_status_device_2
+                document.getElementById('service_status_device_2').style.display = 'none'; 
+            }
+        });
+    }
 
     
     </script>
