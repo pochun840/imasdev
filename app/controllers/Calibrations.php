@@ -458,6 +458,8 @@ class Calibrations extends Controller
             $tmp['x_val'] = json_encode(array_column($echart_data, 'id'));
             $tmp['y_val'] = json_encode(array_column($echart_data, 'torque'));
 
+        }else{
+            $tmp= '';
         }
 
         

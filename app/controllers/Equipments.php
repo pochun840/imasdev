@@ -292,7 +292,6 @@ class Equipments extends Controller
         if($action == 'start'){
 
             $comPort = escapeshellarg($_POST['comport']);
-            // $nodeScript = 'C:/Users/User/Desktop/nodejs/project/tt.js';
             $nodeScript = dirname(dirname(dirname(__FILE__))).'/relink.js';
 
             // 构建命令行

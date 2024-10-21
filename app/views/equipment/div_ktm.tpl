@@ -18,11 +18,62 @@
                                     <b><?php echo $text['Test_adjust_text']; ?></b>
                                 </label>
                             </div>
+                                <div class="row t3">
+                                <div class="col-1 t3">
+                                    <select id="comport" style="width: 110px">
+                                        <?php 
+                                            foreach ($data['comPorts'] as $key => $value) {
+                                                echo '<option value="'.$value.'">'.$value.'</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="col-1 t3">
+                                    <select id="baudRate" style="width: 110px" disabled>
+                                        <option value="115200">115200</option>
+                                        <option value="57600">57600</option>
+                                        <option value="38400">38400</option>
+                                        <option value="9600" selected>19200</option>
+                                        <option value="4800">4800</option>
+                                        <option value="2400">2400</option>
+                                        <option value="1200">1200</option>
+                                    </select>
+                                </div>
+                                <div class="col-1 t3">
+                                    <select id="parity" style="width: 110px" disabled>
+                                        <option value="None" selected>None</option>
+                                        <option value="Odd">Odd</option>
+                                        <option value="Even">Even</option>
+                                        <option value="Mark">Mark</option>
+                                        <option value="Space">Space</option>
+                                    </select>
+                                </div>
+                                <div class="col-1 t3">
+                                    <select id="dataBits" style="width: 110px" disabled>
+                                        <option value="8" selected>8</option>
+                                        <option value="7">7</option>
+                                        <option value="6">6</option>
+                                        <option value="5">5</option>
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </div>
+                                <div class="col-1 t3">
+                                    <select id="stopBits" style="width: 110px" disabled>
+                                        <option value="1" selected>1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="row t4">
                                 <div class="col-3 t3"><?php echo $text['Status_text']; ?>:
                                     <label id="service_status_device_1" style="color: red; padding-left: 5%; display: block;"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
                                     <label id="service_status_device_2" style="color: green; padding-left: 5%; display: none;"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
                                 </div>
+                                
                                 <div class="col">
                                     <button type="button" class="btn btn-Reconnect"  onclick="connect_test_ktm()"><?php echo $text['Connect_Test_text']; ?></button>
                                 </div>
@@ -47,7 +98,9 @@
     <script type="text/javascript">
 
        function connect_test_ktm() {
-            var comPort = 'COM4'; 
+            var selectElement = document.getElementById('comport');
+            var comport = selectElement.value;
+            
             $.ajax({
                 type: 'POST',
                 url: '?url=Equipments/ktm_connect',
