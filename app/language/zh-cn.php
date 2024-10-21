@@ -195,7 +195,7 @@ $text['Download_text'] = '下载';
 $text['Combine_data_text'] = '合并数据';
 
 //template page 
-$text['Program_Template_text'] = '程序模板';
+$text['Program_Template_text'] = '组别';
 $text['Choose_Controller_text'] = '选择控制器';
 $text['Screw_Tool_text'] = '螺丝工具';
 $text['Normal_text'] = '智能';

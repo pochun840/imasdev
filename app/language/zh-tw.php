@@ -213,7 +213,7 @@ $text['Combine_data_text'] = '合併數據';
 
 
 //template page 
-$text['Program_Template_text'] = '參數組別';
+$text['Program_Template_text'] = '組別';
 $text['Choose_Controller_text'] = '選擇控制器';
 $text['Screw_Tool_text'] = '螺絲工具';
 $text['Normal_text'] = '智能';
