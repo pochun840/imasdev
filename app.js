@@ -106,6 +106,6 @@ async function connectComPort(port, baudRate, dataBits, stopBits, parity) {
 connectComPort(comport, 19200, 8, 2, 'none');
 
 // 啟動伺服器
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+app.listen(6000, () => {
+    console.log('Server is running on port 6000');
 });

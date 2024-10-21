@@ -104,7 +104,7 @@
             $.ajax({
                 type: 'POST',
                 url: '?url=Equipments/ktm_connect',
-                data: { comport: comPort },
+                data: { comport: comport },
                 dataType: 'json',
                 success: function(response) {
                     console.log(response); 
