@@ -22,7 +22,7 @@ $text['main_setting_text'] = '設定';
 $text['main_calibration_text'] = '校正';
 $text['main_user_text'] = '用戶';
 $text['main_historical_text'] = '歷史';
-$text['main_template_text'] = '参數組別';
+$text['main_template_text'] = '組別';
 $text['main_DB_SYNC_text'] = '數據同步';
 
 
