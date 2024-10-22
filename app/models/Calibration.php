@@ -257,7 +257,7 @@ class Calibration{
         $statement->bindValue(':ktm_type', $ktm_type );
         $statement->bindValue(':adapter_type', $adapter_type);
         $statement->bindValue(':operator', $_SESSION['user']);
-        $statement->bindValue(':toolsn', $tools_sn['device_sn']);
+        $statement->bindValue(':toolsn', $tools_sn);
         $statement->bindValue(':torque', $final);
         $statement->bindValue(':unit', '1');
         $statement->bindValue(':max_torque', $max_torque);

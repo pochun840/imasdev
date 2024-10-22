@@ -171,7 +171,17 @@ class Calibrations extends Controller
             session_start(); 
         }
     
-    
+        // 獲取工具序列號
+        $data_json = $this->SettingsController->Get_Device_Name(); 
+        if(!empty($data_json)){
+            $dataArray = json_decode($data_json, true);  
+            $tools_sn=trim($dataArray['tool_sn']);
+        }else{
+            $tools_sn = '';
+        }
+
+        //echo $tools_sn;die();
+
 
 
         // 獲取 cookie 中的 skipTurnRev 的值
@@ -187,17 +197,17 @@ class Calibrations extends Controller
         $file_path = $file_tmp . "/api/final_val.txt";
 
         // 檢查文件是否存在
-        if (!file_exists($file_path)) {
+        /*if (!file_exists($file_path)) {
             // 如果未顯示過文件未找到的消息，則顯示並設置標誌
             if (!isset($_SESSION['file_not_found'])) {
                 echo json_encode(array('success' => false, 'message' => '文件未找到'));
                 $_SESSION['file_not_found'] = true; // 設置標誌
             }
             return;
-        }
+        }*/
     
         // 讀取文件內容
-        $fileContent = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); 
+        /*$fileContent = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); 
         $cleanedDataArray = [];
     
         // 清理文件內容
@@ -207,18 +217,12 @@ class Calibrations extends Controller
             if (preg_match('/^[+-]?(\s*\d+(\.\d+)?|\s+\d+(\.\d+)?)$/', $cleanedData)) {
                 $cleanedDataArray[] = trim(str_replace(' ', '', $cleanedData)); 
             }
-        }
+        }*/
 
-        // 獲取工具序列號
-        $data_json = $this->SettingsController->Get_Device_Name(); 
-        if(!empty($data_json)){
-            $dataArray = json_decode($data_json, true);  
-            $tools_sn=trim($dataArray['tool_sn']);
-        }else{
-            $tools_sn = '';
-        }
- 
-    
+        $final = 0.27;
+        
+        $res = $this->CalibrationModel->tidy_data($final, $tools_sn);
+        die();
         // 如果清理後的數據數組不為空
         if (!empty($cleanedDataArray)) {
             $lastValue = end($cleanedDataArray); 
@@ -236,7 +240,7 @@ class Calibrations extends Controller
 
             //轉換浮點數
             $final = floatval($finalNumber);
-
+            $final = 0.26;
 
             // 删除文件的计数器
             //$unlinkCount = 0;

@@ -194,6 +194,7 @@ $text['Download_text'] = '下载';
 //history page - combine
 $text['Combine_data_text'] = '合并数据';
 
+
 //template page 
 $text['Program_Template_text'] = '组别';
 $text['Choose_Controller_text'] = '选择控制器';
