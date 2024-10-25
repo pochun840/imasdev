@@ -1,21 +1,23 @@
 <!-- ARM Edit Setting -->
     <div id="ARM_Edit_Setting" style="display: none">
         <div class="topnav">
-            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 5%"><?php echo $text['ARM_Setting_text']; ?></label>
+            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 68px"><?php echo $text['ARM_Setting_text']; ?></label>
             <button class="btn" id="back-btn" type="button" onclick="cancelSetting()">
                 <img id="img-back" src="./img/back.svg" alt=""><?php echo $text['Back_text']; ?>
             </button>
         </div>
         <div class="main-content">
             <div class="center-content">
-                <div class="container">
+                <div class="navbutton-content">
                     <div class="wrapper" style="top: 0">
                         <div class="navbutton active" onclick="handleButtonClick(this, 'armconnection')">
                             <span data-content="<?php echo $text['Connection_setting_text']; ?>" onclick="showContent('armconnection')"></span><?php echo $text['Connection_setting_text']; ?>
                         </div>
+                        <!--
                         <div class="navbutton" onclick="handleButtonClick(this, 'armsteting')">
                             <span data-content="<?php echo $text['Arm_Encoders_setting_text']; ?>" onclick="showContent('armsteting')"></span><?php echo $text['Arm_Encoders_setting_text']; ?>
                         </div>
+                        -->
                     </div>
 
                     <div id="armconnectionContent" class="content ">
@@ -41,17 +43,16 @@
                             </div> -->
 
                             <div class="row t3">
-                                <div class="col-1 t3">
-                                    <select id="comport" style="width: 110px">
+                                <div class="col-2 t3">
+                                    <select id="comport" style="width: 110px; margin-right: 10px">
                                         <?php 
                                             foreach ($data['comPorts'] as $key => $value) {
                                                 echo '<option value="'.$value.'">'.$value.'</option>';
                                             }
                                         ?>
                                     </select>
-                                </div>
-                                <div class="col-1 t3">
-                                    <select id="baudRate" style="width: 110px" disabled>
+
+                                    <select id="baudRate" style="width: 110px; margin-right: 10px" disabled>
                                         <option value="115200">115200</option>
                                         <option value="57600">57600</option>
                                         <option value="38400">38400</option>
@@ -60,18 +61,16 @@
                                         <option value="2400">2400</option>
                                         <option value="1200">1200</option>
                                     </select>
-                                </div>
-                                <div class="col-1 t3">
-                                    <select id="parity" style="width: 110px" disabled>
+
+                                    <select id="parity" style="width: 110px; margin-right: 10px" disabled>
                                         <option value="None" selected>None</option>
                                         <option value="Odd">Odd</option>
                                         <option value="Even">Even</option>
                                         <option value="Mark">Mark</option>
                                         <option value="Space">Space</option>
                                     </select>
-                                </div>
-                                <div class="col-1 t3">
-                                    <select id="dataBits" style="width: 110px" disabled>
+
+                                    <select id="dataBits" style="width: 110px; margin-right: 10px" disabled>
                                         <option value="8" selected>8</option>
                                         <option value="7">7</option>
                                         <option value="6">6</option>
@@ -81,8 +80,7 @@
                                         <option value="2">2</option>
                                         <option value="1">1</option>
                                     </select>
-                                </div>
-                                <div class="col-1 t3">
+
                                     <select id="stopBits" style="width: 110px" disabled>
                                         <option value="10">10</option>
                                         <option value="4">4</option>
@@ -94,15 +92,6 @@
 
                             <hr style="color: #000;border: 0.5px solid #000;">
 
-                            <div class="row t4" style="padding-bottom: 10px">
-                                <div class="col-3 t3">
-                                    <label><b><?php echo $text['Zero_point_cali_text']; ?></b></label>
-                                </div>
-                                <div class="col">
-                                    <button type="button" class="btn btn-ZeroReset" onclick="set_arm_zero();"><?php echo $text['Zero_reset_text']; ?></button>
-                                </div>
-                            </div>
-
                             <div>
                                 <label style="font-size: 18px">
                                     <img style="height: 25px; width: 25px" class="images" src="./img/test-adjust.png" alt="">&nbsp;
@@ -110,26 +99,27 @@
                                 </label>
                             </div>
                             <div class="row t4">
-                                <div class="col-3 t3"><?php echo $text['Status_text']; ?>:
-                                    <label id="service_status" style="color: red; padding-left: 5%"> - </label>
-                                </div>
-                                <div class="col">
-                                    <button type="button" class="btn btn-Reconnect" onclick="Connect_arm_test('start')"><?php echo $text['Service_Start_text']; ?></button>
-                                    <button type="button" class="btn btn-Reconnect" onclick="Connect_arm_test('stop')"><?php echo $text['Service_Stop_text']; ?></button>
-                                    <button type="button" class="btn btn-Reconnect" onclick="Connect_arm_test('check')"><?php echo $text['Service_Check_text']; ?></button>
+                                <div class="col t3"><?php echo $text['Status_text']; ?>:
+                                    <label id="service_status" style="color: red; padding-left: 5%; margin-right: 20px"><?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
+
+                                    <button type="button" class="btn btn_All" onclick="Connect_arm_test('start')"><?php echo $text['Service_Start_text']; ?></button>
+                                    <button type="button" class="btn btn_All" onclick="Connect_arm_test('stop')"><?php echo $text['Service_Stop_text']; ?></button>
+                                    <!--
+                                    <button type="button" class="btn btn_All" onclick="Connect_arm_test('check')"><?php echo $text['Service_Check_text']; ?></button>
+                                    -->                              
                                 </div>
                             </div>
                             <div class="row t4">
                                 <div class="col t3"><b><?php echo $text['Communication_log_text']; ?></b></div>
                             </div>
-                            <div class="scrollbar-Communicationlog" id="style-Communicationlog-arm">
+                            <div class="scrollbar-Communicationlog" id="style-Communicationlog">
                                 <div id="connect_log_arm" class="force-overflow-Communicationlog" style="padding-left: 5%">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Arm Encoders Setting -->
+                    <!-- Arm Encoders Setting 
                     <div id="armstetingContent" class="content "  style="display: none;">
                         <div style="padding-left: 7%; padding: 40px">
                             <div class="scrollbar-Arm" id="style-Arm">
@@ -143,7 +133,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -152,7 +142,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -165,7 +155,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -177,7 +167,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -186,7 +176,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -198,7 +188,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -210,7 +200,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -219,7 +209,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -231,7 +221,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -243,7 +233,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -252,7 +242,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -264,7 +254,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -276,7 +266,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -285,7 +275,7 @@
                                                 <input type="text" id="" class="form-control input-ms" value="" maxlength="">
                                             </div>
                                             <div class="col-3 t2">
-                                                <button type="button" class="btn btn-Encoder"><?php echo $text['Confirm_text']; ?></button>
+                                                <button type="button" class="btn btn_All"><?php echo $text['Confirm_text']; ?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -293,6 +283,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
                     <button class="saveButton" id="saveButton"><?php echo $text['Save_text']; ?></button>
                 </div>
             </div>

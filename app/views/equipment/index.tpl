@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="<?php echo URLROOT; ?>css/nav.css" type="text/css">
 <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/datatables.min.css">
 
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/equipment.css" type="text/css">
+<link rel="stylesheet" href="<?php echo URLROOT; ?>css/equipment.css?v=202410251500" type="text/css">
 
 <?php echo $data['nav']; ?>
 
@@ -14,7 +14,7 @@
 
 /* Modal add equipment */
 .t3{font-size: 17px; margin: 3px 0px; display: flex; align-items: center; padding-left: 3%}
-.t4{font-size: 15px; margin: 3px 0px;}
+.t4{font-size: 17px; margin: 3px 0px;}
 .t5{font-size: 15px; margin: 3px 0px; height: 30px;}
 
 </style>
@@ -130,15 +130,16 @@
                             <div class="col-1">
                                 <img class="images" src="./img/GTCS.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; font-size:18px; padding-left: 5%">
-                                <div style="font-size: 20px"><b>GTCS</b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b>GTCS</b></div>
                                 <div>V.1.1.0</div>
-                                <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
+                            
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:17px">
-                                <form action="" id="device_Status">
-                                    <div class="mt-1" style="text-align:left;line-height: 55px; color: #FF6633">
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="device_Status"  name="device_Status" style="text-align: center">
+                                        ----
                                     </div>
                                 </form>
                             </div>
@@ -162,16 +163,15 @@
                             <div class="col-1">
                                 <img class="images" src="./img/ARM.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b><?php echo $text['Arm_text']; ?></b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b><?php echo $text['Arm_text']; ?></b></div>
                                 <div>V.1.1.0</div>
-                                <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="arm_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
-                                        ---
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div  id="arm_Status" style="text-align: center">
+                                        ----
                                     </div>
                                 </form>
                             </div>
@@ -191,25 +191,25 @@
                         </div>
 
                         <!-- pick-to-light sensors  -->
-                        <div class="row epuipment-row" style="display:none">
+                        <div class="row epuipment-row" style="display: none">
                             <div class="col-1">
                                 <img class="images" src="./img/ep_picture.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b>pick-to-light sensors</b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b>pick-to-light sensors</b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="Tool_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
-                                        ---
+                            <div class="col" style="font-size:18px">
+                                <form action="">
+                                    <div id="pick-to-light_Status" style="text-align: center">
+                                        ----
                                     </div>
                                 </form>
                             </div>
-
+                            
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
@@ -229,16 +229,16 @@
                             <div class="col-1">
                                 <img class="images" src="./img/light.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b><?php echo $text['Tower_Light_sensors_text']; ?></b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b><?php echo $text['Tower_Light_sensors_text']; ?></b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="Tool_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="Tower_light_Status" style="text-align: center">
                                         ---
                                     </div>
                                 </form>
@@ -247,7 +247,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox" >
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -263,17 +263,17 @@
                             <div class="col-1">
                                 <img class="images" src="./img/ep_picture.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b>PLC</b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b>PLC</b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="Tool_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
-                                        ---
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="PLC_Status" class="mt-1" style="text-align: center">
+                                        ----
                                     </div>
                                 </form>
                             </div>
@@ -297,16 +297,16 @@
                             <div class="col-1">
                                 <img class="images" src="./img/ep_picture.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b>KL-TCG</b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b>KL-TCG</b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="KL-TCG_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="KL-TCG_Status" class="mt-1" style="text-align: center">
                                         ---
                                     </div>
                                 </form>
@@ -332,16 +332,16 @@
                             <div class="col-1">
                                 <img class="images" src="./img/ep_picture.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b>Recycle box</b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b>Recycle box</b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="Recycle-box_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="Recycle-box_Status" class="mt-1" style="text-align: center">
                                         ---
                                     </div>
                                 </form>
@@ -350,7 +350,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox">
+                                        <input type="checkbox" >
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -366,16 +366,16 @@
                             <div class="col-1">
                                 <img class="images" src="./img/socket tray.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b><?php echo $text['Socket_Tray_text']; ?></b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b><?php echo $text['Socket_Tray_text']; ?></b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="Recycle-box_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="Socket_tray_Status" class="mt-1" style="text-align: center">
                                         ---
                                     </div>
                                 </form>
@@ -401,16 +401,16 @@
                             <div class="col-1">
                                 <img class="images" src="./img/id_card.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b><?php echo $text['id_card_text']; ?></b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b><?php echo $text['id_card_text']; ?></b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="Recycle-box_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="id_card_Status" class="mt-1" style="text-align: center">
                                         ---
                                     </div>
                                 </form>
@@ -419,7 +419,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox">
+                                        <input type="checkbox" >
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -436,16 +436,16 @@
                             <div class="col-1">
                                 <img class="images" src="./img/ktm.png" alt="">
                             </div>
-                            <div class="col-3" style="line-height: 32px; padding-left: 5%">
-                                <div style="font-size: 20px"><b><?php echo "KTM"; ?></b></div>
+                            <div class="col">
+                                <div class="mt-3" style="font-size: 20px"><b><?php echo "KTM"; ?></b></div>
                                 <div>V.1.1.0</div>
                                 <!-- <div>Nov 11.23 10:55</div> -->
                             </div>
 
                             <!-- Message  -->
-                            <div class="col-4" style="font-size:18px">
-                                <form action="" id="Recycle-box_Status">
-                                    <div class="mt-1" style="text-align: center;line-height: 55px">
+                            <div class="col" style="font-size:17px">
+                                <form action="">
+                                    <div id="KTM_Status" class="mt-1" style="text-align: center">
                                         ---
                                     </div>
                                 </form>
@@ -464,15 +464,12 @@
                                 <a><i id="Edit" class="fa fa-edit" onclick="ShowKtmSettingMode()"></i></a>
                             </div>
                         </div>
-
-
-                    </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
     <?php
         if(file_exists('../app/views/'.$data['div_device'].'.tpl')){
@@ -488,7 +485,7 @@
             require_once '../app/views/'.$data['div_tower_light'].'.tpl';
         }
         if(file_exists('../app/views/'.$data['div_plc_io'].'.tpl')){
-            //require_once '../app/views/'.$data['div_plc_io'].'.tpl';
+            require_once '../app/views/'.$data['div_plc_io'].'.tpl';
         }
         if(file_exists('../app/views/'.$data['div_recycle_box'].'.tpl')){
             require_once '../app/views/'.$data['div_recycle_box'].'.tpl';
@@ -644,6 +641,7 @@ function cancelSetting()
     var TowerLightSetting = document.getElementById('TowerLight_Edit_Setting');
     var PLCSetting = document.getElementById('PLC_In_Out_Setting');
     var SockettraySetting = document.getElementById('SocketTray_Edit_Setting');
+    var KTMSetting = document.getElementById('Ktm_Edit_Setting');
 
     // Check the current state and toggle accordingly
     if (DeviceSetting.style.display === 'block')
@@ -687,6 +685,12 @@ function cancelSetting()
         // If SockettraySetting is currently displayed, switch to EquipmentSetting
         EquipmentSetting.style.display = 'block';
         SockettraySetting.style.display = 'none';
+    }
+    else if (KTMSetting.style.display === 'block')
+    {
+        // If KTMSetting is currently displayed, switch to EquipmentSetting
+        EquipmentSetting.style.display = 'block';
+        KTMSetting.style.display = 'none';
     }
     else
     {

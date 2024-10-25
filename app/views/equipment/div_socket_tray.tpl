@@ -1,13 +1,13 @@
 <!-- Socket Tray Edit Setting -->
     <div id="SocketTray_Edit_Setting" style="display: none">
         <div class="topnav">
-            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 5%"><?php echo $text['Socket_tray_Setting_text']; ?></label>
+            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 68px"><?php echo $text['Socket_tray_Setting_text']; ?></label>
             <button class="btn" id="back-btn" type="button" onclick="cancelSetting()">
                 <img id="img-back" src="./img/back.svg" alt=""><?php echo $text['Back_text']; ?>
             </button>
         </div>
         <div class="center-content">
-            <div class="container">
+            <div class="navbutton-content">
                 <div class="wrapper" style="top: 0;">
                     <div class="navbutton active" onclick="handleButtonClick(this, 'sockettray')">
                         <span data-content="<?php echo $text['Connection_setting_text']; ?>" onclick="showContent('sockettray')"></span><?php echo $text['Connection_setting_text']; ?>
@@ -16,31 +16,24 @@
 
 
                 <div id="sockettrayContent" class="content">
-                    <div style="padding: 40px">
-                        <!-- <div class="row" style="padding-left: 4.2%">
-                            <div class="col-1 t3">Name:</div>
-                            <div class="col-2 t3">
-                                <input type="text" id="connect-name" class="t5 form-control input-ms" value="" maxlength="">
-                            </div>
-                        </div> -->
-                        <div style="padding-left: 5.5%">
-                                <div style="padding: 5px">
-                                    <label style="font-size: 18px">
-                                        <img style="height: 25px; width: 25px" class="images" src="./img/connection-control.svg" alt="">&nbsp;
-                                        <b><?php echo $text['Connection_control_text']; ?></b>
-                                    </label>
+                    <div style="padding-left: 7%; padding: 50px">
+                        <div style="padding: 5px">
+                            <label style="font-size: 18px">
+                                <img style="height: 25px; width: 25px" class="images" src="./img/connection-control.svg" alt="">&nbsp;
+                                <b><?php echo $text['Connection_control_text']; ?></b>
+                            </label>
+                        </div>
+                        <!-- <div class="row t3">
+                            <div class="col-3 t3 form-check form-check-inline">
+                                <input class="" type="radio" name="connection-control-socket-tray" id="socket-tray-test" value="1" checked="checked" style="zoom:1.2; vertical-align: middle;">&nbsp;&nbsp;
+                                <label class="form-check-label" for="socket-tray-test">PLC</label>
                                 </div>
-                                <!-- <div class="row t3">
-                                    <div class="col-3 t3 form-check form-check-inline">
-                                        <input class="" type="radio" name="connection-control-socket-tray" id="socket-tray-test" value="1" checked="checked" style="zoom:1.2; vertical-align: middle;">&nbsp;&nbsp;
-                                         <label class="form-check-label" for="socket-tray-test">PLC</label>
-                                    </div>
-                                </div> -->
+                        </div> -->
 
-                                <div class="row t3">
-                                    <div class="col-2 t3"><?php echo $text['Output_text']; ?> 1</div>
-                                    <div class="col-3 t3">
-                                        <select id="unit1" style="width: 80px" disabled>
+                                <div class="t3">
+                                    <div class="t1"><?php echo $text['Output_text']; ?> 1</div>
+                                    <div class="t3">
+                                        <select id="unit1" style="width: 80px; margin-right: 50px" disabled>
                                             <option value="0" selected>pin0</option>
                                             <option value="1">pin1</option>
                                             <option value="2">pin2</option>
@@ -55,8 +48,9 @@
                                             <option value="11">pin11</option>
                                         </select>
                                     </div>
-                                    <div class="col-2 t3"><?php echo $text['Input_text']; ?> 1</div>
-                                    <div class="col-3 t3">
+                                    
+                                    <div class="t1"><?php echo $text['Input_text']; ?> 1</div>
+                                    <div class="t3">
                                         <select id="unit2" style="width: 80px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1">pin1</option>
@@ -77,10 +71,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="row t3">
-                                    <div class="col-2 t3"><?php echo $text['Output_text']; ?> 2</div>
-                                    <div class="col-3 t3">
-                                        <select id="unit3" style="width: 80px" disabled>
+                                <div class="t3">
+                                    <div class="t1"><?php echo $text['Output_text']; ?> 2</div>
+                                    <div class="t3">
+                                        <select id="unit3" style="width: 80px; margin-right: 50px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1" selected>pin1</option>
                                             <option value="2">pin2</option>
@@ -95,8 +89,8 @@
                                             <option value="11">pin11</option>
                                         </select>
                                     </div>
-                                    <div class="col-2 t3"><?php echo $text['Input_text']; ?> 2</div>
-                                    <div class="col-3 t3">
+                                    <div class="t1"><?php echo $text['Input_text']; ?> 2</div>
+                                    <div class="t3">
                                         <select id="unit4" style="width: 80px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1">pin1</option>
@@ -117,10 +111,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="row t3">
-                                    <div class="col-2 t3"><?php echo $text['Output_text']; ?> 3</div>
-                                    <div class="col-3 t3">
-                                        <select id="unit5" style="width: 80px" disabled>
+                                <div class="t3">
+                                    <div class="t1"><?php echo $text['Output_text']; ?> 3</div>
+                                    <div class="t3">
+                                        <select id="unit5" style="width: 80px; margin-right: 50px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1">pin1</option>
                                             <option value="2">pin2</option>
@@ -135,8 +129,8 @@
                                             <option value="11">pin11</option>
                                         </select>
                                     </div>
-                                    <div class="col-2 t3"><?php echo $text['Input_text']; ?> 3</div>
-                                    <div class="col-3 t3">
+                                    <div class="t1"><?php echo $text['Input_text']; ?> 3</div>
+                                    <div class="t3">
                                         <select id="unit6" style="width: 80px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1">pin1</option>
@@ -158,10 +152,10 @@
                                     </div>
                                 </div>
                                 
-                                <div class="row t3">
-                                    <div class="col-2 t3"><?php echo $text['Output_text']; ?> 4</div>
-                                    <div class="col-3 t3">
-                                        <select id="unit7" style="width: 80px" disabled>
+                                <div class="t3">
+                                    <div class="t1"><?php echo $text['Output_text']; ?> 4</div>
+                                    <div class="t3">
+                                        <select id="unit7" style="width: 80px; margin-right: 50px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1">pin1</option>
                                             <option value="2">pin2</option>
@@ -185,21 +179,18 @@
                                     </label>
                                 </div>
                                 <div class="row t4">
-                                    <div class="col-3 t3"><?php echo $text['Status_text']; ?>:
-                                        <label style="color: red; padding-left: 3%"> </label>
-                                    </div>
-                                    <div class="col-1 t1">
-                                        <select id="hole_id" style="width: 80px">
+                                    <div class="col t1"><?php echo $text['Status_text']; ?>:
+                                        <label id="Status" style="color: red; padding-left: 3%; margin-right: 20px"></label>
+
+                                        <select id="hole_id" style="width: 80px; margin-right: 20px">
                                             <option value="1">1</option>
                                             <option value="2">2</option>
                                             <option value="3">3</option>
                                             <option value="4">4</option>
                                         </select>
-                                    </div>
 
-                                    <div class="col-3 t1">
-                                        <button type="button" class="btn btn-Reconnect" onclick="connect_test_socket_tray('test')"><?php echo $text['SET_text']; ?></button>&nbsp;
-                                        <button type="button" class="btn btn-Reconnect" onclick="connect_test_socket_tray('clear')"><?php echo $text['Clear_text']; ?></button>
+                                        <button type="button" class="btn btn_All" onclick="connect_test_socket_tray('test')"><?php echo $text['SET_text']; ?></button>&nbsp;
+                                        <button type="button" class="btn btn_All" onclick="connect_test_socket_tray('clear')"><?php echo $text['Clear_text']; ?></button>
                                     </div>
                                 </div>
                                 <div class="row t4">
@@ -215,12 +206,10 @@
                                         </div>
                                     </div>
                                 </div> -->
-                                <div class="scrollbar-Communicationlog" id="style-Communicationlog-sockettray">
+                                <div class="scrollbar-Communicationlog" id="style-Communicationlog">
                                     <div id="connect_log_sockettray" class="force-overflow-Communicationlog" style="padding-left: 5%">
                                     </div>
                                 </div>
-
-                        </div>
                     </div>
                 </div>
 

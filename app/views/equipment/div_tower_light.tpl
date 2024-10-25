@@ -25,13 +25,13 @@ if(!empty($data['tower_light_switch'])) {
 <!-- Tower Light Edit Setting -->
     <div id="TowerLight_Edit_Setting" style="display: none">
         <div class="topnav">
-            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 5%"><?php echo $text['Tower_Light_Setting_text'];?></label>
+            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 68px"><?php echo $text['Tower_Light_Setting_text'];?></label>
             <button class="btn" id="back-btn" type="button" onclick="cancelSetting()">
                 <img id="img-back" src="./img/back.svg" alt=""><?php echo $text['Back_text']; ?>
             </button>
         </div>
         <div class="center-content">
-            <div class="container">
+            <div class="navbutton-content">
                 <div class="wrapper" style="top: 0">
                     <div class="navbutton active" onclick="handleButtonClick(this, 'towerlight')">
                         <span data-content="<?php echo $text['Connection_setting_text']; ?>" onclick="showContent('towerlight')"></span><?php echo $text['Connection_setting_text']; ?>
@@ -43,10 +43,10 @@ if(!empty($data['tower_light_switch'])) {
 
 
                 <div id="towerlightContent" class="content">
-                    <div style="padding: 40px">
-                        <div class="row" style="padding-left: 5.5%">
-                            <div class="col-1 t3"><?php echo $text['Name_text']; ?>:</div>
-                            <div class="col-2 t3">
+                    <div style="padding-left: 7%; padding: 50px">
+                        <div class="t3">
+                            <div class="t1" style="margin-right: 20px"><?php echo $text['Name_text']; ?>:</div>
+                            <div class="t4">
                                 <input type="text" id="connect-name" class="t5 form-control input-ms" value="" maxlength="">
                             </div>
                         </div>
@@ -132,8 +132,8 @@ if(!empty($data['tower_light_switch'])) {
                                         <b><?php echo $text['Test_adjust_text']; ?></b>
                                     </label>
                                 </div>
-                                <div class="row t4">
-                                    <div class="col t3 coler-setting">
+                                <div class="t4">
+                                    <div class="t3 coler-setting">
                                         <label class="light_test"><?php echo $text['Red_text']; ?>
                                           <input id="test_Red" type="checkbox" checked="checked">
                                           <span class="checkmark checkmark_red"></span>
@@ -155,16 +155,15 @@ if(!empty($data['tower_light_switch'])) {
 
                                 <div class="row t4">
                                     <div class="col-3 t3"><?php echo $text['Status_text']; ?>:
-                                        <label style="color: red; padding-left: 3%"> </label>
-                                    </div>
-                                    <div class="col-3 t1">
-                                        <button type="button" class="btn btn-Reconnect" onclick="connect_test()"><?php echo $text['TEST_text']; ?></button>
+                                        <label style="color: red; padding-left: 3%; margin-right: 20px"> </label>
+
+                                        <button type="button" class="btn btn_All" onclick="connect_test()"><?php echo $text['TEST_text']; ?></button>
                                     </div>
                                 </div>
                                 <div class="row t4">
                                     <div class="col t3"><b><?php echo $text['Communication_log_text']; ?></b></div>
                                 </div>
-                                <div class="scrollbar-Communicationlog" id="style-Communicationlog-towerlight">
+                                <div class="scrollbar-Communicationlog" id="style-Communicationlog">
                                     <div id="connect_log" class="force-overflow-Communicationlog" style="padding-left: 5%">
                                     </div>
                                 </div>
@@ -182,201 +181,211 @@ if(!empty($data['tower_light_switch'])) {
                             </label>
                         </div>
 
-                        <div class="row t4">
-                            <div class="col-2 t3">
-                                <label><?php echo $text['Type_text']; ?></label>
+                        <div class="left-right-setting">
+                            <div class="left-column" style="width: 40%">
+                                <div class="row t4">
+                                    <div class="col-3 t3">
+                                        <label><?php echo $text['Type_text']; ?></label>
+                                    </div>
+                                    <div class="col t1">
+                                        <label style="font-weight: bold"><?php echo $text['Color_Configuration_text']; ?></label>
+                                    </div>
+                                </div>
+                                <div class="row t4" style="margin-bottom: 10px">
+                                    <div class="col-3 t3">
+                                        <label>OK</label>
+                                    </div>
+                                    <div class="col-4 t3 coler-setting">
+                                        <label class="light_test">
+                                            <input id="OK_Red" type="checkbox" checked="checked">
+                                            <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OK_Green" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OK_Yellow" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OK_Buzzer" type="checkbox"> 
+                                            <span class="<?php echo $buzzer_status;?>"><?php echo $text['Buzzer_text']; ?></span>
+                                        </label>
+                                    </div>
+                                </div>                                
+                                <div class="row t4" style="margin-bottom: 10px">
+                                    <div class="col-3 t3">
+                                        <label>NG</label>
+                                    </div>
+                                    <div class="col-4 t3 coler-setting">
+                                        <label class="light_test">
+                                            <input id="NG_Red" type="checkbox" checked="checked">
+                                            <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="NG_Green" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="NG_Yellow" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="NG_Buzzer" type="checkbox">
+                                            <span class="<?php echo $buzzer_status;?>"><?php echo $text['Buzzer_text']; ?></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row t4" style="margin-bottom: 10px">
+                                    <div class="col-3 t3">
+                                        <label>OK Sequence</label>
+                                    </div>
+                                    <div class="col-4 t3 coler-setting">
+                                        <label class="light_test">
+                                            <input id="OK_SEQ_Red" type="checkbox" checked="checked">
+                                            <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OK_SEQ_Green" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OK_SEQ_Yellow" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OK_SEQ_Buzzer" type="checkbox">
+                                            <span class="<?php echo $buzzer_status;?>"><?php echo $text['Buzzer_text']; ?></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row t4" style="margin-bottom: 10px">
+                                    <div class="col-3 t3">
+                                        <label>OK-ALL</label>
+                                    </div>
+                                    <div class="col-4 t3 coler-setting">
+                                        <label class="light_test">
+                                            <input id="OKALL_Red" type="checkbox" checked="checked">
+                                             <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OKALL_Green" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OKALL_Yellow" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="OKALL_Buzzer" type="checkbox">
+                                            <span class="<?php echo $buzzer_status;?>"><?php echo $text['Buzzer_text']; ?></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row t4">
+                                    <div class="col-3 t3">
+                                        <label>Sensor Error</label>
+                                    </div>
+                                    <div class="col-4 t3 coler-setting">
+                                        <label class="light_test">
+                                            <input id="ERROR_Red" type="checkbox" checked="checked">
+                                             <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="ERROR_Green" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="ERROR_Yellow" type="checkbox">
+                                            <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
+                                        </label>
+                                        <label class="light_test">
+                                            <input id="ERROR_Buzzer" type="checkbox">
+                                            <span class="<?php echo $buzzer_status;?>"><?php echo $text['Buzzer_text']; ?></span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-4 t1">
-                                <label style="font-weight: bold"><?php echo $text['Color_Configuration_text']; ?></label>
-                            </div>
-                            <div class="col t3">
-                                <label style="font-weight: bold; margin-left: 6.2%"><?php echo $text['Length_of_time_text']; ?></label>
+                            
+                            <div class="right-column">
+                                <div class="row t4">
+                                    <div class="col t1">
+                                        <label style="font-weight: bold; margin-left: 6.2%"><?php echo $text['Length_of_time_text']; ?></label>
+                                    </div>
+                                </div>
+                                <div class="row t4">
+                                    <div class="col t3">
+                                        <div class="form-check form-check-inline">
+                                            <!-- <input class="form-check-input" type="radio" name="OK-option" id="OK-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
+                                            <label class="form-check-label" for="OK-solid-light">
+                                                <img class="length-signal" src="./img/signal02.png" alt="">
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <input id="OK_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <span><?php echo $text['ms_text']; ?></span>
+                                        </div>
+                                    </div>
+                                </div>                                                                
+                                <div class="row t4">
+                                    <div class="col t3">
+                                        <div class="form-check form-check-inline">
+                                            <!-- <input class="form-check-input" type="radio" name="NG-option" id="NG-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
+                                            <label class="form-check-label" for="NG-solid-light">
+                                                <img class="length-signal" src="./img/signal02.png" alt="">
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <input id="NG_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <span><?php echo $text['ms_text']; ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row t4">
+                                    <div class="col t3">
+                                        <div class="form-check form-check-inline">
+                                            <!-- <input class="form-check-input" type="radio" name="OKALL-option" id="OKALL-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
+                                            <label class="form-check-label" for="OKALL-solid-light">
+                                                <img class="length-signal" src="./img/signal02.png" alt="">
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <input id="OK_SEQ_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <span><?php echo $text['ms_text']; ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row t4">
+                                   <div class="col t3">
+                                        <div class="form-check form-check-inline">
+                                            <!-- <input class="form-check-input" type="radio" name="OKALL-option" id="OKALL-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
+                                            <label class="form-check-label" for="OKALL-solid-light">
+                                                <img class="length-signal" src="./img/signal02.png" alt="">
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <input id="OKALL_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <span><?php echo $text['ms_text']; ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row t4">
+                                    <div class="col t3">
+                                        <div class="form-check form-check-inline">
+                                            <!-- <input class="form-check-input" type="radio" name="Error-option" id="Error-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
+                                            <label class="form-check-label" for="Error-solid-light">
+                                                <img class="length-signal" src="./img/signal02.png" alt="">
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <input id="ERROR_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> 
+                                            <span><?php echo $text['ms_text']; ?></span>
+                                        </div>
+                                   </div>
+                                </div>
                             </div>
                         </div>
-                        <!-- <div class="col t3" style="padding-left: 18%">
-                            <label style="margin-right: 48px; color: #339900">GREEN</label> <label style="margin-right: 42px; color: red">RED</label> <label style="color: orange">YELLOW</label>
-                        </div> -->
-
-                        <div class="row t4">
-                            <div class="col-2 t3">
-                                <label>OK</label>
-                            </div>
-                            <div class="col-4 t1 coler-setting">
-                                <label class="light_test">
-                                    <input id="OK_Red" type="checkbox" checked="checked">
-                                    <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OK_Green" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OK_Yellow" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OK_Buzzer" type="checkbox"> 
-                                    <span class="<?php echo $buzzer_status;?>"><?php echo $text['Buzzer_text']; ?></span>
-                                </label>
-                            </div>
-                            <div class="col t3">
-                                <div class="form-check form-check-inline">
-                                    <!-- <input class="form-check-input" type="radio" name="OK-option" id="OK-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
-                                    <label class="form-check-label" for="OK-solid-light">
-                                        <img class="length-signal" src="./img/signal02.png" alt="">
-                                    </label>
-                                </div>
-                                <div>
-                                    <input id="OK_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
-                                    <span><?php echo $text['ms_text']; ?></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row t4">
-                            <div class="col-2 t3">
-                                <label>NG</label>
-                            </div>
-                            <div class="col-4 t1 coler-setting">
-                                <label class="light_test">
-                                    <input id="NG_Red" type="checkbox" checked="checked">
-                                    <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="NG_Green" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="NG_Yellow" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="NG_Buzzer" type="checkbox">
-                                    <span class="<?php echo $buzzer_status;?>""><?php echo $text['Buzzer_text']; ?></span>
-                                </label>
-                            </div>
-                            <div class="col t3">
-                                <div class="form-check form-check-inline">
-                                    <!-- <input class="form-check-input" type="radio" name="NG-option" id="NG-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
-                                    <label class="form-check-label" for="NG-solid-light">
-                                        <img class="length-signal" src="./img/signal02.png" alt="">
-                                    </label>
-                                </div>
-                                <div>
-                                    <input id="NG_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
-                                    <span><?php echo $text['ms_text']; ?></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row t4">
-                            <div class="col-2 t3">
-                                <label>OK Sequence</label>
-                            </div>
-                            <div class="col-4 t1 coler-setting">
-                                <label class="light_test">
-                                    <input id="OK_SEQ_Red" type="checkbox" checked="checked">
-                                    <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OK_SEQ_Green" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OK_SEQ_Yellow" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OK_SEQ_Buzzer" type="checkbox">
-                                    <span class="<?php echo $buzzer_status;?>""><?php echo $text['Buzzer_text']; ?></span>
-                                </label>
-                            </div>
-                            <div class="col t3">
-                                <div class="form-check form-check-inline">
-                                    <!-- <input class="form-check-input" type="radio" name="OKALL-option" id="OKALL-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
-                                    <label class="form-check-label" for="OKALL-solid-light">
-                                        <img class="length-signal" src="./img/signal02.png" alt="">
-                                    </label>
-                                </div>
-                                <div>
-                                    <input id="OK_SEQ_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
-                                    <span><?php echo $text['ms_text']; ?></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row t4">
-                            <div class="col-2 t3">
-                                <label>OK-ALL</label>
-                            </div>
-                             <div class="col-4 t1 coler-setting">
-                                <label class="light_test">
-                                    <input id="OKALL_Red" type="checkbox" checked="checked">
-                                     <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OKALL_Green" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OKALL_Yellow" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="OKALL_Buzzer" type="checkbox">
-                                    <span class="<?php echo $buzzer_status;?>""><?php echo $text['Buzzer_text']; ?></span>
-                                </label>
-                            </div>
-                           <div class="col t3">
-                                <div class="form-check form-check-inline">
-                                    <!-- <input class="form-check-input" type="radio" name="OKALL-option" id="OKALL-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
-                                    <label class="form-check-label" for="OKALL-solid-light">
-                                        <img class="length-signal" src="./img/signal02.png" alt="">
-                                    </label>
-                                </div>
-                                <div>
-                                    <input id="OKALL_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
-                                    <span><?php echo $text['ms_text']; ?></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row t4">
-                            <div class="col-2 t3">
-                                <label>Sensor Error</label>
-                            </div>
-                            <div class="col-4 t1 coler-setting">
-                                <label class="light_test">
-                                    <input id="ERROR_Red" type="checkbox" checked="checked">
-                                     <span class="<?php echo 'checkmark checkmark_red' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="ERROR_Green" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_green' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="ERROR_Yellow" type="checkbox">
-                                    <span class="<?php echo 'checkmark checkmark_yellow' .' ' .$is_disabled;?>"></span>
-                                </label>
-                                <label class="light_test">
-                                    <input id="ERROR_Buzzer" type="checkbox">
-                                    <span class="<?php echo $buzzer_status;?>""><?php echo $text['Buzzer_text']; ?></span>
-                                </label>
-                            </div>
-                            <div class="col t3">
-                                <div class="form-check form-check-inline">
-                                    <!-- <input class="form-check-input" type="radio" name="Error-option" id="Error-solid-light" value="" style="zoom:1.0; vertical-align: middle"> -->
-                                    <label class="form-check-label" for="Error-solid-light">
-                                        <img class="length-signal" src="./img/signal02.png" alt="">
-                                    </label>
-                                </div>
-                                <div>
-                                    <input id="ERROR_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
-                                    <span><?php echo $text['ms_text']; ?></span>
-                                </div>
-                           </div>
-                        </div>
-
                     </div>
                 </div>
                 <button class="saveButton" id="saveButton" onclick="save_setting()"><?php echo $text['Save_text']; ?></button>

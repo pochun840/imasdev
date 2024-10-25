@@ -1,13 +1,13 @@
 <!-- Pick To Light Edit Setting -->
     <div id="PickToLight_Edit_Setting" style="display: none">
         <div class="topnav">
-            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 5%">Pick-To-Light Setting</label>
+            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 68px">Pick-To-Light Setting</label>
             <button class="btn" id="back-btn" type="button" onclick="cancelSetting()">
                 <img id="img-back" src="./img/back.svg" alt="">back
             </button>
         </div>
         <div class="center-content">
-            <div class="container">
+            <div class="navbutton-content">
                 <div class="wrapper" style="top: 0">
                     <div class="navbutton active" onclick="handleButtonClick(this, 'picktolight')">
                         <span data-content="Connect setting" onclick="showContent('picktolight')"></span>Connect setting
@@ -18,10 +18,10 @@
                 </div>
 
                 <div id="picktolightContent" class="content">
-                    <div style="padding-left: 7%; padding: 50px">
-                        <div class="row t1">
-                            <div class="col-1 t3">Name :</div>
-                            <div class="col-2 t2">
+                    <div id="Connect_Setting" style="padding: 50px">
+                        <div class="t3">
+                            <div class="t1" style="margin-right: 20px">Name :</div>
+                            <div class="t4">
                                 <input type="text" id="connect-name" class="t5 form-control input-ms" value="" maxlength="">
                             </div>
                         </div>
@@ -39,15 +39,15 @@
                             </div>
                         </div>
 
-                        <div class="row t3">
-                            <div class="col-1 t3">
-                                <select id="unit" style="width: 110px">
+                        <div class="t3">
+                            <div class="t3">
+                                <select id="unit" style="width: 100px">
                                     <option value="1">com 3</option>
                                     <option value="2">com 5</option>
                                 </select>
                             </div>
-                            <div class="col-1 t3">
-                                <select id="unit" style="width: 110px">
+                            <div class="t3">
+                                <select id="unit" style="width: 100px">
                                     <option value="1">115200</option>
                                     <option value="2">57600</option>
                                     <option value="3">38400</option>
@@ -57,8 +57,8 @@
                                     <option value="7">1200</option>
                                 </select>
                             </div>
-                            <div class="col-1 t3">
-                                <select id="unit" style="width: 110px">
+                            <div class="t3">
+                                <select id="unit" style="width: 100px">
                                     <option value="1">None</option>
                                     <option value="2">Odd</option>
                                     <option value="2">Even</option>
@@ -66,8 +66,8 @@
                                     <option value="2">Space</option>
                                 </select>
                             </div>
-                            <div class="col-1 t3">
-                                <select id="unit" style="width: 110px">
+                            <div class="t3">
+                                <select id="unit" style="width: 100px">
                                     <option value="1">8</option>
                                     <option value="2">7</option>
                                     <option value="3">6</option>
@@ -78,8 +78,8 @@
                                     <option value="8">1</option>
                                 </select>
                             </div>
-                            <div class="col-1 t3">
-                                <select id="unit" style="width: 110px">
+                            <div class="t3">
+                                <select id="unit" style="width: 100px">
                                     <option value="1">10</option>
                                     <option value="2">4</option>
                                     <option value="3">1</option>
@@ -93,14 +93,15 @@
                                 <label class="form-check-label" for="Device-TCP-IP">TCP/IP</label>
                             </div>
                         </div>
-                        <div class="row t4">
-                            <div class="col-2 t3">Network IP:</div>
-                            <div class="col-2 t4" style="margin-left: -5%">
-                                <input type="text" class="t5 form-control input-ms" id="Network-IP" value="192.168.0.184" maxlength="" required>
+                        <div class="t3">
+                            <div class="t1">Network IP:</div>
+                            <div class="t3">
+                                <input type="text" class="t5 form-control input-ms" id="Network-IP" style="width: 150px; margin-right: 20px" value="192.168.0.184" maxlength="" required>
                             </div>
-                            <div class="col-1 t3">Port:</div>
-                            <div class="col-1 t4">
-                                <input type="text" class="t5 form-control input-ms" id="Communication-Port" value="502" maxlength="" required>
+                            
+                            <div class="t1">Port:</div>
+                            <div class="t3">
+                                <input type="text" class="t5 form-control input-ms" id="Communication-Port" style="width: 80px;" value="502" maxlength="" required>
                             </div>
                         </div>
 
@@ -114,10 +115,8 @@
                         </div>
                         <div class="row t4">
                             <div class="col-3 t3">Status:
-                                <label style="color: red; padding-left: 5%"> offline/online</label>
-                            </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-Reconnect">Reconnect</button>
+                                <label style="color: red; padding-left: 5%; margin-right: 20px"> offline/online</label>
+                                <button type="button" class="btn btn_All">Reconnect</button>
                             </div>
                         </div>
                         <div class="row t4">

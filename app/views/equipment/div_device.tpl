@@ -1,7 +1,7 @@
 <!-- Device GTCS Ediet Setting -->
     <div id="Device_Edit_Setting" style="display: none">
         <div class="topnav">
-            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 5%">GTCS - <?php echo $text['Setting_text']; ?></label>
+            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 68px">GTCS - <?php echo $text['Setting_text']; ?></label>
             <button class="btn" id="back-btn" type="button" onclick="cancelSetting()">
                 <img id="img-back" src="./img/back.svg" alt=""><?php echo $text['Back_text']; ?>
             </button>
@@ -9,7 +9,7 @@
 
         <div class="main-content">
             <div class="center-content">
-                <div class="container">
+                <div class="navbutton-content">
                     <div class="wrapper" style=" top: 0">
                         <div class="navbutton active" onclick="handleButtonClick(this, 'connection')">
                             <span data-content="<?php echo $text['Connection_setting_text']; ?>" onclick="showContent('connection')"></span><?php echo $text['Connection_setting_text']; ?>
@@ -22,7 +22,7 @@
                         </div>
                     </div>
 
-                    <div id="connectionContent" class="content ">
+                    <div id="connectionContent" class="content">
                         <div style="padding-left: 7%; padding: 50px">
 
                             <div style="padding: 5px">
@@ -98,9 +98,7 @@
                                 
                                 <div class="col-2 t3">
                                     <input type="text" class="t5 form-control input-ms" id="Network-IP-device" value="<?php echo $data['controller_ip'];  ?>" maxlength="15" required>
-                                </div>
-                                <div class="col-2 t3">
-                                    <button onclick="save_controller_ip()"><?php echo $text['Save_text']; ?></button>
+                                    <button class="btn btn_All"  onclick="save_controller_ip()"><?php echo $text['Save_text']; ?></button>
                                 </div>
                                 
                                 <!-- <div class="col-2 t3">
@@ -123,17 +121,15 @@
                                 </label>
                             </div>
                             <div class="row t4">
-                                <div class="col-3 t3"><?php echo $text['Status_text']; ?>:
-                                    <label id="service_status_device" style="color: red; padding-left: 5%"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
-                                </div>
-                                <div class="col">
-                                    <button type="button" class="btn btn-Reconnect" onclick="connect_test_gtcs()"><?php echo $text['Connect_Test_text']; ?></button>
+                                <div class="col t3"><?php echo $text['Status_text']; ?>:
+                                    <label id="service_status_device" style="color: red; padding-left: 5%"><?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
+                                    <button type="button" class="btn btn_All" onclick="connect_test_gtcs()"><?php echo $text['Connect_Test_text']; ?></button>
                                 </div>
                             </div>
                             <div class="row t4">
                                 <div class="col t3"><b><?php echo $text['Communication_log_text']; ?></b></div>
                             </div>
-                            <div class="scrollbar-Communicationlog" id="style-Communicationlog-device">
+                            <div class="scrollbar-Communicationlog" id="style-Communicationlog">
                                 <div id="connect_log_device" class="force-overflow-Communicationlog" style="padding-left: 5%">
                                 </div>
                             </div>
@@ -141,7 +137,7 @@
                     </div>
 
                     <div id="controllerContent" class="content"  style="display: none;">
-                        <div style="padding-left: 7%; padding: 60px">
+                        <div class="scrollbar_Setting" style="padding-left: 7%; padding: 60px">
                             <div class="col t1" style="padding: 10px"><b><?php echo $text['Contrller_Setting_text']; ?></b></div>
                             <div class="row t1">
                                 <div class="col-2 t1" ><?php echo $text['ID_text']; ?> :</div>
@@ -180,8 +176,8 @@
 
                                 <div class="col-3 t1" style="padding-left: 10%"><?php echo $text['Export_data_text']; ?> :</div>
                                 <div class="col t2">
-                                    <button class="export-impost-data w3-button w3-border w3-round-large" style="float: right"><?php echo $text['Copy_data_text']; ?></button>
-                                    <button class="export-impost-data w3-button w3-border w3-round-large" style="float: right"><?php echo $text['Export_text']; ?></button>
+                                    <button class="btn btn_All" style="float: right"><?php echo $text['Copy_data_text']; ?></button>
+                                    <button class="btn btn_All" style="float: right"><?php echo $text['Export_text']; ?></button>
                                 </div>
                             </div>
 
@@ -196,7 +192,7 @@
                                     <input type="file" id="export-data-uploader" data-target="import-file-uploader" accept=".cfg" style="display: inline-block;" class="t2 form-control">
                                 </div>
                                 <div class="col t2">
-                                    <button class="expost-impost-data w3-button w3-border w3-round-large" style="float: right"><?php echo $text['Import_text']; ?></button>
+                                    <button class="btn btn_All" style="float: right"><?php echo $text['Import_text']; ?></button>
                                 </div>
                             </div>
 
@@ -211,7 +207,7 @@
                                     <input type="file" id="firmware-uploader" data-target="import-file-uploader" accept=".cfg" style="display: inline-block;" class="t2 form-control">
                                 </div>
                                 <div class="col t2">
-                                    <button class="expost-impost-data w3-button w3-border w3-round-large" style="float: right;"><?php echo $text['Update_text']; ?></button>
+                                    <button class="btn btn_All" style="float: right;"><?php echo $text['Update_text']; ?></button>
                                 </div>
                             </div>
 
@@ -231,12 +227,13 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <button class="saveButton" style="right:110px;" onclick="load_device_setting()"><?php echo $text['Read_text']; ?></button>
                         <button class="saveButton" id="saveButton" onclick="save_controller_device_name()"><?php echo $text['Save_text']; ?></button>
                     </div>
 
                     <div id="informationContent" class="content"  style="display: none;">
-                        <div style="padding-left: 5%; padding: 60px">
+                        <div class="scrollbar_Setting" style="padding-left: 5%; padding: 60px">
                             <div class="row t1">
                                 <div class="col-5 t1" style="padding: 10px;"><b><?php echo $text['Tool_Information_text']; ?></b></div>
                                 <div class="col t1" style="padding: 10px; padding-left: 5%"><b><?php echo $text['Controller_Information_text']; ?></b></div>
@@ -318,7 +315,7 @@
                                 </div>
 
                                 <div class="col t2">
-                                    <button class="expost-impost-data w3-button w3-border w3-round-large"><?php echo $text['Refresh_text']; ?></button>
+                                    <button class="btn btn_All"><?php echo $text['Refresh_text']; ?></button>
                                 </div>
                             </div>
 

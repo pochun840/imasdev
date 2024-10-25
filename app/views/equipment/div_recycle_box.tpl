@@ -1,14 +1,14 @@
 <!-- Recycle Box Edit Setting -->
     <div id="RecycleBox_Edit_Setting" style="display: none">
         <div class="topnav">
-            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 5%">Recycle Box Setting</label>
+            <label type="text" style="font-size: 20px; margin: 4px; padding-left: 68px">Recycle Box Setting</label>
             <button class="btn" id="back-btn" type="button" onclick="cancelSetting()">
                 <img id="img-back" src="./img/back.svg" alt="">back
             </button>
         </div>
         <div class="main-content">
             <div class="center-content">
-                <div class="container">
+                <div class="navbutton-content">
                     <div class="wrapper" style=" top: 0">
                         <div class="navbutton" onclick="handleButtonClick(this, 'recyclebox')">
                             <span data-content="Connect setting" onclick="showContent('recyclebox')"></span>Connect setting
@@ -122,10 +122,8 @@
                             </div>
                             <div class="row t4">
                                 <div class="col-3 t3">Status:
-                                    <label style="color: red; padding-left: 5%"> offline/online</label>
-                                </div>
-                                <div class="col">
-                                    <button type="button" class="btn btn-Reconnect">Reconnect</button>
+                                    <label style="color: red; padding-left: 5%; margin-right: 20px"> offline/online</label>
+                                    <button type="button" class="btn btn_All">Reconnect</button>
                                 </div>
                             </div>
                             <div class="row t4">
