@@ -368,7 +368,7 @@
             <header class="w3-container modal-header">
                 <span onclick="document.getElementById('barcode-setting').style.display='none'"
                     class="w3-button w3-red w3-xxlarge w3-display-topright" style="padding: 7px; width: 60px">&times;</span>
-                <h3>Barcode Setting</h3>
+                <h3><?php echo $text['Barcode_text'].$text['Setting_text'];?></h3>
             </header>
 
             <div class="modal-body">
