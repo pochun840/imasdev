@@ -145,7 +145,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox" checked />
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -178,7 +178,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox" checked />
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -213,7 +213,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox" checked />
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -247,7 +247,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox" checked />
+                                        <input type="checkbox" >
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -281,7 +281,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox" checked />
+                                        <input type="checkbox" >
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -315,7 +315,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox" checked />
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -350,7 +350,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox"  checked />
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -384,7 +384,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox"  checked />
+                                        <input type="checkbox" >
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -419,7 +419,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox"  checked />
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
@@ -454,7 +454,7 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox"  checked />
+                                        <input type="checkbox">
                                         <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
