@@ -90,12 +90,7 @@
             trigger: 'item',
             formatter: '{a} <br/>{b} : {c} ({d}%)'
         },
-        /*legend: {
-            orient: 'vertical',
-            left: 'left',
-            top: 'bottom',
-            data: ng_reason.map(function(item) { return item.name; })
-        },*/
+     
         series: [
             {
                 name: 'Error Type',
@@ -154,23 +149,8 @@
             trigger: 'item',
             formatter: '{a} <br/>{b} : {c} ({d}%)'
         },
-        /*legend: {
-            orient: 'vertical',
-            left: 'left',
-            top: 'bottom',
-            data: fastening_status.map(function(item) { return item.name; })
-        },*/
-        /*series: [
-            {
-                name: 'Status',
-                type: 'pie',
-                radius: '55%',
-                center: ['50%', '60%'],
-                data: fastening_status,
-                animationType: 'scale', 
-                animationEasing: 'elasticOut' 
-            }
-        ]*/
+      
+        
         series: [
             {
                 name: 'Status',

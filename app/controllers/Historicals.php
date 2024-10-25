@@ -242,8 +242,22 @@ class Historicals extends Controller
             }
 
             if($val =="fastening_status"){
-                $fastening_status_temp = $this->Historicals_newModel->for_history($val); 
+                //$fastening_status_temp = $this->Historicals_newModel->for_history($val); 
+                $fastening_status_temp  = $info;
                 if(!empty($fastening_status_temp)){
+                    $status_count = array_count_values(array_column($fastening_status_temp, 'fasten_status'));
+                    $fastening_status = array();
+                    foreach ($status_count as $status => $count) {
+                        $fastening_status[] = array(
+                            'value' => $count, // 统计数量
+                            'name' => isset($status_arr['status_type'][$status]) ? $status_arr['status_type'][$status] : '' 
+                        );
+                    }
+                    $data['fastening_status'] = json_encode($fastening_status);
+                }
+                
+    
+                /*if(!empty($fastening_status_temp)){
                     foreach($fastening_status_temp as $key2 =>$val2){
                         $fastening_status_temp[$key2]['status_type'] = $status_arr['status_type'][$val2['fasten_status']];
                     }
@@ -255,7 +269,7 @@ class Historicals extends Controller
                 
 
                     $data['fastening_status'] = json_encode($fastening_status);
-                }
+                }*/
                 
             }
 

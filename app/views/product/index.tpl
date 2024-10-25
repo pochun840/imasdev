@@ -103,7 +103,12 @@
         <button id="barcode-btn" type="button" onclick="get_all_barcode()">
             <?php echo $text['Setting_text']; ?>
         </button>
-        <div class="topnav-right">
+        <div class="topnav-right"> 
+
+            <button id="add-job" type="button" onclick="window.open('?url=Templates', '_blank');">
+                <img id="img-job" src="./img/add-new-job.svg" alt=""><?php echo $text['Program_Template_text']; ?>
+            </button>
+
             <button id="add-job" type="button" onclick="new_job()">
                 <img id="img-job" src="./img/add-new-job.svg" alt=""><?php echo $text['Add_Job_text']; ?>
             </button>
