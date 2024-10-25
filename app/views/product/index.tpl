@@ -106,7 +106,7 @@
         <div class="topnav-right"> 
 
             <button id="add-job" type="button" onclick="window.open('?url=Templates', '_blank');">
-                <img id="img-job" src="./img/add-new-job.svg" alt=""><?php echo $text['Program_Template_text']; ?>
+                <img id="img-job" src="./img/template-head.svg" alt=""><?php echo $text['Program_Template_text']; ?>
             </button>
 
             <button id="add-job" type="button" onclick="new_job()">
