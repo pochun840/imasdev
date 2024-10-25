@@ -234,7 +234,7 @@ class Logins extends Controller
             
         }else{
             //轉回主畫面
-            header("Location:".$_SERVER['PHP_SELF']."?url=Mains");
+            header("Location:".$_SERVER['PHP_SELF']."?url=Equipments");
             exit();
         }
 

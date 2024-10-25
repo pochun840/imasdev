@@ -488,7 +488,7 @@
             require_once '../app/views/'.$data['div_tower_light'].'.tpl';
         }
         if(file_exists('../app/views/'.$data['div_plc_io'].'.tpl')){
-            require_once '../app/views/'.$data['div_plc_io'].'.tpl';
+            //require_once '../app/views/'.$data['div_plc_io'].'.tpl';
         }
         if(file_exists('../app/views/'.$data['div_recycle_box'].'.tpl')){
             require_once '../app/views/'.$data['div_recycle_box'].'.tpl';
@@ -501,7 +501,6 @@
         }
 
         if(file_exists('../app/views/'.$data['div_ktm'].'.tpl')){
-            echo "eeeert";
             require_once '../app/views/'.$data['div_ktm'].'.tpl';
         }
     ?>
