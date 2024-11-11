@@ -739,6 +739,77 @@ class Calibrations extends Controller
     }
 
 
+    public function Get_controller_data(){
+
+        $controller_ip = $this->EquipmentModel->GetControllerIP(1);    
+        $db_name = 'data'.date("Y").'.db';
+        $remote_file = '/var/www/html/database/'.$db_name;   ### 遠端檔案
+        $local_file = '../'.$db_name;   ### 本機儲存檔案名稱
+
+        $system_sn = '';
+        $fasten_torque = '';
+        $error_message = '';
+
+        ### 連接的 FTP 伺服器是 localhost
+        $conn_id = ftp_connect($controller_ip,21,3);
+
+        if ($conn_id) {
+
+            $handle = fopen($local_file, 'w');
+            // code...
+            ### 登入 FTP, 帳號是 USERNAME, 密碼是 PASSWORD
+            $USERNAME = FTP_USER;
+            $PASSWORD = FTP_PASSWORD;
+            $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
+
+            if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
+                // echo "下載成功, 並儲存到 $local_file\n";
+            } else {
+                // echo "下載 $remote_file 到 $local_file 失敗\n";
+            }
+            ftp_close($conn_id);
+            fclose($handle);
+        }
+
+        //----開始get sn name
+
+        $dbPath = '../'.$db_name;
+           try {
+               // 创建 PDO 连接
+               $pdo = new PDO("sqlite:$dbPath");
+   
+               // 设置 PDO 错误模式为异常
+               $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+   
+               $sql = 'SELECT * FROM data order by system_sn desc limit 0,1';
+               $statement = $pdo->prepare($sql);
+               $statement->execute();
+               $results = $statement->fetch(PDO::FETCH_ASSOC);
+
+         
+
+   
+               $system_sn = $results['system_sn'];
+               $fasten_torque = $results['fasten_torque'];
+   
+   
+               // 关闭连接
+               $pdo = null;
+   
+           } catch(PDOException $e) {
+               echo "Error: " . $e->getMessage();
+               $error_message = $e->getMessage();
+               // return 'null';
+           }
+   
+           return  json_encode(array('system_sn' => $system_sn,
+                                     'fasten_torque' => $fasten_torque,
+                                     'error_message' => $error_message));
+
+
+    }
+
+
 
 
     
