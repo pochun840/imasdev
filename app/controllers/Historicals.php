@@ -30,8 +30,6 @@ class Historicals extends Controller
             if (!empty($totalItems)) {
                 $totalPages = ceil($totalItems / $limit);
             }
-        }else{
-            $limit = 100;
         }
 
         #資料取得
@@ -90,14 +88,10 @@ class Historicals extends Controller
     #搜尋資料
     public function search_info_list(){
 
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start(); 
-        }
-
         $info_arr = array();
         $info_arr = $_POST;
 
-        $_SESSION['info_arr'] = $info_arr;
+
         //die();
     
         $offset = 0;
@@ -213,18 +207,6 @@ class Historicals extends Controller
     #鎖附資料 圖表 
     public function history_result(){
         
-
-        $offset = 0;
-        $limit  = 10000;
-
-        $info_arr = isset($_SESSION['info_arr']) ? $_SESSION['info_arr'] : [];
-        if(!empty($info_arr)){
-            $info = $this->Historicals_newModel->monitors_info($info_arr,$offset,$limit);
-        }
-       
-
-
-
         $data = array();
         $status_arr = $this->Historicals_newModel->status_code_change();
         $mode_arr = array('ng_reason','fastening_status','job_info','statistics','bk');
@@ -234,7 +216,6 @@ class Historicals extends Controller
             
             if($val =="ng_reason"){
                 $ng_reason_temp = $this->Historicals_newModel->for_history($val);
-                //
                 if(!empty($ng_reason_temp)){
                     $ng_reason = $this->processNgReasonData($ng_reason_temp, $status_arr);
                     $data['ng_reason_json'] = json_encode($ng_reason);
@@ -242,22 +223,8 @@ class Historicals extends Controller
             }
 
             if($val =="fastening_status"){
-                //$fastening_status_temp = $this->Historicals_newModel->for_history($val); 
-                $fastening_status_temp  = $info;
+                $fastening_status_temp = $this->Historicals_newModel->for_history($val); 
                 if(!empty($fastening_status_temp)){
-                    $status_count = array_count_values(array_column($fastening_status_temp, 'fasten_status'));
-                    $fastening_status = array();
-                    foreach ($status_count as $status => $count) {
-                        $fastening_status[] = array(
-                            'value' => $count, // 统计数量
-                            'name' => isset($status_arr['status_type'][$status]) ? $status_arr['status_type'][$status] : '' 
-                        );
-                    }
-                    $data['fastening_status'] = json_encode($fastening_status);
-                }
-                
-    
-                /*if(!empty($fastening_status_temp)){
                     foreach($fastening_status_temp as $key2 =>$val2){
                         $fastening_status_temp[$key2]['status_type'] = $status_arr['status_type'][$val2['fasten_status']];
                     }
@@ -269,7 +236,7 @@ class Historicals extends Controller
                 
 
                     $data['fastening_status'] = json_encode($fastening_status);
-                }*/
+                }
                 
             }
 

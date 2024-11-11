@@ -153,7 +153,7 @@ class Equipments extends Controller
         $data_false = array(false,false,false,false,false,false,false,false,false,false,false,false);
 
         require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
-        $modbus = new ModbusMaster('192.168.1.75', "TCP");
+        $modbus = new ModbusMaster(IOBOX_IP, "TCP");
         try {
 
             $modbus->port = 502;

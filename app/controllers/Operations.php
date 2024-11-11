@@ -92,6 +92,7 @@ class Operations extends Controller
                 $task_list[$key]['last_step_name'] = $value['program'][array_key_last($value['program'])]['step_name'];
                 $task_list[$key]['last_step_count'] = count($value['program']);
                 $task_list[$key]['gtcs_job_id'] = $value['program'][array_key_last($value['program'])]['gtcs_job_id'];
+                $task_list[$key]['gtcs_seq_id'] = $value['program'][array_key_last($value['program'])]['gtcs_seq_id'];
 
                 //hi lo 直接改 0:window 1:hi-lo
                 if($value['program'][array_key_last($value['program'])]['step_monitoringmode'] == 0){
@@ -117,6 +118,7 @@ class Operations extends Controller
                 $task_list[$key]['last_step_name'] = $value['program']['step_name'] ?? null;
                 $task_list[$key]['last_step_count'] = 1;
                 $task_list[$key]['gtcs_job_id'] = $value['program']['gtcs_job_id'] ?? null;
+                $task_list[$key]['gtcs_seq_id'] = $value['program']['gtcs_seq_id'] ?? null;
             }     
         }
 
@@ -320,6 +322,12 @@ class Operations extends Controller
             $input_check = false;
             $error_message .= "job_id,";
         }
+        if( !empty($_POST['seq_id']) && isset($_POST['seq_id'])  ){
+            $seq_id = $_POST['seq_id'];
+        }else{ 
+            $input_check = false;
+            $error_message .= "seq_id,";
+        }
 
         if ($input_check) {
             require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
@@ -327,7 +335,7 @@ class Operations extends Controller
             try {
                 $modbus->port = 502;
                 $modbus->timeout_sec = 10;
-                $data = array($job_id);
+                $data = array($job_id,$seq_id);
                 $dataTypes = array("INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT");
                 
                 // FC 16
@@ -528,7 +536,7 @@ class Operations extends Controller
     {   
         $error_message = '';
         require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
-            $modbus = new ModbusMaster('192.168.1.75', "TCP");
+            $modbus = new ModbusMaster(IOBOX_IP, "TCP");
             try {
                 $modbus->port = 502;
                 $modbus->timeout_sec = 10;
@@ -810,7 +818,7 @@ class Operations extends Controller
         //要加先判斷連線是否通，不然會等太久
 
         require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
-        $modbus = new ModbusMaster('192.168.1.75', "TCP");
+        $modbus = new ModbusMaster(IOBOX_IP, "TCP");
         try {
             $modbus->port = 502;
             $modbus->timeout_sec = 3;

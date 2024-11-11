@@ -41,7 +41,7 @@ class Navs extends Controller
 
 
         $nav_head = '<nav class="main-menu"><ul>';
-        $nav_foot = '</ul> <ul class="logout"> <li> <a href="?url=Mains/logout"> <object type="image/svg+xml" data="./img/logout.svg" width="40" height="40">Edit Icon</object> <span class="nav-text"> '.$text['logout_text'].' </span> </a> </li> </ul> </nav>';
+        $nav_foot = '</ul> <ul class="logout"> <li> <a href="?url=Mains/logout"> <img class="nav-image" style=" background: none;" src="./img/logout.svg" alt="Home Icon" width="40" height="40"/> <span class="nav-text"> '.$text['logout_text'].' </span> </a> </li> </ul> </nav>';
         $nav_body = '';
 
         foreach ($rows as $key => $value) {

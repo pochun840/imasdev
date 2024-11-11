@@ -314,7 +314,7 @@
         document.getElementsByClassName('selected')[0].c
         console.log(ip)
         if (ip != null) {
-            window.open("http://"+ip+"/CC2/public/", "_blank");
+            window.open("http://"+ip+"/KISS/public/", "_blank");
         }
     }
 

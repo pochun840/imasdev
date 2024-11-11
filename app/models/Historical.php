@@ -61,7 +61,10 @@ class Historical{
             }else if($info_arr['status_val'] =="1"){
                 $sql .="AND fasten_status  in('4')";
             }else if($info_arr['status_val'] =="2"){
+               // $sql .="AND fasten_status = '4' ";
+
                 $sql .="AND fasten_status in('5','6') ";
+                // $sql .=" AND fasten_status = '5' or fasten_status = '6' ";
             }else{
                 $sql .=" AND fasten_status  in('7','8') ";
 

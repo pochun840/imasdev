@@ -104,9 +104,8 @@
 
                                     <button type="button" class="btn btn_All" onclick="Connect_arm_test('start')"><?php echo $text['Service_Start_text']; ?></button>
                                     <button type="button" class="btn btn_All" onclick="Connect_arm_test('stop')"><?php echo $text['Service_Stop_text']; ?></button>
-                                    <!--
                                     <button type="button" class="btn btn_All" onclick="Connect_arm_test('check')"><?php echo $text['Service_Check_text']; ?></button>
-                                    -->                              
+                                                                  
                                 </div>
                             </div>
                             <div class="row t4">

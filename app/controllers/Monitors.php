@@ -233,7 +233,7 @@ class Monitors extends Controller
                 $message .= $result;
                 exec("tasklist | findstr $pid", $output, $result);
                 if(empty($output)){
-                    var_dump(empty($output));
+                    // var_dump(empty($output));
                     $message = '服務已關閉';
                 }
             } else {

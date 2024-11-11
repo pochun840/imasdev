@@ -50,6 +50,26 @@ class Setting{
         return $rows;
     }
 
+    public function get_all_tasks_by_jobid($job_id)
+    {
+        $sql = "SELECT * FROM ccs_normalstep WHERE job_id = '".$job_id."' ORDER BY job_id,seq_id,task_id ";
+        $statement = $this->db->prepare($sql);
+        $results = $statement->execute();
+        $rows = $statement->fetchall(PDO::FETCH_ASSOC);
+
+        return $rows;
+    }
+
+    public function get_all_tasks_advanced_by_jobid($job_id)
+    {
+        $sql = "SELECT * FROM ccs_advancedstep WHERE job_id = '".$job_id."' ORDER BY job_id,seq_id,task_id ";
+        $statement = $this->db->prepare($sql);
+        $results = $statement->execute();
+        $rows = $statement->fetchall(PDO::FETCH_ASSOC);
+
+        return $rows;
+    }
+
     public function JobIdCheck($job_id,$job_data)
     {
         if( $this->CheckJobGTCS($job_id) ){ //已存在，
@@ -80,10 +100,10 @@ class Setting{
     public function SeqIdCheck($job_id,$seq_id,$seq_data)
     {
         // if( $this->CheckSeqGTCS($job_id,$seq_id) ){ //已存在，
-            $sql = "DELETE FROM `sequence` WHERE job_id = :job_id ";
+            $sql = "DELETE FROM `sequence` WHERE job_id = :job_id AND sequence_id = :seq_id ";
             $statement = $this->db_gtcs->prepare($sql);
             $statement->bindValue(':job_id', $job_id);
-            // $statement->bindValue(':seq_id', $seq_id);
+            $statement->bindValue(':seq_id', $seq_id);
             $statement->execute();
         // }
 
@@ -92,7 +112,7 @@ class Setting{
         $statement = $this->db_gtcs->prepare($sql);
         $statement->bindValue(':sequence_enable', 1);
         $statement->bindValue(':job_id', $job_id);
-        $statement->bindValue(':sequence_id', 1);
+        $statement->bindValue(':sequence_id', $seq_id);
         $statement->bindValue(':sequence_name', $seq_data['seq_name']);
         $statement->bindValue(':tightening_repeat', $seq_data['tightening_repeat']);
         $statement->bindValue(':ng_stop', 0); //改成0，因為會妨害中控與GTCS溝通 $seq_data['ng_stop']
@@ -106,13 +126,13 @@ class Setting{
 
     }
 
-    public function TaskIdCheck($task_data,$job_id,$seq_name)
+    public function TaskIdCheck($task_data,$job_id,$seq_name,$seq_id = 1)
     {
         // if( $this->CheckSeqGTCS($data['job_id']) ){ //已存在，
             $sql = "DELETE FROM `normalstep` WHERE job_id = :job_id AND sequence_id = :seq_id ";
             $statement = $this->db_gtcs->prepare($sql);
             $statement->bindValue(':job_id', $job_id);
-            $statement->bindValue(':seq_id', $task_data['seq_id']);
+            $statement->bindValue(':seq_id', $seq_id);
             $statement->execute();
         // }
 
@@ -120,7 +140,7 @@ class Setting{
                 VALUES (:job_id,:sequence_id,:sequence_name,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_hightorque,:step_lowtorque,:step_threshold_mode,:step_threshold_torque,:step_threshold_angle,:step_monitoringangle,:step_highangle,:step_lowangle,:step_downshift_enable,:step_downshift_torque,:step_downshift_speed,:torque_unit,:step_prr,:step_prr_rpm,:step_prr_angle,:step_downshift_mode,:step_downshift_angle )";
         $statement = $this->db_gtcs->prepare($sql);
         $statement->bindValue(':job_id', $job_id);
-        $statement->bindValue(':sequence_id', 1); // for normalstep
+        $statement->bindValue(':sequence_id', $seq_id); // for normalstep
         $statement->bindValue(':sequence_name', $seq_name);
         $statement->bindValue(':step_id', 1);// for normalstep
         $statement->bindValue(':step_name', $task_data['step_name']);
@@ -153,13 +173,13 @@ class Setting{
         return $results;
     }
 
-    public function TaskIdCheck_Advanced($task_data,$job_id,$seq_name)
+    public function TaskIdCheck_Advanced($task_data,$job_id,$seq_name,$seq_id)
     {
         // if( $this->CheckSeqGTCS($data['job_id']) ){ //已存在，
             $sql = "DELETE FROM `advancedstep` WHERE job_id = :job_id AND sequence_id = :seq_id AND step_id = :step_id ";
             $statement = $this->db_gtcs->prepare($sql);
             $statement->bindValue(':job_id', $job_id);
-            $statement->bindValue(':seq_id', $task_data['seq_id']);
+            $statement->bindValue(':seq_id', $seq_id);
             $statement->bindValue(':step_id', $task_data['step_id']);
             $statement->execute();
         // }
@@ -168,7 +188,7 @@ class Setting{
                 VALUES (:job_id,:sequence_id,:sequence_name,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope )";
         $statement = $this->db_gtcs->prepare($sql);
         $statement->bindValue(':job_id', $job_id);
-        $statement->bindValue(':sequence_id', 1); // for normalstep
+        $statement->bindValue(':sequence_id', $seq_id); // for normalstep
         $statement->bindValue(':sequence_name', $seq_name);
         $statement->bindValue(':step_id', $task_data['step_id']);// for normalstep
         $statement->bindValue(':step_name', $task_data['step_name']);
@@ -199,13 +219,14 @@ class Setting{
         return $results;
     }
 
-    public function TaskUpdate($task,$gtcs_job_id)
+    public function TaskUpdate($task,$gtcs_job_id,$gtcs_seq_id = 0)
     {
         $sql = "UPDATE `ccs_normalstep` 
-                    SET gtcs_job_id = :gtcs_job_id 
+                    SET gtcs_job_id = :gtcs_job_id, gtcs_seq_id = :gtcs_seq_id  
                     WHERE job_id = :job_id AND seq_id = :seq_id AND task_id = :task_id";
             $statement = $this->db->prepare($sql);
             $statement->bindValue(':gtcs_job_id', $gtcs_job_id);
+            $statement->bindValue(':gtcs_seq_id', $gtcs_seq_id);
             $statement->bindValue(':job_id', $task['job_id']);
             $statement->bindValue(':seq_id', $task['seq_id']);
             $statement->bindValue(':task_id', $task['task_id']);
@@ -215,13 +236,14 @@ class Setting{
         return $results;
     }
 
-    public function TaskUpdate_Advanced($task,$gtcs_job_id)
+    public function TaskUpdate_Advanced($task,$gtcs_job_id,$gtcs_seq_id = 0)
     {
         $sql = "UPDATE `ccs_advancedstep` 
-                    SET gtcs_job_id = :gtcs_job_id 
+                    SET gtcs_job_id = :gtcs_job_id , gtcs_seq_id = :gtcs_seq_id  
                     WHERE job_id = :job_id AND seq_id = :seq_id AND task_id = :task_id";
             $statement = $this->db->prepare($sql);
             $statement->bindValue(':gtcs_job_id', $gtcs_job_id);
+            $statement->bindValue(':gtcs_seq_id', $gtcs_seq_id);
             $statement->bindValue(':job_id', $task['job_id']);
             $statement->bindValue(':seq_id', $task['seq_id']);
             $statement->bindValue(':task_id', $task['task_id']);
@@ -288,5 +310,33 @@ class Setting{
             }
         }
     }
+
+    //新增table欄位
+    public function addColumnIfNotExists( $tableName, $columnName, $columnType) {
+        // 檢查欄位是否存在的 SQL 查詢
+        $checkColumnQuery = "PRAGMA table_info($tableName)";
+        $stmt = $this->db->query($checkColumnQuery);
+        $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 檢查指定的欄位是否已存在
+        foreach ($columns as $column) {
+            if ($column['name'] === $columnName) {
+                echo "欄位 '$columnName' 已存在於表格 '$tableName' 中。\n";
+                return;
+            }
+        }
+
+        // 如果欄位不存在，則新增該欄位
+        $addColumnQuery = "ALTER TABLE $tableName ADD COLUMN $columnName $columnType";
+        
+        try {
+            $this->db->exec($addColumnQuery);
+            echo "成功新增欄位 '$columnName' 到表格 '$tableName'。\n";
+        } catch (PDOException $e) {
+            echo "新增欄位時發生錯誤: " . $e->getMessage() . "\n";
+        }
+    }
+
+
 
 }

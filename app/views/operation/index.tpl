@@ -82,6 +82,7 @@
                 echo '<input id="task_'.$task['task_id'].'_y" value="'.$task['position_y'].'">';
                 echo '<input id="task_'.$task['task_id'].'_tolerance" value="'.$task['tolerance'].'">';
                 echo '<input id="task_'.$task['task_id'].'_gtcs_job_id" value="'.$task['gtcs_job_id'].'">';
+                echo '<input id="task_'.$task['task_id'].'_gtcs_seq_id" value="'.$task['gtcs_seq_id'].'">';
                 echo '<input id="task_'.$task['task_id'].'_hole_id" value="'.$task['hole_id'].'">';
 
                 echo '<input id="task_'.$task['task_id'].'_targettype" value="'.$task['last_targettype'].'">'; //targettype
@@ -1488,7 +1489,7 @@ tt.set('start_time',new Date())
                                                 var nn_task_id_str = String(nn_task_id);
                                                 var task = task_message_list_nn[nn_task_id_str];
 
-                                                if (typeof task_message_list_nn[nn_task_id_str_f] !== 'undefined') {
+                                                if (typeof task_message_list_nn[nn_task_id_str] !== 'undefined') {
                                                     if (task) {
                                                         let type = task.type ? task.type.trim() : '';
 
@@ -1729,6 +1730,7 @@ tt.set('start_time',new Date())
 function call_job() {
     let task_id = +document.getElementById('task_id').value;
     let gtcs_job_id = document.getElementById('task_'+task_id+'_gtcs_job_id').value;
+    let gtcs_seq_id = document.getElementById('task_'+task_id+'_gtcs_seq_id').value;
     let url = '?url=Operations/Call_Controller_Job';
 
     document.getElementById('modbus_switch').value = 0;
@@ -1738,7 +1740,7 @@ function call_job() {
             type: "POST",
             timeout: 3000, 
             url: url,
-            data: { 'job_id': gtcs_job_id },
+            data: { 'job_id': gtcs_job_id, 'seq_id': gtcs_seq_id },
             // dataType: "json",
             // async:false
         }).done(function(response) { //成功且有回傳值才會執行

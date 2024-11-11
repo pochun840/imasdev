@@ -244,91 +244,116 @@ class Settings extends Controller
 
     public function CCToGTCS($device_id,$device_name)
     {
+        //20241111  ccs_normalstep, ccs_advancedstep 追加 gtcs_seq_id 欄位
+        $this->SettingModel->addColumnIfNotExists('ccs_normalstep', 'gtcs_seq_id', 'INTEGER'); //gtcs的step
+        $this->SettingModel->addColumnIfNotExists('ccs_advancedstep', 'gtcs_seq_id', 'INTEGER'); //gtcs的step
+
         //將中控設定寫入db，同時更新對應的資料task id與job id
 
-        //select 中控 task 再帶出job與sequence的設定值， 最後寫入tcscon
-        //select from ccs_normalstep (應該要再加advancedstep)
-        $tasks = $this->SettingModel->get_all_tasks(); //gtcs的step
+        //20241108 改用task = seq
+        // 1. get cc job list
+        // 2. get job normal - task
+        // 3. write task to gtcs normal job
+        // 4. get job advanced - task
+        // 5. write task to gtcs advanced job
 
-        $gtcs_job_id_count = 1;
-        
-        foreach ($tasks as $key => $task) {
-            //get CC job data
-            $job_data = $this->ProductModel->getJobById($task['job_id']);
-            //get CC seq data
-            $seq_data = $this->SequenceModel->GetSeqById($task['job_id'],$task['seq_id']);
+        $normal_job_id = 1;
+        $advanced_job_id = 101;
 
-            if($seq_data != false){
+
+        $job_list = $this->ProductModel->getJobs();
+
+
+        foreach ($job_list as $key => $job) {
+
+            //get job data
+            $job_data = $this->ProductModel->getJobById($job['job_id']);
+
+            $normal_seq_id = 1;
+            $advanced_seq_id = 1;
+
+            $normal_tasks = $this->SettingModel->get_all_tasks_by_jobid($job['job_id']); //gtcs的step
+
+            //set normal step
+            foreach ($normal_tasks as $key => $normal_task) {
+                //get seq data
+                $seq_data = $this->SequenceModel->GetSeqById($normal_task['job_id'],$normal_task['seq_id']);
+
                 //建立job
-                $this->SettingModel->JobIdCheck($gtcs_job_id_count,$job_data);
+                $this->SettingModel->JobIdCheck($normal_job_id,$job_data);
                 //建立sequence
-                $this->SettingModel->SeqIdCheck($gtcs_job_id_count,$task['seq_id'],$seq_data);
+                $this->SettingModel->SeqIdCheck($normal_job_id,$normal_seq_id,$seq_data);
                 //建立step
-                $this->SettingModel->TaskIdCheck($task,$gtcs_job_id_count,$seq_data['seq_name']);
+                $this->SettingModel->TaskIdCheck($normal_task,$normal_job_id,$seq_data['seq_name'],$normal_seq_id);
 
                 //將gtcs對應的job_id寫回task的gtcs_job_id 
-                $this->SettingModel->TaskUpdate($task,$gtcs_job_id_count);
+                $this->SettingModel->TaskUpdate($normal_task,$normal_job_id,$normal_seq_id);
 
-                $gtcs_job_id_count++;
+                $normal_seq_id++;
             }
 
-        }
+            
 
-        //advanced job
-        $advanced_tasks = $this->SettingModel->get_all_tasks_advanced(); //gtcs的step
+            //set adv step
+            $adv_tasks = $this->SettingModel->get_all_tasks_advanced_by_jobid($job['job_id']); //gtcs的step
 
-        $gtcs_adv_job_id_count = 100;
-        $last_job_id = 0;
-        $last_seq_id = 0;
-        $last_task_id = 0;
+            $last_seq_id = 0;
+            $last_task_id = 0;
+            foreach ($adv_tasks as $key => $adv_task) {
+                //get seq data
+                // $seq_data = $this->SequenceModel->GetSeqById($adv_task['job_id'],$adv_task['seq_id']);
 
-        foreach ($advanced_tasks as $key => $task) {
+                if( $last_seq_id != $adv_task['seq_id'] || $last_task_id != $adv_task['task_id'] ){//與前一筆task不同 job_id++
+                    $advanced_seq_id++;
 
-            if($last_job_id != $task['job_id'] || $last_seq_id != $task['seq_id'] || $last_task_id != $task['task_id'] ){//與前一筆task不同 job_id++
-                $gtcs_adv_job_id_count++;
+                    $last_job_id = $adv_task['job_id'];
+                    $last_seq_id = $adv_task['seq_id'];
+                    $last_task_id = $adv_task['task_id'];
 
-                $last_job_id = $task['job_id'];
-                $last_seq_id = $task['seq_id'];
-                $last_task_id = $task['task_id'];
+                    //get seq data
+                    $seq_data = $this->SequenceModel->GetSeqById($adv_task['job_id'],$adv_task['seq_id']);
 
-                //get CC job data
-                $job_data = $this->ProductModel->getJobById($task['job_id']);
-                //get CC seq data
-                $seq_data = $this->SequenceModel->GetSeqById($task['job_id'],$task['seq_id']);
+                    if($seq_data != false){
 
-                if($seq_data != false){
+                        //建立job
+                        $this->SettingModel->JobIdCheck($advanced_job_id,$job_data);
+                        //建立sequence
+                        $this->SettingModel->SeqIdCheck($advanced_job_id,$advanced_seq_id,$seq_data);
+                        //建立step
+                        $this->SettingModel->TaskIdCheck_Advanced($adv_task,$advanced_job_id,$seq_data['seq_name'],$advanced_seq_id);
 
-                    //建立job
-                    $this->SettingModel->JobIdCheck($gtcs_adv_job_id_count,$job_data);
-                    //建立sequence
-                    $this->SettingModel->SeqIdCheck($gtcs_adv_job_id_count,$task['seq_id'],$seq_data);
-                    //建立step
-                    $this->SettingModel->TaskIdCheck_Advanced($task,$gtcs_adv_job_id_count,$seq_data['seq_name']);
+                        //將gtcs對應的job_id寫回task的gtcs_job_id 
+                        $this->SettingModel->TaskUpdate_Advanced($adv_task,$advanced_job_id,$advanced_seq_id);
+                        
+                    }
 
-                    //將gtcs對應的job_id寫回task的gtcs_job_id 
-                    $this->SettingModel->TaskUpdate_Advanced($task,$gtcs_adv_job_id_count);
-                    
+                }else{//與前一筆task相同 job_id不用++
+                    //get CC seq data
+                    $seq_data = $this->SequenceModel->GetSeqById($adv_task['job_id'],$adv_task['seq_id']);
+
+                    if($seq_data != false){
+                        //建立job job_id相同不用再建立
+                        // $this->SettingModel->JobIdCheck($advanced_job_id,$job_data);
+                        //建立sequence
+                        $this->SettingModel->SeqIdCheck($advanced_job_id,$advanced_seq_id,$seq_data);
+                        //建立step
+                        $this->SettingModel->TaskIdCheck_Advanced($adv_task,$advanced_job_id,$seq_data['seq_name'],$advanced_seq_id);
+
+                        //將gtcs對應的job_id寫回task的gtcs_job_id 
+                        $this->SettingModel->TaskUpdate_Advanced($adv_task,$advanced_job_id,$advanced_seq_id);
+                    }
                 }
 
-            }else{//與前一筆task相同 job_id不用++
-                //get CC job data
-                $job_data = $this->ProductModel->getJobById($task['job_id']);
-                //get CC seq data
-                $seq_data = $this->SequenceModel->GetSeqById($task['job_id'],$task['seq_id']);
-
-                if($seq_data != false){
-                    //建立job job_id相同不用再建立
-                    // $this->SettingModel->JobIdCheck($gtcs_adv_job_id_count,$job_data);
-                    //建立sequence
-                    $this->SettingModel->SeqIdCheck($gtcs_adv_job_id_count,$task['seq_id'],$seq_data);
-                    //建立step
-                    $this->SettingModel->TaskIdCheck_Advanced($task,$gtcs_adv_job_id_count,$seq_data['seq_name']);
-
-                    //將gtcs對應的job_id寫回task的gtcs_job_id 
-                    $this->SettingModel->TaskUpdate_Advanced($task,$gtcs_adv_job_id_count);
-                }
             }
+
+            $normal_job_id++;
+            $advanced_job_id++;
+
         }
+        //end 20241108 改用task = seq
+
+
+
 
         //修改device_id、device_name
         if($device_id != '' && $device_name != ''){

@@ -14,4 +14,5 @@ define('SITENAME', 'KISS');
 define('FTP_USER', 'kls');
 define('FTP_PASSWORD', '12345678rd');
 
-//define('CONTROLLER_IP', '192.168.0.186');
+// IO盒IP
+define('IOBOX_IP', '192.168.111.75'); // 192.168.1.75
