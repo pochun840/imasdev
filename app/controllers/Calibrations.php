@@ -787,12 +787,10 @@ class Calibrations extends Controller
                $results = $statement->fetch(PDO::FETCH_ASSOC);
 
          
-
-   
                $system_sn = $results['system_sn'];
                $fasten_torque = $results['fasten_torque'];
    
-   
+
                // 关闭连接
                $pdo = null;
    
