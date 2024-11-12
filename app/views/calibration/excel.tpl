@@ -181,62 +181,139 @@
 
     var myChart = echarts.init(document.getElementById('mychart'));
 
-    var x_val = <?php echo $data['echart']['x_val']; ?>;
-    var y_val = <?php echo $data['echart']['y_val']; ?>;
     
 
-    var option = {
-        title: {
-            text: ''
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        xAxis: {
-            type: 'category',
-            name: 'Count',
-            data: x_val,
-        },
-        yAxis: {
-            type: 'value',
-            name: 'Torque',
-        },
-        //dataZoom: generateDataZoom(),
-        series: [{
-            name: 'Torque',
-            type: 'line',
-            symbol: 'none',
-            sampling: 'average',
-            lineStyle: {
-                width: 0.75
+
+
+    var x_val = <?php echo isset($data['echart']['x_val']) ? json_encode($data['echart']['x_val']) : '[]'; ?>; 
+    var y_val_torque_1 = <?php echo isset($data['echart']['y_val_torque_1']) ? json_encode($data['echart']['y_val_torque_1']) : '[]'; ?>; 
+    var y_val_torque_2 = <?php echo isset($data['echart']['y_val_torque_2']) ? json_encode($data['echart']['y_val_torque_2']) : '[]'; ?>; 
+
+    x_val = convertToNumberArray(x_val);
+    y_val_torque_1 = convertToNumberArray(y_val_torque_1);
+    y_val_torque_2 = convertToNumberArray(y_val_torque_2);
+    renderChart(x_val,y_val_torque_1,y_val_torque_2);
+
+    
+    function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
+        if (!x_val || !y_val_torque_1 || !y_val_torque_2 || x_val.length === 0 || y_val_torque_1.length === 0 || y_val_torque_2.length === 0) {
+            console.error('Data arrays are empty or undefined!');
+            return;  // Prevent rendering if data is invalid
+        }
+
+        var chartContainer = document.getElementById('mychart');
+        if (!chartContainer) {
+            console.error('Chart container not found!');
+            return;  // Prevent rendering if container is not found
+        }
+
+        if (!myChart) {
+            myChart = echarts.init(chartContainer);
+        }
+
+        var option = {
+            title: {
+                text: ''
             },
-            itemStyle: {
-                normal: {
+            tooltip: {
+                trigger: 'axis',  
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                },
+            formatter: function (params) {
+                    var tooltipContent = params[0].name + '<br>';
+                    params.forEach(function (param) {
+                        tooltipContent += param.seriesName + ': ' + param.value + '<br>';
+                    });
+                    return tooltipContent;
+                }
+            },
+            legend: {
+                data: ['Torque 1', 'Torque 2'],
+                top: 'top'
+            },
+            xAxis: {
+                type: 'category',
+                name: 'Count',
+                data: x_val,
+                boundaryGap: false,
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Torque',
+            },
+            series: [{
+                name: 'Torque 1',
+                type: 'line',
+                symbol: 'none',
+                sampling: 'average',
+                lineStyle: {
+                    width: 0.75,
                     color: 'rgb(255,0,0)'
-                }
+                },
+                itemStyle: {
+                    normal: {
+                        color: 'rgb(255,0,0)'
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgb(255,255,255)' },
+                            { offset: 1, color: 'rgb(255,255,255)' }
+                        ])
+                    }
+                },
+                data: y_val_torque_1,
             },
-            areaStyle: {
-                normal: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 0, [{
-                        offset: 0,
-                        color: 'rgb(255,255,255)'
-                    }, {
-                        offset: 0,
-                        color: 'rgb(255,255,255)'
-                    }])
-                }
-            },
+            {
+                name: 'Torque 2',
+                type: 'line',
+                symbol: 'none',
+                sampling: 'average',
+                lineStyle: {
+                    width: 0.75,
+                    color: 'rgb(0,0,255)'
+                },
+                itemStyle: {
+                    normal: {
+                        color: 'rgb(0,0,255)'
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgb(255,255,255)' },
+                            { offset: 1, color: 'rgb(255,255,255)' }
+                        ])
+                    }
+                },
+                data: y_val_torque_2,
+            }]
+        };
 
+        // Set the chart options
+        myChart.setOption(option, true);
+    }
 
-            data: y_val,
-        }]
-    };
+    function convertToNumberArray(data) {
+        if (Array.isArray(data)) {
+            return data.map(Number);  
+        }
 
-    myChart.setOption(option);
- 
+        try {
+            return JSON.parse(data).map(Number);
+        } catch (e) {
+            console.error('Invalid JSON format:', e);
+            return [];
+        }
+    }
+
 
     
-
 </script>
 <script>
 var type = '<?php echo $data['type']; ?>';
@@ -335,5 +412,8 @@ if (type  == "download") {
             saveAs(content, 'all_calibration' + today + '.zip');
         });
     });
+
+
+    
 }
 </script>

@@ -836,9 +836,9 @@ function fetchLatestInfo() {
             // 更新曲線圖
             if (data.echart_data && data.echart_data.x_val && data.echart_data.y_val_torque_1 && data.echart_data.y_val_torque_2) {
 
-                var x_val = JSON.parse(JSON.stringify(data.echart_data.x_val)).map(Number); 
-                var y_val_torque_1 = JSON.parse(JSON.stringify(data.echart_data.y_val_torque_1)).map(Number);
-                var y_val_torque_2 = JSON.parse(JSON.stringify(data.echart_data.y_val_torque_2)).map(Number);
+                var x_val = convertToNumberArray(data.echart_data.x_val);
+                var y_val_torque_1 = convertToNumberArray(data.echart_data.y_val_torque_1);
+                var y_val_torque_2 = convertToNumberArray(data.echart_data.y_val_torque_2);
 
                 renderChart(x_val,y_val_torque_1,y_val_torque_2);
             } else {
@@ -929,6 +929,7 @@ y_val_torque_2 =  JSON.parse(y_val_torque_2).map(Number);
 
 
 renderChart(x_val, y_val_torque_1,y_val_torque_2);
+
 function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
     if (!x_val || !y_val_torque_1 || !y_val_torque_2 || x_val.length === 0 || y_val_torque_1.length === 0 || y_val_torque_2.length === 0) {
         console.error('Data arrays are empty or undefined!');
@@ -1070,7 +1071,20 @@ function checkEnter(event) {
     var value = document.getElementById('implement_count').value;
 }
 
-
+function convertToNumberArray(data) {
+    // 檢查是否已經是數組，如果是則直接返回，如果不是則解析並轉換
+    if (Array.isArray(data)) {
+        return data.map(Number);  // 已經是數組，直接轉換每個元素為數字
+    }
+    
+    try {
+        // 如果 data 不是數組，則嘗試將其作為 JSON 字符串解析
+        return JSON.parse(data).map(Number);
+    } catch (e) {
+        console.error('Invalid JSON format:', e);
+        return [];
+    }
+}
 
 window.onload = function() {
     document.getElementById('tolerance').value = 10;

@@ -461,7 +461,7 @@ class Calibrations extends Controller
             #整理圖表所需要的資料
             $tmp['x_val'] = json_encode(array_column($echart_data, 'id'));
             $tmp['y_val_torque_1'] = json_encode(array_column($echart_data, 'torque'));
-            $tmp['y_val_torque_2'] = json_encode(array_column($echart_data, 'torque'));
+            $tmp['y_val_torque_2'] = json_encode(array_column($echart_data, 'fasten_torque'));
         }
 
         
@@ -489,6 +489,8 @@ class Calibrations extends Controller
             $data['type'] = '';
         }
         
+
+
 
         $this->view('calibration/excel',$data);
 
