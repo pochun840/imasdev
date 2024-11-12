@@ -167,62 +167,7 @@ function dataURLToBlob(dataURL) {
     return new Blob([u8arr], { type: mime });
 }
 
-// function calljoball(){
-//     document.getElementById("get_joball").style.display = "block";
-// }
 
-
-// function JobCheckbox()
-// {
-//     //取得 job被checked的值
-//     var checked_jobid = document.querySelectorAll('input[type="checkbox"][name="jobid"]:checked');
-//     var checkedjobidarr = [];
-//     checked_jobid.forEach(function(checkbox) {
-//         checkedjobidarr.push(checkbox.value);
-//     });
-// }
-
-// function JobCheckbox_seq(){
-
-//     //取得 job被checked的值
-//     var checked_jobid = document.querySelectorAll('input[type="checkbox"][name="jobid"]:checked');
-//     var checkedjobidarr = [];
-//     checked_jobid.forEach(function(checkbox) {
-//         checkedjobidarr.push(checkbox.value);
-//     });
-
-//     //取得 seq被checked的值
-//     var checked_seqid = document.querySelectorAll('input[type="checkbox"][name="seqid"]:checked');
-//     var checkedseqidarr = [];
-//     checked_seqid.forEach(function(checkbox) {
-//         checkedseqidarr.push(checkbox.value);
-//     });
-
-//     //checkedjobidarr &&  checkedseqidarr  不等於空值 要取得對應的task_id
-//     if(checkedjobidarr != '' && checkedseqidarr  != ''){
-//          $.ajax({
-//             type: "POST",
-//             data: {job_id: checkedjobidarr,seq_id: checkedseqidarr},
-//             url: '?url=Calibrations/get_correspond_val',
-//             success: function(response) {
-//                 if (response.trim() === '') {
-//                     alert('查無資料');
-//                     window.location.href = '?url=Calibrations';
-
-//                 } else {
-//                     var taskListElement = document.getElementById('Task-list');
-//                     taskListElement.style.display = 'block';
-//                     document.getElementById("Task-list").innerHTML = response;
-//                 }
-//             },
-//             error: function(error) {
-//             }
-//         }).fail(function () {
-//         });
-
-
-//     }
-// }
 
 function getCookie(cookieName) {
     var cookies = document.cookie.split(';');
