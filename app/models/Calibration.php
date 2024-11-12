@@ -176,7 +176,7 @@ class Calibration{
     }
 
     
-    public function tidy_data($final, $tools_sn) {
+    public function tidy_data($final, $tools_sn,$system_sn,$fasten_torque) {
         $job_id = 221;
 
     
@@ -211,11 +211,11 @@ class Calibration{
             $datatime = date("Ymd H:i:s");
     
             // 插入新記錄
-            $sql_in = "INSERT INTO `calibrations` (`id`, `job_id`, `controller_type`, `ktm_type`, `adapter_type`, 
-                         `operator`, `toolsn`, `torque`, `unit`, `max_torque`, `min_torque`, `avg_torque`, 
+            $sql_in = "INSERT INTO `calibrations` (`id`, `system_sn`,`job_id`, `controller_type`, `ktm_type`, `adapter_type`, 
+                         `operator`, `toolsn`, `torque`, `fasten_torque`,`unit`, `max_torque`, `min_torque`, `avg_torque`, 
                          `high_percent`, `low_percent`, `customize`, `datatime`)
-                       VALUES (:id, :job_id, :controller_type, :ktm_type, :adapter_type, :operator, 
-                       :toolsn, :torque, :unit, :max_torque, :min_torque, :avg_torque, 
+                       VALUES (:id, :system_sn :job_id, :controller_type, :ktm_type, :adapter_type, :operator, 
+                       :toolsn, :torque, :fasten_torque,:unit, :max_torque, :min_torque, :avg_torque, 
                        :high_percent, :low_percent, :customize, :datatime)";
     
             $statement = $this->db->prepare($sql_in);
@@ -225,7 +225,7 @@ class Calibration{
             }
     
             // 绑定參數
-            $this->bindInsertParameters($statement, $count, $job_id, $tools_sn, $final, $max_torque, $min_torque, $average_torque, $high_percent, $low_percent, $datatime);
+            $this->bindInsertParameters($statement, $count, $system_sn,$job_id, $tools_sn, $final, $fasten_torque,$max_torque, $min_torque, $average_torque, $high_percent, $low_percent, $datatime);
             
             // 執行插入
             if (!$statement->execute()) {
@@ -243,7 +243,7 @@ class Calibration{
     }
     
     // 绑定插入參數
-    private function bindInsertParameters($statement, $count, $job_id, $tools_sn, $final, $max_torque, $min_torque, $average_torque, $high_percent, $low_percent, $datatime) {
+    private function bindInsertParameters($statement, $count, $system_sn, $job_id, $tools_sn, $final, $fasten_torque,$max_torque, $min_torque, $average_torque, $high_percent, $low_percent, $datatime) {
         
         $controller_type = isset($_SESSION['torqueMeter']) ? $_SESSION['torqueMeter'] : '';
         $ktm_type = isset($_SESSION['controller']) ? $_SESSION['controller'] : '';
@@ -252,6 +252,7 @@ class Calibration{
 
         
         $statement->bindValue(':id', $count);
+        $statement->bindValue(':system_sn', $system_sn);
         $statement->bindValue(':job_id', $job_id);
         $statement->bindValue(':controller_type', $controller_type);
         $statement->bindValue(':ktm_type', $ktm_type );
@@ -259,6 +260,7 @@ class Calibration{
         $statement->bindValue(':operator', $_SESSION['user']);
         $statement->bindValue(':toolsn', $tools_sn);
         $statement->bindValue(':torque', $final);
+        $statement->bindValue(':fasten_torque', $fasten_torque);//$fasten_torque
         $statement->bindValue(':unit', '1');
         $statement->bindValue(':max_torque', $max_torque);
         $statement->bindValue(':min_torque', $min_torque);

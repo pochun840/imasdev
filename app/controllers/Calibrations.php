@@ -37,8 +37,7 @@ class Calibrations extends Controller
             $tools_sn = '';
         }
  
-        $controller_data = $this->get_controller_data();
-
+    
 
         $ktm = $this->CalibrationModel->details('torquemeter');
         $job_id = 221;
@@ -174,11 +173,11 @@ class Calibrations extends Controller
             session_start(); 
         }
     
-    
 
 
         // 獲取 cookie 中的 skipTurnRev 的值
         $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 0;
+
 
 
         
@@ -220,7 +219,15 @@ class Calibrations extends Controller
         }else{
             $tools_sn = '';
         }
- 
+
+        //取得控制器的system_sn 及 fasten_torque
+        $controller_data_json = $this->get_controller_data();
+        if(!empty($controller_data_json)){
+            $dataArray_temp = json_decode($controller_data_json, true);  
+            $system_sn = trim($dataArray_temp['system_sn']);
+            $fasten_torque = trim($dataArray_temp['fasten_torque']);
+        }
+
     
         // 如果清理後的數據數組不為空
         if (!empty($cleanedDataArray)) {
@@ -258,7 +265,7 @@ class Calibrations extends Controller
             
 
             // 整理數據
-            $res = $this->CalibrationModel->tidy_data($final, $tools_sn);
+            $res = $this->CalibrationModel->tidy_data($final, $tools_sn,$system_sn,$fasten_torque);
     
             // 返回整理結果
             if ($res == true) {
