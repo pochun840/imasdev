@@ -256,21 +256,20 @@
                         <div class="force-overflow-table">
                             <table class="table table-bordered table-hover" id="table">
                                 <thead id="header-table" style="text-align: center; vertical-align: middle">
-                                       <tr>
+                                    <tr>
                                         <th><?php echo $text['Index_text'];?></th>
                                         <th><?php echo $text['Time_text'];?></th>
                                         <th><?php echo $text['Operator_text'];?></th>
                                         <th><?php echo $text['Tool_SN_text'];?></th>
                                         <th><?php echo $text['Torque_text'];?></th>
+                                        <th><?php echo $text['Final_Torque_text'];?></th>
                                         <th><?php echo $text['Unit_text'];?></th>
-
                                         <th><?php echo $text['Max_Torque_text'];?></th>
                                         <th><?php echo $text['Min_Torque_text'];?></th>
                                         <th><?php echo $text['Avg_Torque_text'];?></th>
                                         <th>+ %</th>
                                         <th>- %</th>
                                         <th><?php echo $text['Customize_text'];?></th>
-                                   
                                     </tr>
                                 </thead>
 
@@ -283,6 +282,7 @@
                                                 <td><?php echo $val['operator']; ?></td>
                                                 <td><?php echo $val['toolsn']; ?></td>
                                                 <td><?php echo $val['torque']; ?></td>
+                                                <td><?php echo $val['fasten_torque']; ?></td>
                                                 <td><?php echo "N.m"; ?></td>
                                                 <td><?php echo $val['max_torque']; ?></td>
                                                 <td><?php echo $val['min_torque']; ?></td>
@@ -304,7 +304,7 @@
                     <div class="column column-chart">
                         <div class="chart-container" id='chart_block' style="display:block;">
                             <!---曲線圖---->
-                            <div  id="mychart" width="500px" height="300px"></div>
+                            <div  id="mychart" width="800px" height="600px"></div>
                         </div>
                     </div>
 
@@ -834,8 +834,13 @@ function fetchLatestInfo() {
             updateTable(data.info);
             
             // 更新曲線圖
-            if (data.echart_data && data.echart_data.x_val && data.echart_data.y_val) {
-                renderChart(data.echart_data.x_val, data.echart_data.y_val);
+            if (data.echart_data && data.echart_data.x_val && data.echart_data.y_val_torque_1 && data.echart_data.y_val_torque_2) {
+
+                var x_val = JSON.parse(JSON.stringify(data.echart_data.x_val)).map(Number); 
+                var y_val_torque_1 = JSON.parse(JSON.stringify(data.echart_data.y_val_torque_1)).map(Number);
+                var y_val_torque_2 = JSON.parse(JSON.stringify(data.echart_data.y_val_torque_2)).map(Number);
+
+                renderChart(x_val,y_val_torque_1,y_val_torque_2);
             } else {
                 console.log('No echart data available.');
             }
@@ -872,6 +877,7 @@ function updateTable(data) {
                 <td>${val.operator}</td>
                 <td>${val.toolsn}</td>
                 <td>${val.torque}</td>
+                 <td>${val.fasten_torque}</td>
                 <td>N.m</td>
                 <td>${val.max_torque}</td>
                 <td>${val.min_torque}</td>
@@ -912,14 +918,31 @@ function updateInputs(meterData) {
 <script>
 
 var x_val = <?php echo isset($data['echart']['x_val']) ? json_encode($data['echart']['x_val']) : '[]'; ?>; 
-var y_val = <?php echo isset($data['echart']['y_val']) ? json_encode($data['echart']['y_val']) : '[]'; ?>; 
+var y_val_torque_1 = <?php echo isset($data['echart']['y_val_torque_1']) ? json_encode($data['echart']['y_val_torque_1']) : '[]'; ?>; 
+var y_val_torque_2 = <?php echo isset($data['echart']['y_val_torque_2']) ? json_encode($data['echart']['y_val_torque_2']) : '[]'; ?>; 
 
-renderChart(x_val, y_val);
 
-function renderChart(x_val, y_val) {
+
+x_val = JSON.parse(x_val).map(Number); 
+y_val_torque_1 =  JSON.parse(y_val_torque_1).map(Number); 
+y_val_torque_2 =  JSON.parse(y_val_torque_2).map(Number);  
+
+
+renderChart(x_val, y_val_torque_1,y_val_torque_2);
+function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
+    if (!x_val || !y_val_torque_1 || !y_val_torque_2 || x_val.length === 0 || y_val_torque_1.length === 0 || y_val_torque_2.length === 0) {
+        console.error('Data arrays are empty or undefined!');
+        return;  // Prevent rendering if data is invalid
+    }
+
+    var chartContainer = document.getElementById('mychart');
+    if (!chartContainer) {
+        console.error('Chart container not found!');
+        return;  // Prevent rendering if container is not found
+    }
 
     if (!myChart) {
-        myChart = echarts.init(document.getElementById('mychart'));
+        myChart = echarts.init(chartContainer);
     }
 
     var option = {
@@ -927,26 +950,43 @@ function renderChart(x_val, y_val) {
             text: ''
         },
         tooltip: {
-            trigger: 'axis'
+            trigger: 'axis',  
+            axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                    color: '#999'
+                }
+            },
+           formatter: function (params) {
+                var tooltipContent = params[0].name + '<br>';
+                params.forEach(function (param) {
+                    tooltipContent += param.seriesName + ': ' + param.value + '<br>';
+                });
+                return tooltipContent;
+            }
+        },
+        legend: {
+            data: ['Torque 1', 'Torque 2'],
+            top: 'top'
         },
         xAxis: {
             type: 'category',
             name: 'Count',
             data: x_val,
             boundaryGap: false,
-            
         },
         yAxis: {
             type: 'value',
             name: 'Torque',
         },
         series: [{
-            name: 'Torque',
+            name: 'Torque 1',
             type: 'line',
             symbol: 'none',
             sampling: 'average',
             lineStyle: {
-                width: 0.75
+                width: 0.75,
+                color: 'rgb(255,0,0)'
             },
             itemStyle: {
                 normal: {
@@ -955,20 +995,42 @@ function renderChart(x_val, y_val) {
             },
             areaStyle: {
                 normal: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 0, [{
-                        offset: 0,
-                        color: 'rgb(255,255,255)'
-                    }, {
-                        offset: 1,
-                        color: 'rgb(255,255,255)'
-                    }])
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgb(255,255,255)' },
+                        { offset: 1, color: 'rgb(255,255,255)' }
+                    ])
                 }
             },
-            data: y_val,
+            data: y_val_torque_1,
+        },
+        {
+            name: 'Torque 2',
+            type: 'line',
+            symbol: 'none',
+            sampling: 'average',
+            lineStyle: {
+                width: 0.75,
+                color: 'rgb(0,0,255)'
+            },
+            itemStyle: {
+                normal: {
+                    color: 'rgb(0,0,255)'
+                }
+            },
+            areaStyle: {
+                normal: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgb(255,255,255)' },
+                        { offset: 1, color: 'rgb(255,255,255)' }
+                    ])
+                }
+            },
+            data: y_val_torque_2,
         }]
     };
 
-    myChart.setOption(option, true); 
+    // Set the chart options
+    myChart.setOption(option, true);
 }
 
 

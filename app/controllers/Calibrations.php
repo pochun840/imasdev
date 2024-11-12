@@ -37,6 +37,8 @@ class Calibrations extends Controller
             $tools_sn = '';
         }
  
+        $controller_data = $this->get_controller_data();
+
 
         $ktm = $this->CalibrationModel->details('torquemeter');
         $job_id = 221;
@@ -53,7 +55,9 @@ class Calibrations extends Controller
         if(!empty($echart_data)){
             #整理圖表所需要的資料
             $tmp['x_val'] = json_encode(array_column($echart_data, 'id'));
-            $tmp['y_val'] = json_encode(array_column($echart_data, 'torque'));
+            $tmp['y_val_torque_1'] = json_encode(array_column($echart_data, 'torque'));
+            $tmp['y_val_torque_2'] = json_encode(array_column($echart_data, 'fasten_torque'));
+
 
         }
         if(empty($info)){
@@ -92,7 +96,6 @@ class Calibrations extends Controller
         }
 
 
-
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
@@ -113,9 +116,6 @@ class Calibrations extends Controller
             'skipTurnRev' => $skipTurnRev
             
         );
-
-
-
         $this->view('calibration/index', $data);
 
 
@@ -140,12 +140,15 @@ class Calibrations extends Controller
         
         $tmp = [
             'x_val' => [],
-            'y_val' => []
+            'y_val_torque_1' => [],
+            'y_val_torque_2' => [],
         ];
     
         if (!empty($echart_data)) {
             $tmp['x_val'] = array_column($echart_data, 'id');
-            $tmp['y_val'] = array_column($echart_data, 'torque');
+            $tmp['y_val_torque_1'] = json_encode(array_column($echart_data, 'torque'));
+            $tmp['y_val_torque_2'] = json_encode(array_column($echart_data, 'fasten_torque'));
+
         }
     
       
@@ -293,6 +296,7 @@ class Calibrations extends Controller
                 $row .= "<td>" . $val['operator'] . "</td>";
                 $row .= "<td>" . $val['toolsn'] . "</td>";
                 $row .= "<td>" . $val['torque'] . "</td>";
+                $row .= "<td>" . $val['fasten_torque'] . "</td>";
                 $row .= "<td>" . $torque_type[$val['unit']] . "</td>";
                 $row .= "<td>" . $val['max_torque'] . "</td>";
                 $row .= "<td>" . $val['min_torque'] . "</td>";
@@ -456,8 +460,8 @@ class Calibrations extends Controller
         if(!empty($echart_data)){
             #整理圖表所需要的資料
             $tmp['x_val'] = json_encode(array_column($echart_data, 'id'));
-            $tmp['y_val'] = json_encode(array_column($echart_data, 'torque'));
-
+            $tmp['y_val_torque_1'] = json_encode(array_column($echart_data, 'torque'));
+            $tmp['y_val_torque_2'] = json_encode(array_column($echart_data, 'torque'));
         }
 
         
@@ -739,7 +743,7 @@ class Calibrations extends Controller
     }
 
 
-    public function Get_controller_data(){
+    public function get_controller_data(){
 
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);    
         $db_name = 'data'.date("Y").'.db';

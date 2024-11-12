@@ -183,6 +183,7 @@
 
     var x_val = <?php echo $data['echart']['x_val']; ?>;
     var y_val = <?php echo $data['echart']['y_val']; ?>;
+    
 
     var option = {
         title: {
