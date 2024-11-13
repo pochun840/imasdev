@@ -177,6 +177,7 @@ class Calibration{
 
     
     public function tidy_data($final, $tools_sn,$system_sn,$fasten_torque) {
+
         $job_id = 221;
 
     
@@ -214,7 +215,7 @@ class Calibration{
             $sql_in = "INSERT INTO `calibrations` (`id`, `system_sn`,`job_id`, `controller_type`, `ktm_type`, `adapter_type`, 
                          `operator`, `toolsn`, `torque`, `fasten_torque`,`unit`, `max_torque`, `min_torque`, `avg_torque`, 
                          `high_percent`, `low_percent`, `customize`, `datatime`)
-                       VALUES (:id, :system_sn :job_id, :controller_type, :ktm_type, :adapter_type, :operator, 
+                       VALUES (:id, :system_sn,:job_id, :controller_type, :ktm_type, :adapter_type, :operator, 
                        :toolsn, :torque, :fasten_torque,:unit, :max_torque, :min_torque, :avg_torque, 
                        :high_percent, :low_percent, :customize, :datatime)";
     

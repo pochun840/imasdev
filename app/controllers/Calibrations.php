@@ -622,6 +622,7 @@ class Calibrations extends Controller
                 $upper_limit_arr = array(0,$upper_limit);
                 $data_job = array(221);
                 $data_open = array(1);
+                $tools_start = array(1);
                 
 
                 $dataTypes = array("INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT", "INT");
@@ -633,7 +634,9 @@ class Calibrations extends Controller
                 $modbus->writeMultipleRegister(0, 1153, $data_offset, $dataTypes); //補償值(只有數值)
                 $modbus->writeMultipleRegister(0, 1155, $upper_limit_arr, $dataTypes); //上限
                 $modbus->writeMultipleRegister(0, 1157, $lower_limit_arr, $dataTypes); //下限
-                $modbus->writeMultipleRegister(0, 463, $data_job, $dataTypes); //切換job
+                $modbus->writeMultipleRegister(0, 463,  $data_job, $dataTypes); //切換job
+                //$modbus->writeMultipleRegister(0, 4167,  $tools_start, $dataTypes); //起子啟動
+                $modbus->writeMultipleRegister(0, 461, $tools_start, $dataTypes);//起子啟用
 
 
                 echo $modbus->status;
