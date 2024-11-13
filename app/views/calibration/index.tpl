@@ -262,7 +262,7 @@
                                         <th><?php echo $text['Operator_text'];?></th>
                                         <th><?php echo $text['Tool_SN_text'];?></th>
                                         <th><?php echo $text['Torque_text'];?></th>
-                                        <th><?php echo $text['Final_Torque_text'];?></th>
+                                        <th><?php echo $text['Final_Torque_text']."Controller";?></th>
                                         <th><?php echo $text['Unit_text'];?></th>
                                         <th><?php echo $text['Max_Torque_text'];?></th>
                                         <th><?php echo $text['Min_Torque_text'];?></th>
@@ -967,7 +967,7 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
             }
         },
         legend: {
-            data: ['Torque 1', 'Torque 2'],
+            data: ['ktm_Torque', 'controller_Torque'],
             top: 'top'
         },
         xAxis: {
@@ -981,7 +981,7 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
             name: 'Torque',
         },
         series: [{
-            name: 'Torque 1',
+            name: 'ktm_Torque',
             type: 'line',
             symbol: 'none',
             sampling: 'average',
@@ -1005,7 +1005,7 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
             data: y_val_torque_1,
         },
         {
-            name: 'Torque 2',
+            name: 'controller_Torque',
             type: 'line',
             symbol: 'none',
             sampling: 'average',

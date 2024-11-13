@@ -232,7 +232,7 @@
                 }
             },
             legend: {
-                data: ['Torque 1', 'Torque 2'],
+                data: ['ktm_Torque', 'controller_Torque'],
                 top: 'top'
             },
             xAxis: {
@@ -246,7 +246,7 @@
                 name: 'Torque',
             },
             series: [{
-                name: 'Torque 1',
+                name: 'ktm_Torque',
                 type: 'line',
                 symbol: 'none',
                 sampling: 'average',
@@ -270,7 +270,7 @@
                 data: y_val_torque_1,
             },
             {
-                name: 'Torque 2',
+                name: 'controller_Torque',
                 type: 'line',
                 symbol: 'none',
                 sampling: 'average',
