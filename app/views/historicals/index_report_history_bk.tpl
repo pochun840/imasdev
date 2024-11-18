@@ -77,42 +77,75 @@
 </body>
 </html>
 <script>
-    var ng_reason = <?php echo isset($data['ng_reason_json']) && !empty($data['ng_reason_json']) ? $data['ng_reason_json'] : '[]'; ?>;
-    if (ng_reason.length > 0) {
-        var myChart = echarts.init(document.getElementById('chart'));
+    var ng_reason = <?php echo $data['ng_reason_json']; ?>;
+    var myChart = echarts.init(document.getElementById('chart'));
+    var option = {
+        title: {
+            text: 'NG Reason',
+            top: 'top', // 調整標題的位置到最上方
+            left: 'center'
+            
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        /*legend: {
+            orient: 'vertical',
+            left: 'left',
+            top: 'bottom',
+            data: ng_reason.map(function(item) { return item.name; })
+        },*/
+        series: [
+            {
+                name: 'Error Type',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: ng_reason,
+                animationType: 'scale', 
+                animationEasing: 'elasticOut' 
+            }
+        ]
+    };
+    myChart.setOption(option);
 
-        var option = {
-            title: {
-                text: 'NG Reason',
-                top: 'top',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: '{a} <br/>{b} : {c} ({d}%)'
-            },
-            series: [
-                {
-                    name: 'Error Type',
-                    type: 'pie',
-                    radius: '55%',
-                    center: ['50%', '60%'],
-                    data: ng_reason,
-                    animationType: 'scale',
-                    animationEasing: 'elasticOut'
-                }
-            ]
-        };
+    var job_time = <?php echo $data['job_time_json']; ?>;
+    var jobtimeChart = echarts.init(document.getElementById('jobtime'));
+      var option = {
+        title: {
+            text: 'JOB VS TIME',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: job_time.map(function(item) { return item.name; })
+        },
+        series: [
+            {
+                name: 'Time Required',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: job_time,
+                animationType: 'scale', 
+                animationEasing: 'elasticOut' 
+            }
+        ]
+    };
+    jobtimeChart.setOption(option);
 
-        myChart.setOption(option);
-    } else {
-        //document.getElementById('chart').innerHTML = 'No data available for NG Reason.';
-    }
 
-    var fastening_status = <?php echo $data['fastening_status']; ?>;
+
+    var fastening_status =<?php echo $data['fastening_status']; ?>;
+       var colors = ['#FFCC00', '#99CC66', '#E60000', '#FFCC00'];
     var fChart = echarts.init(document.getElementById('fastening_status_chart'));
-
-        var option = {
+    var option = {
         title: {
             text: 'fastening_status',
             left: 'center'
@@ -121,6 +154,7 @@
             trigger: 'item',
             formatter: '{a} <br/>{b} : {c} ({d}%)'
         },
+        
         series: [
             {
                 name: 'Status',
@@ -130,17 +164,8 @@
                 data: fastening_status,
                 itemStyle: {
                     color: function(params) {
-                        var name = params.data.name;
-                        if (name === 'NG') {
-                            return '#E60000'; 
-                        } else if (name === 'OK') {
-                            return '#99CC66'; 
-                        } else if (name === 'OK-JOB') {
-                            return '#FFCC00'; 
-                        } else if (name === 'OK-SEQ') {
-                            return '#FFCC00'; 
-                        }
-                        return '#CCCCCC'; 
+                        // Assign colors to pie chart slices based on the index
+                        return colors[params.dataIndex % colors.length];
                     }
                 },
                 animationType: 'scale',
@@ -148,68 +173,124 @@
             }
         ]
     };
-
     fChart.setOption(option);
 
+    var maimchart = echarts.init(document.getElementById('main'));
+    var job_name = <?php echo $data['job_info']['job_name']; ?>;
+    var fasten_time = <?php echo $data['job_info']['fasten_time']; ?>;
 
-    
-    
+    var option = {
+        tooltip: {
+            trigger: 'axis',
+            formatter: '{b0}({a0}): {c0}'
+        },
+        legend: {
+            data: ['']
+        },
+        xAxis: {
+            data: job_name,
+            axisLabel: {
+                rotate: 0,  // 旋转 X 轴标签，避免重叠
+                interval: 0,  // 让所有标签都显示
+                formatter: function(value) {
+                    // 如果标签过长，进行截断或添加省略号
+                    return value.length > 5 ? value.substring(0, 5) + '...' : value;
+                }
+            }
+        },
+        yAxis: [{
+            type: 'value',
+            name: '毫秒',
+            show: true,
+            interval: 500, 
+            axisLine: {
+                lineStyle: {
+                    color: '#5e859e',
+                    width: 2
+                }
+            }
+        }, {
+            type: 'value',
+            name: '',
+            interval: 10,
+            axisLine: {
+                lineStyle: {
+                    color: '#5e859e',
+                    width: 2
+                }
+            }
+        }],
+        series: [{
+            name: '毫秒',
+            type: 'bar',
+            barWidth: '50%',  // 控制条形图的宽度
+            data: fasten_time
+        }]
+    };
 
-     // 将 PHP 数组 $job_info_temp 转换为 JavaScript 数组
-    var jobInfoTemp = <?php echo json_encode($job_info_temp); ?>;
+   
 
-        // 获取柱状图的 X 轴数据（即 job 名称）
-        var jobNames = Object.keys(jobInfoTemp);
-        
-        // 获取柱状图的 Y 轴数据（即对应的 fasten_time 值）
-        var fastenTimes = Object.values(jobInfoTemp);
+    maimchart.setOption(option);
 
-        // 初始化 ECharts
-        var mainChart = echarts.init(document.getElementById('main'));
 
-        // ECharts 配置项
-        var option = {
+
+    var lineChart = echarts.init(document.getElementById('lineChart'));
+
+    var line_title =<?php echo $data['statistics']['date'];?>;
+    var line_ng =<?php echo $data['statistics']['ng'];?>;
+    var line_ok =<?php echo $data['statistics']['ok'];?>;
+    var line_okall =<?php echo $data['statistics']['ok_all'];?>;
+
+        // ECharts 的配置選項
+        var options = {
             title: {
-                text: 'Job Fasten Time',
-                left: 'center'
+                text: ''
             },
             tooltip: {
-                trigger: 'axis',
-                formatter: '{b} : {c}'
+                trigger: 'axis'
+            },
+            legend: {
+                data:['', '', '']
             },
             xAxis: {
                 type: 'category',
-                data: jobNames,  // X 轴使用 job 名称
-                axisLabel: {
-                    rotate: 45,  // 旋转 X 轴标签，避免重叠
-                    interval: 0   // 显示所有标签
-                }
+                data: line_title
             },
             yAxis: {
-                type: 'value',
-                name: 'Fasten Time (ms)',
-                axisLine: {
-                    lineStyle: {
-                        color: '#5e859e',
-                        width: 2
-                    }
-                }
+                type: 'value'
             },
-            series: [{
-                name: 'Fasten Time',
-                type: 'bar',
-                barWidth: '50%',  // 控制条形图的宽度
-                data: fastenTimes  // Y 轴的数据，来自 fasten_time
-            }]
+            series: [
+                {
+                    name: 'OK',
+                    type: 'line',
+                    data: line_ok,
+                    itemStyle: {
+                        color: 'green' 
+                    }   
+                },
+                {
+                    name: 'NG',
+                    type: 'line',
+                    data: line_ng,
+                    itemStyle: {
+                        color: '#F44336' 
+                    }   
+                },
+                {
+                    name: 'OKALL',
+                    type: 'line',
+                    data: line_okall,
+                     itemStyle: {
+                        color: '#FFCC00' 
+                    }   
+                }
+            ]
         };
 
-        // 使用刚指定的配置项和数据显示图表
-        mainChart.setOption(option);
-    </script>
+    lineChart.setOption(options);
 
-
-
-
+  
+    
 </script>
 
 

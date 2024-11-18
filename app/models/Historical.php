@@ -625,7 +625,94 @@ class Historical{
         return $resultarr;
     }
     
-   
+    public function for_history_temp($mode,$info){
+
+        switch ($mode) {
+            case "ng_reason":
+                if(!empty($info)){
+                    $ng_reason_arr = [];  
+                    $ng_count = 0;  
+                    
+                    // 遍历 $info 数组
+                    foreach ($info as $key => $val) {
+                        if ($val['fasten_status'] == 7 || $val['fasten_status'] == 8) {
+                            $ng_count++;
+                    
+                            $key = $val['error_message'] . '-' . $val['fasten_status'];
+                    
+                            if (isset($ng_reason_arr[$key])) {
+                                $ng_reason_arr[$key]['total']++;
+                            } else {
+                                // 否则，初始化该组合
+                                $ng_reason_arr[$key] = [
+                                    'error_message' => $val['error_message'],
+                                    'fasten_status' => $val['fasten_status'],
+                                    'total' => 1 
+                                ];
+                            }
+                        }
+                    }
+                    
+                }
+          
+
+                return $ng_reason_arr;
+            break;
+
+            case 'fastening_status':
+                $fasten_status_count = []; 
+                if(!empty($info)){
+                    foreach ($info as $key => $val) {
+                        if ($val['on_flag'] == 0 && !empty($val['fasten_status'])) {
+                            $status = $val['fasten_status'];
+                    
+                            if (isset($fasten_status_count[$status])) {
+                                $fasten_status_count[$status]['total']++;
+                            } else {
+                                $fasten_status_count[$status] = [
+                                    'fasten_status' => $status,
+                                    'total' => 1
+                                ];
+                            }
+                        }
+                    }
+                }
+                return $fasten_status_count;
+            break;
+
+            case 'job_info_new':
+                $job_info_new = array(); 
+                if(!empty($info)){
+                    foreach ($info as $key => $val) {
+                        if ($val['on_flag'] == 0) {
+                            $job_name = $val['job_name'];
+                            $fasten_time = $val['fasten_time'];
+                            $job_info_new[$job_name] = isset($job_info_new[$job_name]) ? $job_info_new[$job_name] + $fasten_time : $fasten_time;
+                        }
+                    }
+                }
+
+                return $job_info_new;
+            break;
+
+            case 'statistics':
+                $today = date('Ymd');
+                $seven_days_ago = date('Ymd', strtotime('-21 days'));
+                $filtered_data = array();  
+
+                foreach ($info as $key => $val) {
+                    $record_date = substr($val['data_time'], 0, 8);  
+            
+                    if ($record_date >= $seven_days_ago && $record_date <= $today) {
+                        $filtered_data[] = $val;  
+                    }
+                }
+                //var_dump($seven_days_ago);die();
+                return $filtered_data;
+            break;
+        }
+
+    }
     public function for_history($mode){
         
 
@@ -647,7 +734,7 @@ class Historical{
                 $sql = "SELECT fasten_time, job_name FROM `fasten_data` WHERE on_flag = '0' ORDER BY data_time DESC";
             break;
 
-            case "job_info_new":
+            case "job_info_new": //柱狀圖
                 $sql = "SELECT job_name, SUM(fasten_time) AS fasten_time 
                         FROM `fasten_data` 
                         WHERE on_flag = '0' 
