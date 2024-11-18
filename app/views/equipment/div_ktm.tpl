@@ -95,6 +95,12 @@
                             <div class="row t4">
                                 <div class="col t3"><b><?php echo $text['Communication_log_text']; ?></b></div>
                             </div>
+                            
+                            <div class="scrollbar-Communicationlog" id="style-Communicationlog">
+                                    <div id="connect_log" class="force-overflow-Communicationlog" style="padding-left: 5%">
+                                    </div>
+                            </div>
+
                             <div class="scrollbar-Communicationlog" id="style-Communicationlog">
                                 <div id="connect_log_device" class="force-overflow-Communicationlog" style="padding-left: 5%">
                                 </div>
@@ -135,6 +141,8 @@
         var selectElement = document.getElementById('comport');
         currentComPort = selectElement.value
         
+        let log_div = document.getElementById('connect_log');
+        
         $.ajax({
             type: 'POST',
             url: '?url=Equipments/ktm_connect',
@@ -149,12 +157,16 @@
                     message += "\nOutput: " + response.output; // 添加 Node.js 输出
                 }
                 
-    
                 // 隐藏 service_status_device_1
                 document.getElementById('service_status_device_1').style.display = 'none';
                 
                 // 显示 service_status_device_2
                 document.getElementById('service_status_device_2').style.display = 'block'; 
+
+                let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
+
+
+
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error("Error Status: " + textStatus); 
@@ -165,6 +177,11 @@
                 
                 // 显示 service_status_device_2
                 document.getElementById('service_status_device_2').style.display = 'block'; 
+
+                let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
+                
+
+
             }
         });
 

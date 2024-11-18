@@ -126,6 +126,7 @@ if(!preg_match('/^\d+$/', $limit)) $limit = 100;
 
 # 輸出類型
 $type = $_GET['type'];
+if(!empty($type)) $type = 'xml';
 
 function validateAndFormatDate($date){
     if (preg_match("/^20[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])(0[0-9]|1[0-9]|2[0-4])$/", $date)) {
