@@ -791,4 +791,3 @@ class Historical{
             'y_title' => isset($titles[0]) ? $titles[0] : ''
         ];
     }
-}

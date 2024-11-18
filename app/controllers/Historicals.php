@@ -104,16 +104,18 @@ class Historicals extends Controller
 
         #STATUS轉換
         $status_arr = $this->Historicals_newModel->status_code_change();
-
-
         $res_controller_arr = array(1 => 'GTCS', 2 =>'TCG'); 
 
+        $system_sns = [];
 
         if(!empty($info)){
             $info_data ="";
             foreach($info as $k =>$v){
                 $color = $status_arr['status_color'][$v['fasten_status']];
                 $style = 'background-color:'.$color.';font-size: 20px';
+
+                // 收集 system_sn
+                $system_sns[] = $v['system_sn'];  
 
                 $info_data  = "<tr>";
                 $info_data .= '<td style="text-align: center;"><input class="form-check-input" type="checkbox" name="test1" id="test1"  value="'.$v['system_sn'].'" style="zoom:1.2;vertical-align: middle;"></td>';
@@ -136,6 +138,9 @@ class Historicals extends Controller
         
                 $info_data .="</tr>";
                 echo $info_data;
+
+                // system_sn 資料傳给前端
+                echo '<script>window.systemSnList = ' . json_encode($system_sns) . ';</script>';
             }  
         }else{  
             # 查無資料
@@ -143,6 +148,7 @@ class Historicals extends Controller
             echo $response;
             
         }
+
     
     }
 
@@ -189,7 +195,7 @@ class Historicals extends Controller
             #CSV檔名
             $filename = 'data.csv';
             $file = fopen($filename, 'w');
-            fputcsv($file,  array('cc_barcodesn','cc_station','cc_job_id','cc_seq_id','cc_task_id','cc_program_id','cc_equipment','cc_operator','system_sn','data_time','device_type','device_id','device_sn','tool_type','tool_sn','tool_status','job_id','job_name','sequence_id','sequence_name','step_id','fasten_torque','torque_unit','fasten_time','fasten_angle','count_direction','last_screw_count','max_screw_count','fasten_status','error_message','step_targettype','step_tooldirection','step_rpm','step_targettorque','step_hightorque','step_lowtorque','step_targetangle','step_highangle','step_lowangle','step_delayttime','threshold_torque','step_threshold_angle','downshift_torque','downshift_speed','step_prr_rpm','step_prr_angle','barcode','total_angle','on_flag','cc_task_name'));
+            fputcsv($file,  array('id','cc_barcodesn','cc_station','cc_job_id','cc_seq_id','cc_task_id','cc_program_id','cc_equipment','cc_operator','system_sn','data_time','device_type','device_id','device_sn','tool_type','tool_sn','tool_status','job_id','job_name','sequence_id','sequence_name','step_id','fasten_torque','torque_unit','fasten_time','fasten_angle','count_direction','last_screw_count','max_screw_count','fasten_status','error_message','step_targettype','step_tooldirection','step_rpm','step_targettorque','step_hightorque','step_lowtorque','step_targetangle','step_highangle','step_lowangle','step_delayttime','threshold_torque','step_threshold_angle','downshift_torque','downshift_speed','step_prr_rpm','step_prr_angle','barcode','total_angle','on_flag','cc_task_name'));
             foreach ($info_final as $row) {
                 fputcsv($file, $row);
             }
