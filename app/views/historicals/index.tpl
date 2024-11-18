@@ -477,8 +477,8 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                 <td><?php echo $text['Time_text']; ?>: <?php echo $data['job_info'][0]['data_time'];?></td>
                             </tr>
                             <tr  style="vertical-align: middle;">
-                                <td><?php echo $text['Member_text']; ?>: <!--<input class="t6" type="text" size="10" value="Esther" disabled="disabled" style="background-color: #F5F5F5">--></td>
-                                <td><?php echo $text['Note_text']; ?>: <!--<input class="t6" type="text" value="arm (444,215)[200]" disabled="disabled" style="background-color: #F5F5F5; width: 15vw"></td>-->
+                                <td><?php echo $text['Member_text']; ?>:<?php echo $data['job_info'][0]['cc_operator'];?></td>
+                                <td><?php echo $text['Note_text']; ?>: 
                                 <td>
                                     <input class="form-check-input" type="checkbox" id="myCheckbox" onchange="check_limit(this)"  <?php if($limit_val=="1"){ echo "checked"; }else{}?>  style="zoom:1.2; float: left">&nbsp; <?php echo $text['Display_lilo_text']; ?>
                                 </td>
