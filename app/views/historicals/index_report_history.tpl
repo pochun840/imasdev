@@ -261,7 +261,7 @@
  
     var options = {
         title: {
-            text: 'Statistics of OK, NG, OK_ALL'
+            text: ''
         },
         tooltip: {
             trigger: 'axis'
