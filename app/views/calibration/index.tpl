@@ -722,6 +722,10 @@ function current_save() {
     const offset = document.getElementById('current_offset').value;
     const tolerance = document.getElementById('tolerance').value;
 
+    localStorage.setItem('rpm', rpm);
+    localStorage.setItem('offset', offset);
+
+
     let percentage = tolerance / 100; 
     let temp = targetQ  * percentage ;
     let upper_limit = (Number(targetQ) + Number(temp)).toFixed(2);

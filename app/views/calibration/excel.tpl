@@ -45,21 +45,21 @@
             <label for="Tool-SN" style="width: 24%">Tool model : <?php echo $data['tools_sn'];?></label>
             <label for="Serial-Number" style="width: 24%">Serial Number : TPS192865</label>
             <label for="Target-Torque" id="Target-Torque" style="width: 27%">Target Torque :  (N.m)</label>
-            <label for="RPM" style="width: 11%">RPM : 100</label>
+            <label for="RPM" id="rpm" style="width: 11%">RPM : </label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px;">
             <label for="Upper-Limit" id="highLimitTorque" style="width: 24%">Upper Limit : </label>
             <label for="Lower-Limit" id="lowLimitTorque" style="width: 24%">Lower Limit : </label>
             <label for="Tolerance" id="bias" style="width: 27%">Tolerance +/-% : %</label>
-            <label for="Offset" style="width: 16%">Offset : +0.5</label>
+            <label for="Offset" id="offset" style="width: 16%">Offset : </label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px; width: 100%">
-            <label for="Std-dev-s" style="width: 24%">Std dev s(Cv) : 0.18%</label>
-            <label for="Lower-Limit-B" style="width: 24%">3 Std dev s : 0.55%</label>
-            <label for="Cm" style="width: 27%">Cm : 16.83</label>
-            <label for="CmK">Cmk : 3.93</label>
+            <label for="Std-dev-s" style="width: 24%">Std dev s(Cv) : <?php echo isset($data['meter']['stddev1']) ? $data['meter']['stddev1'] : ''; ?></label>
+            <label for="Lower-Limit-B" style="width: 24%">3 Std dev s :  <?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : ''; ?></label>
+            <label for="Cm" style="width: 27%">Cm : <?php echo isset($data['meter']['cm']) ? $data['meter']['cm'] : ''; ?></label>
+            <label for="CmK">Cmk : <?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : ''; ?></label>
         </div>
 
         <div class="container-table">
@@ -161,6 +161,8 @@
     let highLimitTorque = localStorage.getItem('highLimitTorque');
     let lowLimitTorque= localStorage.getItem('lowLimitTorque');
     let bias = localStorage.getItem('bias');
+    let rpm = localStorage.getItem('rpm');
+    let offset = localStorage.getItem('offset');
 
 
     if(targetTorque !== null){
@@ -178,13 +180,19 @@
         document.getElementById('bias').innerText = `Tolerance +/-% : ${bias}%`;
     }
 
+    if(rpm !== null){
+        document.getElementById('rpm').innerText = `RPM :  ${rpm}`;
+    }
+
+    if(offset !== null){
+        document.getElementById('offset').innerText = `Offset  :  ${offset}`;
+    }
+
+
 
     var myChart = echarts.init(document.getElementById('mychart'));
 
     
-
-
-
     var x_val = <?php echo isset($data['echart']['x_val']) ? json_encode($data['echart']['x_val']) : '[]'; ?>; 
     var y_val_torque_1 = <?php echo isset($data['echart']['y_val_torque_1']) ? json_encode($data['echart']['y_val_torque_1']) : '[]'; ?>; 
     var y_val_torque_2 = <?php echo isset($data['echart']['y_val_torque_2']) ? json_encode($data['echart']['y_val_torque_2']) : '[]'; ?>; 
