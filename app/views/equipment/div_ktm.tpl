@@ -97,14 +97,11 @@
                             </div>
                             
                             <div class="scrollbar-Communicationlog" id="style-Communicationlog">
-                                    <div id="connect_log" class="force-overflow-Communicationlog" style="padding-left: 5%">
+                                    <div id="connect_log_ktm" class="force-overflow-Communicationlog" style="padding-left: 5%">
                                     </div>
                             </div>
 
-                            <div class="scrollbar-Communicationlog" id="style-Communicationlog">
-                                <div id="connect_log_device" class="force-overflow-Communicationlog" style="padding-left: 5%">
-                                </div>
-                            </div>
+                           
                         </div>
                     </div>
 
@@ -148,8 +145,7 @@
             url: '?url=Equipments/ktm_connect',
             data: { comport: currentComPort },
             dataType: 'json',
-            success: function(response) {
-                console.log(response); 
+            success: function(response) {   
                 
                 // 处理输出
                 let message = response.result || response.error;
@@ -164,9 +160,8 @@
                 document.getElementById('service_status_device_2').style.display = 'block'; 
 
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
-
-
-
+                let log_div = document.getElementById('connect_log_ktm');
+                log_div.innerHTML =  momo + "  Connect attempt started<br>" + momo + "  Connection result";  
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error("Error Status: " + textStatus); 
