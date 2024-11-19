@@ -681,35 +681,79 @@ class Historical{
             break;
 
             case 'job_info_new':
-                $job_info_new = array(); 
-                if(!empty($info)){
-                    foreach ($info as $key => $val) {
-                        if ($val['on_flag'] == 0) {
-                            $job_name = $val['job_name'];
-                            $fasten_time = $val['fasten_time'];
-                            $job_info_new[$job_name] = isset($job_info_new[$job_name]) ? $job_info_new[$job_name] + $fasten_time : $fasten_time;
+                $aggregated_data  = array(); 
+                foreach ($info as $item) {
+                    if ($item['on_flag'] == 0) { 
+                        $job_name = $item['job_name'];
+                        $fasten_time = $item['fasten_time'];
+                
+                        if (isset($aggregated_data[$job_name])) {
+                            $aggregated_data[$job_name] += $fasten_time;
+                        } else {
+                            $aggregated_data[$job_name] = $fasten_time;
                         }
                     }
                 }
-
-                return $job_info_new;
+                return $aggregated_data;
             break;
 
-            case 'statistics':
-                $today = date('Ymd');
-                $seven_days_ago = date('Ymd', strtotime('-21 days'));
-                $filtered_data = array();  
-
-                foreach ($info as $key => $val) {
-                    $record_date = substr($val['data_time'], 0, 8);  
-            
-                    if ($record_date >= $seven_days_ago && $record_date <= $today) {
-                        $filtered_data[] = $val;  
+            case 'job_info':
+                $job_info = [];
+                if (!empty($info)) {
+                    foreach ($info as $key => $val) {
+                        if ($val['on_flag'] == 0 && isset($val['fasten_time'])) {
+                            $job_name = $val['job_name'];
+                            
+                            if (isset($job_info[$job_name])) {
+                                $job_info[$job_name]['total']++;
+                            } else {
+                                $job_info[$job_name] = [
+                                    'job_name' => $job_name,
+                                    'total' => 1
+                                ];
+                            }
+                        }
                     }
                 }
-                //var_dump($seven_days_ago);die();
-                return $filtered_data;
+        
+                return $job_info;    
             break;
+            
+            case 'statistics':
+                $statistics_arr = array(); 
+                if (!empty($info)) {
+                    foreach ($info as $key => $val) {
+                        
+                        if ($val['on_flag'] == 0 && in_array($val['fasten_status'], [4, 5, 6, 7, 8])) {
+                            
+                            $date = substr($val['data_time'], 0, 8);
+                            $status_category = '';
+                            if (in_array($val['fasten_status'], [7, 8])) {
+                                $status_category = 'NG';
+                            } elseif ($val['fasten_status'] == 4) {
+                                $status_category = 'OK';
+                            } elseif (in_array($val['fasten_status'], [5, 6])) {
+                                $status_category = 'OK_ALL';
+                            }
+                        
+                            if (!isset($statistics_arr[$date])) {
+                                $statistics_arr[$date] = [
+                                    'NG' => 0,
+                                    'OK' => 0,
+                                    'OK_ALL' => 0
+                                ];
+                            }
+                            $statistics_arr[$date][$status_category]++;
+                        }
+                    }
+            
+                    #按照日期排序 從小排到大
+                    ksort($statistics_arr);
+                }
+              
+            return $statistics_arr;    
+            break;
+            
         }
 
     }

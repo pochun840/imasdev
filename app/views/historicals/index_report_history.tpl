@@ -151,65 +151,182 @@
 
     fChart.setOption(option);
 
+    //柱狀圖
+    var maimchart = echarts.init(document.getElementById('main'));
+    var job_name  = <?php echo $data['job_info']['job_name']; ?>;
+    var fasten_time  = <?php echo $data['job_info']['fasten_time']; ?>;
+
+    var barWidthValue = job_name.length > 1 ? '50%' : '5%';
+
+    var option = {
+        tooltip: {
+            trigger: 'axis',
+            formatter: '{b0}({a0}): {c0}'
+        },
+        legend: {
+            data: ['']
+        },
+        xAxis: {
+            data: job_name
+        },
+        yAxis: [{
+            type: 'value',
+            name: '毫秒',
+            show: true,
+            interval: 50,
+            min: 0, 
+            max: 500,
+            axisLine: {
+                lineStyle: {
+                    color: '#5e859e',
+                    width: 2
+                }
+            }
+        }, {
+            type: 'value',
+            name: '',
+            interval: 10,
+            axisLabel: {
+                // formatter: '{value} %'
+            },
+            axisLine: {
+                lineStyle: {
+                    color: '#5e859e',
+                    width: 2
+                }
+            }
+        }],
+        series: [{
+            name: '毫秒',
+            type: 'bar',
+            barWidth: barWidthValue, 
+            data: fasten_time
+        }]
+    };
+
+    maimchart.setOption(option);
+
+    var job_time = <?php echo $data['job_time_json']; ?>;
+    var job_names = Object.keys(job_time); 
+    var total_times = Object.values(job_time).map(function(item) {
+        return item.total; 
+    });
+
+    job_names = job_names.map(function(job_name) {
+        return 'JOB-' + job_name; 
+    });
+
+    var jobtimeChart = echarts.init(document.getElementById('jobtime'));
+    var option = {
+        title: {
+            text: 'JOB VS TIME', 
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)' 
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: job_names 
+        },
+        series: [
+            {
+                name: 'Time Required', 
+                type: 'pie',
+                radius: '55%', 
+                center: ['50%', '60%'], 
+                data: job_names.map(function(job_name, index) {
+                    return {
+                        value: total_times[index], 
+                        name: job_name 
+                    };
+                }),
+                animationType: 'scale',
+                animationEasing: 'elasticOut' 
+            }
+        ]
+    };
+
+    jobtimeChart.setOption(option);
+
+    var lineChart = echarts.init(document.getElementById('lineChart'));
+
+    var line_title = <?php echo $data['statistics']['date']; ?>;
+    var line_ng = <?php echo $data['statistics']['ng']; ?>;
+    var line_ok = <?php echo $data['statistics']['ok']; ?>;
+    var line_okall = <?php echo $data['statistics']['ok_all']; ?>;
+
+ 
+    var options = {
+        title: {
+            text: 'Statistics of OK, NG, OK_ALL'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['NG', 'OK', 'OK_ALL']  
+        },
+        xAxis: {
+            type: 'category',
+            data: line_title, // x轴的数据，使用日期
+            axisLabel: {
+                rotate: 45, // 旋转角度，防止标签重叠
+                interval: 0, // 每个标签都显示
+                formatter: function(value) {
+                    return value.length > 10 ? value.substring(0, 8) : value;
+                }
+            }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value}' 
+            }
+        },
+        series: [
+            {
+                name: 'NG',
+                type: 'line',
+                data: line_ng, // NG 数据
+                itemStyle: {
+                    color: '#F44336'  // NG 曲线的颜色
+                },
+                smooth: false // 平滑曲线
+            },
+            {
+                name: 'OK',
+                type: 'line',
+                data: line_ok, // OK 数据
+                itemStyle: {
+                    color: 'green'  // OK 曲线的颜色
+                },
+                 smooth: false // 平滑曲线
+            },
+            {
+                name: 'OK_ALL',
+                type: 'line',
+                data: line_okall, // OK_ALL 数据
+                itemStyle: {
+                    color: '#FFCC00'  // OK_ALL 曲线的颜色
+                },
+                 smooth: false // 平滑曲线
+            }
+        ]
+    };
+
+    lineChart.setOption(options);
+
+
+
+
+
+
 
     
     
-
-     // 将 PHP 数组 $job_info_temp 转换为 JavaScript 数组
-    var jobInfoTemp = <?php echo json_encode($job_info_temp); ?>;
-
-        // 获取柱状图的 X 轴数据（即 job 名称）
-        var jobNames = Object.keys(jobInfoTemp);
-        
-        // 获取柱状图的 Y 轴数据（即对应的 fasten_time 值）
-        var fastenTimes = Object.values(jobInfoTemp);
-
-        // 初始化 ECharts
-        var mainChart = echarts.init(document.getElementById('main'));
-
-        // ECharts 配置项
-        var option = {
-            title: {
-                text: 'Job Fasten Time',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: '{b} : {c}'
-            },
-            xAxis: {
-                type: 'category',
-                data: jobNames,  // X 轴使用 job 名称
-                axisLabel: {
-                    rotate: 45,  // 旋转 X 轴标签，避免重叠
-                    interval: 0   // 显示所有标签
-                }
-            },
-            yAxis: {
-                type: 'value',
-                name: 'Fasten Time (ms)',
-                axisLine: {
-                    lineStyle: {
-                        color: '#5e859e',
-                        width: 2
-                    }
-                }
-            },
-            series: [{
-                name: 'Fasten Time',
-                type: 'bar',
-                barWidth: '50%',  // 控制条形图的宽度
-                data: fastenTimes  // Y 轴的数据，来自 fasten_time
-            }]
-        };
-
-        // 使用刚指定的配置项和数据显示图表
-        mainChart.setOption(option);
-    </script>
-
-
-
-
 </script>
 
 

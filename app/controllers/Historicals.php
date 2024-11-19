@@ -226,7 +226,7 @@ class Historicals extends Controller
         $offset = 0;
         $limit  = 10000;
         $info = $this->Historicals_newModel->monitors_info($info_arr, $offset, $limit);
-        $mode_arr = array('ng_reason','fastening_status','job_info_new','job_info','statistics','bk');
+        $mode_arr = array('ng_reason','fastening_status','job_info_new','job_info','statistics');
 
         #NG REASON 
         foreach($mode_arr as $key =>$val){
@@ -247,119 +247,86 @@ class Historicals extends Controller
                
             }
 
-            if($val =="fastening_status"){
-                $fastening_status_temp = $this->Historicals_newModel->for_history_temp($val,$info);
-                if(!empty($fastening_status_temp)){
-                    foreach($fastening_status_temp as $key2 =>$val2){
-                        $fastening_status_temp[$key2]['status_type'] = $status_arr['status_type'][$val2['fasten_status']];
+            if ($val == "fastening_status") {
+                $fastening_status_temp = $this->Historicals_newModel->for_history_temp($val, $info);
+                if (!empty($fastening_status_temp)) {
+                    foreach ($fastening_status_temp as $key2 => $val2) {
+                        if (isset($status_arr['status_type'][$val2['fasten_status']])) {
+                            $fastening_status_temp[$key2]['status_type'] = $status_arr['status_type'][$val2['fasten_status']];
+                        } else {
+                            $fastening_status_temp[$key2]['status_type'] = 'Unknown';
+                        }
                     }
-
+            
                     $fastening_status = array();
                     foreach ($fastening_status_temp as $item1) {
-                        $fastening_status[] = array('value' => $item1['total'], 'name' => $item1['status_type']);
+                        $fastening_status[] = array(
+                            'value' => $item1['total'],   
+                            'name'  => $item1['status_type'] 
+                        );
                     }
                     $data['fastening_status'] = json_encode($fastening_status);
+                    
+                    //var_dump($data['fastening_status']);
                 }
-                
             }
-
-           
-           
-
-            if($val=="job_info_new"){
-
-                $job_info_temp = $this->Historicals_newModel->for_history_temp($val,$info);
-
-               
-            }
-
-
-            if($val =="job_info"){
-                $job_info_temp = $this->Historicals_newModel->for_history_temp($val,$info);
-
-            }
-
-
-         
-
-            /*if ($val == "statistics") {
-                $start_date = date('Y-m-d', strtotime('-7 days'));
-                $end_date = date('Y-m-d');
-                $date_format = 'Ymd';
-
-                $all_dates = array();
-                $current_date = strtotime($start_date);
-                while ($current_date <= strtotime($end_date)) {
-                    $all_dates[] = date($date_format, $current_date);
-                    $current_date = strtotime("+1 day", $current_date);
-                }
-
             
-                // 初始化日期数组
-                $date_array = [];
-                for ($date = strtotime($start_date); $date <= strtotime($end_date); $date = strtotime('+1 day', $date)) {
-                    $formatted_date = date('Ymd', $date);
-                    $date_array[$formatted_date] = [
-                        'ng_count' => 0,
-                        'ok_count' => 0,
-                        'ok_all_count' => 0
-                    ];
-                }
 
-                    
-                // NG 数据处理
-                $complete_data = array();
-                $res = $this->Historicals_newModel->for_history('statistics_ng'); 
-                foreach ($res as $record) {
-                    $date = $record['date'];
-                    $category = $record['status_category'];
-                    $count = $record['status_count'];
-                    
-                    $complete_data[$date][$category] = $count;
-                }
+        
+            if ($val == "job_info_new") {
 
-                foreach ($complete_data as $date => $categories) {
-                    if (isset($date_array[$date])) {
-                        // 更新 ng_count
-                        if (isset($categories['NG'])) {
-                            $date_array[$date]['ng_count'] = $categories['NG'];
-                        }
-                        
-                        // 更新 ok_count
-                        if (isset($categories['OK'])) {
-                            $date_array[$date]['ok_count'] = $categories['OK'];
-                        }
-                        
-                        // 更新 ok_all_count
-                        if (isset($categories['OK_ALL'])) {
-                            $date_array[$date]['ok_all_count'] = $categories['OK_ALL'];
-                        }
+                $job_info_temp = $this->Historicals_newModel->for_history_temp($val, $info);
+
+                if (!empty($job_info_temp)) {
+      
+                    $job_names = array();
+                    $fasten_time = array();
+ 
+                    foreach ($job_info_temp  as $job_name => $fasten_time_value) {
+                        $job_names[] = $job_name;         
+                        $fasten_time[] = $fasten_time_value;  
                     }
-                }                
-                $ng_count_values = array_values(array_map(function($item) {
-                    return (int)$item['ng_count'];
-                }, $date_array));
+    
+                    $job_name_json = json_encode($job_names);
+                    $fasten_time_json = json_encode($fasten_time);
+
+                    $data['job_info']['job_name'] = $job_name_json;
+                    $data['job_info']['fasten_time'] = $fasten_time_json;
+                }
+
+              
+            }
+
+            if($val == "job_info"){
+                $job_info = $this->Historicals_newModel->for_history_temp($val, $info);
+                $data['job_time_json'] = json_encode($job_info);
+            }
 
 
-                $ng_count_json = json_encode($ng_count_values, JSON_PRETTY_PRINT);
+            if($val == "statistics"){
+                $statistics_temp = array();
+                $statistics_temp = $this->Historicals_newModel->for_history_temp($val, $info); 
+                if (!empty($statistics_temp)) {
+                    $line_title = [];
+                    $line_ng = [];
+                    $line_ok = [];
+                    $line_okall = [];
+                    
+                    foreach ($statistics_temp as $date => $val) {
+                        $line_title[] = $date; 
+                        $line_ng[] = $val['NG']; 
+                        $line_ok[] = $val['OK']; 
+                        $line_okall[] = $val['OK_ALL']; 
+                    }
 
-                $ok_count_values = array_values(array_map(function($item) {
-                    return (int)$item['ok_count'];
-                }, $date_array));
-                $ok_count_json = json_encode($ok_count_values, JSON_PRETTY_PRINT);
-
-                $ok_all_count_values = array_values(array_map(function($item) {
-                    return (int)$item['ok_all_count'];
-                }, $date_array));
-                $ok_all_count_json = json_encode($ok_all_count_values , JSON_PRETTY_PRINT);
-
+                    $data['statistics']['date'] = json_encode($line_title);
+                    $data['statistics']['ng'] = json_encode($line_ng);
+                    $data['statistics']['ok'] = json_encode($line_ok);
+                    $data['statistics']['ok_all'] = json_encode($line_okall);
             
-                $data['statistics']['date'] = json_encode(array_keys($date_array));
-                $data['statistics']['ng'] = $ng_count_json;
-                $data['statistics']['ok'] = $ok_count_json;
-                $data['statistics']['ok_all'] = $ok_all_count_json;
-            }*/
-            
+        
+                }
+            }
         }
 
        
@@ -373,7 +340,7 @@ class Historicals extends Controller
             $data['type'] = '';
         }
 
-      
+
         $this->view('historicals/index_report_history',$data);
     }
 
