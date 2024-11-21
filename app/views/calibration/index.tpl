@@ -451,7 +451,7 @@
                     <div class="col-3 t1" for="Save-as3"><?php echo $text['Type_text'];?>:</div>
                     <div class="col t1">
                         <select id="Save-as3" style="width: 184px; height: 30px">
-                            <option value="html">html</option>
+                            <!--<option value="html">html</option>-->
                             <option value="xml">xml</option>
                             <option value="csv">excel</option>
                             <option value="jpg">jpg</option>
