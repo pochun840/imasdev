@@ -83,8 +83,8 @@
 
                             <div class="row t4">
                                 <div class="col t3"><?php echo $text['Status_text']; ?>:
-                                    <label id="service_status_device_1" style="color: red; padding-left: 5%; display: block; margin-right: 20px"> <?php echo $text['Offline_text']; ?></label>
-                                    <label id="service_status_device_2" style="color: green; padding-left: 5%; display: none; margin-right: 20px"> <?php echo $text['Online_text']; ?></label>
+                                    <label id="service_status_device_1" style="color: red; padding-left: 5%; display: block; margin-right: 20px"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
+                                    <label id="service_status_device_2" style="color: green; padding-left: 5%; display: none; margin-right: 20px"> <?php echo $text['Offline_text']; ?>/<?php echo $text['Online_text']; ?></label>
                                     
                                     <button type="button" class="btn btn_All"  onclick="connect_test_ktm()"><?php echo $text['Service_Start_text']; ?></button>
                                     <button type="button" class="btn btn_All"  onclick="abort_ktm()"><?php echo $text['Service_Stop_text'];?></button>
@@ -111,14 +111,13 @@
         </div>
     </div>
 
-     <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; text-align: center;">
+
+    <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; text-align: center;">
         <!-- Loading 圓圈 -->
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <div class="loader"></div>
         </div>
     </div>
-
-
 
 
 
@@ -144,6 +143,7 @@
     }
 
     let currentComPort = '';
+
     function connect_test_ktm() {
         var selectElement = document.getElementById('comport');
         currentComPort = selectElement.value;
@@ -159,10 +159,10 @@
             data: { comport: currentComPort },
             dataType: 'json',
             success: function(response) {   
-                
+                // 处理返回结果
                 let message = response.result || response.error;
                 if (response.output) {
-                    message += "\nOutput: " + response.output;
+                    message += "\nOutput: " + response.output; // 添加 Node.js 输出
                 }
                 
                 // 隐藏 service_status_device_1，显示 service_status_device_2
@@ -172,9 +172,18 @@
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log_div = document.getElementById('connect_log_ktm');
                 log_div.innerHTML = momo + "  Connection attempt started<br>" + momo + "  Connection success<br><br>";  
+
+                // 请求完成后隐藏加载动画
                 document.getElementById('overlay').style.display = 'none';
 
-            
+             
+                var checkKtmElement = document.getElementById('check_ktm');
+                // 如果没有找到该元素，弹出警告框
+                if (!checkKtmElement) {
+                    //alert("未找到 id='check_ktm' 的元素");
+                } else {
+                    //alert("找到 id='check_ktm' 的元素");
+                }
 
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -194,6 +203,7 @@
             }
         });
     }
+
 
 
     function abort_ktm() {
@@ -236,7 +246,6 @@
 
     
     </script>
-
     <style>
         /* Loading 圓圈動畫 */
         .loader {
