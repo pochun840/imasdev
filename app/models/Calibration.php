@@ -49,7 +49,6 @@ class Calibration{
         return $details;
     }
 
-
     public function datainfo(){
 
         # 需要job_id 
@@ -63,8 +62,6 @@ class Calibration{
     }
 
     public function datainfo_search($job_id){
-
-    
         $sql = "SELECT * FROM `calibrations` WHERE  job_id = :job_id  ORDER BY id ASC  ";
         $params[':job_id'] = $job_id;
         $statement = $this->db->prepare($sql);
