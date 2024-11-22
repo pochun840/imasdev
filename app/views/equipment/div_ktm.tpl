@@ -112,6 +112,15 @@
     </div>
 
 
+    <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; text-align: center;">
+        <!-- Loading 圓圈 -->
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+
+
     <script type="text/javascript">
      var pidFileAppCheck = '<?php echo $data['pidFile_app_check'] ?>';
      window.onload = function() {
@@ -134,9 +143,13 @@
     }
 
     let currentComPort = '';
+
     function connect_test_ktm() {
         var selectElement = document.getElementById('comport');
-        currentComPort = selectElement.value
+        currentComPort = selectElement.value;
+        
+        // 显示加载动画（overlay）
+        document.getElementById('overlay').style.display = 'block';
         
         let log_div = document.getElementById('connect_log');
         
@@ -147,44 +160,52 @@
             dataType: 'json',
             success: function(response) {   
                 
-                // 处理输出
                 let message = response.result || response.error;
                 if (response.output) {
                     message += "\nOutput: " + response.output; // 添加 Node.js 输出
                 }
                 
-                // 隐藏 service_status_device_1
+        
                 document.getElementById('service_status_device_1').style.display = 'none';
-                
-                // 显示 service_status_device_2
                 document.getElementById('service_status_device_2').style.display = 'block'; 
 
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log_div = document.getElementById('connect_log_ktm');
-                log_div.innerHTML =  momo + "  Connect attempt started<br>" + momo + "  Connection result";  
+                log_div.innerHTML = momo + "  Connection attempt started<br>" + momo + "  Connection success<br><br>";  
+
+                document.getElementById('overlay').style.display = 'none';
+                
+                let check_ktm = 'yes';
+                localStorage.setItem('check_ktm', check_ktm);
+
+                //history.go(0); 
+                
+
+               
+
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.error("Error Status: " + textStatus); 
-                console.error("Error Thrown: " + errorThrown); 
+                //console.error("错误状态: " + textStatus); 
+                //console.error("错误抛出: " + errorThrown); 
 
-                // 隐藏 service_status_device_1
-                document.getElementById('service_status_device_1').style.display = 'none';
-                
-                // 显示 service_status_device_2
-                document.getElementById('service_status_device_2').style.display = 'block'; 
+                // 隐藏 service_status_device_1，显示 service_status_device_2
+                //document.getElementById('service_status_device_1').style.display = 'none';
+                //document.getElementById('service_status_device_2').style.display = 'block'; 
 
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 
-
-
+                // 请求完成后隐藏加载动画
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('check_ktm').checked = false; 
+                
             }
         });
-
-
     }
 
 
+
     function abort_ktm() {
+       
         $.ajax({
             type: 'POST',
             url: '?url=Equipments/ktm_aborted', 
@@ -193,26 +214,52 @@
             success: function(response) {
                 console.log(response); 
                 let message = response.result || response.error;
-                alert(message); 
+                 
                 
                 // 隐藏 service_status_device_1
                 document.getElementById('service_status_device_1').style.display = 'block';
                 
                 // 显示 service_status_device_2
                 document.getElementById('service_status_device_2').style.display = 'none'; 
+                localStorage.removeItem('check_ktm');
+
+                history.go(0);
+      
+
+
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                //console.error("Error Status: " + textStatus); 
-                //console.error("Error Thrown: " + errorThrown); 
 
                 // 隐藏 service_status_device_1
                 document.getElementById('service_status_device_1').style.display = 'block';
-                
                 // 显示 service_status_device_2
                 document.getElementById('service_status_device_2').style.display = 'none'; 
+
+                let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
+                let log_div = document.getElementById('connect_log_ktm');
+                log_div.innerHTML += momo + "  Connection attempt started<br>" + momo + "  Connection fail<br><br>";  
+
+                localStorage.removeItem('check_ktm');
             }
         });
     }
 
     
     </script>
+    <style>
+        /* Loading 圓圈動畫 */
+        .loader {
+            border: 16px solid #f3f3f3; /* 背景顏色 */
+            border-top: 16px solid #3498db; /* 轉動部分顏色 */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        /* 旋轉動畫 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
