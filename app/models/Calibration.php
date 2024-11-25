@@ -158,16 +158,14 @@ class Calibration{
     } 
 
     public function get_tools_sn(){
-        $sql = "SELECT * FROM `fasten_data`   ORDER BY system_sn   DESC LIMIT 1"; // 假设 `created_at` 是时间戳列
+        $sql = "SELECT * FROM `fasten_data`   ORDER BY system_sn   DESC LIMIT 1"; 
         $statement = $this->db->prepare($sql);
         $statement->execute();
-        $latestData = $statement->fetch(PDO::FETCH_ASSOC); // 获取最新的一笔数据
+        $latestData = $statement->fetch(PDO::FETCH_ASSOC); 
 
         if ($latestData) {
-            // 成功获取数据
             return $latestData;
         } else {
-            // 没有找到数据
             return null;
         }          
     }

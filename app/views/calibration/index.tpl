@@ -471,6 +471,7 @@
 
 <script>
 let lastData = null; 
+let intervalId;
 var myChart; 
 $(document).ready(function() {
     fetchLatestInfo();
@@ -728,6 +729,7 @@ function current_save() {
 
     localStorage.setItem('rpm', rpm);
     localStorage.setItem('offset', offset);
+    localStorage.setItem('implement_count', implement_count);
 
 
     let percentage = tolerance / 100; 
@@ -804,9 +806,23 @@ function undo() {
 }
 
 async function fetchData() {
+    // 获取 localStorage 中的 implement_count
+    const implementCount = localStorage.getItem('implement_count');
+    const maxRequestLimit = localStorage.getItem('max_request_limit') || 10; // 获取最大请求次数，默认 10 次
+
+    // 确保 implementCount 是一个有效的数字
+    if (implementCount === null) {
+        console.log('implement_count 未定义，默认值设为 0');
+    } else {
+        if (parseInt(implementCount) >= parseInt(maxRequestLimit)) { // 使用动态的 max_request_limit
+            console.log(`请求次数已超过最大限制：${maxRequestLimit} 次`);
+            return;  // 请求次数超过限制，停止执行
+        }
+    }
+
     const url1 = '?url=Calibrations/get_val';
+    
     try {
-        
         const response1 = await fetch(url1, {
             method: 'GET', 
         });
@@ -814,19 +830,18 @@ async function fetchData() {
         if (response1.ok) {
             const data = await response1.json(); 
             console.log('API 返回:', data);
-            //document.getElementById('result').innerText = JSON.stringify(data, null, 2); 
+            
+            // 更新 implement_count 次数
+            let newImplementCount = parseInt(implementCount) + 1 || 1; // 防止为空时返回 NaN
+            localStorage.setItem('implement_count', newImplementCount);  // 存储新的次数
         } else {
             console.error('请求失败，状态码:', response1.status);
-            //document.getElementById('result').innerText = '请求失败，状态码: ' + response1.status;
         }
-
-    
     } catch (error) {
-        //console.error('发生错误:', error);
-        //document.getElementById('result').innerText = '发生错误: ' + error.message;
-        //document.getElementById('datainfo').innerHTML = '发生错误: ' + error.message;
+        console.error('发生错误:', error);
     }
 }
+
 
 // 每 0.5 秒调用一次 fetchData
 setInterval(fetchData, 500);
@@ -951,19 +966,21 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
         return;  // Prevent rendering if container is not found
     }
 
-    if (!myChart) {
-        myChart = echarts.init(chartContainer);
-    }
+    var myChart = echarts.init(chartContainer);
 
     var upper_limit = parseFloat(localStorage.getItem('highLimitTorque'));
     var lower_limit = parseFloat(localStorage.getItem('lowLimitTorque'));
+
+
+    if (isNaN(upper_limit)) upper_limit = null;
+    if (isNaN(lower_limit)) lower_limit = null;
 
     var option = {
         title: {
             text: ''
         },
         tooltip: {
-            trigger: 'axis',  
+            trigger: 'axis',
             axisPointer: {
                 type: 'cross',
                 crossStyle: {
@@ -991,61 +1008,72 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
         yAxis: {
             type: 'value',
             name: 'Torque',
-            min: Math.min(lower_limit - 0.05, Math.min(...y_val_torque_1), Math.min(...y_val_torque_2)),  // Ensure the lower limit is visible
-            max: Math.max(upper_limit + 0.05, Math.max(...y_val_torque_1), Math.max(...y_val_torque_2)),  // Ensure the upper limit is visible
+            min: Math.min(
+                lower_limit !== null ? lower_limit - 0.05 : Math.min(...y_val_torque_1, ...y_val_torque_2),  // Ensure the lower limit is visible
+                Math.min(...y_val_torque_1, ...y_val_torque_2)  // If lower_limit is null, use the minimum of the data
+            ),
+            max: Math.max(
+                upper_limit !== null ? upper_limit + 0.05 : Math.max(...y_val_torque_1, ...y_val_torque_2),  // Ensure the upper limit is visible
+                Math.max(...y_val_torque_1, ...y_val_torque_2)  // If upper_limit is null, use the maximum of the data
+            ),
             axisLine: {
-                onZero: false 
+                onZero: false
             }
         },
         series: [{
-            name: 'ktm_Torque',
-            type: 'line',
-            symbol: 'none',
-            sampling: 'average',
-            lineStyle: {
-                width: 0.75,
-                color: 'rgb(255,0,0)'
-            },
-            itemStyle: {
-                normal: {
+                name: 'ktm_Torque',
+                type: 'line',
+                symbol: 'none',
+                sampling: 'average',
+                lineStyle: {
+                    width: 0.75,
                     color: 'rgb(255,0,0)'
-                }
+                },
+                itemStyle: {
+                    normal: {
+                        color: 'rgb(255,0,0)'
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgb(255,255,255)' },
+                            { offset: 1, color: 'rgb(255,255,255)' }
+                        ])
+                    }
+                },
+                data: y_val_torque_1,
             },
-            areaStyle: {
-                normal: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: 'rgb(255,255,255)' },
-                        { offset: 1, color: 'rgb(255,255,255)' }
-                    ])
-                }
-            },
-            data: y_val_torque_1,
-        },
-        {
-            name: 'controller_Torque',
-            type: 'line',
-            symbol: 'none',
-            sampling: 'average',
-            lineStyle: {
-                width: 0.75,
-                color: 'rgb(0,0,255)'
-            },
-            itemStyle: {
-                normal: {
+            {
+                name: 'controller_Torque',
+                type: 'line',
+                symbol: 'none',
+                sampling: 'average',
+                lineStyle: {
+                    width: 0.75,
                     color: 'rgb(0,0,255)'
-                }
-            },
-            areaStyle: {
-                normal: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: 'rgb(255,255,255)' },
-                        { offset: 1, color: 'rgb(255,255,255)' }
-                    ])
-                }
-            },
-            data: y_val_torque_2,
-        },
-        {
+                },
+                itemStyle: {
+                    normal: {
+                        color: 'rgb(0,0,255)'
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgb(255,255,255)' },
+                            { offset: 1, color: 'rgb(255,255,255)' }
+                        ])
+                    }
+                },
+                data: y_val_torque_2,
+            }
+        ]
+    };
+
+
+    if (upper_limit !== null && lower_limit !== null) {
+        option.series.push({
             name: 'Upper Limit',
             type: 'line',
             symbol: 'none',
@@ -1054,21 +1082,20 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
                 color: 'green',
                 width: 0.75
             },
-            data: new Array(x_val.length).fill(upper_limit),  
+            data: new Array(x_val.length).fill(upper_limit),
             markPoint: {
-                data: [
-                    {
-                        name: 'Upper Limit Value',
-                        label: {
-                            show: true,
-                            position: 'top',
-                            formatter: `Upper Limit: ${upper_limit}`
-                        }
+                data: [{
+                    name: 'Upper Limit Value',
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: `Upper Limit: ${upper_limit}`
                     }
-                ]
+                }]
             }
-        },
-        {
+        });
+
+        option.series.push({
             name: 'Lower Limit',
             type: 'line',
             symbol: 'none',
@@ -1077,21 +1104,20 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
                 color: 'orange',
                 width: 0.75
             },
-            data: new Array(x_val.length).fill(lower_limit),  
+            data: new Array(x_val.length).fill(lower_limit),
             markPoint: {
-                data: [
-                    {
-                        name: 'Lower Limit Value',
-                        label: {
-                            show: true,
-                            position: 'bottom',
-                            formatter: `Lower Limit: ${lower_limit}`
-                        }
+                data: [{
+                    name: 'Lower Limit Value',
+                    label: {
+                        show: true,
+                        position: 'bottom',
+                        formatter: `Lower Limit: ${lower_limit}`
                     }
-                ]
+                }]
             }
-        }]
-    };
+        });
+    }
+
     myChart.setOption(option, true);
 }
 
@@ -1150,30 +1176,7 @@ function convertToNumberArray(data) {
 window.onload = function() {
     document.getElementById('tolerance').value = 10;
     document.getElementById('bias').value = 10;
-    
-    /*const checkbox = document.getElementById('skip-turn-rev');
-    checkbox.checked = true;
 
-    if (!document.cookie.includes('skipTurnRev=')) {
-        const expirationDays = 7;
-        const d = new Date();
-        d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-        const expires = "expires=" + d.toUTCString();
-        
-        document.cookie = "skipTurnRev=1;" + expires + ";path=/";
-        checkbox.checked = true; 
-    } else {
-        checkbox.checked = document.cookie.includes('skipTurnRev=1');
-    }
-
-    // 根据复选框的状态显示或隐藏相关元素
-    if (checkbox.checked) {
-        document.getElementById('analysis-system-KTM').style.display = 'block';
-        document.getElementById('Torque-Collection').style.display = 'none';
-    } else {
-        document.getElementById('analysis-system-KTM').style.display = 'none';
-        document.getElementById('Torque-Collection').style.display = 'block';
-    }*/
 };
 
 
@@ -1182,6 +1185,10 @@ document.getElementById('tolerance').addEventListener('keypress', function(event
     if (event.key === 'Enter') {
         const toleranceValue = this.value; 
         document.getElementById('bias').value = toleranceValue; 
+
+        document.getElementById('implement_count').value = localStorage.getItem('implement_count') || '';
+
+
     }
 });
 

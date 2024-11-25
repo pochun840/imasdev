@@ -206,22 +206,23 @@
     function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
         if (!x_val || !y_val_torque_1 || !y_val_torque_2 || x_val.length === 0 || y_val_torque_1.length === 0 || y_val_torque_2.length === 0) {
             console.error('Data arrays are empty or undefined!');
-            return;  
+            return;
         }
 
         var chartContainer = document.getElementById('mychart');
         if (!chartContainer) {
             console.error('Chart container not found!');
-            return;  
+            return;  // Prevent rendering if container is not found
         }
 
-        if (!myChart) {
-            myChart = echarts.init(chartContainer);
-        }
+        var myChart = echarts.init(chartContainer);
 
-        #設定 上限及下限
         var upper_limit = parseFloat(localStorage.getItem('highLimitTorque'));
-        var lower_limit =  parseFloat(localStorage.getItem('lowLimitTorque'));
+        var lower_limit = parseFloat(localStorage.getItem('lowLimitTorque'));
+
+
+        if (isNaN(upper_limit)) upper_limit = null;
+        if (isNaN(lower_limit)) lower_limit = null;
 
         var option = {
             title: {
@@ -256,62 +257,72 @@
             yAxis: {
                 type: 'value',
                 name: 'Torque',
-                min: Math.min(lower_limit - 0.05, Math.min(...y_val_torque_1), Math.min(...y_val_torque_2)),  // Ensure the lower limit is visible
-                max: Math.max(upper_limit + 0.05, Math.max(...y_val_torque_1), Math.max(...y_val_torque_2)),  // Ensure the upper limit is visible
+                min: Math.min(
+                    lower_limit !== null ? lower_limit - 0.05 : Math.min(...y_val_torque_1, ...y_val_torque_2),  // Ensure the lower limit is visible
+                    Math.min(...y_val_torque_1, ...y_val_torque_2)  // If lower_limit is null, use the minimum of the data
+                ),
+                max: Math.max(
+                    upper_limit !== null ? upper_limit + 0.05 : Math.max(...y_val_torque_1, ...y_val_torque_2),  // Ensure the upper limit is visible
+                    Math.max(...y_val_torque_1, ...y_val_torque_2)  // If upper_limit is null, use the maximum of the data
+                ),
                 axisLine: {
-                    onZero: false 
+                    onZero: false
                 }
             },
             series: [{
-                name: 'ktm_Torque',
-                type: 'line',
-                symbol: 'none',
-                sampling: 'average',
-                lineStyle: {
-                    width: 0.75,
-                    color: 'rgb(255,0,0)'
-                },
-                itemStyle: {
-                    normal: {
+                    name: 'ktm_Torque',
+                    type: 'line',
+                    symbol: 'none',
+                    sampling: 'average',
+                    lineStyle: {
+                        width: 0.75,
                         color: 'rgb(255,0,0)'
-                    }
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: 'rgb(255,0,0)'
+                        }
+                    },
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgb(255,255,255)' },
+                                { offset: 1, color: 'rgb(255,255,255)' }
+                            ])
+                        }
+                    },
+                    data: y_val_torque_1,
                 },
-                areaStyle: {
-                    normal: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: 'rgb(255,255,255)' },
-                            { offset: 1, color: 'rgb(255,255,255)' }
-                        ])
-                    }
-                },
-                data: y_val_torque_1,
-            },
-            {
-                name: 'controller_Torque',
-                type: 'line',
-                symbol: 'none',
-                sampling: 'average',
-                lineStyle: {
-                    width: 0.75,
-                    color: 'rgb(0,0,255)'
-                },
-                itemStyle: {
-                    normal: {
+                {
+                    name: 'controller_Torque',
+                    type: 'line',
+                    symbol: 'none',
+                    sampling: 'average',
+                    lineStyle: {
+                        width: 0.75,
                         color: 'rgb(0,0,255)'
-                    }
-                },
-                areaStyle: {
-                    normal: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: 'rgb(255,255,255)' },
-                            { offset: 1, color: 'rgb(255,255,255)' }
-                        ])
-                    }
-                },
-                data: y_val_torque_2,
-            },
-            
-            {
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: 'rgb(0,0,255)'
+                        }
+                    },
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgb(255,255,255)' },
+                                { offset: 1, color: 'rgb(255,255,255)' }
+                            ])
+                        }
+                    },
+                    data: y_val_torque_2,
+                }
+            ]
+        };
+
+
+        if (upper_limit !== null && lower_limit !== null) {
+            option.series.push({
                 name: 'Upper Limit',
                 type: 'line',
                 symbol: 'none',
@@ -319,24 +330,21 @@
                     type: 'dashed',
                     color: 'green',
                     width: 0.75
-                },                                   
-                data: new Array(x_val.length).fill(upper_limit),   
+                },
+                data: new Array(x_val.length).fill(upper_limit),
                 markPoint: {
-                    data: [
-                        {
-                            //type: 'max',
-                            name: 'Upper Limit Value',
-                            //coord: [x_val[Math.floor(x_val.length / 2)] , upper_limit],  // Place label in the middle of the x-axis
-                            label: {
-                                show: true,
-                                position: 'top',
-                                formatter: `Upper Limit: ${upper_limit}`
-                            }
+                    data: [{
+                        name: 'Upper Limit Value',
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: `Upper Limit: ${upper_limit}`
                         }
-                    ]
+                    }]
                 }
-            },
-            {
+            });
+
+            option.series.push({
                 name: 'Lower Limit',
                 type: 'line',
                 symbol: 'none',
@@ -345,27 +353,22 @@
                     color: 'orange',
                     width: 0.75
                 },
-                data: new Array(x_val.length).fill(lower_limit),  
+                data: new Array(x_val.length).fill(lower_limit),
                 markPoint: {
-                    data: [
-                        {
-                            //type: 'min',
-                            name: 'Lower Limit Value',
-                            //coord: [x_val[Math.floor(x_val.length / 2)] lower_limit],  // Place label in the middle of the x-axis
-                            label: {
-                                show: true,
-                                position: 'bottom',
-                                formatter: `Lower Limit: ${lower_limit}`
-                            }
+                    data: [{
+                        name: 'Lower Limit Value',
+                        label: {
+                            show: true,
+                            position: 'bottom',
+                            formatter: `Lower Limit: ${lower_limit}`
                         }
-                    ]
+                    }]
                 }
-            }]
-        };
+            });
+        }
 
         myChart.setOption(option, true);
     }
-
 
 
 
