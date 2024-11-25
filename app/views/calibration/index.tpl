@@ -200,7 +200,7 @@
                     <div class="row t1" style="padding-left: 1%">
                        <div class="col-5 t1"><?php echo $text['Count_text'];?>:</div>
                         <div class="col-4 t1">
-                            <input id="implement_count" type="text" class="t2 form-control" value=""  oninput="update_count()" onkeydown="checkEnter(event)" >
+                            <input id="implement_count" type="text" class="t2 form-control" value=""  >
                         </div>
                     </div>
                 </div>
@@ -548,6 +548,9 @@ function NextToAnalysisSystemKTM() {
     document.getElementById('Torque-Collection').style.display = 'none';
     document.getElementById('item').value = details[torqueMeter] + '(N.m)';
 
+    //移除localstorage
+    clearlocalstorage_keys();
+
     
 
 }
@@ -721,6 +724,7 @@ function current_save() {
     const rpm = document.getElementById('current_rpm').value;
     const offset = document.getElementById('current_offset').value;
     const tolerance = document.getElementById('tolerance').value;
+    const implement_count = document.getElementById('implement_count').value;
 
     localStorage.setItem('rpm', rpm);
     localStorage.setItem('offset', offset);
@@ -762,6 +766,7 @@ function current_save() {
             localStorage.setItem('highLimitTorque', upper_limit);
             localStorage.setItem('lowLimitTorque', lower_limit);
             localStorage.setItem('bias', tolerance);
+            localStorage.setItem('implement_count',implement_count);
 
 
 
@@ -937,7 +942,7 @@ renderChart(x_val, y_val_torque_1,y_val_torque_2);
 function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
     if (!x_val || !y_val_torque_1 || !y_val_torque_2 || x_val.length === 0 || y_val_torque_1.length === 0 || y_val_torque_2.length === 0) {
         console.error('Data arrays are empty or undefined!');
-        return;  // Prevent rendering if data is invalid
+        return;
     }
 
     var chartContainer = document.getElementById('mychart');
@@ -949,6 +954,9 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
     if (!myChart) {
         myChart = echarts.init(chartContainer);
     }
+
+    var upper_limit = parseFloat(localStorage.getItem('highLimitTorque'));
+    var lower_limit = parseFloat(localStorage.getItem('lowLimitTorque'));
 
     var option = {
         title: {
@@ -962,7 +970,7 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
                     color: '#999'
                 }
             },
-           formatter: function (params) {
+            formatter: function (params) {
                 var tooltipContent = params[0].name + '<br>';
                 params.forEach(function (param) {
                     tooltipContent += param.seriesName + ': ' + param.value + '<br>';
@@ -983,6 +991,11 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
         yAxis: {
             type: 'value',
             name: 'Torque',
+            min: Math.min(lower_limit - 0.05, Math.min(...y_val_torque_1), Math.min(...y_val_torque_2)),  // Ensure the lower limit is visible
+            max: Math.max(upper_limit + 0.05, Math.max(...y_val_torque_1), Math.max(...y_val_torque_2)),  // Ensure the upper limit is visible
+            axisLine: {
+                onZero: false 
+            }
         },
         series: [{
             name: 'ktm_Torque',
@@ -1031,10 +1044,54 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
                 }
             },
             data: y_val_torque_2,
+        },
+        {
+            name: 'Upper Limit',
+            type: 'line',
+            symbol: 'none',
+            lineStyle: {
+                type: 'dashed',
+                color: 'green',
+                width: 0.75
+            },
+            data: new Array(x_val.length).fill(upper_limit),  
+            markPoint: {
+                data: [
+                    {
+                        name: 'Upper Limit Value',
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: `Upper Limit: ${upper_limit}`
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            name: 'Lower Limit',
+            type: 'line',
+            symbol: 'none',
+            lineStyle: {
+                type: 'dashed',
+                color: 'orange',
+                width: 0.75
+            },
+            data: new Array(x_val.length).fill(lower_limit),  
+            markPoint: {
+                data: [
+                    {
+                        name: 'Lower Limit Value',
+                        label: {
+                            show: true,
+                            position: 'bottom',
+                            formatter: `Lower Limit: ${lower_limit}`
+                        }
+                    }
+                ]
+            }
         }]
     };
-
-    // Set the chart options
     myChart.setOption(option, true);
 }
 
@@ -1127,6 +1184,19 @@ document.getElementById('tolerance').addEventListener('keypress', function(event
         document.getElementById('bias').value = toleranceValue; 
     }
 });
+
+
+function clearlocalstorage_keys() {
+    localStorage.removeItem('highLimitTorque');
+    localStorage.removeItem('lowLimitTorque');
+    localStorage.removeItem('implement_count');
+    localStorage.removeItem('bias');
+    localStorage.removeItem('offset');
+    localStorage.removeItem('rpm');
+    localStorage.removeItem('targetTorque');
+
+    //console.log('Specified keys have been removed from localStorage.');
+}
 
 </script>
 

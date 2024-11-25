@@ -49,7 +49,7 @@
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px;">
-            <label for="Upper-Limit" id="highLimitTorque" style="width: 24%">Upper Limit : </label>
+            <label for="Upper-Limit" id="highLimitTorque" style="width: 24%">Upper Limit :</label>
             <label for="Lower-Limit" id="lowLimitTorque" style="width: 24%">Lower Limit : </label>
             <label for="Tolerance" id="bias" style="width: 27%">Tolerance +/-% : %</label>
             <label for="Offset" id="offset" style="width: 16%">Offset : </label>
@@ -159,7 +159,7 @@
     //讀取 localstorge
     let targetTorque = localStorage.getItem('targetTorque');
     let highLimitTorque = localStorage.getItem('highLimitTorque');
-    let lowLimitTorque= localStorage.getItem('lowLimitTorque');
+    let lowLimitTorque = localStorage.getItem('lowLimitTorque');
     let bias = localStorage.getItem('bias');
     let rpm = localStorage.getItem('rpm');
     let offset = localStorage.getItem('offset');
@@ -206,32 +206,36 @@
     function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
         if (!x_val || !y_val_torque_1 || !y_val_torque_2 || x_val.length === 0 || y_val_torque_1.length === 0 || y_val_torque_2.length === 0) {
             console.error('Data arrays are empty or undefined!');
-            return;  // Prevent rendering if data is invalid
+            return;  
         }
 
         var chartContainer = document.getElementById('mychart');
         if (!chartContainer) {
             console.error('Chart container not found!');
-            return;  // Prevent rendering if container is not found
+            return;  
         }
 
         if (!myChart) {
             myChart = echarts.init(chartContainer);
         }
 
+        #設定 上限及下限
+        var upper_limit = parseFloat(localStorage.getItem('highLimitTorque'));
+        var lower_limit =  parseFloat(localStorage.getItem('lowLimitTorque'));
+
         var option = {
             title: {
                 text: ''
             },
             tooltip: {
-                trigger: 'axis',  
+                trigger: 'axis',
                 axisPointer: {
                     type: 'cross',
                     crossStyle: {
                         color: '#999'
                     }
                 },
-            formatter: function (params) {
+                formatter: function (params) {
                     var tooltipContent = params[0].name + '<br>';
                     params.forEach(function (param) {
                         tooltipContent += param.seriesName + ': ' + param.value + '<br>';
@@ -252,6 +256,11 @@
             yAxis: {
                 type: 'value',
                 name: 'Torque',
+                min: Math.min(lower_limit - 0.05, Math.min(...y_val_torque_1), Math.min(...y_val_torque_2)),  // Ensure the lower limit is visible
+                max: Math.max(upper_limit + 0.05, Math.max(...y_val_torque_1), Math.max(...y_val_torque_2)),  // Ensure the upper limit is visible
+                axisLine: {
+                    onZero: false 
+                }
             },
             series: [{
                 name: 'ktm_Torque',
@@ -300,12 +309,65 @@
                     }
                 },
                 data: y_val_torque_2,
+            },
+            
+            {
+                name: 'Upper Limit',
+                type: 'line',
+                symbol: 'none',
+                lineStyle: {
+                    type: 'dashed',
+                    color: 'green',
+                    width: 0.75
+                },                                   
+                data: new Array(x_val.length).fill(upper_limit),   
+                markPoint: {
+                    data: [
+                        {
+                            //type: 'max',
+                            name: 'Upper Limit Value',
+                            //coord: [x_val[Math.floor(x_val.length / 2)] , upper_limit],  // Place label in the middle of the x-axis
+                            label: {
+                                show: true,
+                                position: 'top',
+                                formatter: `Upper Limit: ${upper_limit}`
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                name: 'Lower Limit',
+                type: 'line',
+                symbol: 'none',
+                lineStyle: {
+                    type: 'dashed',
+                    color: 'orange',
+                    width: 0.75
+                },
+                data: new Array(x_val.length).fill(lower_limit),  
+                markPoint: {
+                    data: [
+                        {
+                            //type: 'min',
+                            name: 'Lower Limit Value',
+                            //coord: [x_val[Math.floor(x_val.length / 2)] lower_limit],  // Place label in the middle of the x-axis
+                            label: {
+                                show: true,
+                                position: 'bottom',
+                                formatter: `Lower Limit: ${lower_limit}`
+                            }
+                        }
+                    ]
+                }
             }]
         };
 
-        // Set the chart options
         myChart.setOption(option, true);
     }
+
+
+
 
     function convertToNumberArray(data) {
         if (Array.isArray(data)) {
@@ -415,7 +477,6 @@ if (type  == "download") {
 
         zip.file(htmlFileName, pageContent); 
 
-        // 生成 ZIP 文件并触发下载
         zip.generateAsync({ type: 'blob' }).then(function(content) {
             saveAs(content, 'all_calibration' + today + '.zip');
         });
