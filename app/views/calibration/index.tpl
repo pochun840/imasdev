@@ -730,6 +730,7 @@ function current_save() {
     localStorage.setItem('rpm', rpm);
     localStorage.setItem('offset', offset);
     localStorage.setItem('implement_count', implement_count);
+    setCookie('implement_count', implement_count, 7);
 
 
     let percentage = tolerance / 100; 
@@ -772,6 +773,7 @@ function current_save() {
 
 
 
+
         },
         error: function(xhr, status, error) {
             alert('保存失敗：' + error);
@@ -804,44 +806,39 @@ function undo() {
 
     
 }
-
+let final_brian = 0;
 async function fetchData() {
-    // 获取 localStorage 中的 implement_count
-    const implementCount = localStorage.getItem('implement_count');
-    const maxRequestLimit = localStorage.getItem('max_request_limit') || 10; // 获取最大请求次数，默认 10 次
-
-    // 确保 implementCount 是一个有效的数字
-    if (implementCount === null) {
-        console.log('implement_count 未定义，默认值设为 0');
-    } else {
-        if (parseInt(implementCount) >= parseInt(maxRequestLimit)) { // 使用动态的 max_request_limit
-            console.log(`请求次数已超过最大限制：${maxRequestLimit} 次`);
-            return;  // 请求次数超过限制，停止执行
-        }
-    }
-
     const url1 = '?url=Calibrations/get_val';
-    
+
+    //
     try {
         const response1 = await fetch(url1, {
             method: 'GET', 
         });
 
         if (response1.ok) {
-            const data = await response1.json(); 
-            console.log('API 返回:', data);
+            const textResponse = await response1.text(); // 先获取响应的文本内容
             
-            // 更新 implement_count 次数
-            let newImplementCount = parseInt(implementCount) + 1 || 1; // 防止为空时返回 NaN
-            localStorage.setItem('implement_count', newImplementCount);  // 存储新的次数
-        } else {
+            if (textResponse.trim()) {
+                try {
+                    const data = JSON.parse(textResponse);
+                    console.log('API 返回:', data);
+
+                     if (data.success === true && data.message === '數據整理成功') {
+                        final_brian += 1; 
+                    }
+
+                } catch (jsonError) {
+                    //console.error('无法解析响应为 JSON:', jsonError);
+                }
+            }
+        }else{
             console.error('请求失败，状态码:', response1.status);
         }
     } catch (error) {
         console.error('发生错误:', error);
     }
 }
-
 
 // 每 0.5 秒调用一次 fetchData
 setInterval(fetchData, 500);
@@ -875,8 +872,14 @@ function fetchLatestInfo() {
             console.log(data.meter);
 
             //更新最大和最小扭力值
-            $('#max-torque').val(data.meter['max-torque'].torque); // 取得 max-torque 的值
-            $('#min-torque').val(data.meter['min-torque'].torque); // 取得 min-torque 的值
+             if (data.meter['max-torque'] && data.meter['max-torque'].torque) {
+                $('#max-torque').val(data.meter['max-torque'].torque); // 取得 max-torque 的值
+            }
+
+            if (data.meter['min-torque'] && data.meter['min-torque'].torque) {
+                $('#min-torque').val(data.meter['min-torque'].torque); // 取得 min-torque 的值
+            }
+
 
             //更新扭力平均值//avg_torque
             document.getElementById('avg-torque').value = data.avg_torque;
@@ -954,11 +957,8 @@ y_val_torque_2 =  JSON.parse(y_val_torque_2).map(Number);
 
 renderChart(x_val, y_val_torque_1,y_val_torque_2);
 
-function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
-    if (!x_val || !y_val_torque_1 || !y_val_torque_2 || x_val.length === 0 || y_val_torque_1.length === 0 || y_val_torque_2.length === 0) {
-        console.error('Data arrays are empty or undefined!');
-        return;
-    }
+ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
+    
 
     var chartContainer = document.getElementById('mychart');
     if (!chartContainer) {
@@ -970,7 +970,6 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
 
     var upper_limit = parseFloat(localStorage.getItem('highLimitTorque'));
     var lower_limit = parseFloat(localStorage.getItem('lowLimitTorque'));
-
 
     if (isNaN(upper_limit)) upper_limit = null;
     if (isNaN(lower_limit)) lower_limit = null;
@@ -1071,7 +1070,7 @@ function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
         ]
     };
 
-
+    // 仅在有有效的上下限时才添加上下限的线条
     if (upper_limit !== null && lower_limit !== null) {
         option.series.push({
             name: 'Upper Limit',
@@ -1203,6 +1202,12 @@ function clearlocalstorage_keys() {
     localStorage.removeItem('targetTorque');
 
     //console.log('Specified keys have been removed from localStorage.');
+}
+
+function setCookie(name, value, days) {
+    const expiresDate = new Date();
+    expiresDate.setTime(expiresDate.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value}; path=/; expires=${expiresDate.toUTCString()}`;
 }
 
 </script>

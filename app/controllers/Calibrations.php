@@ -167,20 +167,16 @@ class Calibrations extends Controller
 
     public function get_val() {
 
-        
+ 
         // 檢查會話是否已經啟動，若未啟動則啟動會話
         if (session_status() == PHP_SESSION_NONE) {
             session_start(); 
         }
     
-
-
         // 獲取 cookie 中的 skipTurnRev 的值
         $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 0;
-
-
-
-        
+        // 獲取 cookie 中的 implement_count 的值
+        $implementCount = isset($_COOKIE['implement_count']) ? intval($_COOKIE['implement_count']) : '';
     
         // 文件路徑
         $file_tmp = __DIR__; 
@@ -242,31 +238,36 @@ class Calibrations extends Controller
                 $finalNumber = $trimmedFinal;
             }
 
-
-
             //轉換浮點數
             $final = floatval($finalNumber);
-
-
-            // 删除文件的计数器
-            //$unlinkCount = 0;
-
             if($skipTurnRev == 1){
-
                 // $final  小於 0 
                 if ($final < 0) {
                     unlink($file_path);
-                    //$unlinkCount++;
 
                     echo json_encode(array('success123' => false, 'message' => '檔案已刪除，因為 final 值為負'));
                     return; // 終止後續程式動作
                 }
             }
             
+            // 新增變數 $fail_brian 紀錄 tidy_data 執行次數
+            $fail_brian = 0;
 
             // 整理數據
             $res = $this->CalibrationModel->tidy_data($final, $tools_sn,$system_sn,$fasten_torque);
-    
+
+            if ($res == true) {
+                $fail_brian++;
+            }
+
+
+            // 判断 $fail_brian 是否和 cookie 中的 implement_count 一致
+            if ($fail_brian == $implementCount) {
+                // 跳出 alert 提示
+                echo json_encode(array('success' => false, 'message' => '已超过请求次数限制，停止继续执行'));
+                return; // 停止继续执行
+            }
+
             // 返回整理結果
             if ($res == true) {
                 $response = array(
