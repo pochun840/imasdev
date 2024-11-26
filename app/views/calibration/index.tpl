@@ -760,7 +760,7 @@ function current_save() {
 
         },
         error: function(xhr, status, error) {
-            alert('保存失敗：' + error);
+            //alert('保存失敗：' + error);
             console.error('Error:', error);
         }
     });
@@ -779,6 +779,15 @@ function undo() {
             document.getElementById('analysis-system-KTM').style.display = 'block';
             document.getElementById('Torque-Collection').style.display = 'none';
 
+            //1.把 final_brian 變成 0
+            var final_brian = 0;
+            
+            //2. 移除 localStorage 中的 implement_count
+            localStorage.removeItem('implement_count');
+
+
+
+
         },
         error: function(error) {
         
@@ -789,8 +798,11 @@ function undo() {
 
 }
 let final_brian = 0; // 新增 final_brian 計數器
+let intervalId; 
+
 async function fetchData() {
     const url1 = '?url=Calibrations/get_val';
+    var implementCount = localStorage.getItem('implement_count');
 
     try {
         const response1 = await fetch(url1, {
@@ -809,14 +821,16 @@ async function fetchData() {
                     if (data.success && data.message === '數據整理成功') {
                         final_brian += 1; // 如果匹配，則 final_brian 自增 1
                         console.log('final_brian 更新為:', final_brian);
-                        alert( final_brian);
-                        alert(implement_count);
+                        console.log('localStorage 為:', implementCount);
+
+                        if(final_brian == implementCount){
+                           alert('已達到次數的上限');
+                           clearInterval(intervalId); 
+                           return; 
+                        }
                     }
-                    // final_brian 的value 與  implement_count 一致
-                    if(final_brian === implement_count){
-                        alert('次數已達上限');
-                        exit();
-                    }
+                    
+                   
                     
 
                 } catch (jsonError) {
@@ -833,9 +847,7 @@ async function fetchData() {
 }
 
 // 每 0.5 秒調用一次 fetchData
-setInterval(fetchData, 500);
-//fetchData();
-
+intervalId = setInterval(fetchData, 500);
 
 function fetchLatestInfo() {
     $.ajax({
@@ -943,7 +955,7 @@ function safeParse(jsonStr) {
         var parsed = JSON.parse(jsonStr);
         return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-        console.error('JSON解析錯誤:', e);
+        //console.error('JSON解析錯誤:', e);
         return [];
     }
 }

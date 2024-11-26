@@ -190,7 +190,7 @@
                 // 请求完成后隐藏加载动画
                 document.getElementById('overlay').style.display = 'none';
                 //document.getElementById('check_ktm').checked = false; 
-                alert('ewe');
+        
             }
         });
     }

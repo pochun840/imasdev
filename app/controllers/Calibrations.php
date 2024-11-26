@@ -349,6 +349,10 @@ class Calibrations extends Controller
 
     public function del_all(){
         $result = $this->CalibrationModel->del_all();
+
+        if(isset($_COOKIE['implement_count'])) {
+            setcookie('implement_count', '', time() - 3600, '/');
+        }
     }
  
     #產生XML的API
