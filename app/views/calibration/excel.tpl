@@ -157,12 +157,12 @@
 <script>
 
     //讀取 localstorge
-    let targetTorque = localStorage.getItem('targetTorque');
-    let highLimitTorque = localStorage.getItem('highLimitTorque');
-    let lowLimitTorque = localStorage.getItem('lowLimitTorque');
-    let bias = localStorage.getItem('bias');
-    let rpm = localStorage.getItem('rpm');
-    let offset = localStorage.getItem('offset');
+    let targetTorque = localStorage.getItem('targetTorque') || 0;
+    let highLimitTorque = localStorage.getItem('highLimitTorque') || 0;
+    let lowLimitTorque = localStorage.getItem('lowLimitTorque') || 0;
+    let bias = localStorage.getItem('bias') || 0;
+    let rpm = localStorage.getItem('rpm') || 0;
+    let offset = localStorage.getItem('offset') || 0;
 
 
     if(targetTorque !== null){
