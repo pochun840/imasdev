@@ -599,8 +599,9 @@ class Equipments extends Controller
         }
 
         #移除cookie - implement_count
-        setcookie('implement_count', '', time() - 3600, '/');
-    
+        if (isset($_COOKIE['implement_count'])) {
+            setcookie('implement_count', '', time() - 3600, '/');
+        }
         exit();
     }
     
