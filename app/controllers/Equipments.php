@@ -598,10 +598,14 @@ class Equipments extends Controller
             echo "PID 文件不存在。";
         }
 
-        #移除cookie - implement_count
-        if (isset($_COOKIE['implement_count'])) {
-            setcookie('implement_count', '', time() - 3600, '/');
+        #移除cookie
+        $cookies_to_delete = array('implement_count', 'new_skip', 'skipTurnRev');
+        foreach ($cookies_to_delete as $cookie_name) {
+            if (isset($_COOKIE[$cookie_name])) {
+                setcookie($cookie_name, '', time() - 3600, '/'); 
+            }
         }
+    
         exit();
     }
     

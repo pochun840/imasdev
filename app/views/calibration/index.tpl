@@ -192,9 +192,9 @@
                     <div class="row t1" style="padding-left: 3%">
                         <div class="col t1 form-check form-check-inline">
                         
-                            <input class="t1 form-check-input" type="checkbox" name="skip-turn-rev" id="skip-turn-rev" value="1" style="zoom:1.0; vertical-align: middle;"  onchange="setCheckboxSession()" checked> 
+                            <input class="t1 form-check-input" type="checkbox" name="skip_turn_rev" id="skip_turn_rev"  style="zoom:1.0; vertical-align: middle;"> 
                             
-                            <label class="t1 form-check-label" for="skip-turn-rev"><?php echo $text['Skip_Turn_Rev_text'];?></label>
+                            <label class="t1 form-check-label" for="skip_turn_rev"><?php echo $text['Skip_Turn_Rev_text'];?></label>
                         </div>
                     </div>
                     <div class="row t1" style="padding-left: 1%">
@@ -667,7 +667,6 @@ function saveAdapterType() {
     });
 }
 
-
 // Notification ....................
 let messageCount = 0;
 
@@ -716,11 +715,22 @@ function current_save() {
     const offset = document.getElementById('current_offset').value;
     const tolerance = document.getElementById('tolerance').value;
     const implement_count = document.getElementById('implement_count').value;
+    const skip_turn_rev = document.getElementById('skip_turn_rev').checked;
+    let new_skip;
+
+    if (skip_turn_rev) {
+        new_skip = 1; // 如果被選中，顯示 1
+    } else {
+        new_skip = 0;  // 如果沒有被選中，顯示 0
+    }
+
 
     localStorage.setItem('rpm', rpm);
     localStorage.setItem('offset', offset);
     localStorage.setItem('implement_count', implement_count);
+    localStorage.setItem('new_skip', new_skip);
     setCookie('implement_count', implement_count, 7);
+    setCookie('new_skip', implement_count, 7);
 
 
     let percentage = tolerance / 100; 
@@ -733,8 +743,6 @@ function current_save() {
         rpm: rpm,           // 轉速
         joint_offset: offset, //扭力補償值
         tolerance: tolerance  //誤差範圍
-
-
     };
 
    $.ajax({
@@ -743,8 +751,6 @@ function current_save() {
         contentType: "application/json",
         data: JSON.stringify(data),
         success: function(response) {
-   
-            console.log('Success:', response);
           
             document.getElementById('target-torque').value = targetQ;
             document.getElementById('high-limit-torque').value = upper_limit;
@@ -775,7 +781,6 @@ function undo() {
               },
         url: '?url=Calibrations/del_all',
         success: function(response) {
-            //history.go(0);
             document.getElementById('analysis-system-KTM').style.display = 'block';
             document.getElementById('Torque-Collection').style.display = 'none';
 
@@ -784,10 +789,6 @@ function undo() {
             
             //2. 移除 localStorage 中的 implement_count
             localStorage.removeItem('implement_count');
-
-
-
-
         },
         error: function(error) {
         
@@ -829,10 +830,6 @@ async function fetchData() {
                            return; 
                         }
                     }
-                    
-                   
-                    
-
                 } catch (jsonError) {
                     // 處理 JSON 解析錯誤
                     console.error('無法解析回應為 JSON:', jsonError);
@@ -1080,7 +1077,7 @@ renderChart(x_val, y_val_torque_1,y_val_torque_2);
         ]
     };
 
-    // 仅在有有效的上下限时才添加上下限的线条
+    //加上曲線圖的上下限
     if (upper_limit !== null && lower_limit !== null) {
         option.series.push({
             name: 'Upper Limit',
@@ -1131,34 +1128,6 @@ renderChart(x_val, y_val_torque_1,y_val_torque_2);
 }
 
 
-
-function setCheckboxSession() {
-    const checkbox = document.getElementById('skip-turn-rev');
-    const isChecked = checkbox.checked ? '1' : '0';
-
-    const expirationDays = 7;
-    const d = new Date();
-    d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + d.toUTCString();
-    
-    document.cookie = "skipTurnRev=" + isChecked + ";" + expires + ";path=/";
-
-}
-
-function update_count() {
-    console.log("输入的值:", document.getElementById('implement_count').value);
-}
-
-function checkEnter(event) {
-    if (event.key === 'Enter') {
-        // 当按下 Enter 键时调用 update_count 或其他函数
-        update_count();
-        // 可选：阻止表单提交或其他默认行为
-        event.preventDefault();
-    }
-    var value = document.getElementById('implement_count').value;
-}
-
 function convertToNumberArray(data) {
     // 檢查是否已經是數組，如果是則直接返回，如果不是則解析並轉換
     if (Array.isArray(data)) {
@@ -1177,6 +1146,9 @@ function convertToNumberArray(data) {
 window.onload = function() {
     document.getElementById('tolerance').value = 10;
     document.getElementById('bias').value = 10;
+    document.getElementById('skip_turn_rev').checked = true;
+
+    document.cookie = "new_skip=1; path=/;";  
 
 };
 
@@ -1198,15 +1170,6 @@ function setCookie(name, value, days) {
     const expiresDate = new Date();
     expiresDate.setTime(expiresDate.getTime() + (days * 24 * 60 * 60 * 1000));
     document.cookie = `${name}=${value}; path=/; expires=${expiresDate.toUTCString()}`;
-}
-
-function getCookie(name){
-    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
-    if(arr=document.cookie.match(reg)){
-        return unescape(arr[2]);
-    }else{
-        return null;
-    }
 }
 
 </script>

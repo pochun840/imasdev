@@ -174,7 +174,8 @@ class Calibrations extends Controller
         }
     
         // 獲取 cookie 中的 skipTurnRev 的值
-        $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 0;
+        $skipTurnRev = isset($_COOKIE['new_skip']) ? $_COOKIE['new_skip'] : 'no';
+        
         // 獲取 cookie 中的 implement_count 的值
         $implementCount = isset($_COOKIE['implement_count']) ? intval($_COOKIE['implement_count']) : '';
     
@@ -239,35 +240,26 @@ class Calibrations extends Controller
             }
 
             //轉換浮點數
+
             $final = floatval($finalNumber);
-            if($skipTurnRev == 1){
-                // $final  小於 0 
-                if ($final < 0) {
+
+            if($skipTurnRev  == "1"){
+                //$final 是負的 則不要進行這段
+                //$final 是正的 則要進行這段
+
+                if ($final > 0){
+                    $res = $this->CalibrationModel->tidy_data($final, $tools_sn,$system_sn,$fasten_torque);
+                }else{
                     unlink($file_path);
-
-                    echo json_encode(array('success123' => false, 'message' => '檔案已刪除，因為 final 值為負'));
-                    return; // 終止後續程式動作
+                    echo json_encode(array('success' => false, 'message' => '檔案已刪除，因為 final 值為負'));
+                    return; 
                 }
-            }
-            
-            // 新增變數 $fail_brian 紀錄 tidy_data 執行次數
-            $fail_brian = 0;
-
-            // 整理數據
-            $res = $this->CalibrationModel->tidy_data($final, $tools_sn,$system_sn,$fasten_torque);
-
-            if ($res == true) {
-                $fail_brian++;
+       
+            }else{
+                $res = $this->CalibrationModel->tidy_data($final, $tools_sn,$system_sn,$fasten_torque);
             }
 
-
-            // 判断 $fail_brian 是否和 cookie 中的 implement_count 一致
-            if ($fail_brian == $implementCount) {
-                // 跳出 alert 提示
-                echo json_encode(array('success' => false, 'message' => '已超过请求次数限制，停止继续执行'));
-                return; // 停止继续执行
-            }
-
+        
             // 返回整理結果
             if ($res == true) {
                 $response = array(
