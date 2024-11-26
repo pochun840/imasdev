@@ -232,18 +232,20 @@ class Historicals extends Controller
         foreach($mode_arr as $key =>$val){
             
             if($val =="ng_reason"){
-
-                if($info_arr['status_val']  != "1" && $info_arr['status_val'] !="2"){
-                    $ng_reason_temp = $this->Historicals_newModel->for_history_temp($val,$info);
-                    if(!empty($ng_reason_temp)){
-                        $ng_reason = $this->processNgReasonData($ng_reason_temp, $status_arr);
-                        
-                        $data['ng_reason_json'] = json_encode($ng_reason);
-                    }else{
-                        $data['ng_reason_json'] = '';
-                        
+                if(!empty($info_arr)){
+                    if($info_arr['status_val']  != "1" && $info_arr['status_val'] !="2"){
+                        $ng_reason_temp = $this->Historicals_newModel->for_history_temp($val,$info);
+                        if(!empty($ng_reason_temp)){
+                            $ng_reason = $this->processNgReasonData($ng_reason_temp, $status_arr);
+                            
+                            $data['ng_reason_json'] = json_encode($ng_reason);
+                        }else{
+                            $data['ng_reason_json'] = '';
+                            
+                        }
                     }
                 }
+                
                
             }
 
