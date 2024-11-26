@@ -218,6 +218,14 @@
                 document.getElementById('Ktm_Edit_Setting').style.display = 'block';
                 document.getElementById('Equipment_Setting').style.display = 'none';
 
+                //移除 cookie - implement_count 及 localStorage - implement_count 
+
+                delCookie(implement_count);
+
+                //document.cookie = "implement_count=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                
+                localStorage.removeItem('implement_count');
+
 
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -231,10 +239,10 @@
                 let log_div = document.getElementById('connect_log_ktm');
                 log_div.innerHTML += momo + "  Connection attempt started<br>" + momo + "  Connection fail<br><br>";  
             }
+
+            
         });
     }
-
-    
     </script>
 
     <style>

@@ -471,14 +471,12 @@
 
 <script>
 let lastData = null; 
-let intervalId;
 var myChart; 
 $(document).ready(function() {
     fetchLatestInfo();
     setInterval(fetchLatestInfo, 1000); // 每 1 秒更新
    
 });
-
 
 // Open modal
 function openModal(modalId)
@@ -577,12 +575,6 @@ function toggleMenu()
     var menuContent = document.getElementById("myMenu");
     menuContent.style.display = (menuContent.style.display === "block") ? "none" : "block";
 }
-
-
-
-// Change the color of a row in a table
-
-
 
 
 $(document).ready(function () {
@@ -697,7 +689,6 @@ function closeModal_job() {
 
 }
 
-
 function selectSingle(checkbox) {
     const checkboxes = document.querySelectorAll('input[name="jobid"]');
 
@@ -718,7 +709,6 @@ function updateCookie(name, value, days) {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
-
 function current_save() {
     
     let targetQ = document.getElementById('current_tarque').value;
@@ -737,8 +727,6 @@ function current_save() {
     let temp = targetQ  * percentage ;
     let upper_limit = (Number(targetQ) + Number(temp)).toFixed(2);
     let lower_limit = (Number(targetQ) - Number(temp)).toFixed(2); 
-
-
 
     const data = {
         target_q: targetQ,  //目標扭力
@@ -763,16 +751,12 @@ function current_save() {
             document.getElementById('low-limit-torque').value = lower_limit;
             document.getElementById('bias').value = tolerance;
 
-
             // 存入 localStorage
             localStorage.setItem('targetTorque', targetQ);
             localStorage.setItem('highLimitTorque', upper_limit);
             localStorage.setItem('lowLimitTorque', lower_limit);
             localStorage.setItem('bias', tolerance);
             localStorage.setItem('implement_count',implement_count);
-
-
-
 
         },
         error: function(xhr, status, error) {
@@ -803,46 +787,54 @@ function undo() {
 
     });
 
-
-    
 }
-let final_brian = 0;
+let final_brian = 0; // 新增 final_brian 計數器
 async function fetchData() {
     const url1 = '?url=Calibrations/get_val';
 
-    //
     try {
         const response1 = await fetch(url1, {
             method: 'GET', 
         });
 
         if (response1.ok) {
-            const textResponse = await response1.text(); // 先获取响应的文本内容
+            const textResponse = await response1.text(); 
             
             if (textResponse.trim()) {
                 try {
                     const data = JSON.parse(textResponse);
-                    console.log('API 返回:', data);
-
-                     if (data.success === true && data.message === '數據整理成功') {
-                        final_brian += 1; 
+                    console.log('API 回應:', data);
+                    
+                    // 檢查回應的 message 是否是 '數據整理成功'
+                    if (data.success && data.message === '數據整理成功') {
+                        final_brian += 1; // 如果匹配，則 final_brian 自增 1
+                        console.log('final_brian 更新為:', final_brian);
+                        alert( final_brian);
+                        alert(implement_count);
                     }
+                    // final_brian 的value 與  implement_count 一致
+                    if(final_brian === implement_count){
+                        alert('次數已達上限');
+                        exit();
+                    }
+                    
 
                 } catch (jsonError) {
-                    //console.error('无法解析响应为 JSON:', jsonError);
+                    // 處理 JSON 解析錯誤
+                    console.error('無法解析回應為 JSON:', jsonError);
                 }
             }
-        }else{
-            console.error('请求失败，状态码:', response1.status);
+        } else {
+            console.error('請求失敗，狀態碼:', response1.status);
         }
     } catch (error) {
-        console.error('发生错误:', error);
+        console.error('發生錯誤:', error);
     }
 }
 
-// 每 0.5 秒调用一次 fetchData
+// 每 0.5 秒調用一次 fetchData
 setInterval(fetchData, 500);
-fetchData();
+//fetchData();
 
 
 function fetchLatestInfo() {
@@ -865,7 +857,6 @@ function fetchLatestInfo() {
             } else {
                 console.log('No echart data available.');
             }
-
 
             //更新右邊的扭力值(total)
             updateInputs(data.meter); 
@@ -924,7 +915,6 @@ function updateInputs(meterData) {
     const container = document.getElementById('input-container'); 
     container.innerHTML = ''; 
 
-
     for (let i = 0; i < meterData.torque.length; i++) {
         const torqueValue = meterData.torque[i].torque; 
         const inputHTML = `
@@ -948,22 +938,30 @@ var x_val = <?php echo isset($data['echart']['x_val']) ? json_encode($data['echa
 var y_val_torque_1 = <?php echo isset($data['echart']['y_val_torque_1']) ? json_encode($data['echart']['y_val_torque_1']) : '[]'; ?>; 
 var y_val_torque_2 = <?php echo isset($data['echart']['y_val_torque_2']) ? json_encode($data['echart']['y_val_torque_2']) : '[]'; ?>; 
 
+function safeParse(jsonStr) {
+    try {
+        var parsed = JSON.parse(jsonStr);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        console.error('JSON解析錯誤:', e);
+        return [];
+    }
+}
 
 
-x_val = JSON.parse(x_val).map(Number); 
-y_val_torque_1 =  JSON.parse(y_val_torque_1).map(Number); 
-y_val_torque_2 =  JSON.parse(y_val_torque_2).map(Number);  
+x_val = safeParse(x_val).map(Number); 
+y_val_torque_1 = safeParse(y_val_torque_1).map(Number); 
+y_val_torque_2 = safeParse(y_val_torque_2).map(Number); 
 
 
 renderChart(x_val, y_val_torque_1,y_val_torque_2);
 
  function renderChart(x_val, y_val_torque_1, y_val_torque_2) {
     
-
     var chartContainer = document.getElementById('mychart');
     if (!chartContainer) {
         console.error('Chart container not found!');
-        return;  // Prevent rendering if container is not found
+        return;  
     }
 
     var myChart = echarts.init(chartContainer);
@@ -1008,12 +1006,12 @@ renderChart(x_val, y_val_torque_1,y_val_torque_2);
             type: 'value',
             name: 'Torque',
             min: Math.min(
-                lower_limit !== null ? lower_limit - 0.05 : Math.min(...y_val_torque_1, ...y_val_torque_2),  // Ensure the lower limit is visible
-                Math.min(...y_val_torque_1, ...y_val_torque_2)  // If lower_limit is null, use the minimum of the data
+                lower_limit !== null ? lower_limit - 0.05 : Math.min(...y_val_torque_1, ...y_val_torque_2),
+                Math.min(...y_val_torque_1, ...y_val_torque_2)  
             ),
             max: Math.max(
-                upper_limit !== null ? upper_limit + 0.05 : Math.max(...y_val_torque_1, ...y_val_torque_2),  // Ensure the upper limit is visible
-                Math.max(...y_val_torque_1, ...y_val_torque_2)  // If upper_limit is null, use the maximum of the data
+                upper_limit !== null ? upper_limit + 0.05 : Math.max(...y_val_torque_1, ...y_val_torque_2),  
+                Math.max(...y_val_torque_1, ...y_val_torque_2) 
             ),
             axisLine: {
                 onZero: false
@@ -1133,14 +1131,6 @@ function setCheckboxSession() {
     
     document.cookie = "skipTurnRev=" + isChecked + ";" + expires + ";path=/";
 
-    // 更新其他需要显示或隐藏的元素的状态
-    /*if (isChecked === '1') {
-        document.getElementById('analysis-system-KTM').style.display = 'block';
-        document.getElementById('Torque-Collection').style.display = 'none';
-    } else {
-        document.getElementById('analysis-system-KTM').style.display = 'none';
-        document.getElementById('Torque-Collection').style.display = 'block';
-    }*/
 }
 
 function update_count() {
@@ -1180,18 +1170,7 @@ window.onload = function() {
 
 
 
-document.getElementById('tolerance').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        const toleranceValue = this.value; 
-        document.getElementById('bias').value = toleranceValue; 
-
-        document.getElementById('implement_count').value = localStorage.getItem('implement_count') || '';
-
-
-    }
-});
-
-
+// 刪除 localstorage
 function clearlocalstorage_keys() {
     localStorage.removeItem('highLimitTorque');
     localStorage.removeItem('lowLimitTorque');
@@ -1201,13 +1180,21 @@ function clearlocalstorage_keys() {
     localStorage.removeItem('rpm');
     localStorage.removeItem('targetTorque');
 
-    //console.log('Specified keys have been removed from localStorage.');
 }
 
 function setCookie(name, value, days) {
     const expiresDate = new Date();
     expiresDate.setTime(expiresDate.getTime() + (days * 24 * 60 * 60 * 1000));
     document.cookie = `${name}=${value}; path=/; expires=${expiresDate.toUTCString()}`;
+}
+
+function getCookie(name){
+    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+    if(arr=document.cookie.match(reg)){
+        return unescape(arr[2]);
+    }else{
+        return null;
+    }
 }
 
 </script>

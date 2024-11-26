@@ -597,6 +597,9 @@ class Equipments extends Controller
         } else {
             echo "PID 文件不存在。";
         }
+
+        #移除cookie - implement_count
+        setcookie('implement_count', '', time() - 3600, '/');
     
         exit();
     }
