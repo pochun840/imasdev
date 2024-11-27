@@ -26,7 +26,7 @@
     <script src="js/jszip.min.js"></script>
     <script src="js/FileSaver.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/calibration.css">
-    <script src="js/calibrations.js"></script>
+    <script src="js/calibrations.js?"></script>
     <title><?php echo SITENAME; ?></title>
 
     

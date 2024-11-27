@@ -147,7 +147,7 @@
         </div>
 
         <div>
-            <span style="padding-left: 3%">Tested by :</span> <span style="padding-left: 40%">Approved by :</span>
+            <span style="padding-left: 3%">Tested by :<?php echo $_SESSION['user']; ?></span> <span style="padding-left: 40%">Approved by :</span>
         </div>
     </div>
 </body>
