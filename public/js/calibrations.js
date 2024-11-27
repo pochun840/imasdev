@@ -3,10 +3,15 @@ function html_download() {
     var fileName3 = document.getElementById('fileName3').value;
     var save_type3 = document.getElementById('Save-as3').value;
 
-    var chartDataURL = myChart.getDataURL({
-        pixelRatio: 2,
-        backgroundColor: '#fff'
-    });
+    var chartDataURL;
+    if (myChart) {
+        chartDataURL = myChart.getDataURL({
+            pixelRatio: 2,
+            backgroundColor: '#fff'
+        });
+    } else {
+        console.error('myChart is not defined or initialized.');
+    }
 
 
     if (save_type3 === "html") {
@@ -104,7 +109,9 @@ function html_download() {
             });
         });
      
-    }else if(save_type3 === "xml") {
+    }
+    
+    if(save_type3 === "xml") {
         // 下載 XML 檔案
         fetch('../public/index.php?url=Calibrations/get_xml')
             .then(response => response.text())
