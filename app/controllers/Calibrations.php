@@ -466,9 +466,15 @@ class Calibrations extends Controller
             $tmp['x_val'] = json_encode(array_column($echart_data, 'id'));
             $tmp['y_val_torque_1'] = json_encode(array_column($echart_data, 'torque'));
             $tmp['y_val_torque_2'] = json_encode(array_column($echart_data, 'fasten_torque'));
+        }else{
+            $tmp = '';
         }
 
-        
+        if(!empty($meter['res_total'])){
+             $res_total = count($meter['res_total']);
+        }else{
+            $res_total = '';
+        }
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
@@ -479,7 +485,7 @@ class Calibrations extends Controller
             'echart'=> $tmp,
             'job_arr' => $job_arr,
             'meter' =>$meter,
-            'count' =>count($meter['res_total']),
+            'count' =>$res_total,
             'tools_sn' => $tools_sn,
             
         );

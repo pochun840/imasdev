@@ -111,13 +111,6 @@
         </div>
     </div>
 
-     <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; text-align: center;">
-        <!-- Loading 圓圈 -->
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="loader"></div>
-        </div>
-    </div>
-
 
 
 
@@ -149,7 +142,8 @@
         currentComPort = selectElement.value;
         
         // 显示加载动画（overlay）
-        document.getElementById('overlay').style.display = 'block';
+        // document.getElementById('overlay').style.display = 'block';
+        $('#overlay').removeClass('hidden');
         
         let log_div = document.getElementById('connect_log');
         
@@ -172,7 +166,8 @@
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log_div = document.getElementById('connect_log_ktm');
                 log_div.innerHTML = momo + "  Connection attempt started<br>" + momo + "  Connection success<br><br>";  
-                document.getElementById('overlay').style.display = 'none';
+                // document.getElementById('overlay').style.display = 'none';
+                $('#overlay').addClass('hidden');
 
             
 
@@ -188,7 +183,8 @@
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 
                 // 请求完成后隐藏加载动画
-                document.getElementById('overlay').style.display = 'none';
+                // document.getElementById('overlay').style.display = 'none';
+                $('#overlay').addClass('hidden');
                 //document.getElementById('check_ktm').checked = false; 
         
             }
@@ -219,8 +215,12 @@
                 document.getElementById('Equipment_Setting').style.display = 'none';
 
                 //移除 cookie - implement_count 及 localStorage - implement_count 
+
+                delCookie(implement_count);
+
+                //document.cookie = "implement_count=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                
                 localStorage.removeItem('implement_count');
-                localStorage.removeItem('new_skip');
 
 
             },

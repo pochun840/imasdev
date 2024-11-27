@@ -56,10 +56,10 @@
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px; width: 100%">
-            <label for="Std-dev-s" style="width: 24%">Std dev s(Cv) : <?php echo isset($data['meter']['stddev1']) ? $data['meter']['stddev1'] : ''; ?></label>
-            <label for="Lower-Limit-B" style="width: 24%">3 Std dev s :  <?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : ''; ?></label>
-            <label for="Cm" style="width: 27%">Cm : <?php echo isset($data['meter']['cm']) ? $data['meter']['cm'] : ''; ?></label>
-            <label for="CmK">Cmk : <?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : ''; ?></label>
+            <label for="Std-dev-s" style="width: 24%">Std dev s(Cv) : <?php echo isset($data['meter']['stddev1']) ? $data['meter']['stddev1'] : 0; ?></label>
+            <label for="Lower-Limit-B" style="width: 24%">3 Std dev s :  <?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : 0; ?></label>
+            <label for="Cm" style="width: 27%">Cm : <?php echo isset($data['meter']['cm']) ? $data['meter']['cm'] : 0; ?></label>
+            <label for="CmK">Cmk : <?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : 0; ?></label>
         </div>
 
         <div class="container-table">
@@ -98,23 +98,23 @@
                         <tbody class="tbody-text">
                             <tr>
                                 <td>Max</td>
-                                <td style="word-spacing: 50px"><?php echo $data['meter']['max_torque']; ?> (N.m)</td>
+                                <td style="word-spacing: 50px"><?php echo isset($data['meter']['max_torque']) ? $data['meter']['max_torque'] : '';?> (N.m)</td>
                             </tr>
                             <tr>
                                 <td>Min</td>
-                                <td style="word-spacing: 50px"><?php echo $data['meter']['min_torque']; ?> (N.m)</td>
+                                <td style="word-spacing: 50px"><?php echo isset($data['meter']['min_torque']) ? $data['meter']['min_torque'] : '';?> (N.m)</td>
                             </tr>
                             <tr>
                                 <td>Mean</td>
-                                <td style="word-spacing: 50px"><?php echo $data['meter']['avg_torque']; ?> (N.m)</td>
+                                <td style="word-spacing: 50px"><?php echo isset($data['meter']['avg_torque']) ? $data['meter']['avg_torque'] : '';?> (N.m)</td>
                             </tr>
                             <tr>
                                 <td>Std Dev s (Cv)</td>
-                                <td><?php echo $data['meter']['stddev1']; ?></td>
+                                <td><?php echo isset($data['meter']['stddev1']) ? $data['meter']['stddev1'] : '';?></td>
                             </tr>
                             <tr style="background-color: #FFFF5C">
                                 <td>3 Std dev s</td>
-                                <td><?php echo $data['meter']['stddev3']; ?></td>
+                                <td><?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : '';?></td>
                             </tr>
                             <tr>
                                 <td>Deviation</td>
@@ -126,11 +126,11 @@
                             </tr>
                             <tr>
                                 <td>Cm</td>
-                                <td><?php echo $data['meter']['cm']; ?></td>
+                                <td><?php echo isset($data['meter']['cm']) ? $data['meter']['cm'] : '';?></td>
                             </tr>
                             <tr style="background-color: #FFFF5C">
                                 <td>CmK</td>
-                                <td><?php echo $data['meter']['cmk']; ?></td>
+                                <td><?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : '';?></td>
                             </tr>
                             <tr>
                                 <td>Positive Tolerance</td>

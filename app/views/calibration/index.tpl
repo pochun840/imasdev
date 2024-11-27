@@ -721,7 +721,7 @@ function current_save() {
     if (skip_turn_rev) {
         new_skip = 1; // 如果被選中，顯示 1
     } else {
-        new_skip = 0;  // 如果沒有被選中，顯示 0
+        new_skip = 'no';  // 如果沒有被選中，顯示 0
     }
 
 
@@ -730,7 +730,7 @@ function current_save() {
     localStorage.setItem('implement_count', implement_count);
     localStorage.setItem('new_skip', new_skip);
     setCookie('implement_count', implement_count, 7);
-    setCookie('new_skip', implement_count, 7);
+    setCookie('new_skip', new_skip, 7);
 
 
     let percentage = tolerance / 100; 
