@@ -550,14 +550,24 @@ class Equipments extends Controller
 
         // 打开一个管道以非阻塞模式执行命令
         $process = popen("start /B $cmd", "w");
-
+        $output = stream_get_contents($process);
         // 关闭管道
         pclose($process);
 
         sleep(3);
+
+        if (strpos($output, 'success') !== false) {
+            $message = "服務連線成功";
+            $status = 'yes';
+        } else {
+            $message = "服務連線失敗";
+            $status = 'no';
+        }
+
     
-        $message = "嘗試開啟服務";
-        echo json_encode(array('result' => $message, 'service_status' => 'yes'));
+        //$message = "嘗試開啟服務";
+        //echo json_encode(array('result' => $message, 'service_status' => 'yes'));
+        echo json_encode(array('result' => $message, 'service_status' => $status));
         exit();
     }
 

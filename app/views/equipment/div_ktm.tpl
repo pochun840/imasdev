@@ -137,108 +137,95 @@
     }
 
     let currentComPort = '';
+
     function connect_test_ktm() {
         var selectElement = document.getElementById('comport');
         currentComPort = selectElement.value;
-        
+
         // 显示加载动画（overlay）
-        // document.getElementById('overlay').style.display = 'block';
         $('#overlay').removeClass('hidden');
-        
+
         let log_div = document.getElementById('connect_log');
-        
+
         $.ajax({
             type: 'POST',
             url: '?url=Equipments/ktm_connect',
             data: { comport: currentComPort },
             dataType: 'json',
-            success: function(response) {   
-                
+            success: function(response) {
                 let message = response.result || response.error;
-                if (response.output) {
-                    message += "\nOutput: " + response.output;
-                }
-                
-                // 隐藏 service_status_device_1，显示 service_status_device_2
-                document.getElementById('service_status_device_1').style.display = 'none';
-                document.getElementById('service_status_device_2').style.display = 'block'; 
+                let outputMessage = response.output ? "\nOutput: " + response.output : '';
 
+                // 更新日志信息
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log_div = document.getElementById('connect_log_ktm');
-                log_div.innerHTML = momo + "  Connection attempt started<br>" + momo + "  Connection success<br><br>";  
-                // document.getElementById('overlay').style.display = 'none';
-                $('#overlay').addClass('hidden');
-
-            
-
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                //console.error("错误状态: " + textStatus); 
-                //console.error("错误抛出: " + errorThrown); 
+                log_div.innerHTML = `${momo}  Connect try<br>${momo}  Connection success<br>${message}${outputMessage}<br><br>`;
 
                 // 隐藏 service_status_device_1，显示 service_status_device_2
-                //document.getElementById('service_status_device_1').style.display = 'none';
-                //document.getElementById('service_status_device_2').style.display = 'block'; 
+                document.getElementById('service_status_device_1').style.display = 'none';
+                document.getElementById('service_status_device_2').style.display = 'block';
 
-                let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
-                
-                // 请求完成后隐藏加载动画
-                // document.getElementById('overlay').style.display = 'none';
+                // 隐藏加载动画
                 $('#overlay').addClass('hidden');
-                //document.getElementById('check_ktm').checked = false; 
-        
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // 错误日志
+                let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
+                let log_div = document.getElementById('connect_log_ktm');
+                log_div.innerHTML = `${momo}  Connect try<br>${momo}  Connection failed: ${textStatus} - ${errorThrown}<br><br>`;
+
+                // 隐藏加载动画
+                $('#overlay').addClass('hidden');
+
+                // 显示错误的状态
+                document.getElementById('service_status_device_1').style.display = 'none';
+                document.getElementById('service_status_device_2').style.display = 'block';
             }
         });
     }
 
 
     function abort_ktm() {
-       
         $.ajax({
             type: 'POST',
-            url: '?url=Equipments/ktm_aborted', 
+            url: '?url=Equipments/ktm_aborted',
             data: { comport: currentComPort },
             dataType: 'json',
             success: function(response) {
-                console.log(response); 
+                console.log(response);
                 let message = response.result || response.error;
-                 
-                
-                // 隐藏 service_status_device_1
+
+                // 隱藏 service_status_device_1
                 document.getElementById('service_status_device_1').style.display = 'block';
-                
-                // 显示 service_status_device_2
-                document.getElementById('service_status_device_2').style.display = 'none'; 
+
+                // 顯示 service_status_device_2
+                document.getElementById('service_status_device_2').style.display = 'none';
 
                 history.go(0);
                 document.getElementById('Ktm_Edit_Setting').style.display = 'block';
                 document.getElementById('Equipment_Setting').style.display = 'none';
 
-                //移除 cookie - implement_count 及 localStorage - implement_count 
-
-                delCookie(implement_count);
-
-                //document.cookie = "implement_count=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                
+                // 移除 cookie 和 localStorage
+                delCookie('implement_count');
                 localStorage.removeItem('implement_count');
-
-
             },
             error: function(jqXHR, textStatus, errorThrown) {
-
-                // 隐藏 service_status_device_1
+                // 隱藏 service_status_device_1
                 document.getElementById('service_status_device_1').style.display = 'block';
-                // 显示 service_status_device_2
-                document.getElementById('service_status_device_2').style.display = 'none'; 
+
+                // 顯示 service_status_device_2
+                document.getElementById('service_status_device_2').style.display = 'none';
 
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log_div = document.getElementById('connect_log_ktm');
-                log_div.innerHTML += momo + "  Connection attempt started<br>" + momo + "  Connection fail<br><br>";  
+                
+                // 將最新日志插入到最上方，而不是追加到底部
+                log_div.innerHTML = momo + "  Connect try<br>" + momo + "  Connection fail<br><br>" + log_div.innerHTML;
             }
-
-            
         });
     }
+
+
     </script>
 
     <style>
