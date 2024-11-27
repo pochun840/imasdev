@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="/img/cc_icon.png" type="image/x-icon">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/cc_icon.png">
-    <link rel="icon" sizes="192x192" href="/img/192.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../public/img/cc_icon.png">
+    <link rel="icon" sizes="192x192" href="../public/img/cc_icon.png">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -181,7 +181,7 @@
                     <div class="row t1">
                        <div class="col-5 t1" style="padding-left: 2%; color: #000">Adapter Type:</div>
                         <div class="col-4 t1">
-                            <input id="adapter_type" type="text" class="t2 form-control" value="" oninput="saveAdapterType()" >
+                            <input id="adapter_type" type="text" class="t2 form-control" value="">
                         </div>
                     </div>
                 </div>
@@ -649,24 +649,6 @@ function deleteRow(selectedId) {
     });
 }
 
-
-function saveAdapterType() {
-    var adapterTypeValue = document.getElementById('adapter_type').value;
-
-    $.ajax({
-        url: '?url=Calibrations/saveAdapterType',
-        method: 'POST',
-        data: { adapter_type: adapterTypeValue },
-        success: function(response) {
-            console.log('Adapter type saved successfully:', response);
-        },
-        error: function(xhr, status, error) {
-            
-            console.error('Error saving adapter type:', error);
-        }
-    });
-}
-
 // Notification ....................
 let messageCount = 0;
 
@@ -716,6 +698,8 @@ function current_save() {
     const tolerance = document.getElementById('tolerance').value;
     const implement_count = document.getElementById('implement_count').value;
     const skip_turn_rev = document.getElementById('skip_turn_rev').checked;
+
+    const adapter_type = document.getElementById('adapter_type').value;
     let new_skip;
 
     if (skip_turn_rev) {
@@ -729,6 +713,7 @@ function current_save() {
     localStorage.setItem('offset', offset);
     localStorage.setItem('implement_count', implement_count);
     localStorage.setItem('new_skip', new_skip);
+    localStorage.setItem('adapter_type',adapter_type);
     setCookie('implement_count', implement_count, 7);
     setCookie('new_skip', new_skip, 7);
 
@@ -763,6 +748,7 @@ function current_save() {
             localStorage.setItem('lowLimitTorque', lower_limit);
             localStorage.setItem('bias', tolerance);
             localStorage.setItem('implement_count',implement_count);
+            localStorage.setItem('adapter_type',adapter_type);
 
         },
         error: function(xhr, status, error) {

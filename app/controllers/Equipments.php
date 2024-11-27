@@ -542,32 +542,30 @@ class Equipments extends Controller
         error_reporting(E_ALL);
         ini_set('display_errors', 1); 
     
-        $comPort = escapeshellarg($_POST['comport']);
-        $nodeScript = dirname(dirname(dirname(__FILE__))).'/app.js';
-    
-        // 构建命令行
-        $cmd = "node $nodeScript $comPort"; 
+        $comPort = escapeshellarg($_POST['comport_ktm']);
 
-        // 打开一个管道以非阻塞模式执行命令
-        $process = popen("start /B $cmd", "w");
-        $output = stream_get_contents($process);
-        // 关闭管道
-        pclose($process);
+        if(!empty($comPort)){
+            $pidFile = '../app.txt';
+            if (file_exists($pidFile)) {
+                $content = file_get_contents($pidFile);
+                $pid = trim($content);
+                exec("taskkill /F /PID $pid", $output, $result);
+                unlink($pidFile);
+            }
+            echo json_encode(array('result' => 'fail', 'service_status' => 'no'));
+        }else{
+            $nodeScript = dirname(dirname(dirname(__FILE__))).'/app.js';
+            // 构建命令行
+            $cmd = "node $nodeScript $comPort"; 
 
-        sleep(3);
+            // 打开一个管道以非阻塞模式执行命令
+            $process = popen("start /B $cmd", "w");
 
-        if (strpos($output, 'success') !== false) {
-            $message = "服務連線成功";
-            $status = 'yes';
-        } else {
-            $message = "服務連線失敗";
-            $status = 'no';
+            // 关闭管道
+            pclose($process);
+            sleep(3);
+            echo json_encode(array('result' => 'success', 'service_status' => 'yes'));
         }
-
-    
-        //$message = "嘗試開啟服務";
-        //echo json_encode(array('result' => $message, 'service_status' => 'yes'));
-        echo json_encode(array('result' => $message, 'service_status' => $status));
         exit();
     }
 

@@ -60,6 +60,12 @@
             <label for="Lower-Limit-B" style="width: 24%">3 Std dev s :  <?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : 0; ?></label>
             <label for="Cm" style="width: 27%">Cm : <?php echo isset($data['meter']['cm']) ? $data['meter']['cm'] : 0; ?></label>
             <label for="CmK">Cmk : <?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : 0; ?></label>
+            
+        </div>
+
+        
+        <div style="font-size: 14px; padding-bottom: 10px; width: 100%">
+            <label for="Adapter Type" style="width: 24%">Adapter Type : </label>
         </div>
 
         <div class="container-table">
@@ -163,6 +169,7 @@
     let bias = localStorage.getItem('bias') || 0;
     let rpm = localStorage.getItem('rpm') || 0;
     let offset = localStorage.getItem('offset') || 0;
+    let adapter_type = localStorage.getItem('adapter_type') || 0;
 
 
     if(targetTorque !== null){
@@ -186,6 +193,11 @@
 
     if(offset !== null){
         document.getElementById('offset').innerText = `Offset  :  ${offset}`;
+    }
+
+    
+    if(adapter_type !== null){
+        document.querySelector('label[for="Adapter Type"]').textContent = 'Adapter Type: ' + adapter_type;
     }
 
 

@@ -32,7 +32,7 @@
                             
                             <div class="row t3">
                                 <div class="col-2 t3">
-                                    <select id="comport" style="width: 110px; margin-right: 10px">
+                                    <select id="comport_ktm" style="width: 110px; margin-right: 10px">
                                         <?php 
                                             foreach ($data['comPorts'] as $key => $value) {
                                                 echo '<option value="'.$value.'">'.$value.'</option>';
@@ -137,61 +137,86 @@
     }
 
     let currentComPort = '';
+    let logEntries = [];  
 
     function connect_test_ktm() {
-        var selectElement = document.getElementById('comport');
+        var selectElement = document.getElementById('comport_ktm');
         currentComPort = selectElement.value;
 
         // 显示加载动画（overlay）
         $('#overlay').removeClass('hidden');
 
-        let log_div = document.getElementById('connect_log');
+        let log_div = document.getElementById('connect_log_ktm');
 
         $.ajax({
             type: 'POST',
             url: '?url=Equipments/ktm_connect',
-            data: { comport: currentComPort },
+            data: { comport_ktm: currentComPort },
             dataType: 'json',
             success: function(response) {
                 let message = response.result || response.error;
                 let outputMessage = response.output ? "\nOutput: " + response.output : '';
 
-                // 更新日志信息
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log_div = document.getElementById('connect_log_ktm');
-                log_div.innerHTML = `${momo}  Connect try<br>${momo}  Connection success<br>${message}${outputMessage}<br><br>`;
 
-                // 隐藏 service_status_device_1，显示 service_status_device_2
-                document.getElementById('service_status_device_1').style.display = 'none';
-                document.getElementById('service_status_device_2').style.display = 'block';
+
+                // 根据连接是否成功更新设备状态
+                if (response.service_status == 'yes') {
+                    log_div.innerHTML = momo + "  Connect try<br>" + momo + "  Connection success<br><br>" + log_div.innerHTML;
+
+                    document.getElementById('service_status_device_1').style.display = 'none';
+                    document.getElementById('service_status_device_2').style.display = 'block';
+                } else {
+                    log_div.innerHTML = momo + "  Connect try<br>" + momo + "  Connection fail<br><br>" + log_div.innerHTML;
+
+                    document.getElementById('service_status_device_1').style.display = 'block';
+                    document.getElementById('service_status_device_2').style.display = 'none';
+                }
 
                 // 隐藏加载动画
                 $('#overlay').addClass('hidden');
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                // 错误日志
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
-                let log_div = document.getElementById('connect_log_ktm');
-                log_div.innerHTML = `${momo}  Connect try<br>${momo}  Connection failed: ${textStatus} - ${errorThrown}<br><br>`;
+                let logMessage = `${momo}  Connect try<br>${momo}  Connection failed: ${textStatus} - ${errorThrown}<br><br>`;
+
+                // 将错误信息存入数组
+                logEntries.push({ timestamp: momo, message: logMessage });
+
+                // 按时间戳进行排序，确保最新的日志排在最上面
+                logEntries.sort((a, b) => moment(b.timestamp, 'YYYY/MM/DD HH:mm:ss A').isBefore(moment(a.timestamp, 'YYYY/MM/DD HH:mm:ss A')) ? 1 : -1);
+
+                // 更新日志显示
+                log_div.innerHTML = logEntries.map(entry => entry.message).join('');
 
                 // 隐藏加载动画
                 $('#overlay').addClass('hidden');
 
-                // 显示错误的状态
-                document.getElementById('service_status_device_1').style.display = 'none';
-                document.getElementById('service_status_device_2').style.display = 'block';
+                document.getElementById('service_status_device_1').style.display = 'block';
+                document.getElementById('service_status_device_2').style.display = 'none';
             }
         });
     }
 
 
+
     function abort_ktm() {
+
+        // 显示加载动画（overlay）
+        $('#overlay').removeClass('hidden');
+
+
         $.ajax({
             type: 'POST',
             url: '?url=Equipments/ktm_aborted',
-            data: { comport: currentComPort },
+            data: { comport_ktm: currentComPort },
             dataType: 'json',
             success: function(response) {
+
+                  // 隐藏加载动画
+                $('#overlay').addClass('hidden');
+
                 console.log(response);
                 let message = response.result || response.error;
 
@@ -208,6 +233,8 @@
                 // 移除 cookie 和 localStorage
                 delCookie('implement_count');
                 localStorage.removeItem('implement_count');
+
+    
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 // 隱藏 service_status_device_1
@@ -221,6 +248,11 @@
                 
                 // 將最新日志插入到最上方，而不是追加到底部
                 log_div.innerHTML = momo + "  Connect try<br>" + momo + "  Connection fail<br><br>" + log_div.innerHTML;
+
+
+                // 隐藏加载动画
+                $('#overlay').addClass('hidden');
+
             }
         });
     }

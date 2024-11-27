@@ -655,27 +655,7 @@ class Calibrations extends Controller
           
         }
 
-
-
-
     }
-
-    public function saveAdapterType() {
-
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start(); 
-        }
-    
-        if (isset($_POST['adapter_type'])) {
-            $_SESSION['adapter_type'] = $_POST['adapter_type'];
-    
-            echo json_encode(['success' => true, 'message' => 'Adapter type saved.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Invalid data.']);
-        }
-    }
-
-
     public function saveSessionData() {
 
         if (session_status() == PHP_SESSION_NONE) {
