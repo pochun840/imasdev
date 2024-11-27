@@ -544,7 +544,7 @@ class Equipments extends Controller
     
         $comPort = escapeshellarg($_POST['comport_ktm']);
 
-        if(!empty($comPort)){
+        if(empty($comPort)){
             $pidFile = '../app.txt';
             if (file_exists($pidFile)) {
                 $content = file_get_contents($pidFile);

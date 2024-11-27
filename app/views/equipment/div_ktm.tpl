@@ -137,12 +137,9 @@
     }
 
     let currentComPort = '';
-    let logEntries = [];  
-
     function connect_test_ktm() {
         var selectElement = document.getElementById('comport_ktm');
         currentComPort = selectElement.value;
-
         // 显示加载动画（overlay）
         $('#overlay').removeClass('hidden');
 
