@@ -786,7 +786,6 @@ function undo() {
 }
 let final_brian = 0; // 新增 final_brian 計數器
 let intervalId; 
-
 async function fetchData() {
     const url1 = '?url=Calibrations/get_val';
     var implementCount = localStorage.getItem('implement_count');
@@ -829,8 +828,8 @@ async function fetchData() {
     }
 }
 
-// 每 0.5 秒調用一次 fetchData
-intervalId = setInterval(fetchData, 500);
+// 每 0.3 秒調用一次 fetchData
+intervalId = setInterval(fetchData,300);
 
 function fetchLatestInfo() {
     $.ajax({
