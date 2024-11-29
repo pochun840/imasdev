@@ -316,7 +316,7 @@
                             <div class="row">
                                 <div for="to_seq_id" class="col-4 t1"><?php echo $text['Seq_ID_text']; ?> :</div>
                 				<div class="col-5 t2">
-                				    <input type="text" class="form-control" id="to_seq_id">
+                				    <input type="number" class="form-control" id="to_seq_id" oninput="if(value>99)value=99">
                 				</div>
             				</div>
                             <div class="row">
@@ -466,6 +466,9 @@ function displayImage()
         document.getElementById('image-preview').style.display = 'none';
         // $('#image-preview').attr('src', '').hide(); //將img的src設定為dataURL並顯示
 
+        //remove is-invalid class
+        remove_invalid('SeqNew');
+
         document.getElementById('SeqNew').style.display='block'
 
     }
@@ -510,6 +513,11 @@ function displayImage()
                 //var formData = new FormData();
                 formData.append('image', fileInput);
             }
+        }
+
+        let check = input_check();
+        if(!check){
+            return
         }
 
         
@@ -680,6 +688,12 @@ function displayImage()
         if (rowSelected.length != 0) {
             let seq_id = rowSelected[0].childNodes[0].innerHTML;
             let seq_name = rowSelected[0].childNodes[1].innerHTML;
+            let job_id = document.getElementById('job_id').value
+            remove_invalid('CopySeq');
+
+            let to_seq_id = get_seq_id_normal(job_id);
+            document.getElementById('to_seq_id').value=to_seq_id;
+            document.getElementById('to_seq_id').disabled = true;
 
             document.getElementById('from_seq_id').value=seq_id;
             document.getElementById('from_seq_name').value=seq_name;
@@ -693,6 +707,21 @@ function displayImage()
         let seq_id = rowSelected[0].childNodes[0].innerHTML;
         let to_seq_id = document.getElementById('to_seq_id').value;
         let to_seq_name = document.getElementById('to_seq_name').value;
+
+        if(to_seq_id == '' || to_seq_name == ''){
+            if (to_seq_id == '') {
+                document.getElementById('to_seq_id').classList.add("is-invalid");
+            }else{
+                document.getElementById('to_seq_id').classList.remove("is-invalid");
+            }
+
+            if (to_seq_name == '') {
+                document.getElementById('to_seq_name').classList.add("is-invalid");
+            }else{
+                document.getElementById('to_seq_name').classList.remove("is-invalid");
+            }
+            return;
+        }
 
         let url = '?url=Sequences/copy_seq';
         $.ajax({
@@ -847,6 +876,68 @@ function ClickNotification() {
 }
 
 addMessage();
+</script>
+
+<script>
+
+    function input_check(argument) {
+
+        let conditions = [
+                { id: 'seq_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'timeout', pattern: /^\d{0,4}(\.\d{0,1})?$/, min: 0, max: 20 },
+            ];
+
+        let isFormValid = true;
+
+        conditions.forEach(function(input) {
+            var element = document.getElementById(input.id);
+            var value = element.value.trim();
+
+            //在<div class="invalid-feedback"></div> 加入範圍
+            if( input.id != 'job_name' && input.id != 'program-name-a' ){
+                // element.nextElementSibling.innerHTML = input.min+' ~ '+input.max;
+            }
+
+            if (value === "") {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (!input.pattern.test(value)) {
+                // element.value = "";
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.min !== null && parseFloat(value) < input.min) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.max !== null && parseFloat(value) > input.max) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else {
+                element.classList.remove("is-invalid");
+            }
+
+        });
+
+        // console.log(conditions)
+
+        return isFormValid;
+
+    }
+
+    function remove_invalid(div_id) {
+        // Select the form by its ID
+        var form = document.getElementById(div_id);
+
+        // Check if the form exists
+        if (form) {
+            // Get all elements within the form
+            var elements = form.querySelectorAll("*");
+            
+            // Loop through each element and remove the "is-invalid" class
+            elements.forEach(function(element) {
+                element.classList.remove("is-invalid");
+            });
+        }
+    }
 </script>
 
 </div>

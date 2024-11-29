@@ -37,6 +37,34 @@ class Tasks extends Controller
                 $tasks[$key]['last_step_lowtorque'] = $value['program'][array_key_last($value['program'])]['step_lowtorque'];
                 $tasks[$key]['last_step_name'] = $value['program'][array_key_last($value['program'])]['step_name'];
                 $tasks[$key]['last_step_count'] = count($value['program']);
+                $tasks[$key]['tool_name'] = isset($value['program'][0]['tool_name']) ? $value['program'][0]['tool_name'] : '';
+                if($tasks[$key]['tool_name'] == null){
+                    $tasks[$key]['tool_name'] = '';
+                }
+
+                foreach ($value['program'] as $key2 => $step) {//預處理 為了list顯示
+                    if($tasks[$key]['program'][$key2]['step_targettype'] == 1){
+                        $tasks[$key]['program'][$key2]['step_targettorque'] = '0';
+                    }else{
+                        $tasks[$key]['program'][$key2]['step_targetangle'] = '0';
+                    }
+                    //判斷是用window還是Hi-Lo， 
+                    //step_monitoringmode  0 window ，1 Hi-Lo
+                    if($step['step_monitoringmode'] == 0){
+                        $tasks[$key]['program'][$key2]['step_hightorque'] = $tasks[$key]['program'][$key2]['step_torwin_target'] + $tasks[$key]['program'][$key2]['step_torquewindow'];
+                        $tasks[$key]['program'][$key2]['step_lowtorque'] = $tasks[$key]['program'][$key2]['step_torwin_target'] - $tasks[$key]['program'][$key2]['step_torquewindow'];
+                        $tasks[$key]['program'][$key2]['step_highangle'] = $tasks[$key]['program'][$key2]['step_angwin_target'] + $tasks[$key]['program'][$key2]['step_anglewindow'];
+                        $tasks[$key]['program'][$key2]['step_lowangle'] = $tasks[$key]['program'][$key2]['step_angwin_target'] - $tasks[$key]['program'][$key2]['step_anglewindow'];
+                    }
+
+                    //判斷如果是target type = torque，是否要監控角度，有的話才顯示Hi A Lo A
+                    if ($step['step_targettype'] == 2 && $step['step_monitoringangle'] == 0) {
+                        $tasks[$key]['program'][$key]['step_highangle'] = '-';
+                        $tasks[$key]['program'][$key]['step_lowangle'] = '-';
+                    }
+                }
+
+
             }else{
 
                 $tasks[$key]['last_job_type'] = 'normal';
@@ -56,8 +84,13 @@ class Tasks extends Controller
                 //$tasks[$key]['last_step_lowtorque'] = $value['program']['step_lowtorque'];
                 //$tasks[$key]['last_step_name'] = $value['program']['step_name'];
                 $tasks[$key]['last_step_count'] = 1;
+                $tasks[$key]['tool_name'] = isset($value['program']['tool_name']) ? $value['program']['tool_name'] : '';
+                // var_dump($tasks[$key]);
             }     
         }
+
+        // var_dump($tasks);
+        // var_dump($tasks[4]['program']);
 
         $data = [
             'isMobile' => $isMobile,
@@ -203,8 +236,11 @@ class Tasks extends Controller
                 //add socket hole
                 $this->TaskModel->edit_task_socket_hole($data_array);
 
-                //step也要新增 用screw_template_id 去新增
-                $program = $this->TaskModel->EditTaskProgram($data_array);
+                if ($data_array['screw_template_id'] > 0) { //純messgare的會是-1
+                    //step也要新增 用screw_template_id 去新增
+                    $program = $this->TaskModel->EditTaskProgram($data_array);
+                }
+                
             }
         }
 

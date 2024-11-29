@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
-
+    <meta name="google" content="#notranslate">
 
 
     <script src="<?php echo URLROOT; ?>/js/jquery-3.7.1.min.js"></script>

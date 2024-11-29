@@ -103,6 +103,7 @@ class Logins extends Controller
                 // 令牌有效，可以根據需要刷新 Cookie 的過期時間
                 setcookie('user', $user, time() + $this->timeout_seconds, '/');
                 setcookie('auth_token', $authToken, time() + $this->timeout_seconds, '/');
+                $this->CookiesRefresh(); //刷新所有cookies
                 return true;
             }
         }
@@ -239,5 +240,22 @@ class Logins extends Controller
         }
 
     }
+
+    //更新所有cookie
+    public function CookiesRefresh()
+    {
+        // 檢查是否有 Cookie
+        if (isset($_COOKIE)) {
+            // 遍歷所有 Cookie
+            foreach ($_COOKIE as $name => $value) {
+                // 設定新的過期時間為目前時間加 1 小時
+                setcookie($name, $value, time() + 3600, "/"); // "/" 表示在整個網域下有效
+            }
+            // echo "所有 Cookie 的過期時間已刷新。";
+        } else {
+            // echo "沒有找到任何 Cookie。";
+        }
+    }
+
 
 }

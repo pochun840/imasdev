@@ -52,12 +52,12 @@
                                     <div class="t1"><?php echo $text['Input_text']; ?> 1</div>
                                     <div class="t3">
                                         <select id="unit2" style="width: 80px" disabled>
-                                            <option value="0">pin0</option>
+                                            <option value="0" selected>pin0</option>
                                             <option value="1">pin1</option>
                                             <option value="2">pin2</option>
                                             <option value="3">pin3</option>
                                             <option value="4">pin4</option>
-                                            <option value="5" selected>pin5</option>
+                                            <option value="5">pin5</option>
                                             <option value="6">pin6</option>
                                             <option value="7">pin7</option>
                                             <option value="8">pin8</option>
@@ -93,12 +93,12 @@
                                     <div class="t3">
                                         <select id="unit4" style="width: 80px" disabled>
                                             <option value="0">pin0</option>
-                                            <option value="1">pin1</option>
+                                            <option value="1" selected>pin1</option>
                                             <option value="2">pin2</option>
                                             <option value="3">pin3</option>
                                             <option value="4">pin4</option>
                                             <option value="5">pin5</option>
-                                            <option value="6" selected>pin6</option>
+                                            <option value="6">pin6</option>
                                             <option value="7">pin7</option>
                                             <option value="8">pin8</option>
                                             <option value="9">pin9</option>
@@ -117,9 +117,9 @@
                                         <select id="unit5" style="width: 80px; margin-right: 50px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1">pin1</option>
-                                            <option value="2">pin2</option>
+                                            <option value="2" selected>pin2</option>
                                             <option value="3">pin3</option>
-                                            <option value="4" selected>pin4</option>
+                                            <option value="4">pin4</option>
                                             <option value="5">pin5</option>
                                             <option value="6">pin6</option>
                                             <option value="7">pin7</option>
@@ -134,12 +134,12 @@
                                         <select id="unit6" style="width: 80px" disabled>
                                             <option value="0">pin0</option>
                                             <option value="1">pin1</option>
-                                            <option value="2">pin2</option>
+                                            <option value="2" selected>pin2</option>
                                             <option value="3">pin3</option>
                                             <option value="4">pin4</option>
                                             <option value="5">pin5</option>
                                             <option value="6">pin6</option>
-                                            <option value="7" selected>pin7</option>
+                                            <option value="7">pin7</option>
                                             <option value="8">pin8</option>
                                             <option value="9">pin9</option>
                                             <option value="10">pin10</option>
@@ -148,26 +148,6 @@
                                             <option value="13">pin13</option>
                                             <option value="14">pin14</option>
                                             <option value="15">pin15</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="t3">
-                                    <div class="t1"><?php echo $text['Output_text']; ?> 4</div>
-                                    <div class="t3">
-                                        <select id="unit7" style="width: 80px; margin-right: 50px" disabled>
-                                            <option value="0">pin0</option>
-                                            <option value="1">pin1</option>
-                                            <option value="2">pin2</option>
-                                            <option value="3">pin3</option>
-                                            <option value="4">pin4</option>
-                                            <option value="5" selected>pin5</option>
-                                            <option value="6">pin6</option>
-                                            <option value="7">pin7</option>
-                                            <option value="8">pin8</option>
-                                            <option value="9">pin9</option>
-                                            <option value="10">pin10</option>
-                                            <option value="11">pin11</option>
                                         </select>
                                     </div>
                                 </div>

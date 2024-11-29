@@ -270,7 +270,7 @@ class Settings extends Controller
             $job_data = $this->ProductModel->getJobById($job['job_id']);
 
             $normal_seq_id = 1;
-            $advanced_seq_id = 1;
+            $advanced_seq_id = 0;
 
             $normal_tasks = $this->SettingModel->get_all_tasks_by_jobid($job['job_id']); //gtcs的step
 
@@ -324,7 +324,6 @@ class Settings extends Controller
 
                         //將gtcs對應的job_id寫回task的gtcs_job_id 
                         $this->SettingModel->TaskUpdate_Advanced($adv_task,$advanced_job_id,$advanced_seq_id);
-                        
                     }
 
                 }else{//與前一筆task相同 job_id不用++

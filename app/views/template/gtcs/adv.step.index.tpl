@@ -102,6 +102,14 @@
         </div>
     </div>
 
+    <div style="display:none;">
+        <input id="tool_name" value="<?php echo $data['tools_info']['tool_name']; ?>">
+        <input id="tool_max_torque" value="<?php echo $data['tools_info']['max_torque']; ?>">
+        <input id="tool_min_torque" value="<?php echo $data['tools_info']['min_torque']; ?>">
+        <input id="tool_max_rpm" value="<?php echo $data['tools_info']['max_rpm']; ?>">
+        <input id="tool_min_rpm" value="<?php echo $data['tools_info']['min_rpm']; ?>">
+    </div>
+
     <div class="main-content">
         <div class="center-content">
             <div class="row" style="margin-bottom: 5px;">
@@ -218,7 +226,7 @@
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Max_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
-                                                <input type="text" id="max-torque" class="form-control input-ms" value="5.0" maxlength="" disabled="disabled">
+                                                <input type="text" id="max-torque" class="form-control input-ms" value="<?php echo $data['tools_info']['max_torque']; ?>" maxlength="" disabled="disabled">
                                             </div>
                                             <div class="col t2">N.m</div>
                                         </div>
@@ -237,21 +245,21 @@
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Target_Type_text']; ?> :</div>
                                             <div class="col-4 t2">
-                              					<select id="target_type" style="width: 215px; height: 32px; border: 0">
+                              					<select id="target_type" class="form-select" >
                                					    <option value="2"><?php echo $text['Torque_text']; ?></option>
                                					    <option value="1"><?php echo $text['Angle_text']; ?></option>
                                   				</select>
                                             </div>
                                         </div>
                                         <div class="row t1">
-                                            <div class="col-3 t1" style="font-size: 20px"><?php echo $text['Direction_text']; ?> :</div>
+                                            <div class="col-3 t1" style=""><?php echo $text['Direction_text']; ?> :</div>
                                             <div class="col t2">
                                      	        <div class="col-3 form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" checked="checked" name="direction-option" id="direction-cw" value="0"style="zoom:1.2; vertical-align: middle">
+                                                    <input class="form-check-input" type="radio" checked="checked" name="direction-option" id="direction-cw" value="0"style="zoom:1; vertical-align: middle">
                                                     <label class="form-check-label" for="direction-cw"><?php echo $text['CW_text']; ?></label>
                                                 </div>
                                       	        <div class="col form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="direction-option" id="direction-ccw" value="1" style="zoom:1.2; vertical-align: middle">
+                                                    <input class="form-check-input" type="radio" name="direction-option" id="direction-ccw" value="1" style="zoom:1; vertical-align: middle">
                                                     <label class="form-check-label" for="direction-ccw"><?php echo $text['CCW_text']; ?></label>
                                                 </div>
                                             </div>
@@ -260,13 +268,15 @@
                                             <div class="col-3 t1" for=""><?php echo $text['RunDownSpeed_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="run-down-speed" class="form-control input-ms" value="100" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
-                                            <div class="col t2"><?php echo $text['max_rpm_text']; ?> 1100</div>
+                                            <div class="col t2"><?php echo $text['max_rpm_text'].' '.$data['tools_info']['max_rpm'];; ?></div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Target_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="target-torque" class="form-control input-ms" value="0.6" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                             <div class="col t2">N.m</div>
                                         </div>
@@ -274,12 +284,14 @@
                                             <div class="col-3 t1" for=""><?php echo $text['Target_Angle_text']; ?>(&#186;) :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="target-angle" class="form-control input-ms" value="1800" maxlength="" disabled="disabled">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Delay_Time_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="delay-time" class="form-control input-ms" value="0.0" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -292,17 +304,20 @@
                                             </div>
                                             <div class="col-3 t2">
                                                 <input type="text" id="offset-value" class="form-control input-ms" value="0.0" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
-                                            <div class="col-3 t1" style="font-size: 20px"><?php echo $text['Monitor_Mode_text']; ?> :</div>
+                                            <div class="col-3 t1" style=""><?php echo $text['Monitor_Mode_text']; ?> :</div>
                                             <div class="col t2">
                                      	        <div class="col-3 form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="monitor-option" id="window" value="0"style="zoom:1.2; vertical-align: middle" checked="checked">
+                                                    <input class="form-check-input" type="radio" name="monitor-option" id="window" value="0"style="zoom:1; vertical-align: middle" checked="checked">
+                                                    <div class="invalid-feedback"></div>
                                                     <label class="form-check-label" for="window"><?php echo $text['Window_text']; ?></label>
                                                 </div>
                                       	        <div class="col form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="monitor-option" id="Hi-Low" value="1" style="zoom:1.2; vertical-align: middle">
+                                                    <input class="form-check-input" type="radio" name="monitor-option" id="Hi-Low" value="1" style="zoom:1; vertical-align: middle">
+                                                    <div class="invalid-feedback"></div>
                                                     <label class="form-check-label" for="Hi-Low"><?php echo $text['Hi_Low_text']; ?></label>
                                                 </div>
                                             </div>
@@ -325,50 +340,58 @@
                                             <div class="col-3 t1" for=""><?php echo $text['Torque_Window_text']; ?> :</div>
                                             <div class="col-2 t2">
                                                 <input type="text" id="torque-window" class="form-control input-ms" value="0.6" maxlength="" disabled>
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                             <div class="col-1 t1" for="">+/-</div>
                                             <div class="col-2 t2">
                                                 <input type="text" id="torque-window-range" class="form-control input-ms" value="0.6" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1" id="Angle_Window_tr">
                                             <div class="col-3 t1" for=""><?php echo $text['Angle_Window_text']; ?> :</div>
                                             <div class="col-2 t2">
                                                 <input type="text" id="angle-window" class="form-control input-ms" value="1800" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                             <div class="col-1 t1" for="">+/-</div>
                                             <div class="col-2 t2">
                                                 <input type="text" id="angle-window-range" class="form-control input-ms" value="1800" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1" id="Hi_Torque_tr">
                                             <div class="col-3 t1" for=""><?php echo $text['Hi_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="hi-torque" class="form-control input-ms" value="0.7" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1" id="Lo_Torque_tr">
                                             <div class="col-3 t1" for=""><?php echo $text['Lo_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="lo-torque" class="form-control input-ms" value="0.0" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1" id="Hi_Angle_tr">
                                             <div class="col-3 t1"><?php echo $text['Hi_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="hi-angle" type="text" value="30600" class="form-control input-ms" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1" id="Lo_Angle_tr">
                                             <div class="col-3 t1"><?php echo $text['Lo_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="lo-angle" type="text" value="0" class="form-control input-ms" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Record_Angle_Val_text']; ?> :</div>
-                                            <div class="col-1 t2">
-                              					<select id="record-angle-val" style="width: 210px; height: 32px; border: 0">
+                                            <div class="col-4 t2">
+                              					<select id="record-angle-val" class="form-select"  style="">
                                					    <option value="0"><?php echo $text['skip_text']; ?></option>
                                                     <option value="1" selected>+</option>
                                                     <option value="2">-</option>
@@ -429,6 +452,7 @@
                                 <div for="to_step_name" class="col-5 t1"><?php echo $text['Step_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
                                     <input type="text" class="form-control" id="to_step_name"> 
+                                    <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                         </div>
@@ -791,31 +815,37 @@ function new_step_save() {
     formData.append('record_angle_val', record_angle_val);
     
 
-    let url = '?url=Templates/edit_step';
-    $.ajax({
-        type: "POST",
-        data: formData,
-        dataType: "json",
-        url: url,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            // 成功回調函數，處理伺服器的回應
-            console.log(response); // 在控制台輸出伺服器的回應
-            // history.go(0);
-            if (response.error == '') {
-                history.go(0);
-            } else {
+    //check form
+    let check = input_check();
+    if(!check){
 
+    }else{
+        let url = '?url=Templates/edit_step';
+        $.ajax({
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            url: url,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                // 成功回調函數，處理伺服器的回應
+                console.log(response); // 在控制台輸出伺服器的回應
+                // history.go(0);
+                if (response.error == '') {
+                    history.go(0);
+                } else {
+
+                }
+            },
+            error: function(error) {
+                // 失敗回調函數，處理錯誤情況
+                // console.error('Error:', error); // 在控制台輸出錯誤訊息
             }
-        },
-        error: function(error) {
-            // 失敗回調函數，處理錯誤情況
-            // console.error('Error:', error); // 在控制台輸出錯誤訊息
-        }
-    }).fail(function() {
-        // history.go(0); //失敗就重新整理
-    });
+        }).fail(function() {
+            // history.go(0); //失敗就重新整理
+        });
+    }
 }
 
 function edit_adv_step(step_id) {
@@ -886,6 +916,7 @@ function edit_adv_step(step_id) {
 function copy_step_div() {
     let rowSelected = document.getElementsByClassName('selected');
     if (rowSelected.length != 0) {
+        document.getElementById('to_step_name').classList.remove("is-invalid");
         let step_id = rowSelected[0].childNodes[1].innerHTML;
         let step_name = rowSelected[0].childNodes[2].innerHTML;
         let to_step_id = get_head_step_id();
@@ -904,6 +935,11 @@ function copy_step_save() {
     
     let to_step_id = document.getElementById('to_step_id').value;
     let to_step_name = document.getElementById('to_step_name').value;
+
+    if(to_step_name == ''){
+        document.getElementById('to_step_name').classList.add("is-invalid");
+        return 0;
+    }
 
     let url = '?url=Templates/copy_step';
     $.ajax({
@@ -998,10 +1034,10 @@ function sync_program() {
     let rowSelected = document.getElementsByClassName('selected');
     let url = '?url=Templates/check_task_by_pro_id';
 
-    
+    console.log(rowSelected)
 
     // 确保至少有一个选中的项
-    if (rowSelected.length  === 0) {
+    if (rowSelected.length  != 0) {
         // 取第一个选中的行的 program_id
         let program_id = extractPartFromurl();
         global_program_id =  program_id;
@@ -1144,4 +1180,218 @@ function extractPartFromurl() {
 }
 
 
+</script>
+
+<script>
+    function input_check(argument) {
+
+        //step 1 先判斷target type
+        //step 2 根據不同的target type產生對應的限制式
+
+        let Tool_Max_Torque = document.getElementById('tool_max_torque').value;
+        let Tool_Min_Torque = document.getElementById('tool_min_torque').value;
+        let Tool_Max_RPM = document.getElementById('tool_max_rpm').value;
+        let Tool_Min_RPM = document.getElementById('tool_min_rpm').value;
+        let delta = Number.parseFloat(Tool_Min_Torque * 0.05).toFixed(4);
+        let Target_Torque_value = document.getElementById('target-torque').value
+
+        let target_type = document.getElementById('target_type').value
+        let target_torque_max = target_torque_min = 0
+        let target_angle_max = target_angle_min = 0
+        let hi_angle_max = hi_angle_min = 0
+        let lo_angle_max = lo_angle_min = 0
+        let hi_torque_max = hi_torque_min = 0
+        let lo_torque_max = lo_torque_min = 0
+        let join_offset_max = join_offset_min = 0
+        let torque_threshold_max = torque_threshold_min = 0
+        let downshift_torque_max = downshift_torque_min = 0
+        let downshift_speed_max = downshift_speed_min = 0
+        let offset_max = 0;
+        let offset_min = 0;
+        let torque_window_max = torque_window_min = 0
+        let torque_window_range_max = torque_window_range_min = 0
+        let angle_window_max = angle_window_min = 0
+        let angle_window_range_max = angle_window_range_min = 0
+
+
+        let monitor_mode = $('input[name=monitor-option]:checked').val(); // 0:window 1:hi-lo
+        let monitor_angle = +document.getElementById('MonitorAngle-ON-OFF').checked; // 0:OFF 1:ON
+        let over_angle_stop = +document.getElementById('AngleStop-ON-OFF').checked;  // 0:OFF 1:ON
+
+
+        if(target_type == 2){// target = torque
+            document.getElementById('target-angle').value = 1800 //set default
+            if(monitor_angle == 0 ){
+                document.getElementById('angle-window').value = 1800
+                document.getElementById('angle-window-range').value = 360
+                document.getElementById('hi-angle').value = 30600
+                document.getElementById('lo-angle').value = 0
+            }
+
+            hi_angle_max = 30600
+            hi_angle_min = 0
+            lo_angle_max =  document.getElementById('hi-angle').value - 1
+            lo_angle_min = 0
+            hi_torque_max = Number.parseFloat(Tool_Max_Torque*1.1).toFixed(4)
+            hi_torque_min = Number.parseFloat( parseFloat(Target_Torque_value) + parseFloat(delta) ).toFixed(4)
+            lo_torque_max = Number.parseFloat( parseFloat(Target_Torque_value) - parseFloat(delta) ).toFixed(4)
+            lo_torque_min = 0
+            join_offset_max = offset_max
+            join_offset_min = offset_min
+
+            if(monitor_mode == 0){ // window
+                torque_window_min = Tool_Min_Torque
+                torque_window_max = Tool_Max_Torque
+                torque_window_range_min = delta
+                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('target-torque').value, +document.getElementById('target-torque').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - target torque ,  target torque - tool min torque ) 
+                angle_window_max = 30600
+                angle_window_min = 1
+                angle_window_range_max = 30599
+                angle_window_range_min = 1
+            }
+
+            if(monitor_mode == 1){ // hi-lo
+                torque_window_min = Tool_Min_Torque
+                torque_window_max = Tool_Max_Torque
+                torque_window_range_min = delta
+                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('target-torque').value, +document.getElementById('target-torque').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - target torque ,  target torque - tool min torque ) 
+                angle_window_max = 30600
+                angle_window_min = 1
+                angle_window_range_max = 30599
+                angle_window_range_min = 1
+            }
+            
+            if( parseFloat(Tool_Max_Torque*1.08 - Target_Torque_value).toFixed(2) >= parseFloat(Target_Torque_value*0.3).toFixed(4) ){
+                offset_max = parseFloat(Target_Torque_value*0.3).toFixed(4);
+            }else{
+                offset_max = parseFloat(Tool_Max_Torque*1.08 - Target_Torque_value).toFixed(2);
+            }
+            
+            let aa = Number.parseFloat(Tool_Min_Torque*0.7 - Target_Torque_value ).toFixed(4);
+            let bb = Number.parseFloat(Target_Torque_value*0.3).toFixed(4);
+            if( aa >= -bb ){
+                offset_min = aa;
+            }else{
+                offset_min = -bb;
+            }
+        }
+
+        if(target_type == 1){// target = angle
+            document.getElementById('target-torque').value = Tool_Min_Torque //set default
+
+            hi_angle_max = 30600
+            hi_angle_min = document.getElementById('target-angle').value
+            lo_angle_max =  document.getElementById('target-angle').value - 1
+            lo_angle_min = 0
+            hi_torque_max = Number.parseFloat(Tool_Max_Torque*1.1).toFixed(4)
+            hi_torque_min = 0
+            lo_torque_max = Number.parseFloat( document.getElementById('hi-torque').value - parseFloat(delta) ).toFixed(4)
+            lo_torque_min = 0
+            join_offset_max = offset_max
+            join_offset_min = offset_min
+
+            if(monitor_mode == 0){ // window
+                torque_window_min = Tool_Min_Torque
+                torque_window_max = Tool_Max_Torque
+                torque_window_range_min = delta
+                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('torque-window').value, +document.getElementById('torque-window').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - torque-window ,  torque-window - tool min torque ) 
+                angle_window_max = 30600
+                angle_window_min = 1
+                angle_window_range_max = Number.parseFloat(Math.min( 30600 - +document.getElementById('target-angle').value , +document.getElementById('target-angle').value )).toFixed(4); //取 min ( 30600 - targetangle , targetangle ) 
+                angle_window_range_min = 1
+            }
+
+            if(monitor_mode == 1){ // hi-lo
+                torque_window_min = Tool_Min_Torque
+                torque_window_max = Tool_Max_Torque
+                torque_window_range_min = delta
+                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('torque-window').value, +document.getElementById('torque-window').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - torque-window ,  torque-window - tool min torque ) 
+                angle_window_max = 30600
+                angle_window_min = 1
+                angle_window_range_max = Number.parseFloat(Math.min( 30600 - +document.getElementById('target-angle').value , +document.getElementById('target-angle').value )).toFixed(4); //取 min ( 30600 - targetangle , targetangle ) 
+                angle_window_range_min = 1
+            }
+
+            //find offset up/low bound
+            offset_max = Number.parseFloat(Tool_Max_Torque*0.3).toFixed(4);
+            offset_min = parseFloat(Tool_Min_Torque*0.7 - document.getElementById('hi-torque').value ).toFixed(4);
+            if(Math.abs(offset_min) > Math.abs(offset_max)){
+                offset_min = offset_max * -1;
+            }
+            
+        }
+
+        
+        let conditions = [
+            { id: 'step-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+            { id: 'run-down-speed', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
+            { id: 'target-torque', pattern: /^-?\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_Torque, max: Tool_Max_Torque },
+            { id: 'target-angle', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: 0, max: 30600 },
+            { id: 'delay-time', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: 0, max: 10 },
+            { id: 'offset-value', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: offset_min, max: offset_max },
+            { id: 'hi-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: hi_torque_min, max: hi_torque_max },
+            { id: 'lo-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: lo_torque_min, max: lo_torque_max },
+            { id: 'hi-angle', pattern: /^\d{1,6}$/, min: hi_angle_min, max: hi_angle_max },
+            { id: 'lo-angle', pattern: /^\d{1,6}(\.\d{0,4})?$/, min: lo_angle_min, max: lo_angle_max },
+            { id: 'torque-window', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: torque_window_min, max: torque_window_max },
+            { id: 'torque-window-range', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: torque_window_range_min, max: torque_window_range_max },
+            { id: 'angle-window', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: angle_window_min, max: angle_window_max },
+            { id: 'angle-window-range', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: angle_window_range_min, max: angle_window_range_max },
+        ];
+
+        let isFormValid = true;
+        conditions.forEach(function(input) {
+            var element = document.getElementById(input.id);
+            var value = element.value.trim();
+
+            //加上offset負號
+            if( ( input.id == 'offset-value' ) &&  document.getElementById('joint-offset').value == 1 && value != '' ){
+                value = value * -1;
+            }
+
+            //在<div class="invalid-feedback"></div> 加入範圍
+            if( input.id != 'step-name' ){
+                element.nextElementSibling.innerHTML = input.min+' ~ '+input.max;
+            }
+
+            if (value === "") {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (!input.pattern.test(value)) {
+                // element.value = "";
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.min !== null && parseFloat(value) < input.min) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.max !== null && parseFloat(value) > input.max) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else {
+                element.classList.remove("is-invalid");
+            }
+
+        });
+
+        console.log(conditions)
+
+        return isFormValid;
+
+    }
+
+    function remove_invalid() {
+        // Select the form by its ID
+        var form = document.getElementById("new_task_form");
+
+        // Check if the form exists
+        if (form) {
+            // Get all elements within the form
+            var elements = form.querySelectorAll("*");
+            
+            // Loop through each element and remove the "is-invalid" class
+            elements.forEach(function(element) {
+                element.classList.remove("is-invalid");
+            });
+        }
+    }
 </script>

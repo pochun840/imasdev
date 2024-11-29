@@ -321,7 +321,7 @@ class Setting{
         // 檢查指定的欄位是否已存在
         foreach ($columns as $column) {
             if ($column['name'] === $columnName) {
-                echo "欄位 '$columnName' 已存在於表格 '$tableName' 中。\n";
+                // echo "欄位 '$columnName' 已存在於表格 '$tableName' 中。\n";
                 return;
             }
         }
@@ -331,9 +331,9 @@ class Setting{
         
         try {
             $this->db->exec($addColumnQuery);
-            echo "成功新增欄位 '$columnName' 到表格 '$tableName'。\n";
+            // echo "成功新增欄位 '$columnName' 到表格 '$tableName'。\n";
         } catch (PDOException $e) {
-            echo "新增欄位時發生錯誤: " . $e->getMessage() . "\n";
+            // echo "新增欄位時發生錯誤: " . $e->getMessage() . "\n";
         }
     }
 

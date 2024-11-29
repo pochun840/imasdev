@@ -81,9 +81,11 @@
                 echo '<input id="task_'.$task['task_id'].'_x" value="'.$task['position_x'].'">';
                 echo '<input id="task_'.$task['task_id'].'_y" value="'.$task['position_y'].'">';
                 echo '<input id="task_'.$task['task_id'].'_tolerance" value="'.$task['tolerance'].'">';
+                echo '<input id="task_'.$task['task_id'].'_tolerance2" value="'.$task['tolerance2'].'">';
                 echo '<input id="task_'.$task['task_id'].'_gtcs_job_id" value="'.$task['gtcs_job_id'].'">';
                 echo '<input id="task_'.$task['task_id'].'_gtcs_seq_id" value="'.$task['gtcs_seq_id'].'">';
                 echo '<input id="task_'.$task['task_id'].'_hole_id" value="'.$task['hole_id'].'">';
+                echo '<input id="task_'.$task['task_id'].'_program_id" value="'.$task['template_program_id'].'">';
 
                 echo '<input id="task_'.$task['task_id'].'_targettype" value="'.$task['last_targettype'].'">'; //targettype
                 if($task['last_targettype'] == 1){// angle
@@ -193,7 +195,7 @@
     <div id="VirtualMessage" class="virtual-message" style="display: none; vertical-align: middle;">
         <div class="topnav">
             <label type="text" style="font-size: 20px; padding-left: 3%; margin: 7px 0"><b>Virtual Message</b></label>
-            <span class="close w3-display-topright" onclick="ClickVirtualMessage()">&times;</span>
+            <span class="close w3-display-topright" id="closeVirtualMessage" onclick="ClickVirtualMessage()">&times;</span>
         </div>
         <div class="scrollbar-Message_text">
             <div class="force-overflow_Message_text">
@@ -246,10 +248,18 @@
 
                                     echo '<img id="imgId" src="'.$data['seq_img'].'">';
                                     foreach ($data['task_list'] as $key => $value) {
-                                        echo '<div class="circle" data-id="'.($key+1).'" '.$value['circle_div'].'>';
-                                        echo '<span class="">'.($key+1).'</span>';
-                                        echo '<div class="circle-border"></div>';
-                                        echo '</div>';
+                                        if($value['template_program_id'] == -1){
+                                            echo '<div class="circle hidden" data-id="'.($key+1).'" '.$value['circle_div'].'>';
+                                            echo '<span class="">'.($key+1).'</span>';
+                                            echo '<div class="circle-border"></div>';
+                                            echo '</div>';
+                                        }else{
+                                            echo '<div class="circle" data-id="'.($key+1).'" '.$value['circle_div'].'>';
+                                            echo '<span class="">'.($key+1).'</span>';
+                                            echo '<div class="circle-border"></div>';
+                                            echo '</div>';
+                                        }
+                                        
                                     }
                                 }
 
@@ -282,7 +292,7 @@
                         <div class="row" style="padding: 0 20px">
                             <label class="col-3 t7" style="margin: 2px 2px"><?php echo $text['barcode_text']; ?>:</label>
                             <div class="col" style="margin: 2px 2px">
-                                <input id="barcode" type="password" class="form-control" placeholder="<?php echo $data['barcode']; ?>" style="font-size: 1.5vmin;height: 28px;">
+                                <input id="barcode" type="password" class="form-control" placeholder="<?php echo $data['barcode']; ?>" style="font-size: 1.5vmin;height: 28px;" autofocus>
                             </div>
                         </div>
 
@@ -311,7 +321,7 @@
                                                 }
 
 
-                                            }else{//torque
+                                            }else if($value['last_targettype'] == 2){//torque
                                                 echo '<a id="step'.$value['task_id'].'" ><img src="./img/torque.png" alt="" style="height: 25px; width: 25px; float: left"> | SGT-CS303 | '.$text['Step_text'].$value['last_step_count'].' | '.$value['last_step_name'].' | '.$value['last_step_targettorque'].'-Nm</a>';
                                                 echo '<div class="dropdown-content" id="target_torque-'.$value['task_id'].'" style="display:none;" step-id="'.$value['task_id'].'">';
 
@@ -327,6 +337,10 @@
                                                     }
                                                 }
 
+                                            }else if($value['last_targettype'] == 'default_value'){
+                                                echo '<a id="step'.$value['task_id'].'" ><img src="./img/message-black.svg" alt="" style="height: 25px; width: 25px; float: left"> | Message </a>';
+                                                echo '<div class="dropdown-content" id="target_torque-'.$value['task_id'].'" style="display:none;" step-id="'.$value['task_id'].'">';
+                                                echo   '<div id="">message</div>';
                                             }
                                             echo    '</div>';
                                             echo '</div>';
@@ -573,54 +587,6 @@
 
     </div>
 
-<!--
-    <footer class="footer">
-        <div id="screw_info_div" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left">Screw info</h5>
-                <label style="color: green; font-size: 2.8vmin;"><b><span id="screw_info"></span></b></label>
-           </div>
-        </div>
-
-        <div id="arm_div" class="column">
-            <div class="zoom" style="">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><img class="images" src="./img/operation-arm.svg" style="float: left">ARM</h5>
-                <label style="color: #FFFF00; font-size: 2.5vmin; text-align: left;padding-left: 31px"><b><span id="coordinate"></span></b></label>
-            </div>
-        </div>
-
-        <div id="tool_div" class="column" onclick="completeTask()">
-            <div class="zoom" style="">
-                <h5 style="font-size: 2.3vmin; text-align: left;">
-                    <img class="images" src="./img/torque.png" style="float: left; height: 20px;">Tool<br><span id="tool_name" style="padding-left:3px">SGT-CS303</span>
-                </h5>
-                <div id="completedIcon" style="display:block; text-align: left;padding-left: 31px">
-                    <span id="tool_task_id" style="color: #000"></span>
-                    <span id="tool_status_icon">
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <div id="socket_tray_div" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><img class="images" src="./img/socket-tray.png" style="float: left">Socket tray</h5>
-            </div>
-        </div>
-
-        <div id="picking_module" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><img class="images" src="./img/picking-module.png" style="float: left; height: 20px; width: 30px">Picking module</h5>
-            </div>
-        </div>
-
-        <div id="screw_feeder_div" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left">Screw feeder</h5>
-            </div>
-        </div>
-    </footer>
--->
 </div>
 <style>
 #completedIcon
@@ -632,51 +598,31 @@
 
 
 <script>
-// Get the modal
-var modal = document.getElementById('SeqSelect');
+    // Get the modal
+    var modal = document.getElementById('SeqSelect');
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
     }
-}
 </script>
 
 <script>
 
-    function completeTask()
+    function updateParameters(task_id)
     {
-        var completedIcon = document.getElementById('completedIcon');
-        completedIcon.style.display = 'block';
-        completedIcon.style.fontSize = "3vmin";
-    }
+        var target_torque = document.getElementById('target_torque-'+task_id);
+        var step = document.getElementById('step'+task_id);
+        var last_step = document.getElementById('step'+ (task_id - 1 ) );
 
-    // function updateParameters()
-    // {
+        let targettype = document.getElementById('task_'+task_id+'_targettype');
+        let target_value = document.getElementById('task_'+task_id+'_target_value');
+        let target_hi = document.getElementById('task_'+task_id+'_target_hi');
+        let target_lo = document.getElementById('task_'+task_id+'_target_lo');
 
-    //     var target_detail = document.getElementById('target_detail');
-    //     if (target_detail.style.display === 'none')
-    //     {
-    //         target_detail.style.display = 'block';
-    //     }
-    //     else
-    //     {
-    //         target_detail.style.display = 'none';
-    //     }
-
-    // }
-
-    function updateParameters(index)
-    {
-        var target_torque = document.getElementById('target_torque-'+index);
-        var step = document.getElementById('step'+index);
-        var last_step = document.getElementById('step'+ (index - 1 ) );
-
-        let targettype = document.getElementById('task_'+index+'_targettype');
-        let target_value = document.getElementById('task_'+index+'_target_value');
-        let target_hi = document.getElementById('task_'+index+'_target_hi');
-        let target_lo = document.getElementById('task_'+index+'_target_lo');
+        console.log(task_id)
 
         //先關閉全部
         var Divs = document.querySelectorAll("div[id^='target_torque-']");
@@ -702,17 +648,17 @@ window.onclick = function(event) {
             target_torque.classList.remove("seleted");
         }
 
-        //index bg-color = #44d0ff => runnuing
+        //task_id bg-color = #44d0ff => runnuing
         step.style.backgroundColor = '#44d0ff';
 
-        //smaller index-1 bg-color = green => finished
+        //smaller task_id-1 bg-color = green => finished
         if(last_step != null){
             last_step.style.color = 'white';
             last_step.style.backgroundColor = 'green';
             last_step.style.borderColor = 'green';
         }
 
-        console.log('task_'+index+'_targettype')
+        console.log('task_'+task_id+'_targettype')
         console.log(targettype.value);
         console.log(target_hi.value);
         console.log(target_lo.value);
@@ -735,19 +681,29 @@ window.onclick = function(event) {
             document.getElementById('low_angle').value = 0;
         }
 
-        document.getElementById('tool_task_id').innerHTML = 'Task'+index;
+        document.getElementById('tool_task_id').innerHTML = 'Task'+task_id;
         // arm_status
-        document.getElementById('arm_status').value = document.getElementById('task_'+index+'_enable_arm').value;
+        document.getElementById('arm_status').value = document.getElementById('task_'+task_id+'_enable_arm').value;
 
         //socket hole div
-        if(document.getElementById('task_'+index+'_hole_id').value == '-1'){
+        if(document.getElementById('task_'+task_id+'_hole_id').value == '-1'){
             document.getElementById('socket_tray_div').classList.add('gray-out');
             document.getElementById('socket_tray_div').style.display = 'flex';
             document.getElementById('socket_hole_number').value = '';
         }else{
-            document.getElementById('socket_hole_number').value = document.getElementById('task_'+index+'_hole_id').value;
+            document.getElementById('socket_hole_number').value = document.getElementById('task_'+task_id+'_hole_id').value;
             document.getElementById('socket_tray_div').classList.remove('gray-out');
             document.getElementById('socket_tray_div').style.display = 'flex';
+        }
+
+        //task是純message
+        if (document.getElementById('task_'+task_id+'_program_id').value == -1) {
+            // alert(999)
+            setTimeout( async () => {
+                await showMessage(task_id)
+                switchJob('OK',task_id)
+                console.log("Delayed for 3 second.");
+            }, 500);
         }
 
     }
@@ -756,95 +712,94 @@ window.onclick = function(event) {
 </script>
 
 <script type="text/javascript">
-let isSendingRequest = false;
-let isFulfilled = false; //前置條件是否滿足
-let light_signal = false;
-let right_position = false;
+    let isSendingRequest = false;
+    let isFulfilled = false; //前置條件是否滿足
+    let light_signal = false;
+    let right_position = false;
 
-let job_singal;
-let seq_sinal;
-let total_seq;
-let ct_seq_id;
-let system_no;
-let ng_auto;
-let ok_auto;
-let ok_job_auto;
-let ok_seq_auto;
+    let job_singal;
+    let seq_sinal;
+    let total_seq;
+    let ct_seq_id;
+    let system_no;
+    let ng_auto;
+    let ok_auto;
+    let ok_job_auto;
+    let ok_seq_auto;
 
-$(document).ready(function () {
-    initail();
-    //img帶入
-    document.getElementById('imgId').src = '<?php echo $data['seq_img']; ?>';
-});
+    $(document).ready(function () {
+        initail();
+        //img帶入
+        document.getElementById('imgId').src = '<?php echo $data['seq_img']; ?>';
+    });
 
-function initail() {
-    //隱藏右下div
-    document.getElementById('tool_div').style.display = 'none';
-    document.getElementById('picking module').style.display = 'none';
-    document.getElementById('arm_div').style.display = 'none';
-    document.getElementById('socket_tray_div').style.display = 'none';
-    document.getElementById('screw_feeder').style.display = 'none';
-    document.getElementById('recycle_box').style.display = 'none';
-    document.getElementById('button').style.display = 'none';
-    document.getElementById('space').style.display = 'none';
+    function initail() {
+        //隱藏右下div
+        document.getElementById('tool_div').style.display = 'none';
+        document.getElementById('picking module').style.display = 'none';
+        document.getElementById('arm_div').style.display = 'none';
+        document.getElementById('socket_tray_div').style.display = 'none';
+        document.getElementById('screw_feeder').style.display = 'none';
+        document.getElementById('recycle_box').style.display = 'none';
+        document.getElementById('button').style.display = 'none';
+        document.getElementById('space').style.display = 'none';
 
 
-    // body...
-    document.getElementById('barcode').value = '';
-    document.getElementById('job_name').value = '<?php echo $data['job_data']['job_name']; ?>';
-    document.getElementById('seq_name').value = '<?php echo $data['seq_data']['seq_name']; ?>';
-    // document.getElementById('task_time') = '';
-    document.getElementById('tightening_status').innerHTML = '';
-    document.getElementById('tightening_repeat').value = ' 0 / 1';
-    document.getElementById('tightening_time').value = '0';
-    document.getElementById('target_torque').innerHTML = '<?php echo $data['task_list'][0]['last_step_targettorque']; ?>';
-    document.getElementById('high_torque').value = '<?php echo  $data['task_list'][0]['last_step_hightorque']; ?>';
-    document.getElementById('low_torque').value = '<?php echo  $data['task_list'][0]['last_step_lowtorque']; ?>';
-    document.getElementById('target_angle').innerHTML = '<?php echo  $data['task_list'][0]['last_step_targetangle']; ?>';
-    document.getElementById('high_angle').value = '<?php echo  $data['task_list'][0]['last_step_highangle']; ?>';
-    document.getElementById('low_angle').value = '<?php echo  $data['task_list'][0]['last_step_lowangle']; ?>';
-    // document.getElementById('screw_info_div').value = '';
-    document.getElementById('screw_info').innerHTML = ' - / ' + document.getElementById('stop_on_ng').value;
-    // document.getElementById('arm_div').value = '';
-    // document.getElementById('coordinate').innerHTML = '';
-    // document.getElementById('tool_div').value = '';
-    // document.getElementById('tool_name').innerHTML = '';
-    document.getElementById('task_serail').value = '<?php echo $data['task_id'].'  /  '.$data['task_count'] ?>';
-    // document.getElementById('task_list') = '';
-    document.getElementById('task_time').value = 0;
-    let task_id = document.getElementById('task_id').value;
-    updateParameters(task_id);
-    let aa = document.querySelector("div[data-id='"+task_id+"']");
-    // aa.classList.add('running')
-    aa.style.backgroundColor = '#44d0ff';
-    aa.childNodes[1].classList.add('running');
-    call_job();
-    document.getElementById('Change_Job_Id').value = document.getElementById('job_id').value;
-    document.getElementById('socket_hole_number').style.backgroundColor = 'transparent';
+        // body...
+        document.getElementById('barcode').value = '';
+        document.getElementById('job_name').value = '<?php echo $data['job_data']['job_name']; ?>';
+        document.getElementById('seq_name').value = '<?php echo $data['seq_data']['seq_name']; ?>';
+        // document.getElementById('task_time') = '';
+        document.getElementById('tightening_status').innerHTML = '';
+        document.getElementById('tightening_repeat').value = ' 0 / 1';
+        document.getElementById('tightening_time').value = '0';
+        document.getElementById('target_torque').innerHTML = '<?php echo $data['task_list'][0]['last_step_targettorque']; ?>';
+        document.getElementById('high_torque').value = '<?php echo  $data['task_list'][0]['last_step_hightorque']; ?>';
+        document.getElementById('low_torque').value = '<?php echo  $data['task_list'][0]['last_step_lowtorque']; ?>';
+        document.getElementById('target_angle').innerHTML = '<?php echo  $data['task_list'][0]['last_step_targetangle']; ?>';
+        document.getElementById('high_angle').value = '<?php echo  $data['task_list'][0]['last_step_highangle']; ?>';
+        document.getElementById('low_angle').value = '<?php echo  $data['task_list'][0]['last_step_lowangle']; ?>';
+        // document.getElementById('screw_info_div').value = '';
+        document.getElementById('screw_info').innerHTML = ' - / ' + document.getElementById('stop_on_ng').value;
+        // document.getElementById('arm_div').value = '';
+        // document.getElementById('coordinate').innerHTML = '';
+        // document.getElementById('tool_div').value = '';
+        // document.getElementById('tool_name').innerHTML = '';
+        document.getElementById('task_serail').value = '<?php echo $data['task_id'].'  /  '.$data['task_count'] ?>';
+        // document.getElementById('task_list') = '';
+        document.getElementById('task_time').value = 0;
+        let task_id = document.getElementById('task_id').value;
+        updateParameters(task_id);
+        let aa = document.querySelector("div[data-id='"+task_id+"']");
+        // aa.classList.add('running')
+        aa.style.backgroundColor = '#44d0ff';
+        aa.childNodes[1].classList.add('running');
+        call_job();
+        document.getElementById('Change_Job_Id').value = document.getElementById('job_id').value;
+        document.getElementById('socket_hole_number').style.backgroundColor = 'transparent';
 
-    job_singal = '<?php echo $data['job_data']['ok_job']; ?>'; //是否有ok-job的訊號
-    seq_singal  = '<?php echo $data['new_seq_list'][$data['seq_id']]['ok_sequence']; ?>'; //是否有ok-seq的訊號
-    total_seq  = '<?php echo $data['total_seq'];?>'; //seq的數量
-    ct_seq_id  = '<?php echo $data['seq_id'];?>';//當前的seq_id 編號
+        job_singal = '<?php echo $data['job_data']['ok_job']; ?>'; //是否有ok-job的訊號
+        seq_singal  = '<?php echo $data['new_seq_list'][$data['seq_id']]['ok_sequence']; ?>'; //是否有ok-seq的訊號
+        total_seq  = '<?php echo $data['total_seq'];?>'; //seq的數量
+        ct_seq_id  = '<?php echo $data['seq_id'];?>';//當前的seq_id 編號
 
-    task_message_list = '<?php echo $data['jsonTaskMessageList']; ?>';
-    task_message_list_nn = '<?php echo $data['jsonTaskMessageList']; ?>';
+        task_message_list = '<?php echo $data['jsonTaskMessageList']; ?>';
+        task_message_list_nn = '<?php echo $data['jsonTaskMessageList']; ?>';
 
-    ng_auto = '<?php echo $data['ng_auto']; ?>'; 
-    ok_auto = '<?php echo $data['ok_auto'];?>';
+        ng_auto = '<?php echo $data['ng_auto']; ?>'; 
+        ok_auto = '<?php echo $data['ok_auto'];?>';
 
-    ok_job_auto = '<?php echo $data['ok_job_auto']; ?>'; 
-    ok_seq_auto = '<?php echo $data['ok_seq_auto'];?>';
-
-    
-}
+        ok_job_auto = '<?php echo $data['ok_job_auto']; ?>'; 
+        ok_seq_auto = '<?php echo $data['ok_seq_auto'];?>';
+        
+    }
    
 </script>
 
 <!-- arm socket link -->
 <script type="text/javascript">
     // const wsServer = 'ws://192.168.0.115:9527';
-    const wsServer = 'ws://localhost:9527';
+    const wsServer = 'ws://<?php echo $_SERVER['SERVER_NAME']; ?>:9527';
     const websocket = new WebSocket(wsServer);
 
     
@@ -867,6 +822,7 @@ function initail() {
 
     websocket.onmessage = function (evt) {
         // console.log('Retrieved data from server: ' + evt.data);
+        document.getElementById('arm_div').style.display = 'flex';
         let axis = evt.data.split(',');
         coordinate(axis);
         // document.getElementById('axis_x').value = axis[0];
@@ -878,15 +834,15 @@ function initail() {
     };
 
     function coordinate(axis) {
-        // 关节角度（以弧度表示）
-        let theta1 = deg2rad(axis[0]/32767 * 360); // 第一个关节的角度（弧度）
-        let theta2 = deg2rad(axis[1]/32767 * 360 + 180); // 第二个关节的角度（弧度）
+        // 關節角度（以弧度表示）
+        let theta1 = deg2rad(axis[0]/32767 * 360); // 第一個關節的角度（弧度）
+        let theta2 = deg2rad(axis[1]/32767 * 360 + 180); // 第二關節的角度（弧度）
 
-        // 机械臂长度
-        let L1 = 50; // 第一个关节到第二个关节的长度
-        let L2 = 50; // 第二个关节到末端的长度
+        // 機械手臂長度
+        let L1 = 50; // 第一個關節到第二個關節的長度
+        let L2 = 50; // 第二個關節到末端的長度
 
-        // 计算末端执行器的位置
+        // 計算末端執行器的位置
         let x = L1 * Math.cos(theta1) + L2 * Math.cos(theta1 + theta2);
         let y = L1 * Math.sin(theta1) + L2 * Math.sin(theta1 + theta2);
 
@@ -899,10 +855,12 @@ function initail() {
 
         let target_x = +document.getElementById('task_'+task_id+'_x').value;
         let target_y = +document.getElementById('task_'+task_id+'_y').value;
-        let bias = +document.getElementById('task_'+task_id+'_tolerance').value;
+        let bias_x = +document.getElementById('task_'+task_id+'_tolerance').value;
+        let bias_y = +document.getElementById('task_'+task_id+'_tolerance').value;
 
-        document.getElementById('coordinate').innerHTML = round_x+','+round_y+'['+bias+']';
+        document.getElementById('coordinate').innerHTML = round_x+','+round_y+'['+bias_x+','+bias_y+']';
 
+        //判斷目前的task是否有使用arm，如果沒有一律return true
         let arm_status = +document.getElementById('arm_status').value
         if (arm_status == 0) {
             right_position = true;
@@ -912,33 +870,17 @@ function initail() {
         let modbus_switch = document.getElementById('modbus_switch').value;
         let current_tool_status = document.getElementById('tool_status').value;
 
-        if(round_x >= target_x-bias && round_x<= target_x+bias && round_y >= target_y-bias && round_y<= target_y+bias){
+        if(round_x >= target_x-bias_x && round_x<= target_x+bias_x && round_y >= target_y-bias_y && round_y<= target_y+bias_y){
             document.getElementById('coordinate').style.backgroundColor = 'green';
             right_position = true;
-            // if(modbus_switch == 1 && current_tool_status == 0 && isSendingRequest == false){ //目前起子與要改變的狀態相反才發送
-            //     // isSendingRequest = true;
-            //     // websocket.send('enable');
-            //     // isSendingRequest = false;
-            //     console.log('send enable');
-            //     right_position = true;
-            //     // switch_tool(1);
-            // }
         }else{
             document.getElementById('coordinate').style.backgroundColor = 'red';
             right_position = false;
-            // if(modbus_switch == 1 && current_tool_status == 1 && isSendingRequest == false){ //目前起子與要改變的狀態相反才發送
-            //     // isSendingRequest = true;
-            //     // websocket.send('disable');
-            //     // isSendingRequest = false;
-            //     console.log('send disable');
-            //     right_position = false;
-            //     // switch_tool(0);
-            // }
         }
     }
 
     function deg2rad(degrees) {
-      return degrees * (Math.PI / 180);
+        return degrees * (Math.PI / 180);
     }
 
 </script>
@@ -952,8 +894,8 @@ function initail() {
           { index: 2, status: "Tool running", color: "" },
           { index: 3, status: "Reverse", color: "" },
           { index: 4, status: "OK", color: "green" },
-          { index: 5, status: "OK-SEQ", color: "" },
-          { index: 4, status: "OK", color: "" },
+          { index: 5, status: "OK-SEQ", color: "#ffcc00" },
+          { index: 6, status: "OK-JOB", color: "#ffcc00" },
           { index: 7, status: "NG", color: "red" },
           { index: 8, status: "NG Stop", color: "red" },
           { index: 9, status: "Setting", color: "" },
@@ -1003,916 +945,197 @@ function initail() {
         { index: 34, status: "<?php echo $error_message['WORKPIECE_RECOVERY'] ?>", color: "" },
     ];
 
-  //----------------------------------------
-  let socket; // WebSocket对象
-  const server_ip = '<?php echo $data['controller_ip']; ?>';
-  const serverUrl = 'ws://'+server_ip+':9501';
-
-  const ipToTableRow = new Map();
-
-  function connectWebSocket() {
-      socket = new WebSocket(serverUrl);
-
-      socket.addEventListener('open', (event) => {
-          console.log('WebSocket连接已建立');
-          // 在连接建立时可以执行其他逻辑
-      });
-
-      socket.addEventListener('message', (event) => {
-          // 处理接收到的WebSocket消息
-        if(isFulfilled){
-          handleWebSocketMessage(event);
-        }
-          // console.log(event);
-      });
-
-      socket.addEventListener('close', (event) => {
-          console.log('WebSocket连接已关闭');
-          // 连接关闭时，设置定时器以尝试重新连接
-          // setTimeout(connectWebSocket, 5000); // 2秒后重新连接
-      });
-
-      socket.addEventListener('error', (event) => {
-          console.error('WebSocket连接发生错误', event);
-          // 在发生错误时也可以执行其他逻辑
-      });
-  }  
-
-  // 初始连接
-  connectWebSocket();
-
-let retry_time = 0;
-const tt = new Map();
-tt.set('start_time',new Date())
-
-
-  function handleWebSocketMessage(event) {
-      const message = event.data;
-
-      // 检查消息是否以 "client X said:" 开头
-      const match = message.match(/^Client (\d+) said: (.*)/);
-
-      if (match) {
-          const clientNumber = match[1];
-          const jsonMessage = match[2];
-
-          try {
-              const data = JSON.parse(jsonMessage);
-
-              //判斷是否要更新
-              let record_data_time = data.data_time
-              // let record_date = new Date('6/29/2011 4:52:48 PM UTC+8');
-              let formattedDate = record_data_time.substring(0, 4) + "-" + record_data_time.substring(4, 6) + "-" + record_data_time.substring(6, 8) + " " + record_data_time.substring(9) + ' UTC+0';
-              var date = new Date(formattedDate);
-              date.toString(); // "Wed Jun 29 2011 09:52:48 GMT-0700 (PDT)"
-
-              // record_data_time = Date(formattedDate)
-              let task_id = +document.getElementById('task_id').value;
-              let gtcs_job_id = document.getElementById('task_'+task_id+'_gtcs_job_id').value;
-              let task_count = document.getElementById('task_count').value;
-              let start_time = tt.get('start_time');
-
-
-
-               // start_time = start_time - 100000; //往前推100秒避免秒差
-              let last_sn = document.getElementById('last_sn').value;
-
-              // if(date > start_time){//紀錄比開啟網頁的時間還新
-              if(data.system_sn > last_sn){//紀錄比開啟網頁的時間還新
-
-
-                if(data.job_id == gtcs_job_id && tt.has(data.system_sn) == false ){
-                    console.log('---123----');
-                    document.getElementById('modbus_switch').value = 0;
-            
-                    tt.set(data.system_sn,data.system_sn)
-                    //確認紀錄是否為當前設定對應的job
-                    //yes:更新顯示 > 觸發下一個task(要更新task_id、加總task time) > call new job
-                    //no:不作動
-
-                    document.getElementById('tightening_status').innerHTML = fasten_status[data.fasten_status].status;
-                    document.getElementById('tightening_status').style.backgroundColor = fasten_status[data.fasten_status].color;
-                    document.getElementById('tightening_status').style.width = 'max-content';
-                    document.getElementById('tightening_repeat').value = ' 1 / 1';
-                    document.getElementById('tightening_time').value = data.fasten_time;
-                    let ttime = +document.getElementById('task_time').value
-                    ttime = ttime + +data.fasten_time;
-                    ttime = ttime.toFixed(2);
-                    document.getElementById('task_time').value = ttime;
-                    document.getElementById('screw_info').value = data.fasten_torque;
-
-                    let stop_on_ng = document.getElementById('stop_on_ng').value;
-
-                    //顯示最終鎖附扭力/角度
-                    document.getElementById('target_torque2').innerHTML = data.fasten_torque;
-                    document.getElementById('target_angle2').innerHTML = data.fasten_angle;
-                    document.getElementById('error1').innerHTML = 'Error : '
-                    document.getElementById('error2').innerHTML = 'Error : '
-                    if(data.step_targettype == 1){// target = angle
-                        document.getElementById('high_torque').value = data.step_hightorque;
-                        document.getElementById('target_torque').value = 0;
-                        document.getElementById('low_torque').value = data.step_lowtorque;
-                        document.getElementById('high_angle').value = data.step_highangle;
-                        document.getElementById('target_angle').value = data.step_targetangle;
-                        document.getElementById('low_angle').value = data.step_lowangle;
-                    }else{// target = torque
-                        document.getElementById('high_torque').value = data.step_hightorque;
-                        document.getElementById('target_torque').value = data.step_targettorque;
-                        document.getElementById('low_torque').value = data.step_lowtorque;
-                        document.getElementById('high_angle').value = data.step_highangle;
-                        document.getElementById('target_angle').value = 0;
-                        document.getElementById('low_angle').value = data.step_lowangle;
-                    }
-
-                    localStorage.setItem('seq_id', <?php echo $data['seq_id']; ?>); //1
-                    localStorage.setItem('seq_count', <?php echo $data['total_seq']; ?>); //2
-
-                    var seq_id_nn = <?php echo json_encode($data['seq_id']); ?>;
-                    var total_seq_nn = <?php echo json_encode($data['total_seq']); ?>;
-
-
-          
-
-                    let  seq_id_new = '<?php echo $data['seq_id']; ?>'
-                    let  seq_count = <?php echo $data['total_seq']; ?>;            
-
-                        if(task_id <= task_count){
-
-                            let current_circle = document.querySelector("div[data-id='"+task_id+"']");
-                            current_circle.childNodes[1].classList.remove('running')
-                            // current_circle.classList.remove('running')
-                            current_circle.classList.remove('ng')
-
-
-                            if(data.fasten_status == 4 || data.fasten_status == 5 || data.fasten_status == 6 ){
-                                //OK、OK-JOB、OK-SEQ
-                                //save_result(data);
-                                retry_time = 0;//retry測試歸零
-                                document.getElementById('screw_info').innerHTML = retry_time + ' / '+ stop_on_ng;
-                                current_circle.classList.add('finished')
-                                current_circle.childNodes[1].classList.remove('circle-border')
-                             
-
-                                task_id = task_id + 1;
-
-                                localStorage.setItem('task_id',task_id);
-                                localStorage.setItem('task_count',task_count);
-                                localStorage.setItem('job_singal',job_singal);
-                                localStorage.setItem('seq_singal',seq_singal);
-                                localStorage.setItem('system_no',data.system_sn);
-
-
-                                    
-                                if(task_id <= task_count){
-
-                                        document.getElementById('task_id').value = task_id;
-                                        updateParameters(task_id)
-                                        //call_job();
-                                        // document.getElementById('modbus_switch').value = 1;
-                                        let next_circle = document.querySelector("div[data-id='"+task_id+"']");
-                                        // next_circle.classList.add('running')
-                                        next_circle.childNodes[1].classList.add('running')
-                                        next_circle.style.backgroundColor = '#44d0ff';
-                                        // next_circle.childNodes[0].classList.add('inner-text');
-                                        document.getElementById('task_serail').value = task_id+' / '+task_count;
-
-                                        document.getElementById('tightening_status').innerHTML = 'OK';
-                                        document.getElementById('tightening_status').style.backgroundColor = 'green';
-                                        document.getElementById('tightening_status_div').style.backgroundColor = 'green';
-
-                                        light_signal = 'OK';
-
-                                        var fasten_status_new = 4;
-                                        var new_task_id = task_id -1;
-                                        save_result_new(data,fasten_status_new,new_task_id );
-
-                                        //播放OK 語音
-                                        if(ok_auto){
-                                            var path =  '../public/voice/'; 
-                                            var fullPath = path + ok_auto;
-
-                                            var audio = new Audio(fullPath);
-                                            audio.play().catch(function(error) {
-                                                console.log('自動播放被阻止:', error);
-                                                alert('自動播放被阻止:', error);
-                                            });
-                                  
-                                        }                  
-                                      
-                                        let system_no = data.system_sn;
-                                       
-                                        afterward();
-
-                                        if(task_message_list == ''){ //完全沒有virtual message
-                                            call_job();
-                                        }else{ //至少有一個virtaul message
-                                            try{
-                                                var element = document.getElementById('VirtualMessage');
-                                                var task_message_list_nn = JSON.parse(task_message_list);
-                                                var nn_task_id_first = task_id-1;
-                                                var nn_task_id_str_f = String(nn_task_id_first);
-
-                                                if (typeof task_message_list_nn[nn_task_id_str_f] !== 'undefined') {
-                                                    var task_f = task_message_list_nn[nn_task_id_str_f];
-                                                    var e_timeStr1 = task_f.timeout +'000';
-                                                    var e_time1 = parseInt(e_timeStr1, 10);
-
-                                                    if(task_f.timeout !== '0'){
-                                                        force_switch_tool(0);
-                                                        
-                                                        document.getElementById('VirtualMessage').style.display = 'block';
-                                                        document.getElementById('w3review').value = task_f.text;
-
-                                                        if(task_f.img == ""){
-                                                            const element_11 = document.querySelector('.scrollbar-Message_text');
-                                                            if (element_11) {
-                                                                element_11.className = 'scrollbar-Message_text_s';
-                                                            }
-                                           
-                                                        }else{
-                                                            if(task_f.type ==="video"){
-                                                                document.getElementById('myvideo').style.display = 'block';
-                                                                document.getElementById('myimage').style.display = 'none';
-                                                                var videoElement = document.getElementById('myvideo');
-                                                                var sourceElement = document.getElementById('video_source');
-                                                                sourceElement.src = task_f.img;
-                                                                videoElement.load();
-                                                            }else{
-                                                                document.getElementById('myvideo').style.display = 'none';
-                                                                document.getElementById('myimage').style.display = 'block';
-                                                                document.getElementById('myimage').src = task_f.img;
-                                                            }
-                                                        
-                                                        }
-
-                                                        element.style.display = 'block';
-                                                        
-                                                        setTimeout(function() {
-                                                            element.style.display = 'none';
-                                                            //force_switch_tool(1);    
-                                                            call_job();
-                                                        }, e_time1); 
-
-                                                    }else{
-                                                        call_job();
-                                                    
-                                                        //force_switch_tool(0); 
-                                                    }
-                                                }else{
-                                                    call_job();
-                                                }
-
-                                            }catch (e) {
-                                                console.log(e)
-                                            }
-                                        }
-                                                                                
-                                }else{
-                                    
-                                        //若OK Job 開啟，OK sequence 開啟，每一個sequence 傳出OK-SEQ信號，最後一個sequence 是傳出OK-Job信號
-                                        if( job_singal == 1 && seq_singal == 1 && seq_id_nn < total_seq_nn && task_id > task_count){
-                                            document.getElementById('tightening_status').innerHTML = 'OK-SEQ';
-                                            document.getElementById('step'+(task_id-1)).style.backgroundColor = '#FFCC00';
-                                            document.getElementById('step'+(task_id-1)).style.borderColor = '#FFCC00';
-                                            document.getElementById('tightening_status').style.backgroundColor = '#FFCC00';
-                                            document.getElementById('tightening_status_div').style.backgroundColor = '#FFCC00';
-                                            current_circle.classList.add('finished_job');  
-
-
-                                            var fasten_status_new = 5;
-                                            save_result(data,fasten_status_new);
-
-                                            if(ok_seq_auto){
-                                                var path =  '../public/voice/'; 
-                                                var fullPath = path + ok_seq_auto;
-
-                                                var audio = new Audio(fullPath);
-                                                audio.play().catch(function(error) {
-                                                    console.log('自動播放被阻止:', error);
-                                                    alert('自動播放被阻止:', error);
-                                                });
-                                    
-                                            }     
-                                            
-
-                                        }
-
-                                        if( job_singal == 1 && seq_singal == 1 && seq_id_nn == total_seq_nn && task_id > task_count){
-                                            document.getElementById('tightening_status').innerHTML = 'OK-JOB';
-                                            document.getElementById('step'+(task_id-1)).style.backgroundColor = '#FFCC00';
-                                            document.getElementById('step'+(task_id-1)).style.borderColor = '#FFCC00';
-                                            document.getElementById('tightening_status').style.backgroundColor = '#FFCC00';
-                                            document.getElementById('tightening_status_div').style.backgroundColor = '#FFCC00';
-                                            current_circle.classList.add('finished_job');  
-
-                                            
-                                            var fasten_status_new = 6;
-                                            save_result(data,fasten_status_new);
-
-                                             if(ok_job_auto){
-                                                var path =  '../public/voice/'; 
-                                                var fullPath = path + ok_job_auto;
-
-                                                var audio = new Audio(fullPath);
-                                                audio.play().catch(function(error) {
-                                                    console.log('自動播放被阻止:', error);
-                                                    alert('自動播放被阻止:', error);
-                                                });
-                                    
-                                            }
-
-                                           
-                                        }
-
-                                        //若OK Job 關閉，OK sequence 關閉 顯示 OK
-                                        if(job_singal == 0 && seq_singal == 0 ){
-                                            document.getElementById('tightening_status').innerHTML = 'OK';
-                                            document.getElementById('step'+(task_id-1)).style.backgroundColor = 'green';
-                                            document.getElementById('step'+(task_id-1)).style.borderColor = 'green';
-                                            document.getElementById('tightening_status').style.backgroundColor = 'green';
-                                            document.getElementById('tightening_status_div').style.backgroundColor = 'green';
-                                            current_circle.classList.add('finished'); 
-
-                                            
-                                            var fasten_status_new = 4;
-                                            save_result(data,fasten_status_new);
-
-                                            //播放OK 語音
-                                            if(ok_auto){
-                                                var path =  '../public/voice/'; 
-                                                var fullPath = path + ok_auto;
-
-                                                var audio = new Audio(fullPath);
-                                                audio.play().catch(function(error) {
-                                                    console.log('自動播放被阻止:', error);
-                                                    alert('自動播放被阻止:', error);
-                                                });
-                                    
-                                            }              
-                                            
-                                    
-
-                                        }
-
-
-                                        //若OK Job 關閉，OK sequence 開啟，每一個sequence 傳出OK-SEQ信號 
-                                        if(job_singal == 0 && seq_singal == 1 && seq_id_nn < total_seq_nn && task_id > task_count){
-                                            document.getElementById('tightening_status').innerHTML = 'OK-SEQ';
-                                            document.getElementById('step'+(task_id-1)).style.backgroundColor = '#FFCC00';
-                                            document.getElementById('step'+(task_id-1)).style.borderColor = '#FFCC00';
-                                            document.getElementById('tightening_status').style.backgroundColor = '#FFCC00';
-                                            document.getElementById('tightening_status_div').style.backgroundColor = '#FFCC00';
-                                            current_circle.classList.add('finished_job');
-
-
-                                            
-                                            var fasten_status_new = 5;
-                                            save_result(data,fasten_status_new);
-
-                                            if(ok_seq_auto){
-                                                var path =  '../public/voice/'; 
-                                                var fullPath = path + ok_seq_auto;
-
-                                                var audio = new Audio(fullPath);
-                                                audio.play().catch(function(error) {
-                                                    console.log('自動播放被阻止:', error);
-                                                    alert('自動播放被阻止:', error);
-                                                });
-                                    
-                                            }         
-
-                                        }
-                                        if(job_singal == 0 && seq_singal == 1 && seq_id_nn == total_seq_nn && task_id > task_count){
-                                            document.getElementById('tightening_status').innerHTML = 'OK-SEQ';
-                                            document.getElementById('step'+(task_id-1)).style.backgroundColor = '#FFCC00';
-                                            document.getElementById('step'+(task_id-1)).style.borderColor = '#FFCC00';
-                                            document.getElementById('tightening_status').style.backgroundColor = '#FFCC00';
-                                            document.getElementById('tightening_status_div').style.backgroundColor = '#FFCC00';
-                                            current_circle.classList.add('finished_job');
-
-                                            if(ok_seq_auto){
-                                                var path =  '../public/voice/'; 
-                                                var fullPath = path + ok_seq_auto;
-
-                                                var audio = new Audio(fullPath);
-                                                audio.play().catch(function(error) {
-                                                    console.log('自動播放被阻止:', error);
-                                                    alert('自動播放被阻止:', error);
-                                                });
-                                
-                                            }   
-
-                                            
-                                            var fasten_status_new = 5;
-                                            save_result(data,fasten_status_new); 
-
-                                        }
-
-                                        //若OK Job 開啟，Oksequence，關閉，最後一個seq 傳出OK-JOB信號
-                                        if(job_singal == 1 && seq_singal == 0 &&  seq_id_nn < total_seq_nn && task_id > task_count){
-                                            document.getElementById('tightening_status').innerHTML = 'OK';
-                                            document.getElementById('step'+(task_id-1)).style.backgroundColor = 'green';
-                                            document.getElementById('step'+(task_id-1)).style.borderColor = 'green';
-                                            document.getElementById('tightening_status').style.backgroundColor = 'green';
-                                            document.getElementById('tightening_status_div').style.backgroundColor = 'green';
-                                            current_circle.classList.add('finished');  
-
-                                            
-                                            var fasten_status_new = 4;
-                                            save_result(data,fasten_status_new);
-
-                                            //播放OK 語音
-                                            if(ok_auto){
-                                                var path =  '../public/voice/'; 
-                                                var fullPath = path + ok_auto;
-
-                                                var audio = new Audio(fullPath);
-                                                audio.play().catch(function(error) {
-                                                    console.log('自動播放被阻止:', error);
-                                                    alert('自動播放被阻止:', error);
-                                                });
-                                    
-                                            }  
-
-                                  
-
-                                        }
-
-                                        if(job_singal == 1 && seq_singal == 0 &&  seq_id_nn == total_seq_nn && task_id > task_count){
-                                            document.getElementById('tightening_status').innerHTML = 'OK-JOB';
-                                            document.getElementById('step'+(task_id-1)).style.backgroundColor = '#FFCC00';
-                                            document.getElementById('step'+(task_id-1)).style.borderColor = '#FFCC00';
-                                            document.getElementById('tightening_status').style.backgroundColor = '#FFCC00';
-                                            document.getElementById('tightening_status_div').style.backgroundColor = '#FFCC00';
-                                            current_circle.classList.add('finished_job');  
-
-
-                                            var fasten_status_new = 6;
-                                            save_result(data,fasten_status_new);
-
-                                            if(ok_job_auto){
-                                                var path =  '../public/voice/'; 
-                                                var fullPath = path + ok_job_auto;
-
-                                                var audio = new Audio(fullPath);
-                                                audio.play().catch(function(error) {
-                                                    console.log('自動播放被阻止:', error);
-                                                    alert('自動播放被阻止:', error);
-                                                });
-                                    
-                                            }        
-                                        }
-                                        
-
-
-                                        
-                                        //這邊要執行 文字訊息的動作
-                                        if(task_message_list == ''){//如果沒有virtual message
-                                            document.getElementById('modbus_switch').value = 0;
-                                            // setTimeout(() => { websocket.send('disable'); }, 1000);
-                                            
-                                            // isSendingRequest = true;
-                                            let current_seq_id = +document.getElementById('seq_id').value;
-                                            let max_seq_id = +document.getElementById('max_seq_id').value;
-                                            if(current_seq_id < max_seq_id){
-                                                // change to next seq
-                                                // change_job(current_seq_id + 1);
-                                                setTimeout(() => { change_job(current_seq_id + 1,'next'); }, 500);
-                                            }else{
-                                                setTimeout(() => { force_switch_tool(0); }, 1000);
-                                                document.getElementById('modbus_switch').value = 0;
-                                            }
-                                        }else{
-                                            try{
-                                                var task_message_list_nn = JSON.parse(task_message_list);
-                                                var nn_task_id = task_id - 1;
-                                                var nn_task_id_str = String(nn_task_id);
-                                                var task = task_message_list_nn[nn_task_id_str];
-
-                                                if (typeof task_message_list_nn[nn_task_id_str] !== 'undefined') {
-                                                    if (task) {
-                                                        let type = task.type ? task.type.trim() : '';
-
-                                                        document.getElementById('VirtualMessage').style.display = 'block';
-                                                        document.getElementById('w3review').value = task.text;
-
-                                                        if(task.img == '') {
-                                                            const element = document.querySelector('.scrollbar-Message_text');
-                                                            if (element) {
-                                                                document.getElementById('myvideo').style.display = 'none';
-                                                                document.getElementById('myimage').style.display = 'none';
-
-                                                                document.getElementById('myvideo').removeAttribute('id');
-                                                                document.getElementById('myimage').removeAttribute('id');
-
-                                                                element.className = 'scrollbar-Message_text_s';
-                                                            }
-                                                        }
-
-                                                        if(type ==="image"){
-                                                   
-                                                            document.getElementById('myvideo').style.display = 'none';
-                                                            document.getElementById('myimage').style.display = 'block';
-                                                            document.getElementById('myimage').src = task.img + '?t=' + new Date().getTime();
-
-                                                        }
-
-                                                        if(type ==="video"){
-                                                            document.getElementById('myvideo').style.display = 'block';
-                                                            document.getElementById('myimage').style.display = 'none';
-                                                            var videoElement = document.getElementById('myvideo');
-                                                            var sourceElement = document.getElementById('video_source');
-                                                            sourceElement.src = task.img;
-                                                            videoElement.load();
-                                                        }
-
-                                                        var e_timeStr = task.timeout +'000';
-                                                        var e_time = parseInt(e_timeStr, 10); 
-                            
-                                                        var element = document.getElementById('VirtualMessage');
-                                                        element.style.display = 'block';
-                                                       
-                                                        force_switch_tool(0);// 起子disable
-
-                                                        setTimeout(() => {
-                                                            element.style.display = 'none';
-                                                
-                                                            document.getElementById('modbus_switch').value = 0;
-                                                            
-                                                            //setTimeout(() => { websocket.send('disable'); }, 1000);
-                                                            
-                                                            let current_seq_id = +document.getElementById('seq_id').value;
-                                                            let max_seq_id = +document.getElementById('max_seq_id').value;
-                                                            
-                                                            if (current_seq_id < max_seq_id) {
-                                                                setTimeout(() => { change_job(current_seq_id + 1, 'next'); }, 500);
-                                                            } else {
-                                                                setTimeout(() => { force_switch_tool(0); }, 1000);
-                                                                document.getElementById('modbus_switch').value = 0;
-                                                            }
-
-                                                        }, e_time);
-
-                                                    }
-                                                }else{
-                                                    document.getElementById('modbus_switch').value = 0;
-                                                    // setTimeout(() => { websocket.send('disable'); }, 1000);
-                                                    
-                                                    // isSendingRequest = true;
-                                                    let current_seq_id = +document.getElementById('seq_id').value;
-                                                    let max_seq_id = +document.getElementById('max_seq_id').value;
-                                                    if(current_seq_id < max_seq_id){
-                                                        // change to next seq
-                                                        // change_job(current_seq_id + 1);
-                                                        setTimeout(() => { change_job(current_seq_id + 1,'next'); }, 500);
-                                                    }else{
-                                                        setTimeout(() => { force_switch_tool(0); }, 1000);
-                                                        document.getElementById('modbus_switch').value = 0;
-                                                    }
-                                                }
-
-                                            }catch (e) {
-                                                console.log(e)
-                                            }
-                                        }
-
-                                        // var task_message_list_nn = JSON.parse(task_message_list);
-                                        // var nn_task_id = task_id - 1;
-                                        // var nn_task_id_str = String(nn_task_id);
-                                        // var task = task_message_list_nn[nn_task_id_str];
-                                        // if (task) {
-                                        //     let type = task.type ? task.type.trim() : '';
-
-                                        //     document.getElementById('VirtualMessage').style.display = 'block';
-                                        //     document.getElementById('w3review').value = task.text;
-
-                                        //     if(task.img == '') {
-                                        //         const element = document.querySelector('.scrollbar-Message_text');
-                                        //         if (element) {
-                                        //             document.getElementById('myvideo').style.display = 'none';
-                                        //             document.getElementById('myimage').style.display = 'none';
-
-                                        //             document.getElementById('myvideo').removeAttribute('id');
-                                        //             document.getElementById('myimage').removeAttribute('id');
-
-                                        //             element.className = 'scrollbar-Message_text_s';
-                                        //         }
-                                        //     }
-
-                                        //     if(type ==="image"){
-                                       
-                                        //         document.getElementById('myvideo').style.display = 'none';
-                                        //         document.getElementById('myimage').style.display = 'block';
-                                        //         document.getElementById('myimage').src = task.img + '?t=' + new Date().getTime();
-
-                                        //     }
-
-                                        //     if(type ==="video"){
-                                        //         document.getElementById('myvideo').style.display = 'block';
-                                        //         document.getElementById('myimage').style.display = 'none';
-                                        //         var videoElement = document.getElementById('myvideo');
-                                        //         var sourceElement = document.getElementById('video_source');
-                                        //         sourceElement.src = task.img;
-                                        //         videoElement.load();
-                                        //     }
-
-                                        //     var e_timeStr = task.timeout +'000';
-                                        //     var e_time = parseInt(e_timeStr, 10); 
-                
-                                        //     var element = document.getElementById('VirtualMessage');
-                                        //     element.style.display = 'block';
-                                           
-                                        //     force_switch_tool(0);// 起子disable
-
-                                        //     setTimeout(() => {
-                                        //         element.style.display = 'none';
-                                    
-                                        //         document.getElementById('modbus_switch').value = 0;
-                                                
-                                        //         //setTimeout(() => { websocket.send('disable'); }, 1000);
-                                                
-                                        //         let current_seq_id = +document.getElementById('seq_id').value;
-                                        //         let max_seq_id = +document.getElementById('max_seq_id').value;
-                                                
-                                        //         if (current_seq_id < max_seq_id) {
-                                        //             setTimeout(() => { change_job(current_seq_id + 1, 'next'); }, 500);
-                                        //         } else {
-                                        //             setTimeout(() => { force_switch_tool(0); }, 1000);
-                                        //             document.getElementById('modbus_switch').value = 0;
-                                        //         }
-
-                                        //     }, e_time);
-
-                                        // }else{
-                                            
-                                        //     document.getElementById('modbus_switch').value = 0;
-                                        //     // setTimeout(() => { websocket.send('disable'); }, 1000);
-                                            
-                                        //     // isSendingRequest = true;
-                                        //     let current_seq_id = +document.getElementById('seq_id').value;
-                                        //     let max_seq_id = +document.getElementById('max_seq_id').value;
-                                        //     if(current_seq_id < max_seq_id){
-                                        //         // change to next seq
-                                        //         // change_job(current_seq_id + 1);
-                                        //         setTimeout(() => { change_job(current_seq_id + 1,'next'); }, 500);
-                                        //     }else{
-                                        //         setTimeout(() => { force_switch_tool(0); }, 1000);
-                                        //         document.getElementById('modbus_switch').value = 0;
-                                        //     }
-                                        //     alert(456)
-                                        // }
-
-                                        
-
-                                        light_signal = 'okall';
-                                        afterward();
-                                       
-                                }
-
-                                
-                            }else if(data.fasten_status == 7 || data.fasten_status == 8){
-                                let fs_status = data.fasten_status
-                                let err_status = data.error_message
-                                //NG、NG-STOP
-                                //播放NG 語音
-                                var path =  '../public/voice/';
-                                var fullPath = path + ng_auto;
-
-                                var audio = new Audio(fullPath);
-                                audio.play().catch(function(error) {
-                                    console.log('自动播放被阻止:', error);
-                                    alert('自动播放被阻止:', error);
-                                });
-
-                                
-
-                                save_result(data);
-
-                                current_circle.childNodes[1].classList.add('running')
-                                current_circle.classList.add('ng');
-                                retry_time = retry_time + 1;
-                                document.getElementById('step'+task_id).style.backgroundColor = 'red';
-                                document.getElementById('tightening_status_div').style.backgroundColor = 'red';
-
-                                document.getElementById('screw_info').innerHTML = retry_time + ' / '+ stop_on_ng;
-                                document.getElementById('modbus_switch').value = 1;
-
-                                // console.log(data.fasten_status)
-                                // console.log(fasten_status[7].status)
-                                document.getElementById('error1').innerHTML = 'Error : ' + fasten_status[fs_status].status;
-                                document.getElementById('error2').innerHTML = 'Error : ' + error_message[err_status].status;
-                                light_signal = 'ng';
-                                afterward();
-
-                                if( +retry_time == +stop_on_ng && +stop_on_ng != 0 ){
-                                    // force_switch_tool(0);
-                                    switch_tool(0);
-                                    // function_auth_check('stop_on_ng')
-                                }
-
-
-                            }
-                        }else{
-                            //
-                        }
-                }
-
-              }
-
-
-              
-          } catch (error) {
-              console.error("Error parsing JSON message: " + error);
-          }
-      }
-  }
-
-function call_job() {
-    let task_id = +document.getElementById('task_id').value;
-    let gtcs_job_id = document.getElementById('task_'+task_id+'_gtcs_job_id').value;
-    let gtcs_seq_id = document.getElementById('task_'+task_id+'_gtcs_seq_id').value;
-    let url = '?url=Operations/Call_Controller_Job';
-
-    document.getElementById('modbus_switch').value = 0;
-
-    setTimeout(() => {
+    //----------------------------------------
+    let socket; // WebSocket對象
+    const server_ip = '<?php echo $data['controller_ip']; ?>';
+    const serverUrl = 'ws://'+server_ip+':9501';
+
+    const ipToTableRow = new Map();
+
+    function connectWebSocket() {
+        socket = new WebSocket(serverUrl);
+
+        socket.addEventListener('open', (event) => {
+            console.log('WebSocket连接已建立');
+            // 連線建立時可以執行其他邏輯
+        });
+
+        socket.addEventListener('message', async (event) => {
+            // 處理接收到的WebSocket訊息
+            if(isFulfilled){
+                await handleWebSocketMessage2(event);
+            }
+            // console.log(event);
+        });
+
+        socket.addEventListener('close', (event) => {
+            console.log('WebSocket連線已關閉');
+            // 連線關閉時，設定定時器以嘗試重新連接
+            // setTimeout(connectWebSocket, 5000); // 2秒後重新連接
+        });
+
+        socket.addEventListener('error', (event) => {
+            console.error('WebSocket連線發生錯誤', event);
+            // 發生錯誤時也可以執行其他邏輯
+        });
+    }  
+
+    // 初始連接
+    connectWebSocket();
+
+    let retry_time = 0;
+    const tt = new Map();
+    tt.set('start_time',new Date())
+
+
+    function call_job() {
+        let task_id = +document.getElementById('task_id').value;
+        let gtcs_job_id = document.getElementById('task_'+task_id+'_gtcs_job_id').value;
+        let gtcs_seq_id = document.getElementById('task_'+task_id+'_gtcs_seq_id').value;
+        let url = '?url=Operations/Call_Controller_Job';
+
+        document.getElementById('modbus_switch').value = 0;
+
+        setTimeout(() => {
+            $.ajax({
+                type: "POST",
+                timeout: 3000, 
+                url: url,
+                data: { 'job_id': gtcs_job_id, 'seq_id': gtcs_seq_id },
+                // dataType: "json",
+                // async:false
+            }).done(function(response) { //成功且有回傳值才會執行
+                // alert(123)
+                document.getElementById('modbus_switch').value = 1;
+            });
+        }, 333);
+   
+    }
+
+    function change_job(seq_id,direction=''){
+        let job_id = document.getElementById('Change_Job_Id').value
+        // let seq_id = 1;
         $.ajax({
             type: "POST",
-            timeout: 3000, 
-            url: url,
-            data: { 'job_id': gtcs_job_id, 'seq_id': gtcs_seq_id },
-            // dataType: "json",
-            // async:false
+            url: '?url=Operations/Change_Job',
+            timeout: 3000,
+            data: { 'job_id': job_id,'seq_id': seq_id ,'direction': direction },
         }).done(function(response) { //成功且有回傳值才會執行
             // alert(123)
-            document.getElementById('modbus_switch').value = 1;
+            // console.log(response);
+            history.go(0);
         });
-    }, 333);
-
-    
-}
-
-function change_job(seq_id,direction=''){
-    let job_id = document.getElementById('Change_Job_Id').value
-    // let seq_id = 1;
-    $.ajax({
-        type: "POST",
-        url: '?url=Operations/Change_Job',
-        timeout: 3000,
-        data: { 'job_id': job_id,'seq_id': seq_id ,'direction': direction },
-    }).done(function(response) { //成功且有回傳值才會執行
-        // alert(123)
-        // console.log(response);
-        history.go(0);
-    });
-}
-
-function change_seq(direction) {
-
-    let seq_id = document.getElementById('seq_id').value;
-    let total_seq = document.getElementById('max_seq_id').value;
-    if (direction == 'previous') {
-        seq_id = +seq_id - 1; 
-    }else if(direction == 'next'){
-        seq_id = +seq_id + 1; 
-    }else{
-        seq_id = document.getElementById('SeqNameSelect').value;
-        console.log(seq_id);
     }
 
-    if (seq_id > total_seq) {
-        alert('last seq');
-        return 0;
-    }
+    function change_seq(direction) {
 
-    if (seq_id < 1) {
-        alert('first seq');
-        return 0;
-    }
-
-    change_job(seq_id,direction)
-}
-
-
-// let isSendingRequest = false;
-
-// setInterval(check_tool_status, 200); // 每隔x秒發送一次請求，可以根據需要調整時間間隔
-
-function check_tool_status(){
-    let modbus_switch = document.getElementById('modbus_switch').value
-    // 發送 AJAX 請求到服務器
-    if (isSendingRequest || modbus_switch == 0) {
-        // 如果正在發送，不執行新的请求
-        return;
-    }
-    isSendingRequest = true;
-    $.ajax({
-        url: '?url=Operations/ToolStatusCheck', // 指向服務器端檢查更新的 PHP 腳本
-        method: 'GET',
-        dataType: "json",
-        success: function(response) {
-            // 處理服務器返回的響應
-            document.getElementById('tool_status').value = response.result;
-            if(response.result == 1){//tool enable
-                document.getElementById('tool_status_icon').innerHTML = '<svg width="24px" height="24px" viewBox="0 0 281.25 281.25" id="svg2" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <defs id="defs4"></defs> <g id="layer1" transform="translate(6693.6064,-4597.9898)"> <path d="m -6552.9808,4636.829 c -56.159,0 -101.7865,45.6275 -101.7865,101.7865 0,56.1591 45.6274,101.7847 101.7865,101.7847 56.1592,0 101.7847,-45.6256 101.7847,-101.7847 0,-56.159 -45.6256,-101.7865 -101.7847,-101.7865 z m 0,9.375 c 51.0925,0 92.4097,41.319 92.4097,92.4115 0,51.0925 -41.3171,92.4097 -92.4097,92.4097 -51.0924,0 -92.4115,-41.3172 -92.4115,-92.4097 0,-51.0925 41.3191,-92.4115 92.4115,-92.4115 z m 48.0341,54.2413 a 4.6875,4.6875 0 0 0 -3.3142,1.3733 l -63.1055,63.1055 -28.1653,-26.0669 a 4.6875,4.6875 0 0 0 -6.6229,0.2563 4.6875,4.6875 0 0 0 0.2563,6.6248 l 31.4722,29.1284 a 4.6879687,4.6879687 0 0 0 6.5002,-0.1245 l 66.2934,-66.2952 a 4.6875,4.6875 0 0 0 0,-6.6284 4.6875,4.6875 0 0 0 -3.3142,-1.3733 z" id="circle1193" style="color:#008000;fill:#008000;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;-inkscape-stroke:none"></path> </g> </g></svg>';
-            }else{//tool disable
-                document.getElementById('tool_status_icon').innerHTML = '<svg width="24px" height="24px" viewBox="0 0 1024 1024" fill="red" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="red"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M512 897.6c-108 0-209.6-42.4-285.6-118.4-76-76-118.4-177.6-118.4-285.6 0-108 42.4-209.6 118.4-285.6 76-76 177.6-118.4 285.6-118.4 108 0 209.6 42.4 285.6 118.4 157.6 157.6 157.6 413.6 0 571.2-76 76-177.6 118.4-285.6 118.4z m0-760c-95.2 0-184.8 36.8-252 104-67.2 67.2-104 156.8-104 252s36.8 184.8 104 252c67.2 67.2 156.8 104 252 104 95.2 0 184.8-36.8 252-104 139.2-139.2 139.2-364.8 0-504-67.2-67.2-156.8-104-252-104z" fill=""></path><path d="M707.872 329.392L348.096 689.16l-31.68-31.68 359.776-359.768z" fill=""></path><path d="M328 340.8l32-31.2 348 348-32 32z" fill=""></path></g></svg>';
-            }
-
-            isSendingRequest = false;
-        },
-        complete: function(XHR, TS) {
-            XHR = null;
-            
-        },
-        error: function(xhr, status, error) {
-      
+        let seq_id = document.getElementById('seq_id').value;
+        let total_seq = document.getElementById('max_seq_id').value;
+        if (direction == 'previous') {
+            seq_id = +seq_id - 1; 
+        }else if(direction == 'next'){
+            seq_id = +seq_id + 1; 
+        }else{
+            seq_id = document.getElementById('SeqNameSelect').value;
+            console.log(seq_id);
         }
-    });
-}
 
-
-
-async function switch_tool(status) {
-    let modbus_switch = document.getElementById('modbus_switch').value;
-    let current_tool_status = +document.getElementById('tool_status').value;
-    if( current_tool_status == status){
-        return;
-    }
-
-
-    if (isSendingRequest || modbus_switch == 0) {
-        // 如果正在發送，不執行新的请求
-        return;
-    }
-    isSendingRequest = true;
-    $.ajax({
-        url: '?url=Operations/Switch_Tool_Status', // 指向服務器端檢查更新的 PHP 腳本
-        method: 'POST',
-        async: false,
-        data: { 'tool_status': status },
-        dataType: "json",
-        success: function(response) {
-            // 處理服務器返回的響應
-            if(response.result){
-                document.getElementById('tool_status').value = status;
-            }
-
-            isSendingRequest = false;
-        },
-        complete: function(XHR, TS) {
-            XHR = null;
-           
-        },
-        error: function(xhr, status, error) {
-
+        if (seq_id > total_seq) {
+            alert('last seq');
+            return 0;
         }
-    });
-}
+
+        if (seq_id < 1) {
+            alert('first seq');
+            return 0;
+        }
+
+        change_job(seq_id,direction)
+    }
 
 
-async function force_switch_tool(status) {
-    let done = true;
-    while(done){
+    // let isSendingRequest = false;
 
+    // setInterval(check_tool_status, 200); // 每隔x秒發送一次請求，可以根據需要調整時間間隔
+
+    async function switch_tool(status) {
         let modbus_switch = document.getElementById('modbus_switch').value;
-        console.log(isSendingRequest)
-        console.log(modbus_switch)
-        document.getElementById('modbus_switch').value = 1;
-        isSendingRequest = false;
+        let current_tool_status = +document.getElementById('tool_status').value;
+        if( current_tool_status == status){
+            return;
+        }
+
+
         if (isSendingRequest || modbus_switch == 0) {
             // 如果正在發送，不執行新的请求
-            continue;
+            return;
         }
         isSendingRequest = true;
-        document.getElementById('modbus_switch').value = 0;
-        // isSendingRequest = true;
         $.ajax({
             url: '?url=Operations/Switch_Tool_Status', // 指向服務器端檢查更新的 PHP 腳本
-            async: false,
             method: 'POST',
+            async: false,
             data: { 'tool_status': status },
             dataType: "json",
             success: function(response) {
                 // 處理服務器返回的響應
-                // document.getElementById('tool_status').value = response.result;
-                // document.getElementById('tool_status_icon').innerHTML = '<svg width="24px" height="24px" viewBox="0 0 1024 1024" fill="red" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="red"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M512 897.6c-108 0-209.6-42.4-285.6-118.4-76-76-118.4-177.6-118.4-285.6 0-108 42.4-209.6 118.4-285.6 76-76 177.6-118.4 285.6-118.4 108 0 209.6 42.4 285.6 118.4 157.6 157.6 157.6 413.6 0 571.2-76 76-177.6 118.4-285.6 118.4z m0-760c-95.2 0-184.8 36.8-252 104-67.2 67.2-104 156.8-104 252s36.8 184.8 104 252c67.2 67.2 156.8 104 252 104 95.2 0 184.8-36.8 252-104 139.2-139.2 139.2-364.8 0-504-67.2-67.2-156.8-104-252-104z" fill=""></path><path d="M707.872 329.392L348.096 689.16l-31.68-31.68 359.776-359.768z" fill=""></path><path d="M328 340.8l32-31.2 348 348-32 32z" fill=""></path></g></svg>';
+                if(response.result){
+                    document.getElementById('tool_status').value = status;
+                }
+
                 isSendingRequest = false;
-                return 0;
-                // document.getElementById('modbus_switch').value = 0;
             },
             complete: function(XHR, TS) {
                 XHR = null;
-                // console.log("执行一次"); 
+               
             },
             error: function(xhr, status, error) {
-                // console.log("fail");
+
             }
         });
-
-        done = false;
     }
-}
+
+
+    async function force_switch_tool(status) {
+        let done = true;
+        while(done){
+
+            let modbus_switch = document.getElementById('modbus_switch').value;
+            console.log(isSendingRequest)
+            console.log(modbus_switch)
+            document.getElementById('modbus_switch').value = 1;
+            isSendingRequest = false;
+            if (isSendingRequest || modbus_switch == 0) {
+                // 如果正在發送，不執行新的请求
+                continue;
+            }
+            isSendingRequest = true;
+            document.getElementById('modbus_switch').value = 0;
+            // isSendingRequest = true;
+            $.ajax({
+                url: '?url=Operations/Switch_Tool_Status', // 指向服務器端檢查更新的 PHP 腳本
+                async: false,
+                method: 'POST',
+                data: { 'tool_status': status },
+                dataType: "json",
+                success: function(response) {
+                    // 處理服務器返回的響應
+                    isSendingRequest = false;
+                    return 0;
+                    // document.getElementById('modbus_switch').value = 0;
+                },
+                complete: function(XHR, TS) {
+                    XHR = null;
+                    // console.log("執行一次"); 
+                },
+                error: function(xhr, status, error) {
+                    // console.log("fail");
+                }
+            });
+
+            done = false;
+        }
+    }
 
 </script>
 
@@ -1939,26 +1162,19 @@ async function force_switch_tool(status) {
             }
 
             // 模拟等待一段时间后再次执行循环
-            await new Promise(resolve => setTimeout(resolve, 300)); // 等待 1 秒
+            await new Promise(resolve => setTimeout(resolve, 300)); // 等待 0.3 秒
             loop_count++;
         }
     });
-    // main_workflow();
 
-    // setInterval(main_workflow, 3000); // 每隔x秒發送一次請求，可以根據需要調整時間間隔
-
-    //operation main workflow
+    //operation main workflow 判斷是否要讓起子enable
     async function main_workflow(argument) {
         // body...
         // prerequisite ，判斷時否達到當前task的前置條件 ex: arm、socket tray、...等等
         // console.log('-----start prerequisite------');
         let aa = await prerequisite();
-        // console.log('-----end prerequisite------');
-
-        // console.log('-----start tool enable or disable------');
-        // await ;
-        // await switch_tool(0)
         console.log(aa)
+        // console.log('-----end prerequisite------');
         if( aa == true ){
             await switch_tool(1)
             // force_switch_tool(1)
@@ -1968,28 +1184,17 @@ async function force_switch_tool(status) {
             isFulfilled = false;
         }
 
-        // await switch_tool(1)
-        // console.log('-----end tool enable or disable------');
-
-        // console.log('-----start afterward------');
-         // afterward();
-        // console.log('-----end afterward------');
-
-        // receive fasten result，接收控制器的鎖附結果產生對應的NG或OK等訊息
-        // afterward ，如果鎖附結果OK，進行當前task對應的後續資訊 ex:三色燈、message、video、audio、...等等
-
-
     }
 
     async function prerequisite(arguments) {
-        //get arm status
+        //get arm status, 確認task是否有啟用arm
         let arm_status = +document.getElementById('arm_status').value
-        //get socket tray status
+        //get socket tray status , 確認task是否有啟用socket_tray
         let socket_tray_status = +document.getElementById('socket_tray_status').value
-        // console.log(arm_status,socket_tray_status)
+
         let task_id = document.getElementById('task_id').value;
         let hole_id = document.getElementById('task_'+task_id+'_hole_id').value;
-        console.log(hole_id);
+        // console.log(hole_id);
 
         let flag = false;
 
@@ -1999,92 +1204,119 @@ async function force_switch_tool(status) {
             return false;
         }
 
-        if (hole_id != '' &&  hole_id != '-1') {
-            //先set io的input  來顯示目標hole
-            $.ajax({
-                url: '?url=Operations/Set_Socket_Hole', // 指向服務器端檢查更新的 PHP 腳本
-                async: false,
-                method: 'POST',
-                data: { 'hole_id': hole_id, 'Socket_Hole': true  },
-                dataType: "json",
-                complete: function(XHR, TS) {
-                    XHR = null;
-                },
-                error: function(xhr, status, error) {
+        
+        let mode = null;
+        if(hole_id != '' &&  hole_id != '-1' && arm_status != 0 ){//有hole 有arm
+            mode = 1;
+        }
+        if(hole_id != '' &&  hole_id != '-1' && arm_status == 0 ){//有hole 無arm
+            mode = 2;
+        }
+        if( (hole_id == '-1' || hole_id == '' ) && arm_status != 0 ){//無hole 有arm
+            mode = 3;
+        }
+        if( (hole_id == '-1' || hole_id == '' ) && arm_status == 0 ){//無hole 有arm
+            mode = 4;
+        }
+
+        // console.log(mode)
+
+        let hole_status_check = false
+        let arm_status_check = false
+
+        switch (mode) {
+
+            case 1: //有hole 有arm
+                console.log('---a---')
+                hole_status_check = await hole_check(hole_id);
+                console.log('---b---')
+                arm_status_check = await arm_check();
+                console.log('---c---')
+                console.log(hole_status_check,arm_status_check)
+                if(hole_status_check && arm_status_check){
+                    return true;
+                }else{
+                    return false;
                 }
+                break;
+
+            case 2: //有hole 無arm
+                hole_status_check = await hole_check(hole_id);
+                if(hole_status_check){
+                    return true;
+                }else{
+                    return false;
+                }
+                break;
+
+            case 3: //無hole 有arm
+                arm_status_check = await arm_check();
+                if(arm_status_check){
+                    return true;
+                }else{
+                    return false;
+                }
+                break;
+
+            case 4: //無hole 無arm
+                return true;
+                break;
+
+            default:
+                // throw new Error('unprocessable value');
+                return false;
+                break;
+
+        } 
+    }
+
+    async function hole_check(hole_id) {
+        let flag = false;
+
+        try {
+            // 設定 socket tray
+            const setResponse = await $.ajax({
+                url: '?url=Operations/Set_Socket_Hole',
+                method: 'POST',
+                data: { 'hole_id': hole_id, 'Socket_Hole': true },
+                dataType: "json",
             });
-            //在get io的output 來確認user是否有拿對
-            $.ajax({
-                url: '?url=Operations/Get_Socket_Hole', // 指向服務器端檢查更新的 PHP 腳本
-                async: false,
+
+            // 獲取當前 socket tray 狀態
+            const getResponse = await $.ajax({
+                url: '?url=Operations/Get_Socket_Hole',
                 method: 'GET',
                 timeout: 500,
                 data: { 'hole_id': hole_id },
                 dataType: "json",
-                success: function(response) {
-                    // 處理服務器返回的響應
-
-                    if(response.result == 'yes'){
-                        flag = true;
-                        document.getElementById('socket_hole_number').style.backgroundColor = '#7ECA86';
-
-                        //把arm判斷放在socket tray之後
-                        if (arm_status != 0 && !right_position) { //task有啟用arm 且 arm不在正確位置
-                            console.log('ng position')
-                            flag = false;
-                        }
-                        
-                    }else{
-                        console.log('ng socket tray')
-                        flag = false;
-                        document.getElementById('socket_hole_number').style.backgroundColor = '#f63e3e';
-                    }
-                    //find task hole id then 
-
-                    isSendingRequest = false;
-                },
-                complete: function(XHR, TS) {
-                    XHR = null;
-                    // console.log("执行一次"); 
-                },
-                error: function(xhr, status, error) {
-                    // console.log("fail");
-                }
             });
-        }else{//沒有設定socket hole
-            flag = true;
-            if (arm_status != 0 && !right_position) { //task有啟用arm 且 arm不在正確位置
-                if(!right_position){
-                    console.log('ng position')
-                     flag = false;
-                }
+
+            // 處理服務器返回的響應
+            console.log('---ab---');
+            if (getResponse.result === 'yes') {
+                flag = true;
+                document.getElementById('socket_hole_number').style.backgroundColor = '#7ECA86';
+            } else {
+                console.log('ng socket tray');
+                flag = false;
+                document.getElementById('socket_hole_number').style.backgroundColor = '#f63e3e';
             }
+
+        } catch (error) {
+            console.error("請求失敗:", error);
+            // 可以選擇在失敗時重新整理頁面
+            // history.go(0);
         }
 
-         //把arm判斷放在socket tray之後
-        // if (arm_status != 0 && !right_position) { //task有啟用arm 且 arm不在正確位置
-        //     // if(!right_position){
-        //     console.log('ng position')
-        //     return false;
-        //     // }
-        // }
-
+        console.log(flag);
         return flag;
+    }
 
-        // return sleep(1000);
+    async function arm_check(argument) {
+        return right_position;
     }
 
     function afterward(arguments) {
-        //關閉所有output
-        // $.ajax({
-        //     url: '?url=Operations/Set_IO_Signal', // 指向服務器端檢查更新的 PHP 腳本
-        //     async: true, // 將此設置為 true 表示請求是非同步的
-        //     method: 'GET',
-        //     data: { 'light_signal': 'stop' },
-        //     dataType: "json"
-        // });
-
-
         if(light_signal != false){
             $.ajax({
                 url: '?url=Operations/Set_IO_Signal', // 指向服務器端檢查更新的 PHP 腳本
@@ -2094,10 +1326,6 @@ async function force_switch_tool(status) {
                 dataType: "json"
             });
         }
-    }
-
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function save_result(data, fasten_status_new) {
@@ -2131,9 +1359,6 @@ async function force_switch_tool(status) {
 
         data.fasten_status = fasten_status_new;
     
-
-
-
         $.ajax({
             url: '?url=Operations/Save_Result',
             // async: false,
@@ -2191,9 +1416,6 @@ async function force_switch_tool(status) {
 
 
         data.fasten_status = fasten_status_new;
-    
-
-
 
         $.ajax({
             url: '?url=Operations/Save_Result',
@@ -2393,6 +1615,7 @@ async function force_switch_tool(status) {
 
     function ClickVirtualMessage()
     {
+        clearTimeout();
         document.getElementById('VirtualMessage').style.display = 'none';
         force_switch_tool(1);
     }
@@ -2411,8 +1634,8 @@ async function force_switch_tool(status) {
 
 <style>
     .running {
-/*      width: 200px;*/
-/*      height: 200px;*/
+    /*      width: 200px;*/
+    /*      height: 200px;*/
       background-color: #00bcd400;
       color: black;
       border-color: #44d0ff !important;
@@ -2490,10 +1713,10 @@ async function force_switch_tool(status) {
 </style>
 
 <style>
-/*調整 circle的顯示size*/
-.circle{
-    scale:<?php echo (1 + 1*($data['job_data']['point_size']/100) );?>;
-}
+    /*調整 circle的顯示size*/
+    .circle{
+        scale:<?php echo (1 + 1*($data['job_data']['point_size']/100) );?>;
+    }
 </style>
 
 
@@ -2501,34 +1724,34 @@ async function force_switch_tool(status) {
 <?php require APPROOT . 'views/inc/footer.tpl'; ?>
 
 <script>
-function setCookie(name, value, days) {
-    var expires = "";
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
-        expires = "; expires=" + date.toUTCString();
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
     }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-}
 
-function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
     }
-    return null;
-}
 
 
-function eraseCookie(name) {
-    document.cookie = name+'=; Max-Age=-99999999;';
-}
+    function eraseCookie(name) {
+        document.cookie = name+'=; Max-Age=-99999999;';
+    }
 
 
-function initializeMessageAutoClose() {
+    function initializeMessageAutoClose() {
         var messageElement = document.getElementById('VirtualMessage');
         
         if (messageElement) {
@@ -2539,50 +1762,582 @@ function initializeMessageAutoClose() {
         }
     }
 
-function setCookie(name, value, days) {
-    var expires = "";
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-} 
-
-function update_status(system_no, new_status) {
-
-    $.ajax({
-        url: '?url=Operations/update_status', // 确保这个 URL 与后端匹配
-        method: "POST",
-        data: { 
-            system_no: system_no,  
-            new_status: new_status 
-        },
-        success: function(response) {
-            // 处理成功的情况
-            console.log('AJAX success:', response);
-            // 例如，刷新页面或更新 UI
-            // history.go(0);  // 刷新页面
-        },
-        error: function(xhr, status, error) {
-            // 处理错误的情况
-            console.error('AJAX error:', status, error);
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
         }
-    });
-}
-function readFromLocalStorage(key) {
-    return localStorage.getItem(key);
-}
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    } 
+
+    function update_status(system_no, new_status) {
+
+        $.ajax({
+            url: '?url=Operations/update_status', // 确保这个 URL 与后端匹配
+            method: "POST",
+            data: { 
+                system_no: system_no,  
+                new_status: new_status 
+            },
+            success: function(response) {
+                // 处理成功的情况
+                console.log('AJAX success:', response);
+                // 例如，刷新页面或更新 UI
+                // history.go(0);  // 刷新页面
+            },
+            error: function(xhr, status, error) {
+                // 处理错误的情况
+                console.error('AJAX error:', status, error);
+            }
+        });
+    }
+
+    function readFromLocalStorage(key) {
+        return localStorage.getItem(key);
+    }
+
+    function playAudio(filename) {
+        var path = '../public/voice/';
+        var fullPath = path + filename;
+
+        var audio = new Audio(fullPath);
+        audio.play().catch(function(error) {
+            console.log('自動播放被阻止:', error);
+            alert('自動播放被阻止: ' + error);
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    async function handleWebSocketMessage2(event) {
+        const message = event.data;
+
+        // 检查消息是否以 "client X said:" 开头
+        const match = message.match(/^Client (\d+) said: (.*)/);
+
+        if (match) {
+            const clientNumber = match[1];
+            const jsonMessage = match[2];
+
+            try {
+                const data = JSON.parse(jsonMessage);
+
+                let task_id = +document.getElementById('task_id').value;
+                let gtcs_job_id = document.getElementById('task_' + task_id + '_gtcs_job_id').value;
+                let gtcs_seq_id = document.getElementById('task_' + task_id + '_gtcs_seq_id').value;
+                let task_count = document.getElementById('task_count').value;
+                let last_sn = document.getElementById('last_sn').value;
+
+                //接收到的sn比進入operation時還新 && job_id相同 && 沒有儲存過
+                if (data.system_sn > last_sn && data.job_id == gtcs_job_id && data.sequence_id == gtcs_seq_id && tt.has(data.system_sn) == false) { 
+                    tt.set(data.system_sn, data.system_sn)//紀錄以判斷的sn,避免重複紀錄
+
+                    //1.判斷OK NG...所附結果
+                    //1.1儲存鎖附結果
+                    //2.將鎖附結果顯示在頁面上 
+                    //3.顯示三色燈、蜂鳴器等IO設備 ---- NG end, OK的話繼續往下
+                    //4.顯示virtual message
+                    //5.進到下一個task or seq
+
+                    console.log('----1----')
+                    // 1.判斷OK NG...所附結果
+                    let result_type = await checkResult(task_id,data.fasten_status);
+                    console.log('----3----')
+                    // 1.1儲存鎖附結果
+                    saveResult(result_type,data);
+                    console.log('----4----')
+
+                    // 2.將鎖附結果顯示在頁面上 
+                    showResult(result_type,task_id,data);
+
+                    // 3.顯示三色燈、蜂鳴器等IO設備、播放聲音
+                    showOutput(result_type,data);
+
+                    if(result_type == 'OK' || result_type == 'OK-SEQ' || result_type == 'OK-JOB'){
+                        
+                        retry_time = 0; //retry測試歸零
+
+                        console.log('----5----')
+                        // 4.顯示virtual message 
+                        await showMessage(task_id);
+                        console.log('----7----')
+
+                        // 5.進到下一個task or seq 
+                        await switchJob(result_type,task_id);
+                        console.log('----9----')
+
+                    }else if(result_type == 'NG'){
+                        // 判斷ng stop 看要不要鎖起子
+                        let stop_on_ng = document.getElementById('stop_on_ng').value;
+                        retry_time = retry_time + 1;
+                        if (+retry_time == +stop_on_ng && +stop_on_ng != 0) {
+                            switch_tool(0);
+                        }
+                        
+                    }            
+
+                }
 
 
-function playAudio(filename) {
-    var path = '../public/voice/';
-    var fullPath = path + filename;
+            } catch (error) {
+                console.error("Error parsing JSON message: " + error);
+            }
+        }
+    }
 
-    var audio = new Audio(fullPath);
-    audio.play().catch(function(error) {
-        console.log('自動播放被阻止:', error);
-        alert('自動播放被阻止: ' + error);
-    });
-}
-<script>
+
+    async function checkResult(task_id,fasten_status) {
+        //在這邊判斷是OK,OK-JOB,OK-SEQ,NG
+        console.log('----2----')
+        if (fasten_status == 4 || fasten_status == 5 || fasten_status == 6) {
+            let ok_job_singal = job_singal
+            let ok_seq_singal = seq_singal
+            let task_count = document.getElementById('task_count').value;
+            let current_seq_id = document.getElementById('seq_id').value;
+            let max_seq_id = document.getElementById('max_seq_id').value;
+
+            //確認是否是最後一個seq
+            let final_seq = false;
+            if(current_seq_id == max_seq_id){
+                final_seq = true;
+            }
+
+            if(task_id == task_count && final_seq){//最後一個task && 最後一個seq
+
+                if( ok_job_singal == 1 ){
+                    return 'OK-JOB';
+                }
+
+                if( ok_job_singal == 0 && ok_seq_singal == 1 ){
+                    return 'OK-SEQ';
+                }
+
+                if( ok_job_singal == 0 && ok_seq_singal == 0 ){
+                    return 'OK-SEQ';
+                }
+
+            }else if(task_id == task_count){//非最後一個seq
+
+                if( ok_seq_singal == 1 ){
+                    return 'OK-SEQ';
+                }else{
+                    return 'OK';    
+                }
+                
+            }else{
+                return 'OK';
+            }
+     
+        }else if(fasten_status == 7 || fasten_status == 8){
+            return 'NG';
+        }
+    }
+
+    function showResult(result_type,task_id,data) {
+
+        document.getElementById('step'+task_id).style.backgroundColor = fasten_status[data.fasten_status].color;//右邊task list background color
+        document.getElementById('step'+(task_id)).style.borderColor = fasten_status[data.fasten_status].color;//右邊task list background color
+
+        let current_circle = document.querySelector("div[data-id='"+task_id+"']");
+        let next_circle = document.querySelector("div[data-id='"+task_id+"']");
+
+        if(result_type == 'NG'){
+            current_circle.classList.add('ng');
+        }else if(result_type == 'OK'){
+            current_circle.classList.remove('ng')
+            current_circle.childNodes[1].classList.remove('running')
+            current_circle.childNodes[1].classList.remove('circle-border')
+            current_circle.classList.add('finished');
+        }else{
+            current_circle.classList.remove('ng')
+            current_circle.childNodes[1].classList.remove('running')
+            current_circle.childNodes[1].classList.remove('circle-border')
+            current_circle.classList.add('finished_job');
+        }
+
+        document.getElementById('tightening_status').innerHTML = result_type;//fasten_status[data.fasten_status].status;
+        document.getElementById('tightening_status').style.backgroundColor = fasten_status[data.fasten_status].color;
+        document.getElementById('tightening_status_div').style.backgroundColor = fasten_status[data.fasten_status].color;
+        document.getElementById('tightening_status').style.width = 'max-content';
+        document.getElementById('tightening_repeat').value = ' 1 / 1';
+        document.getElementById('tightening_time').value = data.fasten_time;
+        let ttime = +document.getElementById('task_time').value
+        ttime = ttime + +data.fasten_time;
+        ttime = ttime.toFixed(2);
+        document.getElementById('task_time').value = ttime;
+        document.getElementById('screw_info').value = data.fasten_torque;
+
+        //顯示最終鎖附扭力/角度
+        document.getElementById('target_torque2').innerHTML = data.fasten_torque;
+        document.getElementById('target_angle2').innerHTML = data.fasten_angle;
+        document.getElementById('error1').innerHTML = 'Error : '
+        document.getElementById('error2').innerHTML = 'Error : '
+        if (data.step_targettype == 1) { // target = angle
+            document.getElementById('high_torque').value = data.step_hightorque;
+            document.getElementById('target_torque').value = 0;
+            document.getElementById('low_torque').value = data.step_lowtorque;
+            document.getElementById('high_angle').value = data.step_highangle;
+            document.getElementById('target_angle').value = data.step_targetangle;
+            document.getElementById('low_angle').value = data.step_lowangle;
+        } else { // target = torque
+            document.getElementById('high_torque').value = data.step_hightorque;
+            document.getElementById('target_torque').value = data.step_targettorque;
+            document.getElementById('low_torque').value = data.step_lowtorque;
+            document.getElementById('high_angle').value = data.step_highangle;
+            document.getElementById('target_angle').value = 0;
+            document.getElementById('low_angle').value = data.step_lowangle;
+        }
+        return '';
+    }
+
+    function showOutput(result_type,data) {
+        //判斷 OK,NG
+        //判斷 OK,OK-SEQ,OK-JOB
+        let voice_path = '';
+
+        switch (result_type) {
+
+            case 'NG': 
+                light_signal = 'ng';
+                voice_path = ng_auto;
+                break;
+
+            case 'OK':
+                light_signal = 'ok';
+                voice_path = ok_auto;
+                break;
+
+            case 'OK-SEQ':
+                light_signal = 'okall';
+                voice_path = ok_seq_auto;
+                break;
+
+            case 'OK-JOB':
+                light_signal = 'okall';
+                voice_path = ok_job_auto;
+                break;
+
+            default:
+                light_signal = false;
+                break;
+        }
+
+        //顯示三色燈與蜂鳴器
+        if(light_signal != false){
+            $.ajax({
+                url: '?url=Operations/Set_IO_Signal', // 指向服務器端檢查更新的 PHP 腳本
+                async: true, // 將此設置為 true 表示請求是非同步的
+                method: 'GET',
+                data: { 'light_signal': light_signal },
+                dataType: "json"
+            });
+        }
+
+        //播放聲音檔
+        if (ok_job_auto) {
+            let path = '../public/voice/';
+            let fullPath = path + voice_path;
+
+            let audio = new Audio(fullPath);
+            audio.play().catch(function(error) {
+                console.log('自動播放被阻止:', error);
+                alert('自動播放被阻止:', error);
+            });
+        }
+
+    }
+
+    function saveResult(result_type,data) {
+        data.cc_job_id = document.getElementById('job_id').value;
+        data.cc_seq_id = document.getElementById('seq_id').value;
+
+        data.cc_task_id = document.getElementById('task_id').value;
+        data.cc_equipment = '<?php echo $data['job_data']['controller_id'];?>';
+        data.cc_barcodesn = document.getElementById('barcode').placeholder;
+        data.cc_station = '';
+        data.cc_operator = '<?php echo $_SESSION['user']; ?>';
+
+        data.task_count_final = '<?php echo $data['task_count'];?>';
+        data.cc_program_id = '<?php echo $data['task_list'][0]['template_program_id'];?>';
+        data.total_seq_count ='<?php echo $data['total_seq'];?>';
+        data.ok_job ='<?php echo $data['job_data']['ok_job'];?>';
+        data.ok_sequence ='<?php echo $data['ok_sequence'];?>';
+        data.job_singal  = job_singal;  //OK-JOB 訊號
+        data.seq_singal  = seq_singal;   //OK-SEQ 訊號 
+        data.total_seq =  total_seq; //需要執行SEQ的數量
+        data.ct_seq_id = ct_seq_id;// 當前的seq_id 
+
+        data.new_task_id    = localStorage.getItem('task_id');
+        data.new_task_count = localStorage.getItem('task_count');
+        data.new_seq_id     = localStorage.getItem('seq_id');
+        data.new_seq_count    = localStorage.getItem('seq_count');
+
+        switch (result_type) {
+
+            case 'OK':
+                data.fasten_status = 4;
+                break;
+
+            case 'OK-SEQ':
+                data.fasten_status = 5;
+                break;
+
+            case 'OK-JOB':
+                data.fasten_status = 6;
+                break;
+
+            default:
+                data.fasten_status = data.fasten_status;
+                break;
+        }
+
+        $.ajax({
+            url: '?url=Operations/Save_Result',
+            // async: false,
+            method: 'GET',
+            data: { 'data': data },
+            dataType: "json",
+            success: function(response) {
+            // Store the response in a global variable
+            if (response.system_no) {
+                globalSystemNo = response.system_no;
+                console.log('System No from AJAX response:', globalSystemNo);
+                // Optionally, store the value in localStorage
+                localStorage.setItem('system_no', globalSystemNo);
+            } else if (response.error) {
+                console.error('Error from server:', response.error);
+            }
+        },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error('AJAX error:', status, error);
+                // Optionally, handle error UI feedback
+            }
+
+        });
+    }
+
+    // 使用 async 函數顯示訊息
+    async function showMessage(task_id) {
+        try {
+            // let proccess_json = task_message_list.replace(/\n/g, "\\n"); // 使用正則表達式來替換換行符
+            // proccess_json = proccess_json.replace(/\r/g, "\\r"); // 使用正則表達式來替換回車符
+            // var task_message_list_nn = JSON.parse(proccess_json);
+            // var nn_task_id = task_id;
+            // var nn_task_id_str = String(nn_task_id);
+            // var task = task_message_list_nn[nn_task_id_str];
+
+            // console.log(task_message_list_nn);
+            // console.log(nn_task_id_str);
+            // console.log(task, nn_task_id);
+
+            let task = await getTaskMessage(task_id);
+
+            if (task != false) {
+                if (task.timeout != 0) {//如果是0秒直接跳過
+                    let type = task.type ? task.type.trim() : '';
+                    document.getElementById('VirtualMessage').style.display = 'block';
+                    document.getElementById('w3review').value = task.text;
+
+                    if (task.img == '') {
+                        const element = document.querySelector('.scrollbar-Message_text');
+                        if (element) {
+                            document.getElementById('myvideo').style.display = 'none';
+                            document.getElementById('myimage').style.display = 'none';
+
+                            // document.getElementById('myvideo').removeAttribute('id');
+                            // document.getElementById('myimage').removeAttribute('id');
+
+                            element.className = 'scrollbar-Message_text_s';
+                        }
+                    }
+
+                    if (type === "image") {
+                        document.getElementById('myvideo').style.display = 'none';
+                        document.getElementById('myimage').style.display = 'block';
+                        document.getElementById('myimage').src = task.img + '?t=' + new Date().getTime();
+                    }
+
+                    if (type === "video") {
+                        document.getElementById('myvideo').style.display = 'block';
+                        document.getElementById('myimage').style.display = 'none';
+                        var videoElement = document.getElementById('myvideo');
+                        var sourceElement = document.getElementById('video_source');
+                        sourceElement.src = task.img;
+                        videoElement.load();
+                    }
+
+                    // var e_timeStr = task.timeout + '000'; // 轉換為毫秒
+                    var e_timeStr = task.timeout * 1000; // 轉換為毫秒
+                    var e_time = parseInt(e_timeStr, 10);
+
+                    var element = document.getElementById('VirtualMessage');
+                    element.style.display = 'block';
+
+                    force_switch_tool(0); // 起子disable
+
+                    // 獲取 promise 和 controller
+                    const { promise, controller } = waitAndHideElement(element, e_time);
+
+                    // 設置取消按鈕的事件監聽器
+                    document.getElementById('closeVirtualMessage').addEventListener('click', () => {
+                        controller.abort(); // 使用者點擊按鈕時取消計時
+                    });
+
+                    await promise; // 等待 promise 完成
+
+                    console.log('----6----');
+
+                }
+            } else {
+                console.log('----6----');
+                return '';
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+
+    const waitAndHideElement = (element, e_time) => {
+        const controller = new AbortController(); // 創建一個 AbortController 實例
+        const signal = controller.signal; // 獲取 signal
+
+        // 返回一個 Promise 和取消函數
+        const promise = new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+                element.style.display = 'none'; // 隱藏元素
+                console.log('----6----');
+                resolve(); // 完成時解析 Promise
+            }, e_time);
+
+            // 當 signal 被中止時，清除 timeout 並拒絕 Promise
+            signal.addEventListener('abort', () => {
+                clearTimeout(timeoutId); // 清除 timeout
+                console.log('計時已取消'); // 記錄取消訊息
+                reject(new Error('計時被中止')); // 拒絕 Promise
+            });
+        });
+
+        return { promise, controller }; // 返回 Promise 和 controller
+    };
+
+
+    async function switchJob(result_type,task_id) {
+        // body...
+        // 0. 判斷是否為最後一個seq, 無法再往後切
+        // 1. update div,css
+        // 2. call job
+
+        let current_seq_id = document.getElementById('seq_id').value;
+        let max_seq_id = document.getElementById('max_seq_id').value;
+        let task_count = document.getElementById('task_count').value;
+
+        //確認是否是最後一個seq
+        let final_seq = false;
+        if(current_seq_id == max_seq_id){
+            final_seq = true;
+        }
+
+
+        if(task_id == task_count && final_seq){//最後一個task && 最後一個seq
+            // 鎖起子
+            // 判斷是否有 job repeat
+            return 0;
+        }else if(task_id == task_count){//非最後一個seq, 切seq
+            //如果是OK-SEQ 且 message timeout < 3
+            let task_message = await getTaskMessage(task_id);
+            let time_diff = 1500;
+            if (task_message != false) {
+                if (task_message.timeout != 0) {//如果是0秒直接跳過
+                    time_diff = 2 - task_message.timeout;
+                    time_diff = time_diff * 1000; // 轉換為毫秒
+                }
+                if (task_message.timeout > 2) {//如果超過2秒直接跳過
+                    time_diff = 50;
+                }
+            }
+
+            setTimeout(() => {
+                change_job(+current_seq_id + 1, 'next');
+                return 0;
+            }, time_diff);
+
+            // next seq
+            // change_job(+current_seq_id + 1, 'next');
+            // return 0;
+        }else{//非最後一個task, 切task
+            // next task
+            updateParameters(+task_id + 1)
+            document.getElementById('task_id').value = +task_id + 1
+            await async_call_job()
+            console.log('----8----')
+            return 0;
+        }
+
+
+    }
+
+    async function async_call_job() {
+        let task_id = +document.getElementById('task_id').value;
+        let gtcs_job_id = document.getElementById('task_'+task_id+'_gtcs_job_id').value;
+        let gtcs_seq_id = document.getElementById('task_'+task_id+'_gtcs_seq_id').value;
+        let url = '?url=Operations/Call_Controller_Job';
+
+        document.getElementById('modbus_switch').value = 0;
+
+        try {
+            const response = await $.ajax({
+                url: url,
+                type: 'POST',
+                data: { 'job_id': gtcs_job_id, 'seq_id': gtcs_seq_id },
+            }).done(function(response) { //成功且有回傳值才會執行
+                let last_circle = document.querySelector("div[data-id='"+(task_id - 1 )+"']");
+                last_circle.childNodes[1].classList.remove('running')
+                last_circle.classList.remove('ng')
+                                    
+                let next_circle = document.querySelector("div[data-id='"+task_id+"']");
+                next_circle.childNodes[1].classList.add('running')
+                next_circle.style.backgroundColor = '#44d0ff';
+
+                console.log('----7.5----')
+                document.getElementById('modbus_switch').value = 1;
+                return response; // 假設回應包含 { success: true/false, message: "..." }
+            });
+            
+        } catch (error) {
+            console.error("儲存錯誤:", error);
+            return { success: false, message: "儲存過程中出現錯誤" };
+        }
+        
+    }
+
+    async function getTaskMessage(task_id) {
+        let proccess_json = task_message_list.replace(/\n/g, "\\n"); // 使用正則表達式來替換換行符
+        proccess_json = proccess_json.replace(/\r/g, "\\r"); // 使用正則表達式來替換回車符
+
+        if (proccess_json == '') {
+            return false;
+        }
+        try{
+            var task_message_list_nn = JSON.parse(proccess_json);
+            var nn_task_id = task_id;
+            var nn_task_id_str = String(nn_task_id);
+            var task = task_message_list_nn[nn_task_id_str];
+
+            if (typeof task_message_list_nn[nn_task_id_str] !== 'undefined') {
+                return task_message_list_nn[nn_task_id_str];
+            }else{
+                return false;
+            }
+        } catch (e){
+            console.log(e)
+            return false;
+        }
+        
+
+    }
+</script>

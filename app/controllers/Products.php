@@ -30,12 +30,28 @@ class Products extends Controller
         $status['reverse_cnt_mode'][0] = 'OFF';
         $status['reverse_cnt_mode'][1] = 'ON';
 
-        // var_dump($jobs);
+        $tools_info = [];
+        $tools_info['tool_name'] = @$_COOKIE['tool_name'];
+        $tools_info['max_torque'] = @$_COOKIE['max_torque'];
+        $tools_info['min_torque'] = @$_COOKIE['min_torque'];
+        $tools_info['max_rpm'] = @$_COOKIE['max_rpm'];
+        $tools_info['min_rpm'] = @$_COOKIE['min_rpm'];
+
+        if($tools_info['tool_name'] == null){//如果未設定起子，帶入預設值
+            $tools_info['tool_name'] = 'SGT-CS303';
+            $tools_info['max_torque'] = 3;
+            $tools_info['min_torque'] = 0.375;
+            $tools_info['max_rpm'] = 980;
+            $tools_info['min_rpm'] = 60;
+        }
+
+        // var_dump($tools_info);
 
         $data = [
             'isMobile' => $isMobile,
             'nav' => $nav,
             'jobs' => $jobs,
+            'tools_info' => $tools_info,
         ];
         
         $this->view('product/index', $data);

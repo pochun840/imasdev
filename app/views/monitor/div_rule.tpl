@@ -115,7 +115,7 @@
         }).fail(function() {
             // history.go(0);//失敗就重新整理
             alert('fail')
-        });;
+        });
 
     }
 

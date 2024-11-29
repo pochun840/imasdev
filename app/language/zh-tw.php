@@ -588,3 +588,7 @@ $error_message['ERR_PROC_NOT_FINISH'] = '操作未完成';
 $error_message['SEQ_COMPLETED'] = '工序完成按確認';
 $error_message['JOB_COMPLETED'] = '工作完成按確認';
 $error_message['WORKPIECE_RECOVERY'] = '工件復歸按確認';
+
+
+//task error message
+$error_message['task_setting'] = '請至少選擇一個組別';

@@ -39,6 +39,13 @@ class Equipments extends Controller
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);
         $tower_light_switch = $this->OperationModel->GetConfigValue('tower_light_switch')['value'];
         $buzzer_switch = $this->OperationModel->GetConfigValue('buzzer_switch')['value'];
+        $IO = $this->EquipmentModel->GetIOPinSetting();
+        $light_pin = array();
+        foreach ($IO as $key => $value) {
+            if ($value['column_name'] == 'red_light' || $value['column_name'] == 'yellow_light' || $value['column_name'] == 'green_light' || $value['column_name'] == 'buzzer') {
+                $light_pin[$value['column_name']] = $value['pin_number'];
+            }
+        }
 
 
 
@@ -72,7 +79,8 @@ class Equipments extends Controller
             'controller_ip' => $controller_ip,
             'tower_light_switch' => $tower_light_switch,
             'buzzer_switch' => $buzzer_switch,
-            'pidFile_app_check' =>$pidFile_app_check
+            'pidFile_app_check' =>$pidFile_app_check,
+            'light_pin' =>$light_pin,
         ];
 
        
@@ -174,11 +182,22 @@ class Equipments extends Controller
 
     }
 
+    //設定OK、NG...三色燈、buzzer設定
     public function TowerLightSetting($value='')
     {
         //看要不要加驗證
         $result = $this->EquipmentModel->SetTowerLight($_POST);
 
+        echo json_encode($result);
+        exit();
+    }
+
+    //設定三色燈、buzzer的pin角
+    public function TowerPinSetting()
+    {
+        //看要不要加驗證
+        $result = $this->EquipmentModel->SetTowerPin($_POST);
+        // $result = '';
         echo json_encode($result);
         exit();
     }
@@ -312,7 +331,7 @@ class Equipments extends Controller
 
 
             // 打开一个管道以非阻塞模式执行命令
-            $process = popen("start /B $cmd", "r");
+            $process = popen("start /B $cmd", "wb");
 
             // 关闭管道
             pclose($process);

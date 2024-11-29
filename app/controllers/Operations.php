@@ -36,9 +36,29 @@ class Operations extends Controller
         if($current_job_id['value'] == "0"  || $job_data == false ){
 
             //echo "eewwere";die();
+            //建立button權限
+            $button_auth = array();
+            $button_auth['switch_job'] = $this->OperationModel->GetConfigValue('auth_job_change')['value'];
+            $button_auth['role_checked'] = $this->OperationModel->GetConfigValue('manger_verify')['value'];
+            $button_auth['role_checked'] = explode(",",$button_auth['role_checked']);//轉換成array 方便用in_array判斷
+            // GetRoleIdByAccount
+            $account = $_SESSION['user'];
+
+            $role_id = $this->NavModel->GetRoleIdByAccount($account);
+            if( !in_array($role_id,$button_auth['role_checked']) ){
+                foreach ($button_auth as $key => $value) {
+                    $button_auth[$key] = 0;
+                }
+            }
+
+            if ($role_id == 1) {
+                foreach ($button_auth as $key => $value) {
+                    $button_auth[$key] = 1;
+                }
+            }
 
             $job_list = $this->ProductModel->getJobs();
-            $data = array('nav' => $nav,'job_list' => $job_list);
+            $data = array('nav' => $nav,'job_list' => $job_list,'button_auth' => $button_auth);
             $this->view('operation/index_empty',$data);
             exit();
         }
@@ -100,6 +120,28 @@ class Operations extends Controller
                     $task_list[$key]['last_step_lowtorque'] = $value['program'][array_key_last($value['program'])]['step_torwin_target'] - $value['program'][array_key_last($value['program'])]['step_torquewindow'];
                     $task_list[$key]['last_step_highangle'] = $value['program'][array_key_last($value['program'])]['step_angwin_target'] + $value['program'][array_key_last($value['program'])]['step_anglewindow'];
                     $task_list[$key]['last_step_lowangle'] = $value['program'][array_key_last($value['program'])]['step_angwin_target'] + $value['program'][array_key_last($value['program'])]['step_anglewindow'];
+                }
+
+                foreach ($value['program'] as $key2 => $step) {//預處理 為了list顯示
+                    if($task_list[$key]['program'][$key2]['step_targettype'] == 1){
+                        $task_list[$key]['program'][$key2]['step_targettorque'] = '0';
+                    }else{
+                        $task_list[$key]['program'][$key2]['step_targetangle'] = '0';
+                    }
+                    //判斷是用window還是Hi-Lo， 
+                    //step_monitoringmode  0 window ，1 Hi-Lo
+                    if($step['step_monitoringmode'] == 0){
+                        $task_list[$key]['program'][$key2]['step_hightorque'] = $task_list[$key]['program'][$key2]['step_torwin_target'] + $task_list[$key]['program'][$key2]['step_torquewindow'];
+                        $task_list[$key]['program'][$key2]['step_lowtorque'] = $task_list[$key]['program'][$key2]['step_torwin_target'] - $task_list[$key]['program'][$key2]['step_torquewindow'];
+                        $task_list[$key]['program'][$key2]['step_highangle'] = $task_list[$key]['program'][$key2]['step_angwin_target'] + $task_list[$key]['program'][$key2]['step_anglewindow'];
+                        $task_list[$key]['program'][$key2]['step_lowangle'] = $task_list[$key]['program'][$key2]['step_angwin_target'] - $task_list[$key]['program'][$key2]['step_anglewindow'];
+                    }
+
+                    //判斷如果是target type = torque，是否要監控角度，有的話才顯示Hi A Lo A
+                    if ($step['step_targettype'] == 2 && $step['step_monitoringangle'] == 0) {
+                        $task_list[$key]['program'][$key]['step_highangle'] = '-';
+                        $task_list[$key]['program'][$key]['step_lowangle'] = '-';
+                    }
                 }
             }else{
                 $task_list[$key]['last_job_type'] = 'normal';
@@ -269,9 +311,7 @@ class Operations extends Controller
                 $ok_job_auto_new  = '';
             }
 
-
         }
-
 
         $data = [
             'isMobile' => $isMobile,
@@ -791,9 +831,11 @@ class Operations extends Controller
             curl_exec($curl);
 
             curl_close($curl);
-            return json_encode( array('result' => '1') );
+            echo json_encode( array('result' => '1') );
+            exit();
         }else{
-            return json_encode( array('result' => '0') );    
+            echo json_encode( array('result' => '0') );
+            exit();    
         }
 
     }

@@ -69,6 +69,19 @@ class Equipment{
         return $results;
     }
 
+    public function SetTowerPin($data)
+    {
+        foreach ($data as $key => $value) {
+            $sql = "UPDATE `equipment_io_pin` SET pin_number = :pin_number WHERE column_name = :column_name ";
+            $statement = $this->db->prepare($sql);
+            $statement->bindValue(':pin_number', $value);
+            $statement->bindValue(':column_name', $key);
+            $results = $statement->execute();
+        }
+
+        return $results;
+    }
+
     public function GetTowerLightSetting()
     {
         $sql = "SELECT * FROM `equipment_tower_light` ORDER BY  light_event_id ";

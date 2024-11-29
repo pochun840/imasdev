@@ -380,6 +380,7 @@ class Task{
                     'step_prr_angle' = :step_prr_angle,
                     'step_downshift_mode' = :step_downshift_mode,
                     'step_downshift_angle' = :step_downshift_angle
+                    'tool_name' = :tool_name
                 WHERE 
                     'job_id' = :job_id AND 'seq_id' = :seq_id AND 'task_id' = :task_id";
 
@@ -413,13 +414,14 @@ class Task{
             $statement->bindValue(':step_prr_angle', $template_data['step_prr_angle']);
             $statement->bindValue(':step_downshift_mode', $template_data['step_downshift_mode']);
             $statement->bindValue(':step_downshift_angle', $template_data['step_downshift_angle']);
+            $statement->bindValue(':tool_name', $template_data['tool_name']);
 
             $results = $statement->execute();
 
         }else{ //不存在，用insert
 
-            $sql = "INSERT INTO `ccs_normalstep` ('job_id','seq_id','task_id','step_name','step_targettype','step_targetangle','step_targettorque','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_hightorque','step_lowtorque','step_threshold_mode','step_threshold_torque','step_threshold_angle','step_monitoringangle','step_highangle','step_lowangle','step_downshift_enable','step_downshift_torque','step_downshift_speed','torque_unit','step_prr','step_prr_rpm','step_prr_angle','step_downshift_mode','step_downshift_angle' )
-                    VALUES (:job_id,:seq_id,:task_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_hightorque,:step_lowtorque,:step_threshold_mode,:step_threshold_torque,:step_threshold_angle,:step_monitoringangle,:step_highangle,:step_lowangle,:step_downshift_enable,:step_downshift_torque,:step_downshift_speed,:torque_unit,:step_prr,:step_prr_rpm,:step_prr_angle,:step_downshift_mode,:step_downshift_angle )";
+            $sql = "INSERT INTO `ccs_normalstep` ('job_id','seq_id','task_id','step_name','step_targettype','step_targetangle','step_targettorque','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_hightorque','step_lowtorque','step_threshold_mode','step_threshold_torque','step_threshold_angle','step_monitoringangle','step_highangle','step_lowangle','step_downshift_enable','step_downshift_torque','step_downshift_speed','torque_unit','step_prr','step_prr_rpm','step_prr_angle','step_downshift_mode','step_downshift_angle','tool_name' )
+                    VALUES (:job_id,:seq_id,:task_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_hightorque,:step_lowtorque,:step_threshold_mode,:step_threshold_torque,:step_threshold_angle,:step_monitoringangle,:step_highangle,:step_lowangle,:step_downshift_enable,:step_downshift_torque,:step_downshift_speed,:torque_unit,:step_prr,:step_prr_rpm,:step_prr_angle,:step_downshift_mode,:step_downshift_angle,:tool_name )";
             $statement = $this->db->prepare($sql);
             $statement->bindValue(':job_id', $data['job_id']);
             $statement->bindValue(':seq_id', $data['seq_id']);
@@ -450,6 +452,7 @@ class Task{
             $statement->bindValue(':step_prr_angle', $template_data['step_prr_angle']);
             $statement->bindValue(':step_downshift_mode', $template_data['step_downshift_mode']);
             $statement->bindValue(':step_downshift_angle', $template_data['step_downshift_angle']);
+            $statement->bindValue(':tool_name', $template_data['tool_name']);
             
             $results = $statement->execute();
 
@@ -482,8 +485,8 @@ class Task{
         // }
 
         foreach ($template_data as $key => $temp_data) {
-            $sql = "INSERT INTO `ccs_advancedstep` ('job_id','seq_id','task_id','step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope','gtcs_job_id' )
-                    VALUES ( :job_id,:seq_id,:task_id,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope,:gtcs_job_id )";
+            $sql = "INSERT INTO `ccs_advancedstep` ('job_id','seq_id','task_id','step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope','gtcs_job_id','tool_name' )
+                    VALUES ( :job_id,:seq_id,:task_id,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope,:gtcs_job_id,:tool_name )";
             $statement = $this->db->prepare($sql);
             $statement->bindValue(':job_id', $data['job_id']);
             $statement->bindValue(':seq_id', $data['seq_id']);
@@ -513,6 +516,7 @@ class Task{
             $statement->bindValue(':step_angle_mode', $temp_data['step_angle_mode']);
             $statement->bindValue(':step_slope', $temp_data['step_slope']);
             $statement->bindValue(':gtcs_job_id', '');
+            $statement->bindValue(':tool_name', $temp_data['tool_name']);
 
             $results = $statement->execute();
         }
@@ -577,11 +581,18 @@ class Task{
         $statement = $this->db->prepare($sql);
         $statement->bindValue(':circle_div', $position);
 
-        $statement->bindValue(':seq_id', $job_id);
-        $statement->bindValue(':job_id', $seq_id);
+        $statement->bindValue(':job_id', $job_id);
+        $statement->bindValue(':seq_id', $seq_id);
         $statement->bindValue(':task_id', $task_id);
 
         $result = $statement->execute();
+
+        var_dump($sql);
+        var_dump($job_id);
+        var_dump($seq_id);
+        var_dump($task_id);
+        var_dump($position);
+        var_dump($result);
 
         return $result;
     }

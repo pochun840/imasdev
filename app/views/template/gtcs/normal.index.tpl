@@ -101,6 +101,14 @@
         </div>
     </div>
 
+    <div style="display:none;">
+        <input id="tool_name" value="<?php echo $data['tools_info']['tool_name']; ?>">
+        <input id="tool_max_torque" value="<?php echo $data['tools_info']['max_torque']; ?>">
+        <input id="tool_min_torque" value="<?php echo $data['tools_info']['min_torque']; ?>">
+        <input id="tool_max_rpm" value="<?php echo $data['tools_info']['max_rpm']; ?>">
+        <input id="tool_min_rpm" value="<?php echo $data['tools_info']['min_rpm']; ?>">
+    </div>
+
     <div class="main-content">
         <div class="center-content">
             <div class="row" style="margin-bottom: 5px;">
@@ -111,7 +119,17 @@
 
                 <div for="controller-type" class="col-1 t1"><?php echo $text['Screw_Tool_text']; ?> :</div>
                 <div class="col-2 t2" style="margin-right: 2%">
-                    <input type="text" class="form-control input-ms" id="screw-type" value="SGT-CS303" maxlength="" disabled="disabled">
+                    <select id="tool_selected" class="form-select" onchange="chagne_tool()">
+                        <?php 
+                            foreach ($data['tools'] as $key => $value) {
+                                if($data['tools_info']['tool_name'] == $value['tool_name']){
+                                    echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
+                                }else{
+                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
+                                }
+                            }
+                        ?>
+                    </select>
                 </div>
 
                 <div class="col">
@@ -263,12 +281,14 @@
                                             <div class="col-3 t1" for=""><?php echo $text['Program_Name_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="program-name" class="form-control input-ms" value="SEQ-1" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Target_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="target-torque" class="form-control input-ms" value="0.6" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                             <div class="col t2">N.m</div>
                                         </div>
@@ -282,26 +302,30 @@
                                             </div>
                                             <div class="col-3 t2">
                                                 <input type="text" id="offset-value" class="form-control input-ms" value="0.0" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Hi_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="hi-torque" class="form-control input-ms" value="0.7" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Lo_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="Lo-torque" class="form-control input-ms" value="0.0" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['RunDownSpeed_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="run-down-speed" class="form-control input-ms" value="100" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
-                                            <div class="col t2"><?php echo $text['max_rpm_text']; ?> 1100</div>
+                                            <div class="col t2"><?php echo $text['max_rpm_text'].' '.$data['tools_info']['max_rpm']; ?></div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" style="font-size: 20px"><?php echo $text['Threshold_Type_text']; ?> :</div>
@@ -320,12 +344,14 @@
                                             <div class="col-3 t1"><?php echo $text['Threshold_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="threshold_torque" type="text" value="0.0" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Threshold_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="threshold_angle" type="text" value="1800" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -339,12 +365,14 @@
                                             <div class="col-3 t1"><?php echo $text['Downshift_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="downshift-torque" type="text" value="1800" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Downshift_Speed_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="downshift-speed" type="text" value="1800" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -358,12 +386,14 @@
                                             <div class="col-3 t1"><?php echo $text['Hi_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="hi-angle" type="text" value="30600" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Lo_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="lo-angle" type="text" value="0" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -377,12 +407,14 @@
                                             <div class="col-3 t1"><?php echo $text['PreRun_RPM_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="pre-run-rpm" type="text" value="200" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['PreRun_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="pre-run-angle" type="text" value="1800" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
 
@@ -421,30 +453,35 @@
                                             <div class="col-3 t1" for=""><?php echo $text['Program_Name_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="program-name-a" class="form-control input-ms" value="Progam-1" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Target_Angle_text']; ?>(&#186;) :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="target-angle-a" class="form-control input-ms" value="1800" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Hi_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="hi-angle-a" type="text" value="30600" class="form-control input-ms" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Lo_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="lo-angle-a" type="text" value="0" class="form-control input-ms" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['Hi_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="hi-torque-a" class="form-control input-ms" value="0.7" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                             <div class="col t2">N.m</div>
                                         </div>
@@ -452,6 +489,7 @@
                                             <div class="col-3 t1" for=""><?php echo $text['Lo_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="Lo-torque-a" class="form-control input-ms" value="0.0" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -464,14 +502,16 @@
                                             </div>
                                             <div class="col-3 t2">
                                                 <input type="text" id="offset-value-a" class="form-control input-ms" value="0.0" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" for=""><?php echo $text['RunDownSpeed_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input type="text" id="run-down-speed-a" class="form-control input-ms" value="100" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
-                                            <div class="col t2"><?php echo $text['max_rpm_text']; ?> 1100</div>
+                                            <div class="col t2"><?php echo $text['max_rpm_text'].' '.$data['tools_info']['max_rpm']; ?></div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1" style="font-size: 20px"><?php echo $text['Target_Type_text']; ?> :</div>
@@ -490,12 +530,14 @@
                                             <div class="col-3 t1"><?php echo $text['Threshold_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="threshold_torque-a" type="text" value="0.0" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Threshold_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="threshold_angle-a" type="text" value="1800" class="form-control input-ms" maxlength="">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -509,12 +551,14 @@
                                             <div class="col-3 t1"><?php echo $text['Downshift_Torque_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="downshift-torque-a" type="text" value="1800" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['Downshift_Speed_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="downshift-speed-a" type="text" value="1800" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -528,12 +572,14 @@
                                             <div class="col-3 t1"><?php echo $text['PreRun_RPM_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="pre-run-rpm-a" type="text" value="200" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="row t1">
                                             <div class="col-3 t1"><?php echo $text['PreRun_Angle_text']; ?> :</div>
                                             <div class="col-4 t2">
                                                 <input id="pre-run-angle-a" type="text" value="1800" class="form-control input-ms" maxlength="" >
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -863,9 +909,12 @@ function new_program() {
 
     //get new program_id
     let program_id = get_program_id();
-    if (program_id > 50) { //避免新增超過50個program
+    if (program_id > 999) { //避免新增超過50個program
         return 0;
     }
+    remove_invalid();
+    document.getElementById("max-torque").value = document.getElementById("tool_max_torque").value;
+    document.getElementById("max-torque-a").value = document.getElementById("tool_max_torque").value;
 
     //document.getElementById('modal_head').innerHTML = ''; //'New Program'
     // //帶入預設值
@@ -886,13 +935,13 @@ function new_program() {
     document.getElementById("threshold_angle").value = '0';
     document.getElementById("Downshift-ON-OFF").checked = false;//checkbox
     document.getElementById("downshift-torque").value = '0.0';
-    document.getElementById("downshift-speed").value = '0';
+    document.getElementById("downshift-speed").value = document.getElementById("tool_min_rpm").value;
     document.getElementById("Monitoring-ON-OFF").checked = false;//checkbox
     document.getElementById("hi-angle").value = '30600';
     document.getElementById("lo-angle").value = '0';
     document.getElementById("Pre-run").checked = false;//checkbox
-    document.getElementById("pre-run-rpm").value = '200';
-    document.getElementById("pre-run-angle").value = '1800';
+    document.getElementById("pre-run-rpm").value = document.getElementById("tool_min_rpm").value;
+    document.getElementById("pre-run-angle").value = '360';
 
     //angle element
     document.getElementById("program-name-a").value = '';
@@ -910,10 +959,10 @@ function new_program() {
     document.getElementById("threshold_angle-a").value = '0';
     document.getElementById("Downshift-ON-OFF-a").checked = false;//checkbox
     document.getElementById("downshift-torque-a").value = '0.0';
-    document.getElementById("downshift-speed-a").value = '60';
+    document.getElementById("downshift-speed-a").value = document.getElementById("tool_min_rpm").value;
     document.getElementById("Pre-run-a").checked = false;//checkbox
-    document.getElementById("pre-run-rpm-a").value = '200';
-    document.getElementById("pre-run-angle-a").value = '1800';
+    document.getElementById("pre-run-rpm-a").value = document.getElementById("tool_min_rpm").value;
+    document.getElementById("pre-run-angle-a").value = '360';
 
     //show modal
     document.getElementById('ProgramNew').style.display = 'block'
@@ -996,60 +1045,67 @@ function new_program_save() {
     Pre_run = +Pre_run
     Monitoring_ON_OFF = +Monitoring_ON_OFF
 
+    //驗證input
+    let check = input_check();
 
-    var formData = new FormData();
-    // 添加表单数据
-    formData.append('program_id', program_id);
-    formData.append('program_name', program_name);
-    formData.append('target_type', target_type);
-    formData.append('target_angle', target_angle);
-    formData.append('target_torque', target_torque);
-    formData.append('hi_angle', hi_angle);
-    formData.append('lo_angle', lo_angle);
-    formData.append('hi_torque', hi_torque);
-    formData.append('Lo_torque', Lo_torque);
-    formData.append('joint_offset', joint_offset);
-    formData.append('offset_value', offset_value);
-    formData.append('run_down_speed', run_down_speed);
-    formData.append('Threshold_Type', Threshold_Type);
-    formData.append('threshold_torque', threshold_torque);
-    formData.append('threshold_angle', threshold_angle);
-    formData.append('Downshift_ON_OFF', Downshift_ON_OFF);
-    formData.append('downshift_torque', downshift_torque);
-    formData.append('downshift_speed', downshift_speed);
-    formData.append('Pre_run', Pre_run);
-    formData.append('pre_run_rpm', pre_run_rpm);
-    formData.append('pre_run_angle', pre_run_angle);
-    formData.append('Monitoring_ON_OFF', Monitoring_ON_OFF);
+    if(check){
+        var formData = new FormData();
+        // 添加表单数据
+        formData.append('program_id', program_id);
+        formData.append('program_name', program_name);
+        formData.append('target_type', target_type);
+        formData.append('target_angle', target_angle);
+        formData.append('target_torque', target_torque);
+        formData.append('hi_angle', hi_angle);
+        formData.append('lo_angle', lo_angle);
+        formData.append('hi_torque', hi_torque);
+        formData.append('Lo_torque', Lo_torque);
+        formData.append('joint_offset', joint_offset);
+        formData.append('offset_value', offset_value);
+        formData.append('run_down_speed', run_down_speed);
+        formData.append('Threshold_Type', Threshold_Type);
+        formData.append('threshold_torque', threshold_torque);
+        formData.append('threshold_angle', threshold_angle);
+        formData.append('Downshift_ON_OFF', Downshift_ON_OFF);
+        formData.append('downshift_torque', downshift_torque);
+        formData.append('downshift_speed', downshift_speed);
+        formData.append('Pre_run', Pre_run);
+        formData.append('pre_run_rpm', pre_run_rpm);
+        formData.append('pre_run_angle', pre_run_angle);
+        formData.append('Monitoring_ON_OFF', Monitoring_ON_OFF);
 
-    let url = '?url=Templates/edit_program';
-    $.ajax({
-        type: "POST",
-        data: formData,
-        dataType: "json",
-        url: url,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            // 成功回調函數，處理伺服器的回應
-            console.log(response); // 在控制台輸出伺服器的回應
-            // history.go(0);
-            if (response.error == '') {
-                history.go(0);
-            } else {
+        let url = '?url=Templates/edit_program';
+        $.ajax({
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            url: url,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                // 成功回調函數，處理伺服器的回應
+                console.log(response); // 在控制台輸出伺服器的回應
+                // history.go(0);
+                if (response.error == '') {
+                    history.go(0);
+                } else {
 
+                }
+            },
+            error: function(error) {
+                // 失敗回調函數，處理錯誤情況
+                // console.error('Error:', error); // 在控制台輸出錯誤訊息
             }
-        },
-        error: function(error) {
-            // 失敗回調函數，處理錯誤情況
-            // console.error('Error:', error); // 在控制台輸出錯誤訊息
-        }
-    }).fail(function() {
-        // history.go(0); //失敗就重新整理
-    });
+        }).fail(function() {
+            // history.go(0); //失敗就重新整理
+        });
+    }
 }
 
 function edit_program(program_id) {
+    remove_invalid();
+    document.getElementById("max-torque").value = document.getElementById("tool_max_torque").value;
+    document.getElementById("max-torque-a").value = document.getElementById("tool_max_torque").value;
 
     let url = '?url=Templates/get_program_by_id';
     $.ajax({
@@ -1131,10 +1187,18 @@ function edit_program(program_id) {
 }
 
 function copy_program_div() {
+    remove_invalid();
     let rowSelected = document.getElementsByClassName('selected');
     if (rowSelected.length != 0) {
         let pro_id = rowSelected[0].childNodes[1].innerHTML;
         let pro_name = rowSelected[0].childNodes[2].innerHTML;
+        
+        let to_program_id = get_program_id();
+        if (to_program_id > 999) { //避免新增超過50個program
+            return 0;
+        }
+        document.getElementById('to_pro_id').value=to_program_id;
+        document.getElementById('to_pro_id').disabled=true;
 
         document.getElementById('from_pro_id').value=pro_id;
         document.getElementById('from_pro_name').value=pro_name;
@@ -1148,29 +1212,41 @@ function copy_program() {
     let to_pro_id = document.getElementById('to_pro_id').value;
     let to_pro_name = document.getElementById('to_Program_name').value;
 
-    let url = '?url=Templates/copy_program';
-    $.ajax({
-        type: "POST",
-        data: {
-            'from_pro_id': pro_id,
-            'to_pro_id': to_pro_id,
-            'to_pro_name': to_pro_name,
-            'job_type': 'normal'
-        },
-        dataType: "json",
-        url: url,
-        success: function(response) {
-            // 成功回調函數，處理伺服器的回應
-            // console.log(response); // 在控制台輸出伺服器的回應
-            history.go(0);
-        },
-        error: function(error) {
-            // 失敗回調函數，處理錯誤情況
-            // console.error('Error:', error); // 在控制台輸出錯誤訊息
+    if(to_pro_id == '' || to_pro_name == ''){
+        
+        if(to_pro_id == ''){
+            document.getElementById('to_pro_id').classList.add("is-invalid");
         }
-    }).fail(function() {
-        // history.go(0);//失敗就重新整理
-    });
+        if(to_pro_name == ''){
+            document.getElementById('to_Program_name').classList.add("is-invalid");
+        }
+        
+    }else{
+        let url = '?url=Templates/copy_program';
+        $.ajax({
+            type: "POST",
+            data: {
+                'from_pro_id': pro_id,
+                'to_pro_id': to_pro_id,
+                'to_pro_name': to_pro_name,
+                'job_type': 'normal'
+            },
+            dataType: "json",
+            url: url,
+            success: function(response) {
+                // 成功回調函數，處理伺服器的回應
+                // console.log(response); // 在控制台輸出伺服器的回應
+                history.go(0);
+            },
+            error: function(error) {
+                // 失敗回調函數，處理錯誤情況
+                // console.error('Error:', error); // 在控制台輸出錯誤訊息
+            }
+        }).fail(function() {
+            // history.go(0);//失敗就重新整理
+        });
+    }
+
 }
 
 function delete_program() {
@@ -1284,11 +1360,248 @@ function cancel_action(){
 </style>
 
 
-<script>
-
 <style>
     .large-text {
         color: white;
         font-size: 18px;
     }
 </style>
+
+<script>
+    function input_check(argument) {
+
+        //step 1 先判斷target type
+        //step 2 根據不同的target type產生對應的限制式
+
+        let Tool_Max_Torque = document.getElementById('tool_max_torque').value;
+        let Tool_Min_Torque = document.getElementById('tool_min_torque').value;
+        let Tool_Max_RPM = document.getElementById('tool_max_rpm').value;
+        let Tool_Min_RPM = document.getElementById('tool_min_rpm').value;
+        let delta = Number.parseFloat(Tool_Min_Torque * 0.05).toFixed(4);
+        let Target_Torque_value = document.getElementById('target-torque').value
+
+        let target_type = $('input[name=Target-Type]:checked').val();
+        let target_torque_max = target_torque_min = 0
+        let target_angle_max = target_angle_min = 0
+        let hi_angle_max = hi_angle_min = 0
+        let lo_angle_max = lo_angle_min = 0
+        let hi_torque_max = hi_torque_min = 0
+        let lo_torque_max = lo_torque_min = 0
+        let join_offset_max = join_offset_min = 0
+        let torque_threshold_max = torque_threshold_min = 0
+        let downshift_torque_max = downshift_torque_min = 0
+        let downshift_speed_max = downshift_speed_min = 0
+
+        let threshold_mode = $('input[name=Threshold-Type]:checked').val();
+        let downshift_mode = +document.getElementById("Downshift-ON-OFF").checked
+        let monitor_angle_mode = +document.getElementById("Monitoring-ON-OFF").checked
+        let pre_run_mode = +document.getElementById("Pre-run").checked
+
+        let conditions;
+
+        // if(threshold_mode == 1){
+        //     document.getElementById('angle_threshold').value = 0
+        // }else if(threshold_mode == 2){
+        //     document.getElementById('torque_threshold').value = 0
+        // }else{
+        //     document.getElementById('angle_threshold').value = 0
+        //     document.getElementById('torque_threshold').value = 0
+        // }
+
+        // if(downshift_mode == 1){
+        //     document.getElementById('downshift_angle').value = 0
+        // }else if(downshift_mode == 2){
+        //     document.getElementById('downshift_torque').value = 0
+        // }else{
+        //     document.getElementById('downshift_torque').value = 0
+        //     document.getElementById('downshift_angle').value = 0
+        // }
+
+        if(target_type == 2){// target = torque
+            document.getElementById('target-angle-a').value = 100 //set default
+            // document.getElementById('target_time').value = 0 //set default
+            //find offset up/low bound
+            let offset_max = 0;
+            if( parseFloat(Tool_Max_Torque*1.08 - Target_Torque_value).toFixed(2) >= parseFloat(Target_Torque_value*0.3).toFixed(4) ){
+                offset_max = parseFloat(Target_Torque_value*0.3).toFixed(4);
+            }else{
+                offset_max = parseFloat(Tool_Max_Torque*1.08 - Target_Torque_value).toFixed(2);
+            }
+            let offset_min = 0;
+            let aa = Number.parseFloat(Tool_Min_Torque*0.7 - Target_Torque_value ).toFixed(4);
+            let bb = Number.parseFloat(Target_Torque_value*0.3).toFixed(4);
+            if( aa >= -bb ){
+                offset_min = aa;
+            }else{
+                offset_min = -bb;
+            }
+
+            hi_angle_max = 30600
+            hi_angle_min = 0
+            lo_angle_max =  document.getElementById('hi-angle').value - 1
+            lo_angle_min = 0
+            hi_torque_max = Number.parseFloat(Tool_Max_Torque*1.1).toFixed(4)
+            hi_torque_min = Number.parseFloat( parseFloat(Target_Torque_value) + parseFloat(delta) ).toFixed(4)
+            lo_torque_max = Number.parseFloat( parseFloat(Target_Torque_value) - parseFloat(delta) ).toFixed(4)
+            lo_torque_min = 0
+            join_offset_max = offset_max
+            join_offset_min = offset_min
+            torque_threshold_max = document.getElementById('target-torque').value
+            torque_threshold_min = 0
+            downshift_torque_max = document.getElementById('target-torque').value;
+            downshift_torque_min = 0
+            downshift_speed_max = document.getElementById('run-down-speed').value
+            downshift_speed_min = Tool_Min_RPM
+
+            angle_threshold_max = 30600
+            angle_threshold_min = 0
+            downshift_angle_max = 30600
+            downshift_angle_min = 0
+
+            conditions = [
+                { id: 'program-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'target-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_Torque, max: Tool_Max_Torque },
+                { id: 'offset-value', pattern: /^-?\d{0,6}(\.\d{0,4})?$/, min: offset_min, max: offset_max },
+                { id: 'hi-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: hi_torque_min, max: hi_torque_max },
+                { id: 'Lo-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: lo_torque_min, max: lo_torque_max },
+                { id: 'run-down-speed', pattern: /^\d{1,3}$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
+                { id: 'threshold_torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: torque_threshold_min, max: torque_threshold_max },
+                { id: 'threshold_angle', pattern: /^\d{1,3}$/, min: angle_threshold_min, max: angle_threshold_max },
+                { id: 'downshift-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: downshift_torque_min, max: downshift_torque_max },
+                { id: 'downshift-speed', pattern: /^\d{1,5}$/, min: downshift_speed_min, max: downshift_speed_max },
+                { id: 'hi-angle', pattern: /^\d{1,6}$/, min: hi_angle_min, max: hi_angle_max },
+                { id: 'lo-angle', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: lo_angle_min, max: lo_angle_max },
+                { id: 'pre-run-rpm', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
+                { id: 'pre-run-angle', pattern: /^\d{0,4}$/, min: 1, max: 30600 },       
+            ];
+
+        }else if(target_type == 1){// target = angle
+            document.getElementById('target-torque').value = Tool_Min_Torque //set default
+            // document.getElementById('target_time').value = 0 //set default
+            //find offset up/low bound
+            let offset_max = Number.parseFloat(Tool_Max_Torque*0.3).toFixed(4);
+            let offset_min = parseFloat(Tool_Min_Torque*0.7 - document.getElementById('hi-torque-a').value ).toFixed(4);
+            if(Math.abs(offset_min) > Math.abs(offset_max)){
+                offset_min = offset_max * -1;
+            }
+
+            hi_angle_max = 30600
+            hi_angle_min = document.getElementById('target-angle-a').value
+            lo_angle_max =  document.getElementById('target-angle-a').value
+            lo_angle_min = 0
+            hi_torque_max = Number.parseFloat(Tool_Max_Torque*1.1).toFixed(4)
+            hi_torque_min = 0
+            lo_torque_max = (document.getElementById('hi-torque-a').value - delta).toFixed(4)
+            lo_torque_min = 0
+            join_offset_max = offset_max
+            join_offset_min = offset_min
+            torque_threshold_max = parseFloat(document.getElementById('hi-torque-a').value)
+            torque_threshold_min = 0
+            downshift_torque_max = Tool_Max_Torque;
+            downshift_torque_min = 0
+            downshift_speed_max = document.getElementById('run-down-speed-a').value
+            downshift_speed_min = Tool_Min_RPM
+
+            angle_threshold_max = document.getElementById('target-angle-a').value
+            angle_threshold_min = 0
+            downshift_angle_max = 30600
+            downshift_angle_min = 0
+
+            conditions = [
+                { id: 'program-name-a', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'target-angle-a', pattern: /^\d{0,5}$/, min: 0, max: 30600 },
+                { id: 'hi-angle-a', pattern: /^\d{0,5}?$/, min: hi_angle_min, max: hi_angle_max },
+                { id: 'lo-angle-a', pattern: /^\d{0,5}?$/, min: lo_angle_min, max: lo_angle_max },
+                { id: 'hi-torque-a', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: hi_torque_min, max: hi_torque_max },
+                { id: 'Lo-torque-a', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: lo_torque_min, max: lo_torque_max },
+                { id: 'offset-value-a', pattern: /^-?\d{0,6}(\.\d{0,4})?$/, min: join_offset_min, max: join_offset_max },
+                { id: 'run-down-speed-a', pattern: /^\d{1,4}$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
+                { id: 'threshold_torque-a', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: torque_threshold_min, max: torque_threshold_max },
+                { id: 'threshold_angle-a', pattern: /^\d{1,5}$/, min: angle_threshold_min, max: angle_threshold_max },
+                { id: 'downshift-torque-a', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: downshift_torque_min, max: downshift_torque_max },
+                { id: 'downshift-speed-a', pattern: /^\d{0,5}/, min: downshift_speed_min, max: downshift_speed_max },
+                { id: 'pre-run-rpm-a', pattern: /^\d{0,4}$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
+                { id: 'pre-run-angle-a', pattern: /^\d{0,5}$/, min: 1, max: 30600 },       
+            ];
+        }
+
+        let isFormValid = true;
+        conditions.forEach(function(input) {
+            var element = document.getElementById(input.id);
+            var value = element.value.trim();
+
+            //加上offset負號
+            if( ( input.id == 'offset-value' || input.id == 'offset-value-a' ) &&  document.getElementById('joint-offset').value == 1 && value != '' ){
+                value = value * -1;
+            }
+
+            //在<div class="invalid-feedback"></div> 加入範圍
+            if( input.id != 'program-name' && input.id != 'program-name-a' ){
+                element.nextElementSibling.innerHTML = input.min+' ~ '+input.max;
+            }
+
+            if (value === "") {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (!input.pattern.test(value)) {
+                // element.value = "";
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.min !== null && parseFloat(value) < input.min) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.max !== null && parseFloat(value) > input.max) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else {
+                element.classList.remove("is-invalid");
+            }
+
+        });
+
+        console.log(conditions)
+
+        return isFormValid;
+
+    }
+
+    function remove_invalid() {
+        // Select the form by its ID
+        var form = document.getElementById("new_task_form");
+
+        // Check if the form exists
+        if (form) {
+            // Get all elements within the form
+            var elements = form.querySelectorAll("*");
+            
+            // Loop through each element and remove the "is-invalid" class
+            elements.forEach(function(element) {
+                element.classList.remove("is-invalid");
+            });
+        }
+    }
+
+    function chagne_tool() {
+        let tool_name = document.getElementById('tool_selected').value
+
+        if(tool_name != ''){
+            $.ajax({
+                url: '?url=Templates/set_tool_cookie', // 
+                // async: false,
+                method: 'POST',
+                data: { 'tool_name':tool_name },
+                dataType: "json",
+            }).done(function(response) { //成功且有回傳值才會執行
+                history.go(0);//失敗就重新整理
+                // if(selectedRadioButton.value == 'normal'){
+                //     location.href = '?url=Templates/normalstep_index/';
+                // }else if(selectedRadioButton.value == 'advance'){
+                //     location.href = '?url=Templates/advancedstep_index/';
+                // }
+            }).fail(function() {
+                history.go(0);//失敗就重新整理
+            });
+
+        }
+    }
+</script>

@@ -16,10 +16,14 @@ class Templates extends Controller
 
         $isMobile = $this->isMobileCheck();
         $nav = $this->NavsController->get_nav();
+        $tools = $this->CFG_reader();
+        // var_dump($tools);
 
         $data = [
             'isMobile' => $isMobile,
             'nav' => $nav,
+            'tools' => $tools,
+
         ];
         
         $this->view('template/index', $data);
@@ -32,6 +36,7 @@ class Templates extends Controller
         $isMobile = $this->isMobileCheck();
         $nav = $this->NavsController->get_nav();
         $NormalSteps = $this->TemplateModel->GetAllNormalStepTemplate();
+        $tools = $this->CFG_reader();
 
         //前端顯示預處理
         foreach ($NormalSteps as $key => $value) {
@@ -67,10 +72,19 @@ class Templates extends Controller
             }
         }
 
+        $tools_info = [];
+        $tools_info['tool_name'] = $_COOKIE['tool_name'];
+        $tools_info['max_torque'] = $_COOKIE['max_torque'];
+        $tools_info['min_torque'] = $_COOKIE['min_torque'];
+        $tools_info['max_rpm'] = $_COOKIE['max_rpm'];
+        $tools_info['min_rpm'] = $_COOKIE['min_rpm'];
+
         $data = [
             'isMobile' => $isMobile,
             'nav' => $nav,
             'NormalSteps' => $NormalSteps,
+            'tools_info' => $tools_info,
+            'tools' => $tools,
         ];
         
         $this->view('template/gtcs/normal.index', $data);
@@ -83,6 +97,7 @@ class Templates extends Controller
         $isMobile = $this->isMobileCheck();
         $nav = $this->NavsController->get_nav();
         $AdvancedSteps = $this->TemplateModel->GetAllAdvancedStepTemplate();
+        $tools = $this->CFG_reader();
 
         foreach ($AdvancedSteps as $key => $advstep) {
             $advancedstep = $this->TemplateModel->GetProgramById_Advanced($advstep['template_program_id']);
@@ -91,10 +106,19 @@ class Templates extends Controller
             }
         }
 
+        $tools_info = [];
+        $tools_info['tool_name'] = $_COOKIE['tool_name'];
+        $tools_info['max_torque'] = $_COOKIE['max_torque'];
+        $tools_info['min_torque'] = $_COOKIE['min_torque'];
+        $tools_info['max_rpm'] = $_COOKIE['max_rpm'];
+        $tools_info['min_rpm'] = $_COOKIE['min_rpm'];
+
         $data = [
             'isMobile' => $isMobile,
             'nav' => $nav,
             'AdvancedSteps' => $AdvancedSteps,
+            'tools_info' => $tools_info,
+            'tools' => $tools,
         ];
         
         $this->view('template/gtcs/adv.index', $data);
@@ -137,6 +161,12 @@ class Templates extends Controller
             }
         }
 
+        $tools_info = [];
+        $tools_info['tool_name'] = $_COOKIE['tool_name'];
+        $tools_info['max_torque'] = $_COOKIE['max_torque'];
+        $tools_info['min_torque'] = $_COOKIE['min_torque'];
+        $tools_info['max_rpm'] = $_COOKIE['max_rpm'];
+        $tools_info['min_rpm'] = $_COOKIE['min_rpm'];
 
         $data = [
             'isMobile' => $isMobile,
@@ -144,6 +174,7 @@ class Templates extends Controller
             'steps' => $advancedstep,
             'program_id' => $template_program_id,
             'program_name' => $advancedstep[0]['template_program_name'],
+            'tools_info' => $tools_info,
         ];
         
         $this->view('template/gtcs/adv.step.index', $data);
@@ -282,6 +313,11 @@ class Templates extends Controller
             }else{ 
                 $input_check = false;
                 $error_message .= 'Monitoring_ON_OFF';
+            }
+            if( isset($_COOKIE['tool_name'])  ){
+                $data_array['tool_name'] = $_COOKIE['tool_name'];
+            }else{ 
+                $data_array['tool_name'] = '';
             }
 
             if ($input_check) {
@@ -455,6 +491,11 @@ class Templates extends Controller
         $data['hi_angle'] = 30600;
         $data['lo_angle'] = 0;
         $data['step_angle_mode'] = 1;
+        if( isset($_COOKIE['tool_name'])  ){
+            $data['tool_name'] = $_COOKIE['tool_name'];
+        }else{ 
+            $data['tool_name'] = '';
+        }
 
         if($input_check){
             //create template seq
@@ -635,6 +676,11 @@ class Templates extends Controller
         }else{ 
             $input_check = false; 
             $error_message .= "angle_window_range,";
+        }
+        if( isset($_COOKIE['tool_name'])  ){
+            $data['tool_name'] = $_COOKIE['tool_name'];
+        }else{ 
+            $data['tool_name'] = '';
         }
 
 
@@ -822,7 +868,8 @@ class Templates extends Controller
                             'step_lowangle' => $item['step_lowangle'],
                             'torque_unit' => $item['torque_unit'],
                             'step_angle_mode' => $item['step_angle_mode'],
-                            'step_slope' => $item['step_slope']
+                            'step_slope' => $item['step_slope'],
+                            'tool_name' => $item['tool_name']
                         );
                     }
                 }
@@ -864,7 +911,8 @@ class Templates extends Controller
                             'step_prr_rpm' => $item['step_prr_rpm'],
                             'step_prr_angle' => $item['step_prr_angle'],
                             'step_downshift_mode' => $item['step_downshift_mode'],
-                            'step_downshift_angle' => $item['step_downshift_angle']
+                            'step_downshift_angle' => $item['step_downshift_angle'],
+                            'tool_name' => $item['tool_name']
                 
                         );
                     }
@@ -921,7 +969,91 @@ class Templates extends Controller
         }else{
             echo json_encode(['error' => 'Invalid input']);    
         }
+        exit();
 
     }
+
+    public function CFG_reader() {
+        $input_file = '../Model.CFG';
+        $tools = [];
+
+        // 嘗試讀取文件
+        try {
+            // 打開文件
+            $file = fopen($input_file, 'r');
+            if (!$file) {
+                throw new Exception("無法打開文件: $input_file");
+            }
+
+            // 逐行讀取文件
+            while (($line = fgets($file)) !== false) {
+                // 去除行首尾的空白字符
+                $line = trim($line);
+
+                // 檢查行是否有效
+                if (strpos($line, '/') === false && strpos($line, '單位預設為NM') === false && strlen($line) > 0) {
+                    $tool_info = explode('|', $line);
+                    $tool_info = array_map('trim', $tool_info); // 去除每個元素的空白字符
+
+                    $tool_name = $tool_info[0];
+                    $tools[$tool_name] = ['tool_name' => $tool_name];
+
+                    // 檢查工具資訊的長度
+                    if (count($tool_info) > 5) {
+                        $tools[$tool_name]['motor_pole'] = $tool_info[1];
+                        $tools[$tool_name]['maxrpm'] = $tool_info[2];
+                        $tools[$tool_name]['minrpm'] = $tool_info[3];
+                        $tools[$tool_name]['gearratio'] = $tool_info[4];
+                        $tools[$tool_name]['maxtorque'] = $tool_info[5];
+                        if (isset($tool_info[6])) {
+                            $tools[$tool_name]['mintorque'] = $tool_info[6];
+                        }
+                        if (isset($tool_info[7])) {
+                            $tools[$tool_name]['motorinverse'] = $tool_info[7];
+                        }
+                        if (isset($tool_info[8])) {
+                            $tools[$tool_name]['slope'] = $tool_info[8];
+                        }
+                    }
+                }
+            }
+
+            // 關閉文件
+            fclose($file);
+        } catch (Exception $e) {
+            echo "讀取文件時發生錯誤: " . $e->getMessage();
+        }
+
+        return $tools;
+    }
+
+    public function set_tool_cookie()
+    {
+        $timeout_seconds = 3600;
+        $input_check = true;
+        if( !empty($_POST['tool_name']) && isset($_POST['tool_name'])  ){
+            $tool_name = $_POST['tool_name'];
+        }else{ 
+            $input_check = false; 
+        }
+        if($input_check){
+            $tool_info = $this->CFG_reader();
+            // var_dump($tool_name);
+            // var_dump($tool_info);
+            setcookie('tool_name', $tool_name, time() + $timeout_seconds, '/');
+            setcookie('max_torque', $tool_info[$tool_name]['maxtorque'], time() + $timeout_seconds, '/');
+            setcookie('min_torque', $tool_info[$tool_name]['mintorque'], time() + $timeout_seconds, '/');
+            setcookie('max_rpm', $tool_info[$tool_name]['maxrpm'], time() + $timeout_seconds, '/');
+            setcookie('min_rpm', $tool_info[$tool_name]['minrpm'], time() + $timeout_seconds, '/');
+
+            echo json_encode(['result' => 'success']);   
+            
+        }else{
+            echo json_encode(['result' => 'fail', 'error' => 'Invalid input']);    
+        }
+        exit();
+    }
+
+
     
 }

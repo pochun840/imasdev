@@ -207,19 +207,22 @@ class Sequence{
     public function DeleteSeqById($job_id,$seq_id)
     {
 
-          //找到該job的sequence 是否有存取圖片
-          $stmt = $this->db->prepare('SELECT img FROM sequence WHERE job_id = :job_id AND seq_id =:seq_id');
-          $stmt->bindValue(':job_id', $job_id);
-          $stmt->bindValue(':seq_id', $seq_id);
-          $stmt->execute();
-          $seq = $stmt->fetch(PDO::FETCH_ASSOC);
-  
-          if ($seq && !empty($seq['img'])) {
-              $imgPath_seq = $seq['img'];
-              if (file_exists($imgPath_seq)) {
-                  unlink($imgPath_seq);
-              }
+        //找到該job的sequence 是否有存取圖片
+        $stmt = $this->db->prepare('SELECT img FROM sequence WHERE job_id = :job_id AND seq_id =:seq_id');
+        $stmt->bindValue(':job_id', $job_id);
+        $stmt->bindValue(':seq_id', $seq_id);
+        $stmt->execute();
+        $seq = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($seq && !empty($seq['img'])) {
+            $imgPath_seq = $seq['img'];
+            if (file_exists($imgPath_seq)) {
+                // unlink前先確認是否有其他job、seq、task使用，如果有就不刪除，避免影響到其他工作
+                if(!$this->imgExistCheck($imgPath_seq)){
+                    unlink($imgPath_seq);
+                }
           }
+        }
 
 
         //刪除sequence
@@ -432,14 +435,27 @@ class Sequence{
         return $results;
     }
 
+    //檢查img是否有被使用中
+    public function imgExistCheck($img)
+    {
+        $sql = "SELECT count(*) as count FROM `job` WHERE img = :img ";
+        $statement = $this->db->prepare($sql);
+        $statement->bindValue(':img', $img); 
+        $statement->execute();
+        $job = $statement->fetch();
 
+        $sql = "SELECT count(*) as count FROM `sequence` WHERE img = :img ";
+        $statement = $this->db->prepare($sql);
+        $statement->bindValue(':img', $img); 
+        $statement->execute();
+        $seq = $statement->fetch();
 
-
-
-
-
-
-    
-    
+        if ($job['count'] > 0 || $seq['count'] > 0) {
+            return true;  // job 或 seq 仍有在使用圖片
+        }else{
+            return false; // 沒有其他job、seq使用
+        }
+    }
+ 
 
 }

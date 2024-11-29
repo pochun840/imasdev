@@ -137,10 +137,18 @@
                         //方法3 只記circle的style 不記data-id 透過foreach自動產生
                         echo '<img id="imgId" style="width: 100%;height: auto;" src="'.$data['seq_img'].'">';
                         foreach ($data['tasks'] as $key => $value) {
-                            echo '<div class="circle" data-id="'.($key+1).'" '.$value['circle_div'].'>';
-                            echo '<span class="">'.($key+1).'</span>';
-                            echo '<div class="circle-border" onclick="updateParameters('. ($key+1) .')"></div>';
-                            echo '</div>';
+                            if($value['template_program_id'] == -1 ){
+                                echo '<div class="circle hidden" data-id="'.($key+1).'" '.$value['circle_div'].'>';
+                                echo '<span class="">'.($key+1).'</span>';
+                                echo '<div class="circle-border" onclick="updateParameters('. ($key+1) .')"></div>';
+                                echo '</div>';
+                            }else{
+                                echo '<div class="circle" data-id="'.($key+1).'" '.$value['circle_div'].'>';
+                                echo '<span class="">'.($key+1).'</span>';
+                                echo '<div class="circle-border" onclick="updateParameters('. ($key+1) .')"></div>';
+                                echo '</div>';
+                            }
+
                         }
                     ?>
                 </div>
@@ -151,11 +159,12 @@
                 <div class="container" id="task-setting" style="width: 80%; background-color: #F2F1F1; height: 70vh">
                     <div class="w3-panel w3-round-large" style="background-color: #444; color: #fff; height: 40px; text-align: left">
                         <label style="font-size: 24px; text-align: left"><?php echo $text['Task_text']; ?></label>
-                        <button id="edit_task" onclick="edit_task()">
-                            <i class="fa fa-pencil" style="font-size: 24px; width:30px; height:30px; color:red; margin-top: 3px"></i>
+                        <button id="edit_task" style="border-color:white;" onclick="edit_task()">
+                            <i class="fa fa-pencil" style="font-size: 24px; width:30px; height:30px; color:white; margin-top: 3px"></i>
                         </button>
-                        <button id="add_task" onclick="new_task();">
-                            <i class="fa fa-plus" style="font-size: 24px; width:30px; height:30px; color:red; margin-top: 4px"></i>
+                        <button id="add_task" style="border:none;" onclick="new_task();">
+                            <!-- <i class="fa fa-plus" style="font-size: 24px; width:30px; height:30px; color:red; margin-top: 4px"></i> -->
+                            <img src="./img/message-white.svg">
                         </button>
                     </div>
                     <div>
@@ -184,24 +193,24 @@
                             echo '<ol>';
                             echo '<div onclick="updateParameters('.$value['task_id'].')">';
                             if($value['last_targettype'] == 1){//angle
-                                echo '<a id="step'.$value['task_id'].'" ><img src="./img/angle.png" alt="" style="height: 25px; width: 25px; float: left"> | SGT-CS303 | '. $text['Step_text'].$value['last_step_count'].' | '.$value['last_step_name'].' | '.$value['last_step_targetangle'].'&ordm;</a>';
+                                echo '<a id="step'.$value['task_id'].'" ><img src="./img/angle.png" alt="" style="height: 25px; width: 25px; float: left"> | '.$value['tool_name'].' | '. $text['Step_text'].$value['last_step_count'].' | '.$value['last_step_name'].' | '.$value['last_step_targetangle'].'&ordm;</a>';
                                 echo '<div class="dropdown-content" id="target_torque-'.$value['task_id'].'" style="display:none;" step-id="'.$value['task_id'].'">';
 
                                 if($value['last_job_type'] == 'normal'){
                                     echo '<div id="">'.$text['Step_text'].'1 '. $value['last_step_name'] .' | <span>'.$value['last_step_targetangle'].'&ordm;| '.$text['Hi_text'].' '.$value['last_step_highangle'].' | '.$text['Lo_text'].' '.$value['last_step_lowangle'].'</span></div>';
                                 }else{
-                                    foreach ($value['program'] as $key => $value) {
-                                        if($value['step_targettype'] == 1 ){//angle
-                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $value['step_name'] .' | <span>'.$value['step_targetangle'].'&ordm;| '.$text['Hi_text'].' '.$value['step_highangle'].' | '.$text['Lo_text'].' '.$value['step_lowangle'].'</span></div>';
+                                    foreach ($value['program'] as $key => $step) {
+                                        if($step['step_targettype'] == 1 ){//angle
+                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $step['step_name'] .' | <span>'.$step['step_targetangle'].'&ordm;| '.$text['Hi_text'].' '.$step['step_highangle'].' | '.$text['Lo_text'].' '.$step['step_lowangle'].'</span></div>';
                                         }else{
-                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $value['step_name'] .' | <span>'.$value['step_targettorque'].'-Nm| '.$text['Hi_text'].' '.$value['step_hightorque'].' | '.$text['Lo_text'].' '.$value['step_lowtorque'].'</span></div>';
+                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $step['step_name'] .' | <span>'.$step['step_targettorque'].'-Nm| '.$text['Hi_text'].' '.$step['step_hightorque'].' | '.$text['Lo_text'].' '.$step['step_lowtorque'].'</span></div>';
                                         }
                                     }
                                 }
 
                                 
-                            }else{//torque
-                                echo '<a id="step'.$value['task_id'].'" ><img src="./img/torque.png" alt="" style="height: 25px; width: 25px; float: left"> | SGT-CS303 | '.$text['Step_text'].$value['last_step_count'].' | '.$value['last_step_name'].' | '.$value['last_step_targettorque'].'-Nm</a>';
+                            }else if($value['last_targettype'] == 2){//torque
+                                echo '<a id="step'.$value['task_id'].'" ><img src="./img/torque.png" alt="" style="height: 25px; width: 25px; float: left"> | '.$value['tool_name'].' | '.$text['Step_text'].$value['last_step_count'].' | '.$value['last_step_name'].' | '.$value['last_step_targettorque'].'-Nm</a>';
                                 echo '<div class="dropdown-content" id="target_torque-'.$value['task_id'].'" style="display:none;" step-id="'.$value['task_id'].'">';
 
                                 if($value['last_job_type'] == 'normal'){
@@ -216,6 +225,11 @@
                                     }
                                 }
                                 
+                            }else{
+                                echo '<a id="step'.$value['task_id'].'" >
+                                <img src="./img/message-black.svg" alt="" style="height: 25px; width: 25px; float: left"> | Message</a>';
+                                echo '<div class="dropdown-content" id="target_torque-'.$value['task_id'].'" style="display:none;" step-id="'.$value['task_id'].'">';
+                                echo   '<div id="">Message</div>';
                             }
                             echo    '</div>';
                             echo '</div>';
@@ -244,6 +258,9 @@
                             <div for="task_id" class="col-2 t1"><?php echo $text['Task_id_text']; ?> :</div>
                             <div class="col-3 t2">
                                 <input type="text" min=1 max=99 class="form-control input-ms" id="task_id" maxlength="2" disabled="disabled">
+                            </div>
+                            <div style="display:none;">
+                                <input id="pure_message" value="0">
                             </div>
                         </div>
 
@@ -355,7 +372,7 @@
                                 </div>
                                 <!-- program Setiing -->
                                 <div id="program-setting" style="display: none;">
-                                    <div for="new_task_form" class="col-3 t1"><b><?php echo $text['Program_controller_text']; ?></b></div>
+                                    <div for="new_task_form" class="col-3 t1"><b><?php echo $text['Program_Template_text']; ?></b></div>
                                     <div class="scrollbar-Program border-bottom-div" id="style-Program">
                                         <div class="force-overflow-Program" style="padding-left: 7%">
                                             <div id="TemplateContainer" class="row">
@@ -513,6 +530,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                              </div>
                         </div>
                     </form>
@@ -657,6 +675,30 @@ function new_task() {
     if (task_id > 10) { //避免新增超過10個task
         return 0;
     }
+
+    //判斷是否為virtual message
+    if( document.querySelector('div[data-id="'+task_id+'"]') == null ){
+        document.getElementById('gtcs').disabled = true
+        document.getElementById('socket-tray').disabled = true
+        document.getElementById('arm').disabled = true
+        document.getElementById('screw-feeder-position').disabled = true
+        document.getElementById('delaytime').disabled = true
+
+        document.getElementById('message').checked = true
+        document.getElementById('message').disabled = true
+        document.getElementById('Message-setting').style.display = 'block'
+    }else{
+        document.getElementById('gtcs').disabled = false
+        document.getElementById('socket-tray').disabled = false
+        document.getElementById('arm').disabled = false
+        document.getElementById('screw-feeder-position').disabled = false
+        document.getElementById('delaytime').disabled = false
+
+        document.getElementById('message').checked = false
+        document.getElementById('message').disabled = false
+        document.getElementById('Message-setting').style.display = 'none'
+    }
+
     document.getElementById('gtcs').checked = false;//arm
     document.getElementById('arm').checked = false;
     document.getElementById("program-setting").style.display = 'none';
@@ -667,6 +709,8 @@ function new_task() {
     document.getElementById("task_id").value = task_id;
     document.getElementById("close_modal_1").setAttribute("onclick", "close_modal()");
     document.getElementById("close_modal_2").setAttribute("onclick", "close_modal()");
+    
+    document.getElementById("TemplateContainer").innerHTML = '';
 
     document.getElementById('TaskNew').style.display = 'block'
 }
@@ -689,26 +733,54 @@ function get_task_id_normal(job_id,seq_id) {
 
 //new task 按下save鍵
 function new_task_save() {
+    
     let job_id = document.getElementById("job_id").value;
     let seq_id = document.getElementById("seq_id").value;
     let task_id = document.getElementById("task_id").value;
-    let screw_template_id = document.querySelector('input[name="screw"]:checked').value;
+    let screw_template_id = '';
     let position = document.getElementById("position").value;
     let tolerance = document.getElementById("tolerance1").value;
     let tolerance2 = document.getElementById("tolerance2").value;
     let message_text = document.getElementById("message_text").value;
     let delaytime = document.getElementById("delaytime").value;
     // let img_div = document.getElementById('img-container').innerHTML;//Tolerance 
-    let img_div = document.querySelector('div[data-id="'+task_id+'"]').outerHTML
-    let controller_id = document.querySelector('input[name="controller"]:checked').value;
+    
+    let controller_id = 1;//目前只有GTCS
     let enable_arm = document.getElementById('arm').checked;
     let sockect_hole = document.getElementById('hole_select').value;
-    
 
-    let circle_width = document.querySelector('div[data-id="'+task_id+'"]').style.width
-    let circle_height = document.querySelector('div[data-id="'+task_id+'"]').style.height
-    let circle_top = document.querySelector('div[data-id="'+task_id+'"]').style.top
-    let circle_left = document.querySelector('div[data-id="'+task_id+'"]').style.left
+    let img_div;//
+    let circle_width = '';
+    let circle_height = '';
+    let circle_top = '';
+    let circle_left = '';
+
+    //判斷是否為virtual message
+    if( document.querySelector('div[data-id="'+task_id+'"]') == null || document.getElementById('pure_message').value == 1 ){ //純virtaul message
+
+        circle_width = 0;
+        circle_height = 0;
+        circle_top = 0;
+        circle_left = 0;
+
+        screw_template_id = -1;
+
+    }else{ //有鎖附
+        if( document.querySelector('input[name="screw"]:checked') == null){
+            alert('<?php echo $error_message['task_setting']; ?>')
+            return;
+        }
+        screw_template_id = document.querySelector('input[name="screw"]:checked').value;
+
+        img_div = document.querySelector('div[data-id="'+task_id+'"]').outerHTML
+        circle_width = document.querySelector('div[data-id="'+task_id+'"]').style.width
+        circle_height = document.querySelector('div[data-id="'+task_id+'"]').style.height
+        circle_top = document.querySelector('div[data-id="'+task_id+'"]').style.top
+        circle_left = document.querySelector('div[data-id="'+task_id+'"]').style.left
+
+    }
+
+    
 
     img_div = `style="width: `+circle_width+`; height: `+circle_height+`; top: `+circle_top+`; left: `+circle_left+`;"`
 
@@ -822,7 +894,15 @@ function edit_task() {
 
         console.log(response)
         if(response['controller'] == 1){//帶入controller
-            document.getElementById('gtcs').checked = true;
+            
+            if(response['template_program_id'] == -1){
+                document.getElementById('gtcs').checked = false;
+                document.getElementById('pure_message').value = 1
+            }else{
+                document.getElementById('gtcs').checked = true;
+                document.getElementById('pure_message').value = 0
+            }
+
             EquipmentCheckbox('gtcs');
         }
         if(response['enable_arm'] == 1){//帶入arm
@@ -886,6 +966,24 @@ function edit_task() {
 
         }
 
+        //判斷是否為virtual message
+        if( response['template_program_id'] < 0 ){
+            document.getElementById('gtcs').disabled = true
+            document.getElementById('socket-tray').disabled = true
+            document.getElementById('arm').disabled = true
+            document.getElementById('screw-feeder-position').disabled = true
+            document.getElementById('delaytime').disabled = true
+            document.getElementById('message').disabled = true
+            document.getElementById("program-setting").style.display = 'none';
+        }else{
+            document.getElementById('gtcs').disabled = false
+            document.getElementById('socket-tray').disabled = false
+            document.getElementById('arm').disabled = false
+            document.getElementById('screw-feeder-position').disabled = false
+            document.getElementById('delaytime').disabled = false
+            document.getElementById('message').disabled = false
+        }
+
         document.getElementById('TaskNew').style.display = 'block'
     });
 
@@ -927,16 +1025,16 @@ function get_gtcs_template(item) {
             label.htmlFor = `screw_${item.template_program_id}`;
 
             if(item.step_targettype == 2){//target = torque
-                label.textContent = `${item.step_name} | Tool | ${item.step_targettorque} N.m`;
+                label.textContent = `${item.step_name} | ${item.tool_name} | ${item.step_targettorque} N.m`;
             }else{//target = angle
-                label.textContent = `${item.step_name} | Tool | ${item.step_targetangle} º`;
+                label.textContent = `${item.step_name} | ${item.tool_name} | ${item.step_targetangle} º`;
             }
 
             if (typeof item.template_program_name !== 'undefined') {
                 if(item.step_targettype == 2){//target = torque
-                    label.textContent = `${item.template_program_name} | Tool | ${item.step_targettorque} N.m`;
+                    label.textContent = `${item.template_program_name} | ${item.tool_name} | ${item.step_targettorque} N.m`;
                 }else{//target = angle
-                    label.textContent = `${item.template_program_name} | Tool | ${item.step_targetangle} º`;
+                    label.textContent = `${item.template_program_name} | ${item.tool_name} | ${item.step_targetangle} º`;
                 }
             }
 

@@ -69,42 +69,48 @@ if(!empty($data['tower_light_switch'])) {
                                 <div class="row t3">
                                     <div class="col-3 t3"><?php echo $text['Red_text']; ?></div>
                                     <div class="col-1 t3">
-                                        <select id="unit" style="width: auto" disabled>
-                                            <option value="0"></option>
-                                            <option value="1">pin1</option>
-                                            <option value="2">pin2</option>
-                                            <option value="3">pin3</option>
-                                            <option value="4">pin4</option>
-                                            <option selected value="5">pin5</option>
-                                            <option value="6">pin6</option>
+                                        <select id="redlight_pin" style="width: auto" >
+                                            <?php 
+                                                for ($i=0; $i < 12; $i++) { 
+                                                    if($data['light_pin']['red_light'] == $i){
+                                                        echo '<option value="'.$i.'"selected>pin'.$i.'</option>';
+                                                    }else{
+                                                        echo '<option value="'.$i.'">pin'.$i.'</option>';    
+                                                    }
+                                                }
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row t3">
                                     <div class="col-3 t3"><?php echo $text['Green_text']; ?></div>
                                     <div class="col-1 t3">
-                                        <select id="unit" style="width: auto" disabled>
-                                            <option value="0"></option>
-                                            <option value="1">pin1</option>
-                                            <option value="2">pin2</option>
-                                            <option value="3">pin3</option>
-                                            <option selected value="4">pin4</option>
-                                            <option value="5">pin5</option>
-                                            <option value="6">pin6</option>
+                                        <select id="greenlight_pin" style="width: auto" >
+                                             <?php 
+                                                for ($i=0; $i < 12; $i++) { 
+                                                    if($data['light_pin']['green_light'] == $i){
+                                                        echo '<option value="'.$i.'"selected>pin'.$i.'</option>';
+                                                    }else{
+                                                        echo '<option value="'.$i.'">pin'.$i.'</option>';    
+                                                    }
+                                                }
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row t3">
                                     <div class="col-3 t3"><?php echo $text['Yellow_text']; ?></div>
                                     <div class="col-1 t3">
-                                        <select id="unit" style="width: auto" disabled>
-                                            <option value="0"></option>
-                                            <option selected value="1">pin1</option>
-                                            <option value="2">pin2</option>
-                                            <option value="3">pin3</option>
-                                            <option value="4">pin4</option>
-                                            <option value="5">pin5</option>
-                                            <option value="6">pin6</option>
+                                        <select id="yellowlight_pin" style="width: auto" >
+                                             <?php 
+                                                for ($i=0; $i < 12; $i++) { 
+                                                    if($data['light_pin']['yellow_light'] == $i){
+                                                        echo '<option value="'.$i.'"selected>pin'.$i.'</option>';
+                                                    }else{
+                                                        echo '<option value="'.$i.'">pin'.$i.'</option>';    
+                                                    }
+                                                }
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
@@ -112,17 +118,26 @@ if(!empty($data['tower_light_switch'])) {
                                 <div class="row t3">
                                     <div class="col-3 t3"><?php echo $text['Buzzer_text']; ?></div>
                                     <div class="col-1 t3">
-                                        <select id="unit" style="width: auto" disabled>
-                                            <option selected value="0">pin0</option>
-                                            <option value="1">pin1</option>
-                                            <option value="2">pin2</option>
-                                            <option value="3">pin3</option>
-                                            <option value="4">pin4</option>
-                                            <option value="5">pin5</option>
-                                            <option value="6">pin6</option>
+                                        <select id="buzzer_pin" style="width: auto" >
+                                             <?php 
+                                                for ($i=0; $i < 12; $i++) { 
+                                                    if($data['light_pin']['buzzer'] == $i){
+                                                        echo '<option value="'.$i.'"selected>pin'.$i.'</option>';
+                                                    }else{
+                                                        echo '<option value="'.$i.'">pin'.$i.'</option>';    
+                                                    }
+                                                }
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
+                                <div class="row t3">
+                                    <div class="col-3 t3"></div>
+                                    <div class="col-3 t3">
+                                        <button type="button" class="btn btn_All" onclick="set_tower_pin()"><?php echo $text['Save_text']; ?></button>
+                                    </div>
+                                </div>
+                                
                             </div>
 
                             <div class="right-column">
@@ -323,7 +338,7 @@ if(!empty($data['tower_light_switch'])) {
                                             </label>
                                         </div>
                                         <div>
-                                            <input id="OK_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <input id="OK_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
                                             <span><?php echo $text['ms_text']; ?></span>
                                         </div>
                                     </div>
@@ -337,7 +352,7 @@ if(!empty($data['tower_light_switch'])) {
                                             </label>
                                         </div>
                                         <div>
-                                            <input id="NG_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <input id="NG_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
                                             <span><?php echo $text['ms_text']; ?></span>
                                         </div>
                                     </div>
@@ -351,7 +366,7 @@ if(!empty($data['tower_light_switch'])) {
                                             </label>
                                         </div>
                                         <div>
-                                            <input id="OK_SEQ_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <input id="OK_SEQ_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
                                             <span><?php echo $text['ms_text']; ?></span>
                                         </div>
                                     </div>
@@ -365,7 +380,7 @@ if(!empty($data['tower_light_switch'])) {
                                             </label>
                                         </div>
                                         <div>
-                                            <input id="OKALL_time" class="lighttime" type="" name="" <?php echo $is_disabled;?>
+                                            <input id="OKALL_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
                                             <span><?php echo $text['ms_text']; ?></span>
                                         </div>
                                     </div>
@@ -379,7 +394,7 @@ if(!empty($data['tower_light_switch'])) {
                                             </label>
                                         </div>
                                         <div>
-                                            <input id="ERROR_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> 
+                                            <input id="ERROR_time" class="lighttime" type="" name="" <?php echo $is_disabled;?> >
                                             <span><?php echo $text['ms_text']; ?></span>
                                         </div>
                                    </div>
@@ -605,6 +620,37 @@ if(!empty($data['tower_light_switch'])) {
         document.getElementById("ERROR_Yellow").checked = +ERROR_Yellow;
         document.getElementById("ERROR_Buzzer").checked = +ERROR_Buzzer;
         document.getElementById("ERROR_time").value = ERROR_time;
+    }
+
+    function set_tower_pin(argument) {
+        let formData = {};
+        formData.red_light = document.getElementById("redlight_pin").value;
+        formData.green_light = document.getElementById("greenlight_pin").value;
+        formData.yellow_light = document.getElementById("yellowlight_pin").value;
+        formData.buzzer = document.getElementById("buzzer_pin").value;
+
+        $.ajax({
+            url: '?url=Equipments/TowerPinSetting', // 
+            // async: false,
+            method: 'POST',
+            data: formData ,
+            dataType: "json",
+            success: function(response) {
+                // 處理服務器返回的響應
+                if(response){
+                    alert('save success');
+                }else{
+                    alert('save fail')
+                }
+            },
+            complete: function(XHR, TS) {
+                XHR = null;
+                // console.log("connect_test 執行完成");
+            },
+            error: function(xhr, status, error) {
+                // console.log("fail");
+            }
+        });
     }
 
 

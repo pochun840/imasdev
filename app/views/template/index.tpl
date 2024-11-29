@@ -104,9 +104,14 @@
                 <div class="row t1">
                     <div class="col-4 t1"><?php echo $text['Screw_Tool_text']; ?> :</div>
                     <div class="custom-select">
-                        <select class="selectem">
+                        <select id="tool_selected" class="selectem">
                             <option value="" disabled selected><?php echo $text['Select_text']; ?></option>
-                            <option value="tool1">SGT-CS303</option>
+                            <!-- <option value="tool1">SGT-CS303</option> -->
+                            <?php 
+                                foreach ($data['tools'] as $key => $value) {
+                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';
+                                }
+                            ?>
                             <!-- <option value="tool2">3-01007-7L-H</option> -->
                         </select>
                     </div>
@@ -169,11 +174,26 @@
 <script type="text/javascript">
     function go_to(argument) {
         let selectedRadioButton = document.querySelector('input[name="jobType"]:checked');
-        // alert(selectedRadioButton.value);
-        if(selectedRadioButton.value == 'normal'){
-            location.href = '?url=Templates/normalstep_index/';
-        }else if(selectedRadioButton.value == 'advance'){
-            location.href = '?url=Templates/advancedstep_index/';
+        let tool_name = document.getElementById('tool_selected').value
+
+        if(tool_name != ''){
+            $.ajax({
+                url: '?url=Templates/set_tool_cookie', // 
+                // async: false,
+                method: 'POST',
+                data: { 'tool_name':tool_name },
+                dataType: "json",
+            }).done(function(response) { //成功且有回傳值才會執行
+
+                if(selectedRadioButton.value == 'normal'){
+                    location.href = '?url=Templates/normalstep_index/';
+                }else if(selectedRadioButton.value == 'advance'){
+                    location.href = '?url=Templates/advancedstep_index/';
+                }
+            }).fail(function() {
+                history.go(0);//失敗就重新整理
+            });
+
         }
     }
 

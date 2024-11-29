@@ -454,13 +454,13 @@
                             <div class="col">
                                 <div class="simple-toggle">
                                     <label class="tgl" style="font-size:28px; float: right;">
-                                        <input type="checkbox"   id="check_ktm">
-                                        <span data-on="&#10003;" data-off="&#10005;" ></span>
+                                        <input type="checkbox">
+                                        <span data-on="&#10003;" data-off="&#10005;"></span>
                                     </label>
                                 </div>
                             </div>
                             <div class="col">
-                                <a><i id="Remove" class="fa fa-minus-square-o" ></i></a>
+                                <a><i id="Remove" class="fa fa-minus-square-o"></i></a>
                                 <a><i id="Edit" class="fa fa-edit" onclick="ShowKtmSettingMode()"></i></a>
                             </div>
                         </div>
@@ -525,16 +525,6 @@
             modal.classList.remove("active");
         }
     }
-
-    window.addEventListener('DOMContentLoaded', function() {
-        var checkBox = document.getElementById('check_ktm');
-        var checkKtmValue = localStorage.getItem('check_ktm') || 'no';
-        checkBox.checked = (checkKtmValue === 'yes');
-        checkBox.addEventListener('change', function() {
-            localStorage.setItem('check_ktm', checkBox.checked ? 'yes' : 'no');
-        });
-    });
-
 </script>
 
 <script>

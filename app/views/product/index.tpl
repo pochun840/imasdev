@@ -97,6 +97,14 @@
         </div>
     </div>
 
+    <div style="display:none;">
+        <input id="tool_name" value="<?php echo $data['tools_info']['tool_name']; ?>">
+        <input id="tool_max_torque" value="<?php echo $data['tools_info']['max_torque']; ?>">
+        <input id="tool_min_torque" value="<?php echo $data['tools_info']['min_torque']; ?>">
+        <input id="tool_max_rpm" value="<?php echo $data['tools_info']['max_rpm']; ?>">
+        <input id="tool_min_rpm" value="<?php echo $data['tools_info']['min_rpm']; ?>">
+    </div>
+
     <div class="topnav">
         <a style="font-size: 18px; padding-left: 2%"><?php echo $text['Barcode_text']; ?> :</a>&nbsp;
         <input class="t2" type="text" id="search-bar" size="50" placeholder="">
@@ -195,7 +203,7 @@
                                 <div class="row">
                                     <div for="controller_type" class="col-5 t1"><?php echo $text['Controller_Type_text']; ?> :</div>
                                     <div class="col t2">
-                      					<select id="controller_type" style="width: 183px">
+                      					<select id="controller_type" class="form-select" style="width: 183px">
                        					    <option value="0"><?php echo $text['NO_text']; ?> </option>
                        					    <option value="1">GTCS</option>
                      					    <option value="2">TCG</option>
@@ -258,11 +266,11 @@
                                         <input id="reverse_rpm" type="text" class="form-control input-ms" maxlength="" >
                                     </div>
                                     <div class="col t1">
-                                        <label><?php echo $text['MAX_text']; ?> 1000</label>
+                                        <label><?php echo $text['MAX_text']; ?> <?php echo $data['tools_info']['max_rpm']; ?></label>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div for="reverse_Force" class="col-5 t1"><?php echo $text['Reverse_Force_text']; ?> (&#37;) :</div>
+                                    <div for="reverse_Force" class="col-5 t1"><?php echo $text['Reverse_Force_text']; ?> :</div>
                                     <div class="col-4 t2">
                                         <input id="reverse_Force" type="text" class="form-control input-ms" maxlength="" >
                                     </div>
@@ -345,7 +353,7 @@
                             <div class="row">
                                 <div for="to_job_id" class="col-4 t1"><?php echo $text['Job_ID_text']; ?> :</div>
                 				<div class="col-5 t2">
-                				    <input type="text" class="form-control" id="to_job_id" >
+                				    <input type="number" class="form-control" id="to_job_id" oninput="if(value>999)value=999" >
                 				</div>
             				</div>
                             <div class="row">
@@ -683,7 +691,13 @@ function updateCircleSize(value)
                 //var formData = new FormData();
                 formData.append('image', fileInput);
             }
-        } 
+        }
+
+        let check = input_check();
+        if(!check){
+            return;
+        }
+
 
 
         //cropper
@@ -791,7 +805,7 @@ function updateCircleSize(value)
         document.getElementById("reverse_button").value = 1;
         document.getElementById("reverse_rpm").value = 100;
         document.getElementById("reverse_Force").value = 70;
-        document.getElementById('reverse_count').value = '';
+        document.getElementById('reverse_count').value = 0;
         document.getElementById("threshold_torque").value = 0.0;
         document.getElementById('barcode_start').checked = 1;
         document.getElementById('job_repeat').checked = 0;
@@ -805,6 +819,9 @@ function updateCircleSize(value)
         //image
         document.getElementById('upload_img').value = '';
         $('#output').attr('src', '').hide(); //將img的src設定為dataURL並顯示
+
+        //remove is-invalid class
+        remove_invalid('JobNew');
 
         //get job id
         let job_id = get_job_id_normal();
@@ -838,6 +855,9 @@ function updateCircleSize(value)
     function edit_job(argument) {
 
         let rowSelected = document.getElementsByClassName('selected');
+        if(rowSelected.length == 0){
+            return
+        }
         let job_id = rowSelected[0].childNodes[0].innerHTML;
 
         let url = '?url=Products/get_job_by_id';
@@ -879,6 +899,9 @@ function updateCircleSize(value)
                 //image
                 $('#output').attr('src', response['img']).show(); //將img的src設定為dataURL並顯示
 
+                //remove is-invalid class
+                remove_invalid('JobNew');
+
                 document.getElementById('modal_head').innerHTML = '<?php echo $text['Edit_Job_text']; ?>'; //'New Job'
                 document.getElementById('JobNew').style.display='block'
             },
@@ -897,6 +920,7 @@ function updateCircleSize(value)
         if (rowSelected.length != 0) {
             let job_id = rowSelected[0].childNodes[0].innerHTML;
             let job_id_name = rowSelected[0].childNodes[1].innerHTML;
+            remove_invalid('new_job_form');
 
             document.getElementById('from_job_id').value=job_id;
             document.getElementById('from_job_name').value=job_id_name;
@@ -906,9 +930,27 @@ function updateCircleSize(value)
 
     function copy_job() {
         let rowSelected = document.getElementsByClassName('selected');
+        if(rowSelected.length == 0){
+            return
+        }
         let job_id = rowSelected[0].childNodes[0].innerHTML;
         let to_job_id = document.getElementById('to_job_id').value;
         let to_job_name = document.getElementById('to_job_name').value;
+
+        if(to_job_id == '' || to_job_name == ''){
+            if (to_job_id == '') {
+                document.getElementById('to_job_id').classList.add("is-invalid");
+            }else{
+                document.getElementById('to_job_id').classList.remove("is-invalid");
+            }
+
+            if (to_job_name == '') {
+                document.getElementById('to_job_name').classList.add("is-invalid");
+            }else{
+                document.getElementById('to_job_name').classList.remove("is-invalid");
+            }
+            return;
+        }
 
         let url = '?url=Products/copy_job';
         $.ajax({
@@ -1274,6 +1316,77 @@ function ClickNotification() {
 
 addMessage();
 </script>
+
+<script>
+
+    function input_check(argument) {
+
+        let Tool_Max_Torque = document.getElementById('tool_max_torque').value;
+        let Tool_Min_Torque = document.getElementById('tool_min_torque').value;
+        let Tool_Max_RPM = document.getElementById('tool_max_rpm').value;
+        let Tool_Min_RPM = document.getElementById('tool_min_rpm').value;
+
+        let conditions = [
+                { id: 'job_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'reverse_rpm', pattern: /^\d{0,5}(\.\d{0,2})?$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
+                { id: 'reverse_Force', pattern: /^\d{0,5}(\.\d{0,2})??$/, min: 1, max: 110 },
+                { id: 'threshold_torque', pattern: /^\d{0,5}(\.\d{0,2})??$/, min: 0, max: 99999 },
+                { id: 'controller_type', pattern: /^\d{0,5}(\.\d{0,2})??$/, min: 1, max: 99999 },
+            ];
+
+        let isFormValid = true;
+
+        conditions.forEach(function(input) {
+            var element = document.getElementById(input.id);
+            var value = element.value.trim();
+
+            //在<div class="invalid-feedback"></div> 加入範圍
+            if( input.id != 'job_name' && input.id != 'program-name-a' ){
+                // element.nextElementSibling.innerHTML = input.min+' ~ '+input.max;
+            }
+
+            if (value === "") {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (!input.pattern.test(value)) {
+                // element.value = "";
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.min !== null && parseFloat(value) < input.min) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else if (input.max !== null && parseFloat(value) > input.max) {
+                element.classList.add("is-invalid");
+                isFormValid = false;
+            } else {
+                element.classList.remove("is-invalid");
+            }
+
+        });
+
+        // console.log(conditions)
+
+        return isFormValid;
+
+    }
+
+    function remove_invalid(div_id) {
+        // Select the form by its ID
+        var form = document.getElementById(div_id);
+
+        // Check if the form exists
+        if (form) {
+            // Get all elements within the form
+            var elements = form.querySelectorAll("*");
+            
+            // Loop through each element and remove the "is-invalid" class
+            elements.forEach(function(element) {
+                element.classList.remove("is-invalid");
+            });
+        }
+    }
+</script>
+
 
 </div>
 

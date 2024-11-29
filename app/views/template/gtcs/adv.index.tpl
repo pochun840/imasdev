@@ -112,7 +112,17 @@
 
                 <div for="tool-type" class="col-1 t1"><?php echo $text['Screw_Tool_text'];?> :</div>
                 <div class="col-2 t2" style="margin-right: 2%">
-                    <input type="text" class="form-control input-ms" id="tool-type" value="3-01007-7L-H" maxlength="" disabled="disabled">
+                    <select id="tool_selected" class="form-select" onchange="chagne_tool()">
+                        <?php 
+                            foreach ($data['tools'] as $key => $value) {
+                                if($data['tools_info']['tool_name'] == $value['tool_name']){
+                                    echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
+                                }else{
+                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
+                                }
+                            }
+                        ?>
+                    </select>
                 </div>
 
                 <div class="col t1">
@@ -407,9 +417,11 @@ function highlight_row() {
 
         //get new program_id
         let program_id = get_program_id();
-        if (program_id > 50) { //避免新增超過50個program
+        if (program_id > 999) { //避免新增超過50個program
             return 0;
         }
+
+        document.getElementById("program-name").classList.remove("is-invalid");
 
         document.getElementById('modal_head').innerHTML = '<?php echo $text['New_Program_text']; ?>'; //'New Program'
         // //帶入預設值
@@ -432,6 +444,8 @@ function highlight_row() {
             let pro_id = rowSelected[0].childNodes[1].innerHTML;
             let pro_name = rowSelected[0].childNodes[2].innerHTML;
 
+            document.getElementById("edit_program-name").classList.remove("is-invalid");
+
             document.getElementById("edit_program-id").value = pro_id;
 
             document.getElementById("edit_program-name").value = pro_name;
@@ -440,9 +454,6 @@ function highlight_row() {
             document.getElementById('ProgramEdit').style.display = 'block';
         }
 
-        
-
-        document.getElementById('ProgramEdit').style.display = 'block';
     }
 
     function create_advance_template(argument) {
@@ -450,16 +461,20 @@ function highlight_row() {
         let program_name = document.getElementById("program-name").value;
         let program_target = document.getElementById("target-type").value;
 
-        $.ajax({
-            type: "POST",
-            url: "?url=Templates/create_gtcs_adv_program",
-            data: {'program_id':program_id, 'program_name':program_name, 'program_target':program_target},
-            dataType: "json",
-        }).done(function(data) { //成功且有回傳值才會執行
-            // program_id = data['missing_id'];
-            console.log(data);
-            history.go(0)
-        });
+        if(program_name != ''){
+            $.ajax({
+                type: "POST",
+                url: "?url=Templates/create_gtcs_adv_program",
+                data: {'program_id':program_id, 'program_name':program_name, 'program_target':program_target},
+                dataType: "json",
+            }).done(function(data) { //成功且有回傳值才會執行
+                // program_id = data['missing_id'];
+                console.log(data);
+                history.go(0)
+            });
+        }else{
+            document.getElementById("program-name").classList.add("is-invalid");
+        }
     }
 
 
@@ -469,26 +484,37 @@ function highlight_row() {
         let program_id = document.getElementById("edit_program-id").value;
         let program_name = document.getElementById("edit_program-name").value;
 
-        $.ajax({
-            type: "POST",
-            url: "?url=Templates/edit_gtcs_adv_program",
-            data: {'program_id':program_id, 'program_name':program_name},
-            // dataType: "json",
-        }).done(function(data) { //成功且有回傳值才會執行
-            // program_id = data['missing_id'];
-            //console.log(data);
-            history.go(0);
-             document.getElementById('ProgramEdit').style.display = 'none';
-        });
-        // document.getElementById('ProgramEdit').style.display = 'none';
-        // history.go(0);
+        if(program_name != ''){
+            $.ajax({
+                type: "POST",
+                url: "?url=Templates/edit_gtcs_adv_program",
+                data: {'program_id':program_id, 'program_name':program_name},
+                // dataType: "json",
+            }).done(function(data) { //成功且有回傳值才會執行
+                // program_id = data['missing_id'];
+                //console.log(data);
+                history.go(0);
+                 document.getElementById('ProgramEdit').style.display = 'none';
+            });
+        }else{
+            document.getElementById("edit_program-name").classList.add("is-invalid");
+        }
     }
 
     function copy_program_div() {
         let rowSelected = document.getElementsByClassName('selected');
+        document.getElementById("to_pro_id").classList.remove("is-invalid");
+        document.getElementById("to_Program_name").classList.remove("is-invalid");
         if (rowSelected.length != 0) {
             let pro_id = rowSelected[0].childNodes[1].innerHTML;
             let pro_name = rowSelected[0].childNodes[2].innerHTML;
+            
+            let to_program_id = get_program_id();
+            if (to_program_id > 999) { //避免新增超過50個program
+                return 0;
+            }
+            document.getElementById('to_pro_id').value=to_program_id;
+            document.getElementById('to_pro_id').disabled=true;
 
             document.getElementById('from_pro_id').value=pro_id;
             document.getElementById('from_pro_name').value=pro_name;
@@ -502,29 +528,40 @@ function highlight_row() {
         let to_pro_id = document.getElementById('to_pro_id').value;
         let to_pro_name = document.getElementById('to_Program_name').value;
 
-        let url = '?url=Templates/copy_program';
-        $.ajax({
-            type: "POST",
-            data: {
-                'from_pro_id': pro_id,
-                'to_pro_id': to_pro_id,
-                'to_pro_name': to_pro_name,
-                'job_type': 'advanced'
-            },
-            dataType: "json",
-            url: url,
-            success: function(response) {
-                // 成功回調函數，處理伺服器的回應
-                // console.log(response); // 在控制台輸出伺服器的回應
-                history.go(0);
-            },
-            error: function(error) {
-                // 失敗回調函數，處理錯誤情況
-                // console.error('Error:', error); // 在控制台輸出錯誤訊息
+        if(to_pro_id != '' && to_pro_name != ''){
+            let url = '?url=Templates/copy_program';
+            $.ajax({
+                type: "POST",
+                data: {
+                    'from_pro_id': pro_id,
+                    'to_pro_id': to_pro_id,
+                    'to_pro_name': to_pro_name,
+                    'job_type': 'advanced'
+                },
+                dataType: "json",
+                url: url,
+                success: function(response) {
+                    // 成功回調函數，處理伺服器的回應
+                    // console.log(response); // 在控制台輸出伺服器的回應
+                    history.go(0);
+                },
+                error: function(error) {
+                    // 失敗回調函數，處理錯誤情況
+                    // console.error('Error:', error); // 在控制台輸出錯誤訊息
+                }
+            }).fail(function() {
+                // history.go(0);//失敗就重新整理
+            });
+        }else{
+            if (to_pro_id == ''){
+                document.getElementById("to_pro_id").classList.add("is-invalid");
             }
-        }).fail(function() {
-            // history.go(0);//失敗就重新整理
-        });
+            if (to_pro_name == ''){
+                document.getElementById("to_Program_name").classList.add("is-invalid");
+            }
+        }
+
+        
     }
 
     function delete_program() {
@@ -557,21 +594,40 @@ function highlight_row() {
         }
     }
 
- // Notification ....................
-let messageCount = 0;
+     // Notification ....................
+    let messageCount = 0;
 
-function addMessage() {
-    messageCount++;
-    document.getElementById('messageCount').innerText = messageCount;
-}
+    function addMessage() {
+        messageCount++;
+        document.getElementById('messageCount').innerText = messageCount;
+    }
 
-function ClickNotification() {
-    let messageBox = document.getElementById('messageBox');
-    let closeBtn = document.getElementsByClassName("close")[0];
-    messageBox.style.display = (messageBox.style.display === 'block') ? 'none' : 'block';
-}
+    function ClickNotification() {
+        let messageBox = document.getElementById('messageBox');
+        let closeBtn = document.getElementsByClassName("close")[0];
+        messageBox.style.display = (messageBox.style.display === 'block') ? 'none' : 'block';
+    }
 
-addMessage();
+    addMessage();
+
+    function chagne_tool() {
+        let tool_name = document.getElementById('tool_selected').value
+
+        if(tool_name != ''){
+            $.ajax({
+                url: '?url=Templates/set_tool_cookie', // 
+                // async: false,
+                method: 'POST',
+                data: { 'tool_name':tool_name },
+                dataType: "json",
+            }).done(function(response) { //成功且有回傳值才會執行
+                history.go(0);//失敗就重新整理
+            }).fail(function() {
+                history.go(0);//失敗就重新整理
+            });
+
+        }
+    }
 
 </script>
 

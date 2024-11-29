@@ -649,3 +649,6 @@ $text['job_select_text'] = 'Job Select';
 // $error_message['SEQ_COMPLETED'] = '工序完成按确认';
 // $error_message['JOB_COMPLETED'] = '工作完成按确认';
 // $error_message['WORKPIECE_RECOVERY'] = '工件复归按确认';
+
+//task error message
+$error_message['task_setting'] = 'Please select at least one program';

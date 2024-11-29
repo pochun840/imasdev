@@ -40,46 +40,14 @@
         </div>
 
         <div style="display: none;">
-            <input id="job_id" value="<?php echo $data['job_id']; ?>" disabled>
-            <input id="seq_id" value="<?php echo $data['seq_id']; ?>" disabled>
-            <input id="task_id" value="<?php echo $data['task_id']; ?>" disabled>
-            <input id="task_count" value="<?php echo $data['task_count']; ?>" disabled>
-            <input id="total_seq_count" value="<?php echo $data['total_seq']; ?>" disabled>
-            <input id="max_seq_id" value="<?php echo $data['max_seq_id']; ?>" disabled>
-            <input id="modbus_switch" value="1" >
-            <input id="tool_status" value="-1" > 
+            
         </div>
       
 
         <div id="task_coordinate" style="display:none;">
-            <?php foreach ($data['task_list'] as $key => $task){
-                echo '<input id="task_'.$task['task_id'].'_enable_arm" value="'.$task['enable_arm'].'">';
-                echo '<input id="task_'.$task['task_id'].'_x" value="'.$task['position_x'].'">';
-                echo '<input id="task_'.$task['task_id'].'_y" value="'.$task['position_y'].'">';
-                echo '<input id="task_'.$task['task_id'].'_tolerance" value="'.$task['tolerance'].'">';
-                echo '<input id="task_'.$task['task_id'].'_gtcs_job_id" value="'.$task['gtcs_job_id'].'">';
-                echo '<input id="task_'.$task['task_id'].'_hole_id" value="'.$task['hole_id'].'">';
-
-                echo '<input id="task_'.$task['task_id'].'_targettype" value="'.$task['last_targettype'].'">'; //targettype
-                if($task['last_targettype'] == 1){// angle
-                    echo '<input id="task_'.$task['task_id'].'_target_value" value="'.$task['last_step_targetangle'].'">'; //target torque
-                    echo '<input id="task_'.$task['task_id'].'_target_hi" value="'.$task['last_step_highangle'].'">'; //hi angle
-                    echo '<input id="task_'.$task['task_id'].'_target_lo" value="'.$task['last_step_lowangle'].'">'; //lo angle
-                }else{// torque
-                    echo '<input id="task_'.$task['task_id'].'_target_value" value="'.$task['last_step_targettorque'].'">'; //target torque
-                    echo '<input id="task_'.$task['task_id'].'_target_hi" value="'.$task['last_step_hightorque'].'">'; //hi torque
-                    echo '<input id="task_'.$task['task_id'].'_target_lo" value="'.$task['last_step_lowtorque'].'">'; //lo torque
-                    echo '<input id="task_'.$task['task_id'].'_last_target_value" value="'.$task['last_step_targettorque'].'">'; //target torque
-                    echo '<input id="task_'.$task['task_id'].'_last_target_hi" value="'.$task['last_step_hightorque'].'">'; //hi torque
-                    echo '<input id="task_'.$task['task_id'].'_last_target_lo" value="'.$task['last_step_lowtorque'].'">'; //lo torque
-                }
-            }?>
             <?php foreach ($data['button_auth'] as $key => $value) {
                 echo '<input id="button_auth_'.$key.'" value="'.$value.'">';
             }?>
-            <?php 
-                echo '<input id="stop_on_ng" value="'.$data['seq_data']['ng_stop'].'">';
-            ?>
 
         </div>
         <!-- for sensor position or status -->
@@ -164,30 +132,6 @@
         </div>
     </div>
 
-    <!-- Virtual Message -->
-    <div id="VirtualMessage" class="virtual-message" style="display: none; vertical-align: middle;">
-        <div class="topnav">
-            <label type="text" style="font-size: 20px; padding-left: 3%; margin: 7px 0"><b>Virtual Message</b></label>
-            <span class="close w3-display-topright" onclick="ClickVirtualMessage()">&times;</span>
-        </div>
-        <div class="scrollbar-Message_text" id="style-Message_text">
-            <div class="force-overflow_Message_text">
-                <div id="Message_text" style="padding-left: 6%">
-                    <form action="">
-                        <textarea id="w3review" name="w3review" rows="4" cols="40">
-                            <?php echo $data['task_message_list'][$data['task_id']]['text'];?>
-                        </textarea>
-                    </form>
-                </div>
-                <div style="padding-left: 6%;">
-                    <?php $img = empty($data['task_message_list'][$data['task_id']]['img']) ? './img/message.svg' : $data['task_message_list'][$data['task_id']]['img']; ?>
-                    <img src="<?php echo htmlspecialchars($img); ?>" style="height: 250px; width: 300px" alt="Nature">
-                </div>
-            </div>
-        </div>
-        <label style="bottom:0px; float:right; color:red; margin-right: 5px; padding: 5px"></label>
-    </div>
-
 
 
     <!-- Identity Verify -->
@@ -255,7 +199,7 @@
                         <div class="row" style="padding: 0 20px">
                             <label class="col-3 t7" style="margin: 2px 2px"><?php echo $text['barcode_text']; ?>:</label>
                             <div class="col" style="margin: 2px 2px">
-                                <input id="barcode" type="password" class="form-control" placeholder="" style="font-size: 1.5vmin;height: 28px;">
+                                <input id="barcode" type="password" class="form-control" placeholder="" style="font-size: 1.5vmin;height: 28px;" autofocus>
                             </div>
                         </div>
 
@@ -359,7 +303,7 @@
                     <div class="row">
                         <div id="tool_div" class="row sensor_style">
                             <h5 style="font-size: 2.3vmin; text-align: left;">
-                                <img class="t6 images" src="./img/torque.png"><?php echo $text['Tool_text']; ?> :<span id="tool_name" style="padding-left:5%">SGT-CS303</span>
+                                <img class="t6 images" src="./img/torque.png"><?php echo $text['Tool_text']; ?> :<span id="tool_name" style="padding-left:5%"></span>
                             </h5>
                             <div id="completedIcon" style="display:block; text-align: left;padding-left: 31px">
                                 <span id="tool_task_id" style="color: #000"></span>
@@ -466,89 +410,12 @@
                 </form>
             </div>
 
-            <!-- Sequence Select Modal -->
-            <div id="SeqSelect" class="modal" style="top: 28%; left: 10%">
-                <form class="w3-modal-content w3-animate-zoom" action="" style="width:280px; height: 150px">
-                    <div class=" w3-light-grey">
-                        <header class=" w3-container modal-header">
-                            <span onclick="document.getElementById('SeqSelect').style.display='none'"
-                            class="w3-button w3-dark-grey w3-display-topright" style="margin: 0px; height: 48px; width: 45px">&times;</span>
-                            <div style="text-align:center; font-size: 20px; color: #000"><?php echo $text['Seq_List_text']; ?></div>
-                        </header>
-                        <table id="seq_list" style="margin: 5px 10px 0px">
-                            <tr>
-                                <td align="left"><?php echo $text['Total_Seq_text']; ?> :
-                                    <input style="text-align: center; margin-bottom: 2%" id="RecordCnt" name="RecordCnt" readonly="readonly" disabled size="3" maxlength="3" value="<?php echo $data['total_seq']; ?>">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <select style="margin: center" id="SeqNameSelect" name="SeqNameSelect" size="5">
-                                         <?php foreach ($data['seq_list'] as $key => $seq) {
-                                            echo "<option value=".$seq['seq_id'].">{$seq['seq_id']} &nbsp;{$seq['seq_name']}</option>";
-                                        } ?>
-                                    </select>
-                                </td>
-                            </tr>
-                        </table>
-                        <div class="modal-footer justify-content-center">
-                             <button type="button" class="btn btn-primary" onclick="change_seq('')" ><?php echo $text['OK_text']; ?></button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+
         </div>
 
     </div>
 
-<!--
-    <footer class="footer">
-        <div id="screw_info_div" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left">Screw info</h5>
-                <label style="color: green; font-size: 2.8vmin;"><b><span id="screw_info"></span></b></label>
-           </div>
-        </div>
 
-        <div id="arm_div" class="column">
-            <div class="zoom" style="">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><img class="images" src="./img/operation-arm.svg" style="float: left">ARM</h5>
-                <label style="color: #FFFF00; font-size: 2.5vmin; text-align: left;padding-left: 31px"><b><span id="coordinate"></span></b></label>
-            </div>
-        </div>
-
-        <div id="tool_div" class="column" onclick="completeTask()">
-            <div class="zoom" style="">
-                <h5 style="font-size: 2.3vmin; text-align: left;">
-                    <img class="images" src="./img/torque.png" style="float: left; height: 20px;">Tool<br><span id="tool_name" style="padding-left:3px">SGT-CS303</span>
-                </h5>
-                <div id="completedIcon" style="display:block; text-align: left;padding-left: 31px">
-                    <span id="tool_task_id" style="color: #000"></span>
-                    <span id="tool_status_icon">
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <div id="socket_tray_div" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><img class="images" src="./img/socket-tray.png" style="float: left">Socket tray</h5>
-            </div>
-        </div>
-
-        <div id="picking_module" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left"><img class="images" src="./img/picking-module.png" style="float: left; height: 20px; width: 30px">Picking module</h5>
-            </div>
-        </div>
-
-        <div id="screw_feeder_div" class="column">
-            <div class="zoom">
-                <h5 style="font-size: 2.3vmin; line-height: 30px; text-align: left">Screw feeder</h5>
-            </div>
-        </div>
-    </footer>
--->
 </div>
 <style>
 #completedIcon
@@ -578,7 +445,7 @@ window.onclick = function(event) {
 
 
 $(document).ready(function () {
-    initail();
+    // initail();
     //img帶入
     
 });
@@ -676,14 +543,6 @@ $(document).ready(function () {
 
 </style>
 
-<style>
-/*調整 circle的顯示size*/
-.circle{
-    scale:<?php echo (1 + 1*($data['job_data']['point_size']/100) );?>;
-}
-</style>
-
-
 
 <?php require APPROOT . 'views/inc/footer.tpl'; ?>
 
@@ -691,8 +550,18 @@ $(document).ready(function () {
 function function_auth_check(action) {
     document.getElementById('verify_action').value = action;
     if(action == 'change_job'){
-      verify_action('change_job');
-        
+        if(document.getElementById('button_auth_switch_job').value == '1' ){
+            verify_action(action);
+        }else{
+            verify_form_display();
+        }
+    }
+    if(action == 'barcode'){
+        if(document.getElementById('button_auth_switch_job').value == '1' ){
+            verify_action(action);
+        }else{
+            verify_form_display();
+        }
     }
     
 }
@@ -702,9 +571,48 @@ function verify_action(action) {
     if(action == 'change_job'){
         document.getElementById('change_job').style.display='block';
     }
+    if(action == 'barcode'){
+        barcode_change_job();
+        // document.getElementById('change_job').style.display='block';
+    }
     
 }
 
+function verify_form_display() {
+    toggleIdentityVerify();
+    document.getElementById('id_verify').value = '';
+    document.getElementById('id_verify').focus()
+}
+
+function toggleIdentityVerify() {
+    let IdentityVerify = document.getElementById('IdentityVerify');
+    let closeBtn = document.getElementsByClassName("close")[0];
+    IdentityVerify.style.display = (IdentityVerify.style.display === 'block') ? 'none' : 'block';
+    //document.getElementById('IdentityVerify').style.display = 'none';
+
+}
+
+async function call_job_check(){
+
+    let action = document.getElementById('verify_action').value;
+    let card = document.getElementById('id_verify').value;
+    $.ajax({
+        url: '?url=Operations/button_auth_check', // 指向服務器端檢查更新的 PHP 腳本
+        // async: false,
+        method: 'POST',
+        data: { 'card': card, 'action': action },
+        dataType: "json"
+    }).done(function(response) { //成功且有回傳值才會執行
+        // alert(456)
+        console.log(response)
+        if(response.result){
+            verify_action(action)
+        }else{
+            alert('verify fail')
+        }
+        toggleIdentityVerify();
+    });
+}
 
 
 function change_job(seq_id,direction=''){
@@ -746,8 +654,8 @@ barcode_input.addEventListener("keypress", function(event) {
     // Cancel the default action, if needed
     event.preventDefault();
     // Trigger the button element with a click
-    barcode_change_job();
-    // function_auth_check('barcode')
+    // barcode_change_job();
+    function_auth_check('barcode')
     // alert(document.getElementById('barcode').value)
     
   }

@@ -67,7 +67,8 @@ class Template{
                         step_prr_rpm  = :step_prr_rpm,
                         step_prr_angle = :step_prr_angle,
                         step_downshift_mode = :step_downshift_mode,
-                        step_downshift_angle = :step_downshift_angle
+                        step_downshift_angle = :step_downshift_angle,
+                        tool_name = :tool_name
                     WHERE template_program_id = :template_program_id AND template_step_id = 1 ";
             $statement = $this->db->prepare($sql);
             // var_dump($this->db->errorInfo());
@@ -97,6 +98,7 @@ class Template{
             $statement->bindValue(':step_prr_angle', $data['pre_run_angle']);
             $statement->bindValue(':step_downshift_mode', 0);//先不管 downshift mode 
             $statement->bindValue(':step_downshift_angle', 0);//先不管 downshift angle 
+            $statement->bindValue(':tool_name', $data['tool_name']);//先不管 downshift angle 
             $results = $statement->execute();
 
         }else{ //不存在，用insert
@@ -108,8 +110,8 @@ class Template{
             $statement->bindValue(':type', 'normal');
             $results = $statement->execute();
 
-            $sql = "INSERT INTO `gtcs_normalstep_template` ('template_program_id','template_step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_hightorque','step_lowtorque','step_threshold_mode','step_threshold_torque','step_threshold_angle','step_monitoringangle','step_highangle','step_lowangle','step_downshift_enable','step_downshift_torque','step_downshift_speed','torque_unit','step_prr','step_prr_rpm','step_prr_angle','step_downshift_mode','step_downshift_angle' )
-                    VALUES (:template_program_id,:template_step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_hightorque,:step_lowtorque,:step_threshold_mode,:step_threshold_torque,:step_threshold_angle,:step_monitoringangle,:step_highangle,:step_lowangle,:step_downshift_enable,:step_downshift_torque,:step_downshift_speed,:torque_unit,:step_prr,:step_prr_rpm,:step_prr_angle,:step_downshift_mode,:step_downshift_angle )";
+            $sql = "INSERT INTO `gtcs_normalstep_template` ('template_program_id','template_step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_hightorque','step_lowtorque','step_threshold_mode','step_threshold_torque','step_threshold_angle','step_monitoringangle','step_highangle','step_lowangle','step_downshift_enable','step_downshift_torque','step_downshift_speed','torque_unit','step_prr','step_prr_rpm','step_prr_angle','step_downshift_mode','step_downshift_angle','tool_name' )
+                    VALUES (:template_program_id,:template_step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_hightorque,:step_lowtorque,:step_threshold_mode,:step_threshold_torque,:step_threshold_angle,:step_monitoringangle,:step_highangle,:step_lowangle,:step_downshift_enable,:step_downshift_torque,:step_downshift_speed,:torque_unit,:step_prr,:step_prr_rpm,:step_prr_angle,:step_downshift_mode,:step_downshift_angle,:tool_name )";
             $statement = $this->db->prepare($sql);
             $statement->bindValue(':template_program_id', $data['program_id']);
             $statement->bindValue(':template_step_id', 1);
@@ -138,6 +140,7 @@ class Template{
             $statement->bindValue(':step_prr_angle', $data['pre_run_angle']);
             $statement->bindValue(':step_downshift_mode', 0);//先不管 downshift mode 
             $statement->bindValue(':step_downshift_angle', 0);//先不管 downshift angle 
+            $statement->bindValue(':tool_name', $data['tool_name']);//先不管 downshift angle 
             
             $results = $statement->execute();
 
@@ -190,9 +193,9 @@ class Template{
         $results = $statement->execute();    
         
         if($job_type == 'normal'){
-            $sql= "INSERT INTO `gtcs_normalstep_template` (template_program_id,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_hightorque,step_lowtorque,step_threshold_mode,step_threshold_torque,step_threshold_angle,step_monitoringangle,step_highangle,step_lowangle,step_downshift_enable,step_downshift_torque,step_downshift_speed,torque_unit,step_prr,step_prr_rpm,step_prr_angle,step_downshift_mode,step_downshift_angle )
+            $sql= "INSERT INTO `gtcs_normalstep_template` (template_program_id,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_hightorque,step_lowtorque,step_threshold_mode,step_threshold_torque,step_threshold_angle,step_monitoringangle,step_highangle,step_lowangle,step_downshift_enable,step_downshift_torque,step_downshift_speed,torque_unit,step_prr,step_prr_rpm,step_prr_angle,step_downshift_mode,step_downshift_angle,tool_name )
 
-                SELECT  :to_pro_id,template_step_id,:to_pro_name,step_targettype,step_targetangle,step_targettorque,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_hightorque,step_lowtorque,step_threshold_mode,step_threshold_torque,step_threshold_angle,step_monitoringangle,step_highangle,step_lowangle,step_downshift_enable,step_downshift_torque,step_downshift_speed,torque_unit,step_prr,step_prr_rpm,step_prr_angle,step_downshift_mode,step_downshift_angle
+                SELECT  :to_pro_id,template_step_id,:to_pro_name,step_targettype,step_targetangle,step_targettorque,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_hightorque,step_lowtorque,step_threshold_mode,step_threshold_torque,step_threshold_angle,step_monitoringangle,step_highangle,step_lowangle,step_downshift_enable,step_downshift_torque,step_downshift_speed,torque_unit,step_prr,step_prr_rpm,step_prr_angle,step_downshift_mode,step_downshift_angle,tool_name
                 FROM    gtcs_normalstep_template
                 WHERE template_program_id = :from_pro_id ";
             $stmt = $this->db->prepare($sql);
@@ -203,9 +206,9 @@ class Template{
         }
 
         if($job_type == 'advanced'){
-            $sql= "INSERT INTO `gtcs_advancedstep_template` (template_program_id,template_program_name,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope )
+            $sql= "INSERT INTO `gtcs_advancedstep_template` (template_program_id,template_program_name,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope,tool_name )
 
-                SELECT  :to_pro_id,:to_pro_name,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope 
+                SELECT  :to_pro_id,:to_pro_name,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope,tool_name 
                 FROM    gtcs_advancedstep_template
                 WHERE template_program_id = :from_pro_id ";
             $stmt = $this->db->prepare($sql);
@@ -251,8 +254,6 @@ class Template{
          } else {
              echo "No record found.";
          }        
-
-
       
     }
 
@@ -301,7 +302,8 @@ class Template{
                         step_lowangle = :step_lowangle,
                         torque_unit = :torque_unit,
                         step_angle_mode = :step_angle_mode,
-                        step_slope = :step_slope 
+                        step_slope = :step_slope,
+                        tool_name = :tool_name 
 
                     WHERE template_program_id = :template_program_id AND template_step_id = :template_step_id ";
             $statement = $this->db->prepare($sql);
@@ -331,6 +333,7 @@ class Template{
             $statement->bindValue(':torque_unit', 1);//先不管 扭力單位
             $statement->bindValue(':step_angle_mode', $data['step_angle_mode']);//先不管 扭力單位
             $statement->bindValue(':step_slope', 2000);//先不管斜率
+            $statement->bindValue(':tool_name', $data['tool_name']);//先不管斜率
             $results = $statement->execute();
 
         }else{ //不存在，用insert
@@ -342,8 +345,8 @@ class Template{
             $statement->bindValue(':type', 'advanced');
             $results = $statement->execute();
 
-            $sql = "INSERT INTO `gtcs_advancedstep_template` ('template_program_id','template_program_name','template_step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope' )
-                    VALUES (:template_program_id,:template_program_name,:template_step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope )";
+            $sql = "INSERT INTO `gtcs_advancedstep_template` ('template_program_id','template_program_name','template_step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope','tool_name' )
+                    VALUES (:template_program_id,:template_program_name,:template_step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope,:tool_name )";
             $statement = $this->db->prepare($sql);
             $statement->bindValue(':template_program_id', $data['program_id']);
             $statement->bindValue(':template_program_name', $data['program_name']);
@@ -370,6 +373,7 @@ class Template{
             $statement->bindValue(':torque_unit', 1);//先不管 扭力單位
             $statement->bindValue(':step_angle_mode', $data['step_angle_mode']);//先不管 扭力單位
             $statement->bindValue(':step_slope', 2000);//先不管斜率
+            $statement->bindValue(':tool_name', $data['tool_name']);//先不管斜率
             
             $results = $statement->execute();
 
@@ -446,7 +450,8 @@ class Template{
                         step_lowangle = :step_lowangle,
                         torque_unit = :torque_unit,
                         step_angle_mode = :step_angle_mode,
-                        step_slope = :step_slope 
+                        step_slope = :step_slope,
+                        tool_name = :tool_name 
 
                     WHERE template_program_id = :template_program_id AND template_step_id = :template_step_id ";
             $statement = $this->db->prepare($sql);
@@ -476,12 +481,13 @@ class Template{
             $statement->bindValue(':torque_unit', 1);//先不管 扭力單位
             $statement->bindValue(':step_angle_mode', $data['record_angle_val']);//先不管
             $statement->bindValue(':step_slope', 2000);//先不管斜率
+            $statement->bindValue(':tool_name', $data['tool_name']);//先不管斜率
             $results = $statement->execute();
 
         }else{ //不存在，用insert
 
-            $sql = "INSERT INTO `gtcs_advancedstep_template` ('template_program_id','template_program_name','template_step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope' )
-                    VALUES (:template_program_id,:template_program_name,:template_step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope )";
+            $sql = "INSERT INTO `gtcs_advancedstep_template` ('template_program_id','template_program_name','template_step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope','tool_name' )
+                    VALUES (:template_program_id,:template_program_name,:template_step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope,:tool_name )";
             $statement = $this->db->prepare($sql);
             $statement->bindValue(':template_program_id', $data['program_id']);
             $statement->bindValue(':template_program_name', $data['program_name']);
@@ -508,6 +514,7 @@ class Template{
             $statement->bindValue(':torque_unit', 1);//先不管 扭力單位
             $statement->bindValue(':step_angle_mode', $data['record_angle_val']);//先不管
             $statement->bindValue(':step_slope', 2000);//先不管斜率
+            $statement->bindValue(':tool_name', $data['tool_name']);//先不管斜率
             
             $results = $statement->execute();
 
@@ -555,9 +562,9 @@ class Template{
         }
 
         if($job_type == 'advanced'){
-            $sql= "INSERT INTO `gtcs_advancedstep_template` (template_program_id,template_program_name,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope )
+            $sql= "INSERT INTO `gtcs_advancedstep_template` (template_program_id,template_program_name,template_step_id,step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope,tool_name )
 
-                SELECT  template_program_id,template_program_name,:to_step_id,:to_step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope 
+                SELECT  template_program_id,template_program_name,:to_step_id,:to_step_name,step_targettype,step_targetangle,step_targettorque,step_delayttime,step_tooldirection,step_rpm,step_offsetdirection,step_torque_jointoffset,step_monitoringmode,step_torwin_target,step_torquewindow,step_angwin_target,step_anglewindow,step_hightorque,step_lowtorque,step_monitoringangle,step_highangle,step_lowangle,torque_unit,step_angle_mode,step_slope,tool_name 
                 FROM    gtcs_advancedstep_template
                 WHERE template_program_id = :from_pro_id AND template_step_id = :from_step_id ";
             $stmt = $this->db->prepare($sql);
@@ -645,8 +652,8 @@ class Template{
 
          
             foreach ($new_array as $item) {
-                $sql = "INSERT INTO $table_name ('job_id','seq_id','task_id','step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope' )
-                    VALUES ( :job_id,:seq_id,:task_id,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope )";
+                $sql = "INSERT INTO $table_name ('job_id','seq_id','task_id','step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope','tool_name' )
+                    VALUES ( :job_id,:seq_id,:task_id,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope,:tool_name )";
                 
                 $statement = $this->db->prepare($sql);
         
@@ -682,7 +689,8 @@ class Template{
                     'step_lowangle' => $item['step_lowangle'],
                     'torque_unit' => $item['torque_unit'],
                     'step_angle_mode' => $item['step_angle_mode'],
-                    'step_slope' => $item['step_slope']
+                    'step_slope' => $item['step_slope'],
+                    'tool_name' => $item['tool_name']
                 ])) {
                     $insertedCount++;
                 } else {
@@ -734,7 +742,7 @@ class Template{
                             step_threshold_torque, step_threshold_angle, step_monitoringangle, step_highangle, 
                             step_lowangle, step_downshift_enable, step_downshift_torque, step_downshift_speed, 
                             torque_unit, step_prr, step_prr_rpm, step_prr_angle, step_downshift_mode, 
-                            step_downshift_angle
+                            step_downshift_angle,tool_name
                         ) VALUES (
                             :job_id, :seq_id, :task_id, :step_name, :step_targettype, :step_targetangle, 
                             :step_targettorque, :step_tooldirection, :step_rpm, :step_offsetdirection, 
@@ -742,7 +750,7 @@ class Template{
                             :step_threshold_torque, :step_threshold_angle, :step_monitoringangle, :step_highangle, 
                             :step_lowangle, :step_downshift_enable, :step_downshift_torque, :step_downshift_speed, 
                             :torque_unit, :step_prr, :step_prr_rpm, :step_prr_angle, :step_downshift_mode, 
-                            :step_downshift_angle
+                            :step_downshift_angle, :tool_name
                         )";
                 
                 try {
@@ -777,7 +785,8 @@ class Template{
                         ':step_prr_rpm' => $item['step_prr_rpm'],
                         ':step_prr_angle' => $item['step_prr_angle'],
                         ':step_downshift_mode' => $item['step_downshift_mode'],
-                        ':step_downshift_angle' => $item['step_downshift_angle']
+                        ':step_downshift_angle' => $item['step_downshift_angle'],
+                        'tool_name' => $item['tool_name']
                     ])) {
                         $insertedCount++;
                     } else {
