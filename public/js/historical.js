@@ -41,7 +41,21 @@ function deleteinfo() {
     checkboxes.forEach(function(checkbox) {
         checkedValues.push(checkbox.value);
     });
-    var yes = confirm('確定是否要刪除選定的資料？');
+
+
+
+    //如果沒有選值 就跳出
+    if (!checkedValues.length) {
+        alert('no data');
+        return;  
+    }else{
+
+        //alert(checkedValues);
+        //return;
+
+    }
+
+    var yes = confirm('Are you sure you want to delete the selected data ?');
     if (yes) {
          $.ajax({
                 type: "POST",
@@ -534,3 +548,4 @@ function check_limit(checkbox){
 var chat_modeno = getCookie('chat_modeno');
 var limit_val = getCookie('limit_val');
 var chat_mode_change = getCookie('chat_mode_change');
+

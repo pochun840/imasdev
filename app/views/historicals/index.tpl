@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="<?php echo URLROOT; ?>css/historical.css?v=202404111200" type="text/css">
 
 <script src="<?php echo URLROOT; ?>js/flatpickr.js"></script>
-<script src="<?php echo URLROOT; ?>js/historical.js?v=202408151600"></script>
+<script src="<?php echo URLROOT; ?>js/historical.js?v=202411291330"></script>
 
 <script src="<?php echo URLROOT; ?>js/echarts_min.js?v=202405080900"></script>
 <script src="<?php echo URLROOT; ?>js/html2canvas_min.js?v=202405080900"></script>
@@ -346,6 +346,8 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
 
                         <div class="topnav-right">
+
+                            <?php echo (!empty($data['user_role_title']) && $data['user_role_title'] == "Super admin") ? '<button onclick="deleteinfo()" class="ExportButton"><i class="fa fa-trash-o" style="font-size:26px;color:black"></i></button>' : ''; ?>
                             <button id="Export-CSV" type="button" class="ExportButton" onclick="csv_download()"><?php echo $text['Export_text']; ?> CSV</button>
                             <button id="Export-Report" type="button" class="ExportButton" onclick="window.open('?url=Historicals/history_result', '_blank');" ><?php echo $text['Export_Report_text']; ?></button>
                             <button id="Combine-btn" type="button" onclick="NextToCombineData()"><?php echo $text['Combine_Data_text']; ?></button>
@@ -363,7 +365,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                         <?php 
                                             if(!empty($data['user_role_title'])){
                                                 if($data['user_role_title'] =="Super admin"){?>
-                                                     <th><i class="fa fa-trash-o" style="font-size:26px;color:black" onclick="deleteinfo()"></i></th>
+                                                     <th><button id="toggle-select-all" onclick="selectAllCheckboxes()" class="ExportButton" ><?php echo $text['Select_all_text'];?></button></th>
                                                 <?php }else{ ?>
                                                     <th><i></i></th>
                                                 <?php }
@@ -1798,5 +1800,58 @@ function check_limit11(x_title,y_title){
 
 
 }
+
+//獲取所有的複選框
+const checkboxes = document.querySelectorAll('input[type="checkbox"][name="test1"]');
+
+// 獲取全選按鈕
+const toggleButton = document.getElementById('toggle-select-all');
+
+// 獲取 language 
+const language = '<?php echo $data['language'];?>';
+    
+// 根據 language 設定按鈕文字
+function updateButtonText(allChecked) {
+    //let buttonText = 'Select All'; // 預設為英文
+
+    if (language == 'zh-cn') {
+        buttonText = allChecked ? '取消全选' : '全选'; // 簡體中文
+    } else if (language == 'zh-tw') {
+        buttonText = allChecked ? '取消全選' : '全選'; // 繁體中文
+    } else if (language == 'en-us') {
+        buttonText = allChecked ? 'Deselect All' : 'Select All'; // 英文
+    }
+    
+    toggleButton.innerHTML = buttonText;
+}
+
+// 點擊按鈕觸發的函數：全選或取消全選
+function selectAllCheckboxes() {
+    const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked); // 判斷是否所有複選框都已選中
+    
+    // 根據當前選中狀態切換全選/取消全選
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = !allChecked; // 反轉每個複選框的選中狀態
+    });
+    
+    // 更新按鈕文字
+    updateButtonText(!allChecked);
+
+    if (!allChecked) {
+        return; // 如果取消全選，直接跳出
+    }
+
+    //deleteinfo();
+
+}
+
+function initButtonText() {
+    updateButtonText(false); // 當頁面載入時，默認顯示 'Select All'
+}
+
+
+// 初始化按鈕文字
+initButtonText();
+
 
 </script>

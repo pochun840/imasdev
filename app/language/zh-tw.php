@@ -223,6 +223,7 @@ $text['Choose_Mode_text'] = '選擇模式';
 $text['Choose_Mode_combo_text'] = $text['Choose_Mode_text'].' ('.$text['Normal_text'].' / '.$text['Advanced_text'].')';
 $text['Next_text'] = '下一步';
 $text['Select_text'] = '選擇';
+$text['Select_all_text'] = '全選';
 
 
 //template page - normal

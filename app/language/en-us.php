@@ -206,7 +206,7 @@ $text['Choose_Mode_text'] = 'Choose Mode';
 $text['Choose_Mode_combo_text'] = $text['Choose_Mode_text'].' ('.$text['Normal_text'].' / '.$text['Advanced_text'].')';
 $text['Next_text'] = 'Next';
 $text['Select_text'] = 'Select';
-
+$text['Select_all_text'] = 'Select All';
 //template page - normal
 $text['Program_Normal_text'] = 'Program - Normal';
 $text['Add_Program_text'] = 'Add Program';
