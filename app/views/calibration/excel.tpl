@@ -128,7 +128,7 @@
                             </tr>
                             <tr>
                                 <td>Range</td>
-                                <td></td>
+                                <td><?php echo isset($data['meter']['max_torque'], $data['meter']['min_torque']) ? number_format($data['meter']['max_torque'] - $data['meter']['min_torque'], 2) : ''; ?></td>
                             </tr>
                             <tr>
                                 <td>Cm</td>
