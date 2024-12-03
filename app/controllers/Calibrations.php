@@ -264,17 +264,27 @@ class Calibrations extends Controller
             if ($res == true) {
                 $response = array(
                     'success' => true,
+                    'type'    => 'success',
                     'message' => '數據整理成功'
                 );
             } else {
                 $response = array(
                     'success' => false,
+                    'type'    => 'fail',
                     'message' => '未找到數據'
                 );
             }
-            
+
+    
             // 刪除文件
             unlink($file_path);
+
+            
+            #取得最新的筆數
+            $temp_count = $this->CalibrationModel->getTotalRecords();
+            #紀錄log
+            $this->logMessage('add_calibrations', $response['type'],'success: id:'.$temp_count);
+
             echo json_encode($response);
         } else {
             echo json_encode(array('success' => false, 'message' => '未找到有效數據'));
@@ -324,16 +334,22 @@ class Calibrations extends Controller
             if($res == true){
                 $response = array(
                     'success' => true,
+                    'type'    => 'success',
                     'message' => 'Data delete success'
                 );
             }else{
                 $response = array(
                     'success' => false,
+                    'type'    => 'fail',
                     'message' => 'Data delete fail'
                 );
             }
+
+            #紀錄log
+            $this->logMessage('del_calibrations', $response['type'],'success: id:'.$click_id);
             echo json_encode($response);
 
+           
         }
 
 
@@ -345,6 +361,12 @@ class Calibrations extends Controller
         if(isset($_COOKIE['implement_count'])) {
             setcookie('implement_count', '', time() - 3600, '/');
         }
+
+        //紀錄log
+        $this->logMessage('del_calibrations', $result,'success: del total');
+
+
+
     }
  
     #產生XML的API

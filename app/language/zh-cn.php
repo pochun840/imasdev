@@ -541,6 +541,8 @@ $text['Item_text'] = '项目';
 $text['Tolerance_text'] = '误差范围';
 $text['Bias_text'] = '偏差';
 $text['Meter_text'] = '儀表';
+$text['Adapter_type_text'] = '弹簧测试座';
+
 
 //operation error message
 $error_message['NO_ERROR'] = '';

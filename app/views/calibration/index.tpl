@@ -179,7 +179,7 @@
                         </div>
                     </div>
                     <div class="row t1">
-                       <div class="col-5 t1" style="padding-left: 2%; color: #000">Adapter Type:</div>
+                       <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['Adapter_type_text'];?>:</div>
                         <div class="col-4 t1">
                             <input id="adapter_type" type="text" class="t2 form-control" value="">
                         </div>
@@ -1131,7 +1131,13 @@ function convertToNumberArray(data) {
 window.onload = function() {
     document.getElementById('tolerance').value = 10;
     document.getElementById('bias').value = 10;
+    document.getElementById('current_offset').value = 0;
+    document.getElementById('current_rpm').value = 100;
+    document.getElementById('current_tarque').value = 0.5;
     document.getElementById('skip_turn_rev').checked = true;
+    document.getElementById('target-torque').value = 0.5;
+    document.getElementById('high-limit-torque').value = 0.55;
+    document.getElementById('low-limit-torque').value = 0.45;
 
     document.cookie = "new_skip=1; path=/;";  
 

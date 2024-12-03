@@ -435,6 +435,7 @@ $text['Item_text'] = 'Item';
 $text['Tolerance_text'] = 'Tolerance';
 $text['Bias_text'] = 'Bias';
 $text['Meter_text'] = 'Meter';
+$text['Adapter_type_text'] = 'Adapter Type';
 
 //----------------------------------------------------------------------------------------------------------------
 //扭力單位

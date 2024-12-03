@@ -400,5 +400,17 @@ class Calibration{
         }
         return $avg;        
     }
+
+    public function getTotalRecords() {
+ 
+        $sql = "SELECT COUNT(*) AS total_records FROM calibrations";
+        $statement = $this->db->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        
+        return (int)$result['total_records'];
+    }
+    
+
     
 }

@@ -164,8 +164,8 @@
 
     //讀取 localstorge
     let targetTorque = localStorage.getItem('targetTorque') || 0;
-    let highLimitTorque = localStorage.getItem('highLimitTorque') || 0;
-    let lowLimitTorque = localStorage.getItem('lowLimitTorque') || 0;
+    let highLimitTorque = localStorage.getItem('highLimitTorque') || 0.55;
+    let lowLimitTorque = localStorage.getItem('lowLimitTorque') || 0.45;
     let bias = localStorage.getItem('bias') || 0;
     let rpm = localStorage.getItem('rpm') || 0;
     let offset = localStorage.getItem('offset') || 0;
