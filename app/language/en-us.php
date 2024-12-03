@@ -436,7 +436,11 @@ $text['Tolerance_text'] = 'Tolerance';
 $text['Bias_text'] = 'Bias';
 $text['Meter_text'] = 'Meter';
 $text['Adapter_type_text'] = 'Adapter Type';
-
+$text['calibration_certificate_text'] = 'Calibration Certificate';
+$text['company_text'] = 'Kilews Industrial Co., Ltd.';
+$text['company_address_text'] = 'No. 30, Lane 83, Hwa Cheng Rd., Hsin Chuang Dist., New Taipei City, Taiwan, R.O.C';
+$text['tel_text'] = 'Tel';
+$text['fax_text'] = 'Fax';
 //----------------------------------------------------------------------------------------------------------------
 //扭力單位
 $text['unit_status_0'] = 'Kgf-m';

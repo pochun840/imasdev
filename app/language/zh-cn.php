@@ -542,8 +542,11 @@ $text['Tolerance_text'] = '误差范围';
 $text['Bias_text'] = '偏差';
 $text['Meter_text'] = '儀表';
 $text['Adapter_type_text'] = '弹簧测试座';
-
-
+$text['calibration_certificate_text'] = '校准证书';
+$text['company_text'] = '奇力速工业股份有限公司';
+$text['company_address_text'] = '台湾新北市新庄区化成路83号';
+$text['tel_text'] = '电话';
+$text['fax_text'] = 'Fax';
 //operation error message
 $error_message['NO_ERROR'] = '';
 $error_message['ERR_CONT_TEMP'] = 'ERR-CONT-TEMP';

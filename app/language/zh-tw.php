@@ -460,7 +460,11 @@ $text['Tolerance_text'] = '誤差範圍';
 $text['Bias_text'] = '偏差';
 $text['Meter_text'] = '儀表';
 $text['Adapter_type_text'] = '彈簧測試座';
-
+$text['calibration_certificate_text'] = '校準證書';
+$text['company_text'] = '奇力速工業股份有限公司';
+$text['company_address_text'] = '台灣新北市新莊區化成路83號';
+$text['tel_text'] = '電話';
+$text['fax_text'] = '传真';
 //----------------------------------------------------------------------------------------------------------------
 //扭力單位
 $text['unit_status_0'] = '公斤米';

@@ -35,17 +35,18 @@
         <header class="border-bottom">
             <?php $base_url = "../public/img/logo.jpg"; ?>
             <h2><img src="<?php echo $base_url; ?>" alt="Logo"></h2>
-            <p style="font-weight: bold; font-size: 34px; padding-bottom: 5px">Certificate of Calibration</p>
-            <p>Kilews Industrial Co., Ltd.</p>
-            <p>No. 30, Lane 83, Hwa Cheng Rd., Hsin Chuang Dist., New Taipei City, Taiwan, R.O.C</p>
-            <p>Tel: +886-2-2997-1912 &nbsp;&nbsp;&nbsp; Fax: +886-2-2996-9023</p>
+            <p style="font-weight: bold; font-size: 34px; padding-bottom: 5px"><?php echo $text['calibration_certificate_text'];?></p>
+            <p><?php echo $text['company_text'];?></p>
+            <p><?php echo $text['company_address_text'];?></p>
+            <p><?php echo $text['tel_text'];?>: +886-2-2997-1912 &nbsp;&nbsp;&nbsp; <?php echo $text['fax_text'];?>: +886-2-2996-9023</p>
         </header>
 
         <div style="font-size: 14px; padding-bottom: 10px; padding-top: 10px">
             <label for="Tool-SN" style="width: 24%">Tool model : <?php echo $data['tools_sn'];?></label>
             <label for="Serial-Number" style="width: 24%">Serial Number : TPS192865</label>
-            <label for="Target-Torque" id="Target-Torque" style="width: 27%">Target Torque :  (N.m)</label>
-            <label for="RPM" id="rpm" style="width: 11%">RPM : </label>
+            <label  id="Target-Torque" style="width: 27%"><?php echo "1323";?> :  (N.m)</label>
+
+            <label for="RPM" id="rpm" style="width: 11%"><?php echo $text['RPM_text']?> : </label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px;">
@@ -74,7 +75,7 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Torque</th>
+                            <th><?php echo $text['Torque_text'];?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -103,7 +104,7 @@
                         </thead>
                         <tbody class="tbody-text">
                             <tr>
-                                <td>Max</td>
+                                <td><?php echo $text['MAX_text'];?></td>
                                 <td style="word-spacing: 50px"><?php echo isset($data['meter']['max_torque']) ? $data['meter']['max_torque'] : '';?> (N.m)</td>
                             </tr>
                             <tr>
@@ -166,14 +167,14 @@
     let targetTorque = localStorage.getItem('targetTorque') || 0;
     let highLimitTorque = localStorage.getItem('highLimitTorque') || 0.55;
     let lowLimitTorque = localStorage.getItem('lowLimitTorque') || 0.45;
-    let bias = localStorage.getItem('bias') || 0;
+    let bias = localStorage.getItem('bias') || 10; 
     let rpm = localStorage.getItem('rpm') || 0;
     let offset = localStorage.getItem('offset') || 0;
     let adapter_type = localStorage.getItem('adapter_type') || 0;
 
 
     if(targetTorque !== null){
-        document.getElementById('Target-Torque').innerText = `Target Torque : ${targetTorque} (N.m)`;
+        document.getElementById('target_torque').innerText = `Target Torque : ${targetTorque} (N.m)`;
     } 
 
     if(highLimitTorque !== null){
