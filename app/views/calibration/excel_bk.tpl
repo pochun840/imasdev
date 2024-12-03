@@ -42,22 +42,23 @@
         </header>
 
         <div style="font-size: 14px; padding-bottom: 10px; padding-top: 10px">
-            <label for="Tool-SN" style="width: 24%"><?php echo $text['Tool_Model_text'];?> : <?php echo $data['tools_sn'];?></label>
-            <label for="Serial-Number" style="width: 24%"><?php echo $text['Serial_Number_text'];?> : TPS192865</label>
-            <label  id="target_torque" style="width: 27%"><?php echo $text['Target_Torque_text'];?> : <span id='torque_val'></span> (<?php echo $text['N.m'];?>)</label>
+            <label for="Tool-SN" style="width: 24%">Tool model : <?php echo $data['tools_sn'];?></label>
+            <label for="Serial-Number" style="width: 24%">Serial Number : TPS192865</label>
+            <label  id="target_torque" style="width: 27%"><?php echo $text['Target_Torque_text'];?> : <span id='torque_val'></span> (N.m)</label>
+
             <label for="RPM" id="rpm" style="width: 11%"><?php echo $text['RPM_text']?> :<span id='rpm_val'></span></label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px;">
-            <label  id="highLimitTorque" style="width: 24%"><?php echo $text['Hi_text'];?> :<span id='highLimitTorque_val'></span>(<?php echo $text['N.m'];?>)</label>
-            <label  id="lowLimitTorque"  style="width: 24%"><?php echo $text['Lo_text'];?> :<span id='lowLimitTorque_val'></span> (<?php echo $text['N.m'];?>)</label>
-            <label for="Tolerance" id="bias" style="width: 27%"><?php echo $text['Tolerance_val_text'];?> +/-% : <span id='bias_val'></span></label>
-            <label  id="offset" style="width: 16%"><?php echo $text['Offset_val_text'];?> : <span id='offset_val'></span></label>
+            <label  id="highLimitTorque" style="width: 24%">Upper Limit :</label>
+            <label  id="lowLimitTorque" style="width: 24%">Lower Limit : </label>
+            <label  id="bias" style="width: 27%">Tolerance +/-% : %</label>
+            <label  id="offset" style="width: 16%"><?php echo $text['Joint_Offset_text'];?> : <span id='offset_val'></span></label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px; width: 100%">
-            <label for="Std-dev-s" style="width: 24%"><?php echo $text['Standard_deviation_text'];?> s(Cv) : <?php echo isset($data['meter']['stddev1']) ? $data['meter']['stddev1'] : 0; ?></label>
-            <label for="Lower-Limit-B" style="width: 24%"><?php echo $text['3_Standard_deviation_text'];?> s :  <?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : 0; ?></label>
+            <label for="Std-dev-s" style="width: 24%">Std dev s(Cv) : <?php echo isset($data['meter']['stddev1']) ? $data['meter']['stddev1'] : 0; ?></label>
+            <label for="Lower-Limit-B" style="width: 24%">3 Std dev s :  <?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : 0; ?></label>
             <label for="Cm" style="width: 27%">Cm : <?php echo isset($data['meter']['cm']) ? $data['meter']['cm'] : 0; ?></label>
             <label for="CmK">Cmk : <?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : 0; ?></label>
             
@@ -65,7 +66,7 @@
 
         
         <div style="font-size: 14px; padding-bottom: 10px; width: 100%">
-            <label style="width: 24%"><?php echo $text['Adapter_type_text'];?> : <span id='adapter_type_val'></span> </label>
+            <label style="width: 24%"><?php echo $text['Adapter_type_text']; ?> : </label>
         </div>
 
         <div class="container-table">
@@ -74,7 +75,7 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Torque</th>
+                            <th><?php echo $text['Torque_text'];?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -103,31 +104,31 @@
                         </thead>
                         <tbody class="tbody-text">
                             <tr>
-                                <td><?php echo $text['max_val_text'];?></td>
+                                <td><?php echo $text['MAX_text'];?></td>
                                 <td style="word-spacing: 50px"><?php echo isset($data['meter']['max_torque']) ? $data['meter']['max_torque'] : '';?> (N.m)</td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['min_val_text'];?></td>
+                                <td>Min</td>
                                 <td style="word-spacing: 50px"><?php echo isset($data['meter']['min_torque']) ? $data['meter']['min_torque'] : '';?> (N.m)</td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['avg_val_text'];?></td>
+                                <td>Mean</td>
                                 <td style="word-spacing: 50px"><?php echo isset($data['meter']['avg_torque']) ? $data['meter']['avg_torque'] : '';?> (N.m)</td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['Standard_deviation_text'];?> (Cv)</td>
+                                <td>Std Dev s (Cv)</td>
                                 <td><?php echo isset($data['meter']['stddev1']) ? $data['meter']['stddev1'] : '';?></td>
                             </tr>
                             <tr style="background-color: #FFFF5C">
-                                <td><?php echo $text['3_Standard_deviation_text'];?></td>
+                                <td>3 Std dev s</td>
                                 <td><?php echo isset($data['meter']['stddev3']) ? $data['meter']['stddev3'] : '';?></td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['Deviation_text'];?></td>
+                                <td>Deviation</td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['Range_text'];?></td>
+                                <td>Range</td>
                                 <td><?php echo isset($data['meter']['max_torque'], $data['meter']['min_torque']) ? number_format($data['meter']['max_torque'] - $data['meter']['min_torque'], 2) : ''; ?></td>
                             </tr>
                             <tr>
@@ -139,11 +140,11 @@
                                 <td><?php echo isset($data['meter']['cmk']) ? $data['meter']['cmk'] : '';?></td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['Positive_Tolerance_text'];?></td>
+                                <td>Positive Tolerance</td>
                                 <td>0%</td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['Negative_Tolerance_text'];?></td>
+                                <td>Negative Tolerance</td>
                                 <td>0%</td>
                             </tr>
                         </tbody>
@@ -153,7 +154,7 @@
         </div>
 
         <div>
-            <span style="padding-left: 3%"><?php echo $text['Tested_by_text'];?> :<?php echo $_SESSION['user']; ?></span> <span style="padding-left: 40%"><?php echo $text['Approved_by_text'];?> :</span>
+            <span style="padding-left: 3%">Tested by :<?php echo $_SESSION['user']; ?></span> <span style="padding-left: 40%">Approved by :</span>
         </div>
     </div>
 </body>
@@ -166,10 +167,10 @@
     let targetTorque = localStorage.getItem('targetTorque') || 0.5;
     let highLimitTorque = localStorage.getItem('highLimitTorque') || 0.55;
     let lowLimitTorque = localStorage.getItem('lowLimitTorque') || 0.45;
-    let bias = localStorage.getItem('bias') || 0;
-    let rpm = localStorage.getItem('rpm') || 100;
+    let bias = localStorage.getItem('bias') || 10; 
+    let rpm = localStorage.getItem('rpm') || 0;
     let offset = localStorage.getItem('offset') || 0;
-    let adapter_type = localStorage.getItem('adapter_type') || '';
+    let adapter_type = localStorage.getItem('adapter_type') || 0;
 
 
     if(targetTorque !== null){
@@ -178,14 +179,14 @@
     } 
 
     if(highLimitTorque !== null){
-        document.getElementById('highLimitTorque_val').innerText = highLimitTorque ;
+        document.getElementById('highLimitTorque').innerText = `Upper Limit : ${highLimitTorque}`;
     } 
     if(lowLimitTorque !== null){
-        document.getElementById('lowLimitTorque_val').innerText = lowLimitTorque; 
+        document.getElementById('lowLimitTorque').innerText = `Lower Limit : ${lowLimitTorque}`; 
     }
 
     if(bias !== null){
-        document.getElementById('bias_val').innerText = bias;
+        document.getElementById('bias').innerText = `Tolerance +/-% : ${bias}%`;
     }
 
     if(rpm !== null){
@@ -198,7 +199,7 @@
 
     
     if(adapter_type !== null){
-        document.getElementById('adapter_type_val').innerText = adapter_type;
+        document.querySelector('label[for="Adapter Type"]').textContent = 'Adapter Type: ' + adapter_type;
     }
 
 

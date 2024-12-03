@@ -441,6 +441,21 @@ $text['company_text'] = 'Kilews Industrial Co., Ltd.';
 $text['company_address_text'] = 'No. 30, Lane 83, Hwa Cheng Rd., Hsin Chuang Dist., New Taipei City, Taiwan, R.O.C';
 $text['tel_text'] = 'Tel';
 $text['fax_text'] = 'Fax';
+$text['max_val_text'] = 'Max';
+$text['min_val_text'] = 'Min';
+$text['avg_val_text'] = 'Mean';
+$text['Offset_val_text'] = 'Offset';
+$text['Tolerance_val_text'] = 'Tolerance';
+$text['Standard_deviation_text'] = 'Standard Deviation';
+$text['3_Standard_deviation_text'] = '3 Standard Deviations';
+$text['Positive_Tolerance_text'] = 'Positive Tolerance';
+$text['Negative_Tolerance_text'] = 'Negative Tolerance';
+$text['Tested_by_text'] = 'Tested by';
+$text['Approved_by_text'] = 'Approved by';
+$text['Range_text'] = 'Range';
+$text['Deviation_text'] = 'Deviation';
+$text['Tool_Model_text'] = 'Tool Model';
+$text['Serial_Number_text'] = 'Serial Number';
 //----------------------------------------------------------------------------------------------------------------
 //扭力單位
 $text['unit_status_0'] = 'Kgf-m';
