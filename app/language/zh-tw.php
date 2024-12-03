@@ -464,7 +464,7 @@ $text['calibration_certificate_text'] = '校準證書';
 $text['company_text'] = '奇力速工業股份有限公司';
 $text['company_address_text'] = '台灣新北市新莊區化成路83號';
 $text['tel_text'] = '電話';
-$text['fax_text'] = '传真';
+$text['fax_text'] = '傳真';
 //----------------------------------------------------------------------------------------------------------------
 //扭力單位
 $text['unit_status_0'] = '公斤米';

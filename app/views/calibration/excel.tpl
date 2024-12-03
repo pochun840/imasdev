@@ -44,9 +44,9 @@
         <div style="font-size: 14px; padding-bottom: 10px; padding-top: 10px">
             <label for="Tool-SN" style="width: 24%">Tool model : <?php echo $data['tools_sn'];?></label>
             <label for="Serial-Number" style="width: 24%">Serial Number : TPS192865</label>
-            <label  id="Target-Torque" style="width: 27%"><?php echo "1323";?> :  (N.m)</label>
+            <label  id="target_torque" style="width: 27%"><?php echo $text['Target_Torque_text'];?> : <span id='torque_val'></span> (N.m)</label>
 
-            <label for="RPM" id="rpm" style="width: 11%"><?php echo $text['RPM_text']?> : </label>
+            <label for="RPM" id="rpm" style="width: 11%"><?php echo $text['RPM_text']?> :<span id='rpm_val'></span></label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px;">
@@ -164,7 +164,7 @@
 <script>
 
     //讀取 localstorge
-    let targetTorque = localStorage.getItem('targetTorque') || 0;
+    let targetTorque = localStorage.getItem('targetTorque') || 0.5;
     let highLimitTorque = localStorage.getItem('highLimitTorque') || 0.55;
     let lowLimitTorque = localStorage.getItem('lowLimitTorque') || 0.45;
     let bias = localStorage.getItem('bias') || 10; 
@@ -174,14 +174,15 @@
 
 
     if(targetTorque !== null){
-        document.getElementById('target_torque').innerText = `Target Torque : ${targetTorque} (N.m)`;
+        document.getElementById('torque_val').innerText  = targetTorque;
+
     } 
 
     if(highLimitTorque !== null){
-        document.getElementById('highLimitTorque').innerText = `Upper Limit : ${highLimitTorque} (N.m)`;
+        document.getElementById('highLimitTorque').innerText = `Upper Limit : ${highLimitTorque}`;
     } 
     if(lowLimitTorque !== null){
-        document.getElementById('lowLimitTorque').innerText = `Lower Limit : ${lowLimitTorque} (N.m)`; 
+        document.getElementById('lowLimitTorque').innerText = `Lower Limit : ${lowLimitTorque}`; 
     }
 
     if(bias !== null){
@@ -189,7 +190,7 @@
     }
 
     if(rpm !== null){
-        document.getElementById('rpm').innerText = `RPM :  ${rpm}`;
+        document.getElementById('rpm_val').innerText = rpm;
     }
 
     if(offset !== null){

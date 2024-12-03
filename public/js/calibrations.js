@@ -3,15 +3,6 @@ function html_download() {
     var fileName3 = document.getElementById('fileName3').value;
     var save_type3 = document.getElementById('Save-as3').value;
 
-    var chartDataURL;
-    if (myChart) {
-        chartDataURL = myChart.getDataURL({
-            pixelRatio: 2,
-            backgroundColor: '#fff'
-        });
-    } else {
-        console.error('myChart is not defined or initialized.');
-    }
 
 
     if (save_type3 === "html") {
@@ -130,49 +121,14 @@ function html_download() {
         downloadCSV(job_id, fileName3);
 
     }else if(save_type3 === "jpg"){
-        downloadChartAsImage(chartDataURL, fileName3, 'jpg');
-
+        saveChartAsImage('mychart'); 
+      
     }else {
         //console.log("不支持的保存類型.");
     }
 }
 
-// 將 Data URI 轉換為 Blob 物件的輔助函式
-function dataURItoBlob(dataURI) {
-    var byteString = atob(dataURI.split(',')[1]);
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    var ab = new ArrayBuffer(byteString.length);
-    var ia = new Uint8Array(ab);
-    for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], { type: mimeString });
-}
 
-
-
-function downloadChartAsImage(chartDataURL, fileName, format) {
- 
-    var blob = dataURLToBlob(chartDataURL);
-    var link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = fileName + '.' + format;
-    link.click();
-}
-
-function dataURLToBlob(dataURL) {
-    var arr = dataURL.split(','),
-        mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]),
-        n = bstr.length,
-        u8arr = new Uint8Array(n);
-
-    while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    return new Blob([u8arr], { type: mime });
-}
 
 
 
@@ -218,3 +174,24 @@ function downloadCSV(job_id, fileName3) {
     }
 }
 
+function saveChartAsImage(chartId, backgroundColor = '#ffffff', ) {
+    
+    var fileName3 = document.getElementById('fileName3').value; 
+    var chartElement = document.getElementById(chartId);
+
+    chartElement.style.backgroundColor = backgroundColor;
+
+    html2canvas(chartElement, {
+        backgroundColor: backgroundColor,  
+        logging: true,                      
+        useCORS: true,                    
+        onrendered: function (canvas) {
+            var img = canvas.toDataURL('image/jpeg');
+
+            var link = document.createElement('a');
+            link.href = img;
+            link.download = fileName3;
+            link.click();
+        }
+    });
+}

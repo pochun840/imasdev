@@ -26,7 +26,9 @@
     <script src="js/jszip.min.js"></script>
     <script src="js/FileSaver.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/calibration.css">
-    <script src="js/calibrations.js?"></script>
+    <script src="js/calibrations.js?v=202412031500"></script>
+    <script src="js/html2canvas_min.js?v=202412031700"></script>
+    
     <title><?php echo SITENAME; ?></title>
 
     
@@ -451,7 +453,6 @@
                     <div class="col-3 t1" for="Save-as3"><?php echo $text['Type_text'];?>:</div>
                     <div class="col t1">
                         <select id="Save-as3" style="width: 184px; height: 30px">
-                            <!--<option value="html">html</option>-->
                             <option value="xml">xml</option>
                             <option value="csv">excel</option>
                             <option value="jpg">jpg</option>
@@ -1109,8 +1110,10 @@ renderChart(x_val, y_val_torque_1,y_val_torque_2);
         });
     }
 
-    myChart.setOption(option, true);
+    myChart.setOption(option);
 }
+
+
 
 
 function convertToNumberArray(data) {
@@ -1162,6 +1165,10 @@ function setCookie(name, value, days) {
     expiresDate.setTime(expiresDate.getTime() + (days * 24 * 60 * 60 * 1000));
     document.cookie = `${name}=${value}; path=/; expires=${expiresDate.toUTCString()}`;
 }
+
+
+
+
 
 </script>
 
