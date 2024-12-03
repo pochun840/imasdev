@@ -163,9 +163,25 @@
                                     echo '<div id="Detail-Dropdown-'.$job['job_id'].'" class=" dropdown dropdown-content">';
                                     echo   '<a style="margin-top: 10%">'.$text['Controller_Type_text'].' :<i style="float: right">GTCS</i></a>';
                                     echo   '<a>'.$text['Job_ID_text'].' :<i style="float: right">'.$job['job_id'].'</i></a>';
-                                    echo   '<a>'.$text['OK_Job_text'].' :<i style="float: right">'.$job['ok_job'].'</i></a>';
-                                    echo   '<a>'.$text['Job_Repeat_text'].' :<i style="float: right">'.$job['ok_job_stop'].'</i></a>';
-                                    echo   '<a>'.$text['Reverse_Button_text'].' :<i style="float: right">'.$job['reverse_direction'].'</i></a>';
+
+                                    if($job['ok_job'] == 1){
+                                        echo   '<a>'.$text['OK_Job_text'].' :<i style="float: right">'.$text['ON_text'].'</i></a>';
+                                    }else{
+                                        echo   '<a>'.$text['OK_Job_text'].' :<i style="float: right">'.$text['OFF_text'].'</i></a>';
+                                    }
+                                    
+                                    if($job['ok_job_stop'] == 1){
+                                        echo   '<a>'.$text['Job_Repeat_text'].' :<i style="float: right">'.$text['ON_text'].'</i></a>';
+                                    }else{
+                                        echo   '<a>'.$text['Job_Repeat_text'].' :<i style="float: right">'.$text['OFF_text'].'</i></a>';
+                                    }
+
+                                    if($job['reverse_direction'] == 1){
+                                        echo   '<a>'.$text['Reverse_Button_text'].' :<i style="float: right">'.$text['CCW_text'].'</i></a>';
+                                    }else{
+                                        echo   '<a>'.$text['Reverse_Button_text'].' :<i style="float: right">'.$text['CW_text'].'</i></a>';
+                                    }
+
                                     echo   '<a>'.$text['Reverse_RPM_text'].' :<i style="float: right">'.$job['reverse_rpm'].'</i></a>';
                                     echo   '<a>'.$text['Reverse_Force_text'].' :<i style="float: right">'.$job['reverse_force'].'</i></a>';
                                     echo   '<a>'.$text['Reverse_Count_text'].' :<i style="float: right">'.$job['reverse_cnt_mode'].'</i></a>';

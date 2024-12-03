@@ -226,8 +226,8 @@ class Product{
         if($dupli_flag){
             $this->DeleteJobById($to_job_id);
         }
-        $sql= "INSERT INTO job ( job_id,job_name,controller_id,ok_job,ok_job_stop,reverse_force,reverse_rpm,reverse_direction,reverse_cnt_mode,reverse_threshold_torque,point_size,img )
-            SELECT  :to_job_id,:to_job_name,controller_id,ok_job,ok_job_stop,reverse_force,reverse_rpm,reverse_direction,reverse_cnt_mode,reverse_threshold_torque,point_size,img
+        $sql= "INSERT INTO job ( job_id,job_name,controller_id,ok_job,ok_job_stop,reverse_force,reverse_rpm,reverse_direction,reverse_cnt_mode,reverse_threshold_torque,point_size,img,tower_light,barcode_start )
+            SELECT  :to_job_id,:to_job_name,controller_id,ok_job,ok_job_stop,reverse_force,reverse_rpm,reverse_direction,reverse_cnt_mode,reverse_threshold_torque,point_size,img,tower_light,barcode_start
             FROM    job
             WHERE job_id = :job_id ";
         $stmt = $this->db->prepare($sql);

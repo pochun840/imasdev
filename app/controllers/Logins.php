@@ -151,7 +151,8 @@ class Logins extends Controller
             //登入成功寫入 active_sessions 資料庫
             // $reslut = $this->active_sessions('admin');
             $reslut = true;
-            $this->logMessage('login','success');
+            $_SESSION['user'] = $username;
+            $this->logMessage('login','','success');
 
             if($reslut){
 
@@ -174,7 +175,7 @@ class Logins extends Controller
 
             return true;
         }else{
-            $this->logMessage('login','account:'.$username.' login fail');
+            $this->logMessage('login','','account:'.$username.' login fail');
             // exit();
             return false;
         }

@@ -515,6 +515,10 @@ $text['station_id_text'] = '工站 ID';
 $text['station_name_text'] = '工站名称';
 $text['station_ip_text'] = '工站 IP';
 $text['job_select_text'] = '工作选择';
+$text['monitor_mode_text'] = '监控模式';
+$text['monitor_server_ip_text'] = '监控服务器IP';
+$text['client_text'] = '客戶端';
+$text['server_text'] = '服务器';
 
 
 //Calibrations

@@ -119,7 +119,7 @@ class Users extends Controller
             $user_id = $this->UserModel->AddUser($user_account,$user_password,$user_name,$user_employee_number,$user_card);
             if (isset($user_id)) {
                 $this->UserModel->AddUserRole($user_id,$role);
-                $this->logMessage('add user','success: user:'.$user_account);
+                $this->logMessage('add user','','success: user:'.$user_account);
                 $result = true;
             }else{
                 $result = false;
@@ -180,7 +180,7 @@ class Users extends Controller
             $results = $this->UserModel->EditUser($user_id,$user_password,$user_name,$user_employee_number,$user_card);
             if ($results) {
                 $this->UserModel->EditUserRole($user_id,$role);
-                $this->logMessage('edit user','success: user_id:'.$user_id);
+                $this->logMessage('edit user','','success: user_id:'.$user_id);
                 $result = true;
             }else{
                 $result = false;
@@ -210,7 +210,7 @@ class Users extends Controller
             $results = $this->UserModel->DeleteUser($user_id);
             if ($results) {
                 $this->UserModel->DeleteUserRole($user_id);
-                $this->logMessage('delete user','success: user_id:'.$user_id);
+                $this->logMessage('delete user','','success: user_id:'.$user_id);
                 $result = true;
             }else{
                 $result = false;
@@ -242,7 +242,7 @@ class Users extends Controller
 
             $role_id = $this->UserModel->AddNewRole($role_name);
             if ($role_id > 0) {
-                $this->logMessage('add role','success: rolename:'.$role_name);
+                $this->logMessage('add role','','success: rolename:'.$role_name);
                 $result = true;
             }else{
                 $result = false;
@@ -282,7 +282,7 @@ class Users extends Controller
                 echo json_encode(array('error' => 'Already Assign'));
                 exit();
             }else{
-                $this->logMessage('delete role','success: role_id:'.$role_id);
+                $this->logMessage('delete role','','success: role_id:'.$role_id);
                 echo json_encode(array('error' => ''));
                 exit();
             }
@@ -304,7 +304,7 @@ class Users extends Controller
                 echo json_encode(array('error' => 'fail'));
                 exit();
             }else{
-                $this->logMessage('edit role','success: role_id:'.$role_id.', permissions:'.json_encode($role_permissions));
+                $this->logMessage('edit role','','success: role_id:'.$role_id.', permissions:'.json_encode($role_permissions));
                 echo json_encode(array('error' => ''));
                 exit();
             }

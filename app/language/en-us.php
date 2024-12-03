@@ -614,6 +614,10 @@ $text['station_id_text'] = 'Station ID';
 $text['station_name_text'] = 'Station Name';
 $text['station_ip_text'] = 'Station IP';
 $text['job_select_text'] = 'Job Select';
+$text['monitor_mode_text'] = 'Monitor Mode';
+$text['monitor_server_ip_text'] = 'Monitor Server IP';
+$text['client_text'] = 'Client';
+$text['server_text'] = 'Server';
 //Station IP 
 
 

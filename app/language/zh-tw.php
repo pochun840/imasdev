@@ -558,6 +558,10 @@ $text['station_id_text'] = '工站 ID';
 $text['station_name_text'] = '工站名稱';
 $text['station_ip_text'] = '工站 IP';
 $text['job_select_text'] = '工作選擇';
+$text['monitor_mode_text'] = '監控模式';
+$text['monitor_server_ip_text'] = '監控伺服器IP';
+$text['client_text'] = '客戶端';
+$text['server_text'] = '伺服器';
 
 //operation error message
 $error_message['NO_ERROR'] = '';

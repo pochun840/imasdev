@@ -62,7 +62,7 @@ class Controller
 
     }
 
-    public function logMessage($action,$detail) {
+    public function logMessage($action,$result = '',$detail) {
         date_default_timezone_set('UTC');
         if( PHP_OS_FAMILY == 'Linux'){
             $cc_db = new PDO('sqlite:/var/www/html/database/tcscon.db'); //local
@@ -85,15 +85,16 @@ class Controller
         }     
         
         $cc_db->exec('set names utf-8'); 
-        $stmt = $cc_db->prepare('INSERT INTO system_log (account, action, detail, ip, timestamp ) VALUES ( :account, :action, :detail, :ip, :timestamp )');
+        $stmt = $cc_db->prepare('INSERT INTO system_log (account, action, result, detail, ip, timestamp ) VALUES ( :account, :action, :result, :detail, :ip, :timestamp )');
         $stmt->bindValue(':account', $account);
         $stmt->bindValue(':action', $action);
+        $stmt->bindValue(':result', $result);
         $stmt->bindValue(':detail', $detail);
         $stmt->bindValue(':ip', $ip);
         $stmt->bindValue(':timestamp', date("Y-m-d H:i:s"));
-        $result = $stmt->execute();
+        $result2 = $stmt->execute();
 
-        return $result;       
+        return $result2;       
     }
 
     public function isMobileCheck($value='')

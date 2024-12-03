@@ -1,5 +1,5 @@
 <!-- Monitor -->
-<div id="monitorContent" class="content" style="height: calc(100vh - 60px);">
+<div id="monitorContent" class="content" style="display: none;height: calc(100vh - 60px);">
     <div id="MonitorDisplay" style="margin-top: 40px">
         <div class="container-ms" style="padding-left: 0%;vertical-align: middle;">
             <div class="scrollbar-station-all" id="style-station-all">

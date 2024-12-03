@@ -166,10 +166,26 @@
                                     echo '<label><img src="./img/info-30.png" alt="" style="height: 30px; float: left; margin-right: 5px; margin-bottom: 10px" onclick="PictureDetailFunction('.$seq['seq_id'].')"> '.$text['Detail_text'].'</label>';
                                     echo '<div id="Detail-Dropdown-'.$seq['seq_id'].'" class=" dropdown dropdown-content">';
                                     echo   '<a style="margin-top: 10%">'.$text['Seq_ID_text'].' :<i style="float: right">GTCS</i></a>';
-                                    echo   '<a>'.$text['NG_Stop_text'].' :<i style="float: right">'.$seq['ng_stop'].'</i></a>';
-                                    echo   '<a>'.$text['Enalbe_text'].' :<i style="float: right">'.$seq['sequence_enable'].'</i></a>';
-                                    echo   '<a>'.$text['Sequence_OK_text'].' :<i style="float: right">'.$seq['ok_sequence'].'</i></a>';
-                                    //echo   '<a>'.$text['Sequence_OK_text'].' :<i style="float: right">'.$seq['ok_sequence_stop'].'</i></a>';
+
+                                    
+                                    if($seq['ng_stop'] == 0){
+                                        echo   '<a>'.$text['NG_Stop_text'].' :<i style="float: right">'.$text['NO_text'].'</i></a>';
+                                    }else{
+                                        echo   '<a>'.$text['NG_Stop_text'].' :<i style="float: right">'.$seq['ng_stop'].'</i></a>';
+                                    }
+
+                                    if($seq['sequence_enable'] == 1){
+                                        echo   '<a>'.$text['Enalbe_text'].' :<i style="float: right">'.$text['ON_text'].'</i></a>';
+                                    }else{
+                                        echo   '<a>'.$text['Enalbe_text'].' :<i style="float: right">'.$text['OFF_text'].'</i></a>';
+                                    }
+                                    
+                                    if($seq['ok_sequence'] == 1){
+                                        echo   '<a>'.$text['Sequence_OK_text'].' :<i style="float: right">'.$text['ON_text'].'</i></a>';
+                                    }else{
+                                        echo   '<a>'.$text['Sequence_OK_text'].' :<i style="float: right">'.$text['OFF_text'].'</i></a>';
+                                    }
+
                                     echo   '<a>'.$text['Timeout_text'].' :<i style="float: right">'.$seq['sequence_maxtime'].'</i></a>';
                                     echo '</div>
                                     <br>

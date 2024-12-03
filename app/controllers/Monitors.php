@@ -25,6 +25,7 @@ class Monitors extends Controller
         $div_rule = 'monitor/div_rule';
 
         $monitor_server_ip = $this->OperationModel->GetConfigValue('monitor_server_ip');
+        $monitor_mode = $this->OperationModel->GetConfigValue('monitor_mode'); // 1: client, 2:server
 
         $monitor_result = $this->MonitorModel->GetMonitorRow();
         $monitor_rows = [];//預處理monitor row
@@ -42,6 +43,7 @@ class Monitors extends Controller
             'div_rule' => $div_rule,
             'monitor_rows' => $monitor_rows,
             'monitor_server_ip' => $monitor_server_ip['value'],
+            'monitor_mode' => $monitor_mode['value'],
         ];
         $this->view('monitor/index', $data);
 
@@ -167,27 +169,31 @@ class Monitors extends Controller
             exit();
         }
 
+        $monitor_mode = $this->OperationModel->GetConfigValue('monitor_mode'); // 1: client, 2:server
+
         $message = '';
         $port = 3000;// monitor server websocket port
 
         if($action == 'start'){
 
-            //開啟server
-            $pidFile = '..\node_pid_server.txt';
-            if (file_exists($pidFile)) { //先kill再開啟，避免重複開啟
-                $pid = file_get_contents($pidFile);
-                exec("taskkill /F /PID $pid", $output, $result);
-                sleep(1);
-            }
+            if( $monitor_mode == 2 ){ // server才需要開
+                //開啟server
+                $pidFile = '..\node_pid_server.txt';
+                if (file_exists($pidFile)) { //先kill再開啟，避免重複開啟
+                    $pid = file_get_contents($pidFile);
+                    exec("taskkill /F /PID $pid", $output, $result);
+                    sleep(1);
+                }
 
-            $nodeScript = dirname(dirname(dirname(__FILE__))).'/monitor_server.js';
-            // 构建命令行
-            $cmd = "node $nodeScript";
-            // 打开一个管道以非阻塞模式执行命令
-            pclose(popen("start /B $cmd", "w"));
-            
+                $nodeScript = dirname(dirname(dirname(__FILE__))).'/monitor_server.js';
+                // 构建命令行
+                $cmd = "node $nodeScript";
+                // 打开一个管道以非阻塞模式执行命令
+                pclose(popen("start /B $cmd", "w"));
+            }
             sleep(1);
 
+            //開啟Client
             $pidFile = '..\node_pid_client.txt';
             if (file_exists($pidFile)) { //先kill再開啟，避免重複開啟
                 $pid = file_get_contents($pidFile);
@@ -303,6 +309,26 @@ class Monitors extends Controller
 
         if ($input_check) {
             $this->OperationModel->SetConfigValue('monitor_server_ip',$data_array['server_ip']);
+        }
+
+        echo json_encode(array('error' => $error_message));
+        exit();
+    }
+
+    public function SaveMonitorMode($value='')
+    {
+        $input_check = true;
+        $error_message = '';
+        $data_array = array();
+        if( !empty($_POST['monitor_mode']) && isset($_POST['monitor_mode']) ){
+            $data_array['monitor_mode'] = $_POST['monitor_mode'];
+        }else{ 
+            $input_check = false;
+            $error_message .= "monitor_mode,";
+        }
+
+        if ($input_check) {
+            $this->OperationModel->SetConfigValue('monitor_mode',$data_array['monitor_mode']);
         }
 
         echo json_encode(array('error' => $error_message));

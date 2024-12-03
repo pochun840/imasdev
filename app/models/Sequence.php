@@ -190,8 +190,8 @@ class Sequence{
         if($dupli_flag){
             $this->DeleteSeqById($from_job_id,$to_seq_id);
         }
-        $sql= "INSERT INTO sequence ( sequence_enable,job_id,seq_id,seq_name,img,tightening_repeat,ng_stop,ok_sequence,ok_sequence_stop,sequence_mintime,sequence_maxtime )
-            SELECT  sequence_enable,job_id,:to_seq_id,:to_seq_name,img,tightening_repeat,ng_stop,ok_sequence,ok_sequence_stop,sequence_mintime,sequence_maxtime
+        $sql= "INSERT INTO sequence ( sequence_enable,job_id,seq_id,seq_name,img,tightening_repeat,ng_stop,ok_sequence,ok_sequence_stop,sequence_mintime,sequence_maxtime,barcode_start )
+            SELECT  sequence_enable,job_id,:to_seq_id,:to_seq_name,img,tightening_repeat,ng_stop,ok_sequence,ok_sequence_stop,sequence_mintime,sequence_maxtime,barcode_start
             FROM    sequence
             WHERE job_id = :job_id AND seq_id = :seq_id";
         $stmt = $this->db->prepare($sql);
