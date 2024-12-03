@@ -6,10 +6,10 @@
 <link rel="stylesheet" href="<?php echo URLROOT; ?>css/historical.css?v=202404111200" type="text/css">
 
 <script src="<?php echo URLROOT; ?>js/flatpickr.js"></script>
-<script src="<?php echo URLROOT; ?>js/historical.js?v=202411291330"></script>
+<script src="js/historical.js?v=<?php echo date('YmdHi'); ?>"></script>
 
-<script src="<?php echo URLROOT; ?>js/echarts_min.js?v=202405080900"></script>
-<script src="<?php echo URLROOT; ?>js/html2canvas_min.js?v=202405080900"></script>
+<script src="<?php echo URLROOT; ?>js/echarts_min.js?v=<?php echo date('YmdHi'); ?>"></script>
+<script src="<?php echo URLROOT; ?>js/html2canvas_min.js?v=<?php echo date('YmdHi'); ?>"></script>
 
 <?php if(isset($data['nav'])){
     echo $data['nav'];

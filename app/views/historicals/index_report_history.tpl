@@ -11,7 +11,7 @@
 <script src="js/FileSaver.min.js"></script>
 
 <script src="js/echarts.min.js"></script>
-<script src="js/historical.js"></script>
+<script src="js/historical.js?v=<?php echo date('YmdHi'); ?>"></script>
 
 </head>
 

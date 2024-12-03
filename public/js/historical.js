@@ -62,6 +62,7 @@ function deleteinfo() {
                 data: {values: checkedValues},
                 url: '?url=Historicals/del_info',
                 success: function(response) {
+                    //console.log(response);
                     history.go(0);
                 },
                 error: function(error) {

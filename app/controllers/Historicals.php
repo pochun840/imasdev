@@ -80,7 +80,13 @@ class Historicals extends Controller
 
         $del_info_sn_arr = array();
         $del_info_sn = $_POST['values'];
+        
         $res = $this->Historicals_newModel->del_info($del_info_sn);
+
+        #紀錄log 
+        $temp_value = implode(", ", $del_info_sn); 
+        $detail = 'success: system_sn:'.$temp_value;
+        $this->logMessage('del_historicals', $res,$detail);
         return $res;
     }
 

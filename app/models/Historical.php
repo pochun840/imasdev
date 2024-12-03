@@ -139,18 +139,37 @@ class Historical{
     }
 
 
-    #刪除鎖附資料
-    public function del_info($del_info_sn){
-        #20240401 修改成 update on_flag的資料(0:顯示 1:隱藏)
+    #刪除鎖附資料 
+    #20240401 修改成 update on_flag的資料(0:顯示 1:隱藏)
+    public function del_info($del_info_sn) {
+        // SQL 更新語句，將 on_flag 設為 '1'
         $sql = "UPDATE fasten_data SET on_flag = '1' WHERE system_sn = ?";
         $statement = $this->db->prepare($sql);
+    
+        $this->db->beginTransaction();
         
-        foreach ($del_info_sn as $vv) {
-            $statement->execute([$vv]);
+        try {
+            foreach ($del_info_sn as $vv) {
+                // 執行每一筆更新操作
+                $result = $statement->execute([$vv]);
+    
+                // 如果執行失敗，標記為失敗並立即退出循環
+                if (!$result) {
+                    $this->db->rollBack();
+                    return 'fail'; 
+                }
+            }
+    
+            // 所有操作成功，提交事務
+            $this->db->commit();
+
+            return 'success'; 
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            return 'fail'; 
         }
-        
-        return $del_info_sn;
     }
+    
 
     
     public function getTotalItemCount() {
