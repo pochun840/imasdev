@@ -473,6 +473,21 @@ class Calibrations extends Controller
         $echart_data = $this->CalibrationModel->echarts_data();
 
 
+        $sum_torque = 0;
+        $sum_fasten_torque = 0;
+        $count = count($info); 
+        
+        // 遍歷陣列，累加每個項目的 torque 和 fasten_torque 值
+        foreach ($info as $item) {
+            $sum_torque += $item['torque'];
+            $sum_fasten_torque += $item['fasten_torque'];
+        }
+        
+        // 計算平均值
+        $average_torque = $sum_torque / $count;
+        $average_fasten_torque = $sum_fasten_torque / $count;
+        
+
         $data_json = $this->SettingsController->Get_Device_Name(); 
         if(!empty($data_json)){
             $dataArray = json_decode($data_json, true);  
@@ -509,6 +524,8 @@ class Calibrations extends Controller
             'meter' =>$meter,
             'count' =>$res_total,
             'tools_sn' => $tools_sn,
+            'torque' => $average_torque,
+            'fasten_torque' =>  $average_fasten_torque
             
         );
 

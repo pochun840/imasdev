@@ -717,6 +717,11 @@ class Historicals extends Controller
         return $data;
     }
 
+    public function test_time(){
+
+        $this->view('historicals/index_bk');
+    }
+
 
  
     

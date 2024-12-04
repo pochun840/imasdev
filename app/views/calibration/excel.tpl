@@ -124,7 +124,7 @@
                             </tr>
                             <tr>
                                 <td><?php echo $text['Deviation_text'];?></td>
-                                <td></td>
+                                <td><?php echo round(($data['torque'] - $data['fasten_torque']) / $data['fasten_torque'], 2); ?></td>
                             </tr>
                             <tr>
                                 <td><?php echo $text['Range_text'];?></td>
@@ -140,11 +140,11 @@
                             </tr>
                             <tr>
                                 <td><?php echo $text['Positive_Tolerance_text'];?></td>
-                                <td>0%</td>
+                                <td><?php echo round(($data['meter']['max_torque'] - $data['meter']['avg_torque']) / $data['meter']['avg_torque'], 2); ?>%</td>
                             </tr>
                             <tr>
                                 <td><?php echo $text['Negative_Tolerance_text'];?></td>
-                                <td>0%</td>
+                                <td><?php echo round(($data['meter']['min_torque'] - $data['meter']['avg_torque']) / $data['meter']['avg_torque'], 2); ?>%</td>
                             </tr>
                         </tbody>
                     </table>

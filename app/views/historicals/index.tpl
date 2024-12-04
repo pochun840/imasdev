@@ -1,9 +1,7 @@
 <?php require APPROOT . 'views/inc/header.tpl'; ?>
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/w3.css" type="text/css">
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/nav.css" type="text/css">
-<link rel="stylesheet" href="<?php echo URLROOT; ?>/css/datatables.min.css">
 
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/historical.css?v=202404111200" type="text/css">
+<link rel="stylesheet" href="../public/css/historical.css?v=202404111200" type="text/css">
+<link rel="stylesheet" href="../public/css/flatpickr_min.css?v=202412041130" type="text/css">
 
 <script src="<?php echo URLROOT; ?>js/flatpickr.js"></script>
 <script src="js/historical.js?v=<?php echo date('YmdHi'); ?>"></script>
@@ -238,7 +236,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                         <div class="input-group mb-2">
                             <span class="input-group-text"><?php echo $text['From_text']; ?>:</span>
-                            <input type="datetime-local" id="FromDate" name="FromDate" class="form-control input-ms" style="margin-right: 7px">
+                            <input type="datetime-local"   class="form-control input-ms" style="margin-right: 7px">
 
                             <span class="input-group-text"><?php echo $text['To_text']; ?>:</span>
                             <input type="datetime-local" id="ToDate" name="ToDate" class="form-control input-ms" style="margin-right: 7px">
@@ -266,6 +264,8 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                     <option value="<?php echo $val_res_2['template_program_id'];?>"><?php echo $val_res_2['template_program_id'];?></option>
                                 <?php }?>
                             </select>
+
+                            
                         </div>
                         
                     </div>                
@@ -297,7 +297,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                         <div class="row">
                             <div class="col-2 t1" for="FromDate"><?php echo $text['From_text']; ?>:</div>
                             <div class="col-2 t1" style="margin-left: -100px">
-                                <input type="datetime-local" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC; ">
+                                <input type="datetime-local" class="t3" id="FromDate"  style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC; ">
                             </div>
 
                             <div class="col-2 t1" for="ToDate"><?php echo $text['To_text']; ?>:</div>
@@ -1855,3 +1855,4 @@ initButtonText();
 
 
 </script>
+

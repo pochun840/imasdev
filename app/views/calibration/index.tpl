@@ -750,6 +750,7 @@ function current_save() {
             localStorage.setItem('bias', tolerance);
             localStorage.setItem('implement_count',implement_count);
             localStorage.setItem('adapter_type',adapter_type);
+            alert('saved');
 
         },
         error: function(xhr, status, error) {
