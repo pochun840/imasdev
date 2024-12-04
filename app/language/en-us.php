@@ -456,6 +456,7 @@ $text['Range_text'] = 'Range';
 $text['Deviation_text'] = 'Deviation';
 $text['Tool_Model_text'] = 'Tool Model';
 $text['Serial_Number_text'] = 'Serial Number';
+$text['no_text'] = 'No.';
 //----------------------------------------------------------------------------------------------------------------
 //扭力單位
 $text['unit_status_0'] = 'Kgf-m';

@@ -52,7 +52,7 @@
             <label  id="highLimitTorque" style="width: 24%"><?php echo $text['Hi_text'];?> :<span id='highLimitTorque_val'></span>(<?php echo $text['N.m'];?>)</label>
             <label  id="lowLimitTorque"  style="width: 24%"><?php echo $text['Lo_text'];?> :<span id='lowLimitTorque_val'></span> (<?php echo $text['N.m'];?>)</label>
             <label for="Tolerance" id="bias" style="width: 27%"><?php echo $text['Tolerance_val_text'];?> +/-% : <span id='bias_val'></span></label>
-            <label  id="offset" style="width: 16%"><?php echo $text['Offset_val_text'];?> : <span id='offset_val'></span></label>
+            <label  id="offset" style="width: 16%"><?php echo $text['Joint_Offset_text'];?> : <span id='offset_val'></span></label>
         </div>
 
         <div style="font-size: 14px; padding-bottom: 10px; width: 100%">
@@ -73,8 +73,8 @@
                 <table class="table-bordered">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>Torque</th>
+                            <th><?php echo $text['no_text'];?></th>
+                            <th><?php echo $text['Torque_text'];?></th>
                         </tr>
                     </thead>
                     <tbody>

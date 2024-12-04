@@ -562,6 +562,8 @@ $text['Range_text'] = '范围';
 $text['Deviation_text'] = '偏差';
 $text['Tool_Model_text'] = '工具型号';
 $text['Serial_Number_text'] = '序列号';
+$text['no_text'] = '编号';
+
 //operation error message
 $error_message['NO_ERROR'] = '';
 $error_message['ERR_CONT_TEMP'] = 'ERR-CONT-TEMP';
