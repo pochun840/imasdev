@@ -942,6 +942,30 @@ class Historical{
         ];
     }
 
+    #判斷瀏覽器的種類
+    public function getBrowserType() {
+        
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        // 判斷瀏覽器
+        if (strpos($userAgent, 'Chrome') !== false) {
+            return 'Chrome';
+        } elseif (strpos($userAgent, 'Firefox') !== false) {
+            return 'Firefox';
+        } elseif (strpos($userAgent, 'Safari') !== false) {
+            return 'Safari';
+        } elseif (strpos($userAgent, 'MSIE') !== false || strpos($userAgent, 'Trident') !== false) {
+            return 'Internet Explorer';
+        } elseif (strpos($userAgent, 'Edge') !== false) {
+            return 'Edge';
+        } elseif (strpos($userAgent, 'Opera') !== false || strpos($userAgent, 'OPR') !== false) {
+            return 'Opera';
+        } elseif (strpos($userAgent, 'SamsungBrowser') !== false) {
+            return 'Samsung Browser';
+        } else {
+            return 'Unknown Browser';
+        }
+    }
+
 
    
     

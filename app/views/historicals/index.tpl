@@ -236,7 +236,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                         <div class="input-group mb-2">
                             <span class="input-group-text"><?php echo $text['From_text']; ?>:</span>
-                            <input type="datetime-local"   class="form-control input-ms" style="margin-right: 7px">
+                            <input type="datetime-local"  id="FromDate" name="FromDate class="form-control input-ms" style="margin-right: 7px">
 
                             <span class="input-group-text"><?php echo $text['To_text']; ?>:</span>
                             <input type="datetime-local" id="ToDate" name="ToDate" class="form-control input-ms" style="margin-right: 7px">
@@ -347,7 +347,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                         <div class="topnav-right">
 
-                            <?php echo (!empty($data['user_role_title']) && $data['user_role_title'] == "Super admin") ? '<button onclick="deleteinfo()" class="ExportButton"><i class="fa fa-trash-o" style="font-size:26px;color:black"></i></button>' : ''; ?>
+                            <?php echo (!empty($data['user_role_title']) && $data['user_role_title'] == "Super admin") ? '<button onclick="deleteinfo()" class="ExportButton"><i class="fa fa-trash-o" style="font-size:26px;color:white"></i></button>' : ''; ?>
                             <button id="Export-CSV" type="button" class="ExportButton" onclick="csv_download()"><?php echo $text['Export_text']; ?> CSV</button>
                             <button id="Export-Report" type="button" class="ExportButton" onclick="window.open('?url=Historicals/history_result', '_blank');" ><?php echo $text['Export_Report_text']; ?></button>
                             <button id="Combine-btn" type="button" onclick="NextToCombineData()"><?php echo $text['Combine_Data_text']; ?></button>
@@ -1819,7 +1819,7 @@ function updateButtonText(allChecked) {
     } else if (language == 'zh-tw') {
         buttonText = allChecked ? '取消全選' : '全選'; // 繁體中文
     } else if (language == 'en-us') {
-        buttonText = allChecked ? 'Deselect All' : 'Select All'; // 英文
+        buttonText = allChecked ? 'Deselect' : 'Select'; // 英文
     }
     
     toggleButton.innerHTML = buttonText;

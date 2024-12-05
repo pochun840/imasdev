@@ -54,6 +54,9 @@ class Historicals extends Controller
         $job_arr = $this->Historicals_newModel->get_job_id();
         $status_arr = $this->Historicals_newModel->status_code_change();
 
+        #判斷瀏覽器
+        $browser = $this->Historicals_newModel->getBrowserType();
+
         $data = [
             'isMobile' => $isMobile,
             'nav' => $nav,
@@ -69,7 +72,8 @@ class Historicals extends Controller
             'status_arr' => $status_arr,
             'job_arr' => $job_arr,
             'path' => __FUNCTION__,
-            'user_role_title' => $user_permissions['Title']
+            'user_role_title' => $user_permissions['Title'],
+            'browser' => $browser
         ];
 
         $this->view('historicals/index', $data);
