@@ -94,7 +94,6 @@ class Calibrations extends Controller
             $avg_torque = null; 
         }
 
-
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
@@ -112,7 +111,8 @@ class Calibrations extends Controller
             'avg_torque' => $avg_torque,
             'current_torquemeter' => $ktm[$_SESSION['torqueMeter']],
             'user' => $_SESSION['user'],
-            'skipTurnRev' => $skipTurnRev
+            'skipTurnRev' => $skipTurnRev,
+            'language' => $_SESSION['language']
             
         );
         $this->view('calibration/index', $data);

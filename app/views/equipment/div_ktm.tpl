@@ -123,7 +123,24 @@
             if (pidFileAppCheck === "Y") {
                 console.log("檔案檢查狀態：存在且為 'Y'");
                 document.getElementById('service_status_device_2').style.display = 'block';
-                 document.getElementById('service_status_device_1').style.display = 'none';
+                document.getElementById('service_status_device_1').style.display = 'none';
+
+                // 判斷 id='comport_ktm' 底下的 option 是否存在
+                var selectElement = document.getElementById('comport_ktm');
+                if (selectElement && selectElement.options.length > 0) {
+                    console.log("comport_ktm 的選項存在");
+                } else {
+                    var currentComPort = localStorage.getItem('currentComPort');
+                    var selectElement = document.getElementById('comport_ktm');
+                    selectElement.innerHTML = ''; // 清空下拉式選單
+
+                    var newOption = document.createElement('option');
+                    newOption.value = currentComPort; 
+                    newOption.text = currentComPort;
+                    selectElement.appendChild(newOption);
+
+                }
+
             } else {
                 console.log("檔案檢查狀態：存在但不為 'Y'");
                document.getElementById('service_status_device_1').style.display = 'block';
@@ -134,6 +151,8 @@
             document.getElementById('service_status_device_1').style.display = 'block';
             document.getElementById('service_status_device_2').style.display = 'none';
         }
+
+      
     }
 
     let currentComPort = '';
@@ -157,6 +176,17 @@
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log_div = document.getElementById('connect_log_ktm');
 
+                var selectElement = document.getElementById('comport_ktm');
+                selectElement.innerHTML = ''; // 清空下拉式選單
+
+                var newOption = document.createElement('option');
+                newOption.value = currentComPort; 
+                newOption.text = currentComPort;
+                selectElement.appendChild(newOption);
+
+                localStorage.setItem('currentComPort', currentComPort);
+
+        
 
                 // 根据连接是否成功更新设备状态
                 if (response.service_status == 'yes') {
@@ -230,6 +260,7 @@
                 // 移除 cookie 和 localStorage
                 delCookie('implement_count');
                 localStorage.removeItem('implement_count');
+                localStorage.removeItem('currentComPort');
 
     
             },
@@ -254,6 +285,25 @@
         });
     }
 
+
+    // 更新 'comport_ktm' 下拉選單的option
+    function updateComPortOptions(selectElement) {
+        if (selectElement && selectElement.options.length > 0) {
+            console.log("comport_ktm 的選項存在");
+        } else {
+            var currentComPort = localStorage.getItem('currentComPort');
+            if (currentComPort) {
+                selectElement.innerHTML = ''; // 清空下拉選單
+
+                var newOption = document.createElement('option');
+                newOption.value = currentComPort;
+                newOption.text = currentComPort;
+                selectElement.appendChild(newOption);
+            } else {
+                console.log("沒有找到儲存的 COM 端口值");
+            }
+        }
+}
 
     </script>
 

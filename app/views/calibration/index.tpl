@@ -761,37 +761,62 @@ function current_save() {
 }
 
 function undo() {
-    var status_val= '0';
-    $.ajax({
-        type: "POST",
-        data: {
-              status_val: status_val
-              },
-        url: '?url=Calibrations/del_all',
-        success: function(response) {
-            document.getElementById('analysis-system-KTM').style.display = 'block';
-            document.getElementById('Torque-Collection').style.display = 'none';
+    var language = '<?php echo $data['language']?>';
 
-            //1.把 final_brian 變成 0
-            var final_brian = 0;
-            
-            //2. 移除 localStorage 中的 implement_count
-            localStorage.removeItem('implement_count');
-        },
-        error: function(error) {
+    var confirmMessage = '';
+    if (language === 'zh-tw') {
+        confirmMessage = "確定要刪除全部的資料?";
+    } else if (language === 'zh-cn') {
+        confirmMessage = "确定要删除全部的资料?";
+    } else if (language === 'en-us') {
+        confirmMessage = "Are you sure you want to delete all the data?";
+    } else {
+        confirmMessage = "Are you sure you want to delete all the data?"; // 默認為英文
+    }
+
+    // 問題用戶是否確認執行
+    var userConfirmed = confirm(confirmMessage);
+    
+    // 如果用戶點選「確定」，則執行撤銷邏輯
+    if (userConfirmed) {
+        var status_val = '0';
         
-        }
-    }).fail(function () {
+        $.ajax({
+            type: "POST",
+            data: {
+                status_val: status_val
+            },
+            url: '?url=Calibrations/del_all',
+            success: function(response) {
+                // 顯示 'analysis-system-KTM' 並隱藏 'Torque-Collection'
+                document.getElementById('analysis-system-KTM').style.display = 'block';
+                document.getElementById('Torque-Collection').style.display = 'none';
 
-    });
-
+                // 1. 將 final_brian 設定為 0
+                var final_brian = 0;
+                
+                // 2. 移除 localStorage 中的 implement_count
+                localStorage.removeItem('implement_count');
+            },
+            error: function(error) {
+                // 處理錯誤（如果需要）
+            }
+        }).fail(function () {
+            // 處理 AJAX 請求失敗（如果需要）
+        });
+    } else {
+        // 如果用戶點選「取消」，則什麼也不做，或可紀錄取消操作
+        console.log("error");
+    }
 }
+
+
 let final_brian = 0; // 新增 final_brian 計數器
 let intervalId; 
+let implementCount = localStorage.getItem('implement_count');
 async function fetchData() {
     const url1 = '?url=Calibrations/get_val';
-    var implementCount = localStorage.getItem('implement_count');
-
+    
     try {
         const response1 = await fetch(url1, {
             method: 'GET', 
@@ -811,11 +836,12 @@ async function fetchData() {
                         console.log('final_brian 更新為:', final_brian);
                         console.log('localStorage 為:', implementCount);
 
-                        if(final_brian == implementCount){
+                        /*if( final_brian == implementCount ){
                            alert('已達到次數的上限');
                            clearInterval(intervalId); 
                            return; 
-                        }
+                        }*/  
+                        
                     }
                 } catch (jsonError) {
                     // 處理 JSON 解析錯誤
@@ -831,7 +857,16 @@ async function fetchData() {
 }
 
 // 每 0.3 秒調用一次 fetchData
-intervalId = setInterval(fetchData,300);
+intervalId = setInterval(function() {
+    fetchData();
+    // 判斷 implementCount 是否有值且不為空，並檢查是否達到次數上限
+    if(implementCount && implementCount !== "" && final_brian == implementCount){
+        alert('已達到次數的上限');
+        clearInterval(intervalId); 
+        return;
+    }
+}, 300);
+
 
 function fetchLatestInfo() {
     $.ajax({
