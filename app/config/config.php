@@ -11,8 +11,8 @@ define('URLROOT', '../public/'); //local用
 define('SITENAME', 'KISS');
 
 // GTCS控制器FTP帳密
-define('FTP_USER', 'kls');
-define('FTP_PASSWORD', '12345678rd');
+define('FTP_USER', 'iams');
+define('FTP_PASSWORD', 'Kilewsiams');
 
 // IO盒IP
 define('IOBOX_IP', '192.168.111.75'); // 192.168.1.75

@@ -1,58 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flatpickr with Moment.js</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>各種日期選擇器範例</title>
 
-  <!-- 引入 Flatpickr 的 CSS -->
-  <!--<link rel="stylesheet" href="css/flatpickr_min.css">-->
+    <!-- jQuery UI Datepicker -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/air-datepicker@2.3.1/dist/css/datepicker.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuejs-datepicker/dist/vuejs-datepicker.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/pikaday.css">
+    <link rel="stylesheet" href="http://www.jsdatepicker.com/jsDatePick_ltr.min.css">
 
-  <!-- 引入 Moment.js -->
-  <!--<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>-->
-  <!--<script src="js/moment.min.js"></script>-->
-  <!-- 引入 jQuery 和 Flatpickr 的 JS -->
-  <!--<script src="js/jquery-3.7.1.min.js"></script>-->
-  <!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
-  <!--<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>-->
-  <!--<script src="js/flatpickr.js"></script>-->
-
-
-  <script src="../public/js/jquery-3.7.1.min.js"></script>
-  <script src="../public/js/sweetalert2.js"></script>
-  <script src="../public/js/moment.min.js"></script>
-
-
-
-  
-  <link rel="stylesheet" href="../public/css/historical.css?v=202404111200" type="text/css">
-  <link rel="stylesheet" href="../public/css/flatpickr_min.css?v=202412041130" type="text/css">
-  
-  <script src="../public/js/flatpickr.js"></script>
-  <script src="../public/js/historical.js?v=202412040414"></script>
-  
-  <script src="/public/js/echarts_min.js?v=202412040414"></script>
-  <script src="/public/js/html2canvas_min.js?v=202412040414"></script>
-
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/air-datepicker@2.3.1/dist/js/datepicker.min.js"></script>
+    <script src="http://www.jsdatepicker.com/jsDatePick.min.1.3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuejs-datepicker"></script>
 </head>
 <body>
 
-  <!-- 用於選擇日期和時間的輸入框 -->
+<div class="container mt-5">
+    <h2>日期選擇器範例</h2>
 
-<input type="text" id="FromDate"  class="form-control input-ms" style="margin-right: 7px">
-<input type="datetime-local" id="meeting-time">
+    <!-- jQuery UI Datepicker -->
+    <div class="mb-3">
+        <label for="datepicker-jquery-ui">jQuery UI Datepicker</label>
+        <input type="text" id="datepicker-jquery-ui" class="form-control">
+    </div>
+
+    <!-- Bootstrap Datepicker -->
+    <div class="mb-3">
+        <label for="datepicker-bootstrap">Bootstrap Datepicker</label>
+        <input type="text" id="datepicker-bootstrap" class="form-control">
+    </div>
+
+    <!-- Flatpickr -->
+    <div class="mb-3">
+        <label for="datepicker-flatpickr">Flatpickr</label>
+        <input type="datetime" id="datepicker-flatpickr" class="form-control" style="width: 190px; border-radius: 5px;border: 1px solid #CCCCCC;">
+    </div>
+
+    <!-- Moment.js + Bootstrap Datepicker -->
+    <div class="mb-3">
+        <label for="datepicker-moment">Moment.js + Bootstrap Datepicker</label>
+        <input type="text" id="datepicker-moment" class="form-control">
+    </div>
+
+ 
+ 
+
+</div>
+
 <script>
-    // 使用 Flatpickr 並搭配 Moment.js 格式化
-    flatpickr("#FromDate", {
-      enableTime: true,                // 開啟時間選擇功能
-      dateFormat: "Y-m-d H:i",         // 設定日期和時間格式
-      onChange: function(selectedDates, dateStr, instance) {
-        // 使用 Moment.js 進行格式化
-        const formattedDate = moment(dateStr, "YYYY-MM-DD HH:mm").format("YYYY-MM-DD HH:mm");
-        console.log(formattedDate);  // 輸出格式化後的日期時間
-      }
+    // jQuery UI Datepicker
+    $(document).ready(function() {
+        $("#datepicker-jquery-ui").datepicker();
     });
-  </script>
+
+    // Bootstrap Datepicker
+    $(document).ready(function() {
+        $('#datepicker-bootstrap').datepicker();
+    });
+
+    // Flatpickr
+     flatpickr("#datepicker-flatpickr", {
+            enableTime: true,  // 啟用時間選擇
+            dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
+            time_24hr: true,  // 使用24小時制（可選）
+        });
+
+    // Pikaday
+    var picker = new Pikaday({ field: document.getElementById('datepicker-pikaday') });
+
+    // Moment.js + Bootstrap Datepicker
+    $(document).ready(function() {
+        $('#datepicker-moment').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: moment().format('YYYY-MM-DD')
+        });
+    });
+
+    // Date Range Picker for Bootstrap
+    $(document).ready(function() {
+        $('#daterange').daterangepicker();
+    });
+
+    // Air Datepicker
+    new AirDatepicker('#datepicker-air');
+
+    // jsDatePick
+    var dp = new JsDatePick({
+        useMode: 2,
+        target: "datepicker-jsDatePick"
+    });
+
+    // Vue.js Datepicker
+    new Vue({
+        el: '#vue-datepicker',
+        data: {
+            date: ''
+        },
+        template: '<vuejs-datepicker v-model="date"></vuejs-datepicker>'
+    });
+</script>
+
 </body>
 </html>

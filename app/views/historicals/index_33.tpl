@@ -1,9 +1,7 @@
 <?php require APPROOT . 'views/inc/header.tpl'; ?>
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/w3.css" type="text/css">
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/nav.css" type="text/css">
-<link rel="stylesheet" href="<?php echo URLROOT; ?>/css/datatables.min.css">
 
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/historical.css?v=202404111200" type="text/css">
+<link rel="stylesheet" href="../public/css/historical.css?v=202404111200" type="text/css">
+<link rel="stylesheet" href="../public/css/flatpickr_min.css?v=202412041130" type="text/css">
 
 <script src="<?php echo URLROOT; ?>js/flatpickr.js"></script>
 <script src="js/historical.js?v=<?php echo date('YmdHi'); ?>"></script>
@@ -238,7 +236,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                         <div class="input-group mb-2">
                             <span class="input-group-text"><?php echo $text['From_text']; ?>:</span>
-                            <input type="datetime-local" id="FromDate" name="FromDate" class="form-control input-ms" style="margin-right: 7px">
+                            <input type="datetime-local"  id="FromDate" name="FromDate class="form-control input-ms" style="margin-right: 7px">
 
                             <span class="input-group-text"><?php echo $text['To_text']; ?>:</span>
                             <input type="datetime-local" id="ToDate" name="ToDate" class="form-control input-ms" style="margin-right: 7px">
@@ -266,6 +264,8 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                     <option value="<?php echo $val_res_2['template_program_id'];?>"><?php echo $val_res_2['template_program_id'];?></option>
                                 <?php }?>
                             </select>
+
+                            
                         </div>
                         
                     </div>                
@@ -297,7 +297,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                         <div class="row">
                             <div class="col-2 t1" for="FromDate"><?php echo $text['From_text']; ?>:</div>
                             <div class="col-2 t1" style="margin-left: -100px">
-                                <input type="datetime" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC; ">
+                                   <input type="datetime-local" id="FromDate" name="FromDate" class="form-control input-ms" style="margin-right: 7px">
                             </div>
 
                             <div class="col-2 t1" for="ToDate"><?php echo $text['To_text']; ?>:</div>
@@ -347,7 +347,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                         <div class="topnav-right">
 
-                            <?php echo (!empty($data['user_role_title']) && $data['user_role_title'] == "Super admin") ? '<button onclick="deleteinfo()" class="ExportButton"><i class="fa fa-trash-o" style="font-size:26px;color:black"></i></button>' : ''; ?>
+                            <?php echo (!empty($data['user_role_title']) && $data['user_role_title'] == "Super admin") ? '<button onclick="deleteinfo()" class="ExportButton"><i class="fa fa-trash-o" style="font-size:26px;color:white"></i></button>' : ''; ?>
                             <button id="Export-CSV" type="button" class="ExportButton" onclick="csv_download()"><?php echo $text['Export_text']; ?> CSV</button>
                             <button id="Export-Report" type="button" class="ExportButton" onclick="window.open('?url=Historicals/history_result', '_blank');" ><?php echo $text['Export_Report_text']; ?></button>
                             <button id="Combine-btn" type="button" onclick="NextToCombineData()"><?php echo $text['Combine_Data_text']; ?></button>
@@ -1077,6 +1077,7 @@ addMessage();
     var x_data_val = <?php echo  $data['chart_info']['x_val']; ?>;
     var y_data_val = <?php echo  $data['chart_info']['y_val']; ?>;
 
+
     var min_val = <?php echo  $data['chat_y_min_val'];?>;
     var max_val = <?php echo  $data['chat_y_max_val'];?>;
 
@@ -1086,8 +1087,6 @@ addMessage();
     var chat_mode = '<?php echo $data['chart_info']['chat_mode'];?>';
     var step_prr_angle = '<?php echo $data['job_info'][0]['step_prr_angle'];?>';
     var step_threshold_angle = '<?php echo $data['job_info'][0]['step_threshold_angle'];?>';
-    var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
-    var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
 
     var option = {
             
@@ -1147,8 +1146,7 @@ addMessage();
         ]
     };
 
-    
-      // 尋牙角度(for chat_mode == 2)
+    // 尋牙角度(for chat_mode == 2)
     if (chat_mode == '2' && (step_prr_angle != '0' || step_threshold_angle != '0') ) {
       
         // 如果 step_prr_angle 不等於 '0'
@@ -1198,85 +1196,9 @@ addMessage();
         }
     }
 
-    if (chat_mode == '1' && (downshift_torque != '0' || threshold_torque != '0')) {
- 
-
-        if (downshift_torque != '0') {
-                // 將 downshift_torque 轉換為數字
-                var downshift_torque_num = parseFloat(downshift_torque);
-
-                // 遍歷 y_data_val，查找符合範圍的數值
-                for (var i = 0; i < y_data_val.length; i++) {
-                    var y_val = parseFloat(y_data_val[i]);  // 確保 y_data_val 中的每個值是數字
-
-                    // 檢查 y_val 是否在 downshift_torque 的範圍內（例如 0.8000 - 0.8999）
-                    if (y_val >= downshift_torque_num && y_val < downshift_torque_num + 0.1) {
-                        var x_value = x_data_val[i];  // 找到對應的 x 值
-
-                        // 確保 markPoint 被初始化
-                        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-                        
-                        // 推入標註數據
-                        option.series[0].markPoint.data.push({
-                            xAxis: x_value,
-                            yAxis: y_val,  // 使用符合範圍的 y 值
-                            symbol: 'circle',
-                            symbolSize: 10,
-                            itemStyle: {
-                                color: 'red'
-                            },
-                            label: {
-                                position: 'top',
-                                formatter: 'downshift_torque : ' + downshift_torque
-                            }
-                        });
-
-                        // 找到第一筆符合條件的數據後跳出迴圈
-                        break;
-                    }
-                }
-            }
-
-            // 處理 threshold_torque
-            if (threshold_torque != '0') {
-                var threshold_torque_num = parseFloat(threshold_torque);
-
-                // 遍歷 y_data_val，查找符合 threshold_torque 範圍的數值
-                for (var i = 0; i < y_data_val.length; i++) {
-                    var y_val = parseFloat(y_data_val[i]);
-
-                    // 檢查 y_val 是否在 threshold_torque 的範圍內（例如 0.800 - 0.899）
-                    if (y_val >= threshold_torque_num && y_val < threshold_torque_num + 0.1) {
-                        var x_value = x_data_val[i];  // 找到對應的 x 值
-
-                        // 確保 markPoint 被初始化
-                        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-
-                        // 推入標註數據
-                        option.series[0].markPoint.data.push({
-                            xAxis: x_value,
-                            yAxis: y_val,
-                            symbol: 'circle',
-                            symbolSize: 10,
-                            itemStyle: {
-                                color: 'blue'  // 可以使用不同顏色區分 downshift_torque 和 threshold_torque
-                            },
-                            label: {
-                                position: 'top',
-                                formatter: 'threshold_torque : ' + threshold_torque
-                            }
-                        });
-
-                        // 找到第一筆符合條件的數據後跳出迴圈
-                        break;
-                    }
-                }
-            }
-    }
 
 
-    
-    
+
     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
     if ((x_title === "Time(MS)" && (y_title === "Power" || y_title === "RPM")) ||chat_mode == 2) {
         document.cookie = "limit_val=" + limit_val + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
@@ -1949,7 +1871,7 @@ function updateButtonText(allChecked) {
     } else if (language == 'zh-tw') {
         buttonText = allChecked ? '取消全選' : '全選'; // 繁體中文
     } else if (language == 'en-us') {
-        buttonText = allChecked ? 'Deselect All' : 'Select All'; // 英文
+        buttonText = allChecked ? 'Deselect' : 'Select'; // 英文
     }
     
     toggleButton.innerHTML = buttonText;
@@ -1985,3 +1907,4 @@ initButtonText();
 
 
 </script>
+

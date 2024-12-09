@@ -301,7 +301,7 @@ class Historical{
 
     public function get_info_data($index){
         
-        $sql = "SELECT * FROM `fasten_data` WHERE system_sn = ?";
+        $sql = "SELECT * FROM `fasten_data` WHERE system_sn = ? ORDER BY `data_time` DESC ";
         $statement = $this->db->prepare($sql);
         $statement->execute([$index]);
         $res = $statement->fetchAll(PDO::FETCH_ASSOC);

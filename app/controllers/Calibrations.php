@@ -94,6 +94,7 @@ class Calibrations extends Controller
             $avg_torque = null; 
         }
 
+ 
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),

@@ -371,7 +371,7 @@ class Historicals extends Controller
                 exit();
             }
 
-
+            //var_dump($index);die();
             $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
             $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
  
@@ -425,7 +425,12 @@ class Historicals extends Controller
             $data['nav'] = $this->NavsController->get_nav();
             $data['nopage'] = 0;
             $data['path'] = __FUNCTION__;
-    
+
+            // echo "<pre>";
+            // print_r($data);
+            // echo "</pre>";
+            // die();
+
             $this->view('historicals/index', $data);
         }
     }
