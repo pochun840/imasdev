@@ -309,6 +309,20 @@ class Historical{
         return  $res;
     }
 
+    public function get_info_data_by_snid($index_arr){
+
+        if (count($index_arr) < 2) {
+            throw new Exception("Invalid index array. It should contain at least two elements.");
+        }
+
+        $sql = "SELECT * FROM `fasten_data` WHERE system_sn = ? AND id = ? ";
+        $statement = $this->db->prepare($sql);
+        $statement->execute([$index_arr[0], $index_arr[1]]);
+        $res = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return  $res;
+    }
+
     public function get_job_id(){
         
         $sql = "SELECT * FROM `job` WHERE job_id != '' ";

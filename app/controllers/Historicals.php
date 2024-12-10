@@ -278,8 +278,6 @@ class Historicals extends Controller
                         );
                     }
                     $data['fastening_status'] = json_encode($fastening_status);
-                    
-                    //var_dump($data['fastening_status']);
                 }
             }
             
@@ -361,22 +359,24 @@ class Historicals extends Controller
 
         if(!empty($index)) {
             $data = array();
-    
-            #取得詳細資料
-            $data['job_info'] = $this->Historicals_newModel->get_info_data($index);
-
+            $index_arr = explode("-",$index);
+            //如果$index_arr 不是null
+            if(!empty($index_arr)){
+                
+                #取得詳細資料
+                $data['job_info'] = $this->Historicals_newModel->get_info_data_by_snid($index_arr);
+            }
+                
             if(empty($data['job_info'])){
                 $redirectUrl = '?url=Historicals';
                 header('Location: ' . $redirectUrl);
                 exit();
             }
 
-            //var_dump($index);die();
             $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
             $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
  
 
-    
             #檢查chat_mode cookie
             $chat_mode = isset($_COOKIE['chat_mode_change']) ? $_COOKIE['chat_mode_change'] : "1";
     
@@ -426,12 +426,8 @@ class Historicals extends Controller
             $data['nopage'] = 0;
             $data['path'] = __FUNCTION__;
 
-            // echo "<pre>";
-            // print_r($data);
-            // echo "</pre>";
-            // die();
-
             $this->view('historicals/index', $data);
+    
         }
     }
 
@@ -495,9 +491,17 @@ class Historicals extends Controller
 
         // 用 cookie 取得已勾選的 id
         if (!empty($_COOKIE['checkedsn'])) {
+
             $checkedsn = $_COOKIE['checkedsn'];
+            $checkedsn = str_replace("?url=Historicals/nextinfo/","",$checkedsn);
             $checkedsn_array = strpos($checkedsn, ',') !== false ? explode(",", $checkedsn) : [$checkedsn];
+            foreach ($checkedsn_array as &$sn) {
+                $parts = explode('-', trim($sn));
+                $sn = $parts[0];
+            }
             $checked_sn_in = implode("','", $checkedsn_array);
+
+
 
             // 取得所有的資料
             $info_final = $this->Historicals_newModel->csv_info($checked_sn_in);  
@@ -513,6 +517,9 @@ class Historicals extends Controller
             $new_id = $id;
             $id_array = explode(',', $new_id);
             $data['id_total'] = $id_array;
+
+
+
 
             // 取得曲線圖的資料
             $final_label = $this->Historicals_newModel->get_result($checked_sn_in, $id, $data['chat_mode']);

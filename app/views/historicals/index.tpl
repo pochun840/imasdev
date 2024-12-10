@@ -395,12 +395,13 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                     <?php 
                                     if(isset($data['info'])){
                                     foreach($data['info'] as $k_info =>$v_info){
-                                    
-                                        $link ='?url=Historicals/nextinfo/'.$v_info['system_sn'];
+                                        
+                                        
+                                        $link ='?url=Historicals/nextinfo/'.$v_info['system_sn']."-".$v_info['id'];
                                         ?>
                                         <tr>
                                             <td style="text-align: center;">
-                                                <input class="form-check-input" type="checkbox" name="test1" id="test1"  value="<?php echo $v_info['system_sn'];?>" style="zoom:1.2;vertical-align: middle;">
+                                                <input class="form-check-input" type="checkbox" name="test1" id="test1"  value="<?php echo $link;?>" style="zoom:1.2;vertical-align: middle;">
                                             </td>
                                             <td><?php echo $v_info['system_sn'];?></td>
                                             <td><?php echo $v_info['data_time'];?></td>
