@@ -1200,26 +1200,18 @@ addMessage();
 
     if (chat_mode == '1' && (downshift_torque != '0' || threshold_torque != '0')) {
  
-
         if (downshift_torque != '0') {
                 // 將 downshift_torque 轉換為數字
                 var downshift_torque_num = parseFloat(downshift_torque);
-
-                // 遍歷 y_data_val，查找符合範圍的數值
                 for (var i = 0; i < y_data_val.length; i++) {
-                    var y_val = parseFloat(y_data_val[i]);  // 確保 y_data_val 中的每個值是數字
-
-                    // 檢查 y_val 是否在 downshift_torque 的範圍內（例如 0.8000 - 0.8999）
+                    var y_val = parseFloat(y_data_val[i]); 
                     if (y_val >= downshift_torque_num && y_val < downshift_torque_num + 0.1) {
-                        var x_value = x_data_val[i];  // 找到對應的 x 值
+                        var x_value = x_data_val[i]; 
 
-                        // 確保 markPoint 被初始化
                         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-                        
-                        // 推入標註數據
                         option.series[0].markPoint.data.push({
                             xAxis: x_value,
-                            yAxis: y_val,  // 使用符合範圍的 y 值
+                            yAxis: y_val,  
                             symbol: 'circle',
                             symbolSize: 10,
                             itemStyle: {
@@ -1230,52 +1222,39 @@ addMessage();
                                 formatter: 'downshift_torque : ' + downshift_torque
                             }
                         });
-
-                        // 找到第一筆符合條件的數據後跳出迴圈
                         break;
                     }
                 }
             }
 
-            // 處理 threshold_torque
             if (threshold_torque != '0') {
                 var threshold_torque_num = parseFloat(threshold_torque);
-
-                // 遍歷 y_data_val，查找符合 threshold_torque 範圍的數值
                 for (var i = 0; i < y_data_val.length; i++) {
                     var y_val = parseFloat(y_data_val[i]);
 
                     // 檢查 y_val 是否在 threshold_torque 的範圍內（例如 0.800 - 0.899）
                     if (y_val >= threshold_torque_num && y_val < threshold_torque_num + 0.1) {
-                        var x_value = x_data_val[i];  // 找到對應的 x 值
-
-                        // 確保 markPoint 被初始化
+                        var x_value = x_data_val[i];  
                         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-
-                        // 推入標註數據
                         option.series[0].markPoint.data.push({
                             xAxis: x_value,
                             yAxis: y_val,
                             symbol: 'circle',
                             symbolSize: 10,
                             itemStyle: {
-                                color: 'blue'  // 可以使用不同顏色區分 downshift_torque 和 threshold_torque
+                                color: 'blue'  
                             },
                             label: {
                                 position: 'top',
                                 formatter: 'threshold_torque : ' + threshold_torque
                             }
                         });
-
-                        // 找到第一筆符合條件的數據後跳出迴圈
                         break;
                     }
                 }
             }
     }
 
-
-    
     
     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
     if ((x_title === "Time(MS)" && (y_title === "Power" || y_title === "RPM")) ||chat_mode == 2) {
