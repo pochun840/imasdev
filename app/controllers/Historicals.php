@@ -508,6 +508,7 @@ class Historicals extends Controller
             $data['chat_mode_arr_combine'] = $this->Historicals_newModel->details('chart_type');
             $data['info_final'] = $info_final;
 
+
             // 取得曲線圖 ID
             $id = '';
             foreach ($info_final as $item) {
@@ -576,6 +577,7 @@ class Historicals extends Controller
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
                         }
                     }
+
                 }
 
                 // 設置圖表數據和座標
@@ -588,6 +590,9 @@ class Historicals extends Controller
 
                     $data["chart{$key}_ycoordinate_max_correct"] = $data['info_final'][$key]['step_hightorque'];
                     $data["chart{$key}_ycoordinate_min_correct"] = $data['info_final'][$key]['step_lowtorque'];
+                    $data["chart{$key}_ycoordinate_threshold_torque"] =  $data['info_final'][$key]['threshold_torque'];
+                    $data["chart{$key}_ycoordinate_downshift_torque"] =  $data['info_final'][$key]['downshift_torque'];
+                    //$data["chart{$key}_ycoordinate_step_threshold_angle"] =  $data['info_final'][$key]['step_threshold_angle'];
 
                 
                     if (isset($chart['y_angle'])) {
@@ -597,7 +602,11 @@ class Historicals extends Controller
                         $data["chart{$key}_ycoordinate_max_angle"] = max($angleValues);
                         $data["chart{$key}_ycoordinate_min_angle"] = min($angleValues);
                     }
+
+
                 }
+
+                
 
                 // 設置曲線圖座標名稱
                 $chartTypeDetails = $this->Historicals_newModel->details('chart_type');
@@ -612,8 +621,6 @@ class Historicals extends Controller
             // 單位換算
             $torque_mode_arr = $this->Historicals_newModel->details('torque');
             $status_arr = $this->Historicals_newModel->status_code_change();
-
-
 
             //檢查  $data['info_final'] 的 cc_program_id 是否一致
             if(!empty($data['info_final'])){
@@ -645,8 +652,25 @@ class Historicals extends Controller
             $data['id_count'] = count($info_final) - 1;
             $data['torque_arr'] = $torque_arr;
 
+            $threshold_torque = '';
+            $downshift_torque = '';
 
-           
+            foreach ($info_final as $item) {
+                if (isset($item['threshold_torque'])) {
+                    $threshold_torque .= $item['threshold_torque'] . ',';
+                }
+                if (isset($item['downshift_torque'])) {
+                    $downshift_torque.= $item['downshift_torque'] . ',';
+                }
+            }
+
+            $threshold_torque = rtrim($threshold_torque, ',');
+            $data['threshold_torque'] = $threshold_torque;
+
+            $downshift_torque = rtrim($downshift_torque, ',');
+            $data['downshift_torque'] = $downshift_torque;
+
+
 
             $this->view('historicals/index', $data);
         
