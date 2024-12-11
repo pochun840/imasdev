@@ -10,6 +10,9 @@
 
 <script src="<?php echo URLROOT; ?>js/echarts_min.js?v=<?php echo date('YmdHi'); ?>"></script>
 <script src="<?php echo URLROOT; ?>js/html2canvas_min.js?v=<?php echo date('YmdHi'); ?>"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 
 <?php if(isset($data['nav'])){
     echo $data['nav'];
@@ -2156,6 +2159,19 @@ function initButtonText() {
 // 初始化按鈕文字
 initButtonText();
 
+flatpickr("#FromDate", {
+    enableTime: true,  // 啟用時間選擇
+    dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
+    time_24hr: true,  // 使用24小時制（可選）
+    className: "custom-flatpickr-input"
+});
 
 
 </script>
+<style>
+    /* 這將改變該輸入框的背景顏色為白色 */
+    .custom-flatpickr-input {
+        background-color: white !important;
+        color: black;  /* 你可以修改文字顏色 */
+    }
+</style>
