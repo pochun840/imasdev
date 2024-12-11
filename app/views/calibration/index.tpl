@@ -792,8 +792,8 @@ function undo() {
                 document.getElementById('analysis-system-KTM').style.display = 'block';
                 document.getElementById('Torque-Collection').style.display = 'none';
 
-                // 1. 將 final_brian 設定為 0
-                var final_brian = 0;
+                // 1. 將 final_count 設定為 0
+                var final_count = 0;
                 
                 // 2. 移除 localStorage 中的 implement_count
                 localStorage.removeItem('implement_count');
@@ -811,9 +811,11 @@ function undo() {
 }
 
 
-let final_brian = 0; // 新增 final_brian 計數器
+let final_count = 0; // 新增 final_count 計數器
 let intervalId; 
 let implementCount = localStorage.getItem('implement_count');
+implementCount = Number(implementCount); 
+
 async function fetchData() {
     const url1 = '?url=Calibrations/get_val';
     
@@ -832,17 +834,13 @@ async function fetchData() {
                     
                     // 檢查回應的 message 是否是 '數據整理成功'
                     if (data.success && data.message === '數據整理成功') {
-                        final_brian += 1; // 如果匹配，則 final_brian 自增 1
-                        console.log('final_brian 更新為:', final_brian);
+                        final_count += 1; // 如果匹配，則 final_count 自增 1
+                        console.log('final_count 更新為:', final_count);
                         console.log('localStorage 為:', implementCount);
 
-                        /*if( final_brian == implementCount ){
-                           alert('已達到次數的上限');
-                           clearInterval(intervalId); 
-                           return; 
-                        }*/  
                         
                     }
+
                 } catch (jsonError) {
                     // 處理 JSON 解析錯誤
                     console.error('無法解析回應為 JSON:', jsonError);
@@ -860,11 +858,16 @@ async function fetchData() {
 intervalId = setInterval(function() {
     fetchData();
     // 判斷 implementCount 是否有值且不為空，並檢查是否達到次數上限
-    if(implementCount && implementCount !== "" && final_brian == implementCount){
+    
+    /*console.log("final_count:", final_count, "Type:", typeof final_count);
+    console.log("implementCount:", implementCount, "Type:", typeof implementCount);
+    if( final_count == implementCount){
         alert('已達到次數的上限');
         clearInterval(intervalId); 
         return;
-    }
+    }*/
+
+
 }, 300);
 
 

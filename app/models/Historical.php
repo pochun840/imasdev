@@ -18,7 +18,9 @@ class Historical{
     public function csv_info($system_sn){
 
         if($system_sn != 'total'){
-            $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' AND system_sn IN('".$system_sn."') order by data_time desc";
+            $system_sn_array = explode(", ", $system_sn);
+            $system_sn_array = array_map('intval', $system_sn_array);
+            $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' AND id IN (" . implode(",", $system_sn_array) . ") ORDER BY data_time DESC";
         }else{
             $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' ORDER BY data_time desc";
         }
@@ -559,6 +561,7 @@ class Historical{
                 $file_found = false; 
                 foreach ($file_arr as $file_suffix) {
                     $infile = '../public/data/DATALOG_' . str_pad($val, 10, "0", STR_PAD_LEFT) . $file_suffix . ".csv";
+                   
                     if (file_exists($infile)) {
                         $csvdata = file_get_contents($infile);
                         $rows = explode("\n", $csvdata);

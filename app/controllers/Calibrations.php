@@ -249,6 +249,8 @@ class Calibrations extends Controller
                 //$final 是正的 則要進行這段
 
                 if ($final > 0){
+
+                    
                     $res = $this->CalibrationModel->tidy_data($final, $tools_sn,$system_sn,$fasten_torque);
                 }else{
                     unlink($file_path);

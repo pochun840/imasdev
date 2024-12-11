@@ -1073,6 +1073,8 @@ addMessage();
 <!----nextinfo op----->
 <?php if ($path == "nextinfo" && isset($data['chart_info']['chat_mode']) && $data['chart_info']['chat_mode'] != "6") { ?>
 <script>
+
+    
     var myChart = echarts.init(document.getElementById('chartinfo'));
 
     var x_data_val = <?php echo  $data['chart_info']['x_val']; ?>;
@@ -1085,10 +1087,13 @@ addMessage();
     var y_title = '<?php echo $data['chart_info']['y_title'];?>';
 
     var chat_mode = '<?php echo $data['chart_info']['chat_mode'];?>';
+    var step_prr_rpm   = '<?php echo $data['job_info'][0]['step_prr_rpm'];?>';
     var step_prr_angle = '<?php echo $data['job_info'][0]['step_prr_angle'];?>';
     var step_threshold_angle = '<?php echo $data['job_info'][0]['step_threshold_angle'];?>';
     var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
     var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
+
+    
 
     var option = {
             
@@ -1150,30 +1155,8 @@ addMessage();
 
     
       // 尋牙角度(for chat_mode == 2)
-    if (chat_mode == '2' && (step_prr_angle != '0' || step_threshold_angle != '0') ) {
+    if (chat_mode == '2' && ( step_threshold_angle != '0') ) {
       
-        // 如果 step_prr_angle 不等於 '0'
-        if (step_prr_angle != '0') {
-            if (y_data_val.includes(step_prr_angle.toString())) {
-                var index = y_data_val.indexOf(step_prr_angle.toString());
-                var x_value = x_data_val[index];  // 获取对应的 x 轴值
-
-                option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-                option.series[0].markPoint.data.push({
-                    xAxis: x_value,  
-                    yAxis: step_prr_angle,  
-                    symbol: 'circle',
-                    symbolSize: 10,
-                    itemStyle: {
-                        color: 'blue'
-                    },
-                    label: {
-                        position: 'top',
-                        formatter: 'Step PRR Angle: ' + step_prr_angle
-                    }
-                });
-            }
-        }
 
         // 如果 step_threshold_angle 不等於 '0'
         if (step_threshold_angle != '0') {
@@ -1199,7 +1182,25 @@ addMessage();
         }
     }
 
-    if (chat_mode == '1' && (downshift_torque != '0' || threshold_torque != '0')) {
+    //step_prr_rpm
+    if ((chat_mode == '1') && (step_prr_rpm != '0' || step_prr_angle != '0')) {
+        
+        //檢查 y_data_val = 0的 都要隱藏
+        for (var i = 0; i < y_data_val.length; i++) {
+            if (y_data_val[i] == 0) {
+                y_data_val[i] = null; 
+            }
+        }
+
+      
+
+        option.series[0].data = y_data_val;
+        myChart.setOption(option);
+    }
+
+    
+  
+    if ((chat_mode == '1') && (downshift_torque != '0' || threshold_torque != '0')) {
  
         if (parseFloat(downshift_torque) !== 0) {
 
@@ -1254,6 +1255,61 @@ addMessage();
                 }
             }
     }
+
+    // 尋找並顯示 step_threshold_angle（如果在 chat_mode == '5'）
+    if (chat_mode == '5') {
+        var step_threshold_angle_num = parseFloat(step_threshold_angle);
+
+
+        // 如果 x_data_val 中有與 step_threshold_angle 相等的值，則找到對應的 X 軸位置
+        if (x_data_val.includes(step_threshold_angle_num.toString())) {
+            var index = x_data_val.indexOf(step_threshold_angle_num.toString());
+            var x_value = x_data_val[index];
+
+            // 確保 markLine 存在，如果不存在則初始化
+            option.series[0].markLine = option.series[0].markLine || { data: [] };
+
+            // 隱藏虛線
+            option.series[0].markLine.data.push({
+                xAxis: x_value,  // 在 X 軸上標註 step_threshold_angle 值
+                name: 'Step Threshold Angle',
+                symbol: 'none',  // 确保移除箭头
+                symbolSize: 0,    // 确保没有箭头
+                clip: true,
+                lineStyle: {
+                    type: 'dashed',  // 虚线
+                    color: 'green',   // 绿色
+                    width: 0.75,         // 线宽
+                    opacity: 0    
+                },
+                label: {
+                    //position: 'start',  // 标签位置
+                    //formatter: 'threshold_angle: ' + step_threshold_angle
+                },
+
+                show: true  
+            });
+
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+            option.series[0].markPoint.data.push({
+                xAxis: x_value,  
+                yAxis: threshold_torque,  // 对应的 Y 轴值
+                symbol: 'circle',  // 圆点标注
+                symbolSize: 8,  // 圆点的大小
+                itemStyle: {
+                    color: 'pink'  
+                },
+                label: {
+                    position: 'top',  // 圆点标签位置
+                    formatter: 'threshold_angle:' + step_threshold_angle
+                }
+            });
+
+           
+        }
+    }
+
+
 
     
     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
@@ -1567,10 +1623,7 @@ addMessage();
             if (downshift_torque !== 0 && downshift_torque!== 0.0) {
                 console.log("Downshift Torque:", downshift_torque);
 
-                //檢查每條曲線的值，否有對應的 downshift_torque
                 for (var i = 0; i <= max_count; i++) {
-
-                    // 如果该曲线被隐藏，则跳过
                     if (!legendStatus[`chart${i}`]) continue;
 
 
@@ -1578,7 +1631,6 @@ addMessage();
 
                     var found = false;
 
-                    //downshift_torque的範圍
                     var rangeStart = downshift_torque + 0.001; 
                     var rangeEnd = downshift_torque + 0.099; 
 

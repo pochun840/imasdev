@@ -189,7 +189,6 @@ function search_info(){
         seqNames.push(seq_name); 
        
     });
-    //alert(checkedjobidarr);
 
     //seq 
     var checked_seqid = document.querySelectorAll('input[type="checkbox"][name="seqid"]:checked');

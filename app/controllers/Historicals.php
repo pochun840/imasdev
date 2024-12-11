@@ -17,10 +17,12 @@ class Historicals extends Controller
 
     public function index($page)
     {
+
         $nopage = isset($_COOKIE["nopage"]) ? $_COOKIE["nopage"] : "0";
         $limit = 30;
         $offset = 0;
         $totalPages = 0;
+
 
         if($nopage == "1") {
             $page = isset($_GET['p']) ? $_GET['p'] : 1;
@@ -31,6 +33,7 @@ class Historicals extends Controller
                 $totalPages = ceil($totalItems / $limit);
             }
         }
+
 
         #資料取得
         $info = $this->getMonitorsInfo($nopage, $offset, $limit);
@@ -104,6 +107,9 @@ class Historicals extends Controller
         $_SESSION['info_arr'] = $info_arr; 
 
 
+
+
+
         $offset = 0;
         $limit  = 10000;
         #按照POST的資訊 取得資料庫搜尋的結果
@@ -158,6 +164,9 @@ class Historicals extends Controller
             echo $response;
             
         }
+
+        //session_unset();  
+        //session_destroy(); 
 
     
     }
@@ -490,6 +499,8 @@ class Historicals extends Controller
         $torque_arr = $this->Historicals_newModel->details('torque');
 
         // 用 cookie 取得已勾選的 id
+
+        
         if (!empty($_COOKIE['checkedsn'])) {
 
             $checkedsn = $_COOKIE['checkedsn'];
@@ -501,10 +512,11 @@ class Historicals extends Controller
             }
             $checked_sn_in = implode("','", $checkedsn_array);
 
-
-
+            preg_match_all('/-(\d+)/', $_COOKIE['checkedsn'], $matches);
+            $cleaned_str = implode(", ", $matches[1]);
+            //var_dump( $cleaned_str);die();
             // 取得所有的資料
-            $info_final = $this->Historicals_newModel->csv_info($checked_sn_in);  
+            $info_final = $this->Historicals_newModel->csv_info($cleaned_str);  
             $data['chat_mode_arr_combine'] = $this->Historicals_newModel->details('chart_type');
             $data['info_final'] = $info_final;
 

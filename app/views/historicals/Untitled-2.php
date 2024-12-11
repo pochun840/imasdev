@@ -1,282 +1,288 @@
+<?php if ($path == "nextinfo" && isset($data['chart_info']['chat_mode']) && $data['chart_info']['chat_mode'] != "6") { ?>
 <script>
-        var chartData = <?php echo json_encode($data); ?>;
-        var idTotal = <?php echo json_encode($data['id_total']); ?>;
-        var chat_mode = '<?php echo $data['chat_mode'];?>';
-        var check_limit_val = '<?php echo $data['check_limit_val'];?>';
-        var max_count = '<?php echo $data['id_count'];?>';
-        var myChart_combine = echarts.init(document.getElementById('chart_combine'));
 
-        
-        var threshold_torque_total = <?php echo json_encode($data['threshold_torque']); ?>;
-        var downshift_torque_total = <?php echo json_encode($data['downshift_torque']); ?>;
+    
+    var myChart = echarts.init(document.getElementById('chartinfo'));
 
-        // 定義顏色調色盤
-        var colorPalette = [
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-            '#f5b041', '#5dade2', '#a2d9ce', '#d91d3a', '#ff9c00',
-            '#6c5b7b', '#c06c84', '#f67280', '#ffbe0b', '#2a9d8f',
-            '#e9c46a', '#f1faee', '#264653', '#2a9d8f', '#e76f51',
-            '#f9a826', '#e63946', '#f1faee', '#a8dadc', '#457b9d',
-            '#1d3557', '#f1faee', '#e63946', '#f1faee', '#a8dadc',
-            '#f77f00', '#d62839', '#003049', '#f1faee', '#e9c46a',
-            '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
-        ];
+    var x_data_val = <?php echo  $data['chart_info']['x_val']; ?>;
+    var y_data_val = <?php echo  $data['chart_info']['y_val']; ?>;
 
-        // 解析X轴数据
-        var xCoordinatesArray = chartData.chart_xcoordinates.map(x => JSON.parse(x));
+    var min_val = <?php echo  $data['chat_y_min_val'];?>;
+    var max_val = <?php echo  $data['chat_y_max_val'];?>;
 
-        // 找到最長的 X 軸數據
-        var xData = xCoordinatesArray.reduce((longest, current) => {
-            return current.length > longest.length ? current : longest;
-        }, []);
+    var x_title = '<?php echo $data['chart_info']['x_title'];?>';
+    var y_title = '<?php echo $data['chart_info']['y_title'];?>';
 
-        // 針對最長 X 軸數據處理 Y 軸數據
-        var seriesData = Array.from({ length: 25 }, (_, i) => {
-            var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-            return yData.length === xData.length ? yData : [];
-        }).filter(data => data.length > 0);
+    var chat_mode = '<?php echo $data['chart_info']['chat_mode'];?>';
+    var step_prr_rpm   = '<?php echo $data['job_info'][0]['step_prr_rpm'];?>';
+    var step_prr_angle = '<?php echo $data['job_info'][0]['step_prr_angle'];?>';
+    var step_threshold_angle = '<?php echo $data['job_info'][0]['step_threshold_angle'];?>';
+    var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
+    var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
 
-        // 计算最大值和最小值
-        var maxValues = [];
-        var minValues = [];
-        for (var i = 0; i <= max_count; i++) {
-            var maxVal, minVal;
-            if (chat_mode == 1) {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
-                threshold_torque =  parseFloat(chartData[`chart${i}_ycoordinate_threshold_torque`]);
+    
+
+    var option = {
+            
+            grid: GridConfig.generate('90%', '70%', '3%', '20%'),
+            tooltip: {
+                trigger: 'axis',
+                position: function (pt) {
+                    return [pt[0], '10%'];
+                },
+                formatter: function (params) {
+                    var state = '<span style="color: red;">' + y_title + '</span>';
+                    var value = '<span style="color: red;">' + params[0].value + '</span>';
+                    return state + ': ' + value; 
+                },
                 
-                console.log(threshold_torque);
-            } else if (chat_mode == 5) {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
-            } else {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]);
+            },
+            title: {left: 'center',text: '',},
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,
+                name: x_title,
+                data: x_data_val
+            },
+            yAxis: {
+                type: 'value',
+                name: y_title,
+                boundaryGap: [0, '10%'],
+                ...(chat_mode == 1 || chat_mode == 5 ? { max: max_val } : {})
+            },
+        dataZoom: generateDataZoom(),
+        series: [
+            {
+                name:'',
+                type:'line',
+                symbol: 'none',
+                sampling: 'average',
+                
+                itemStyle: {
+                    normal: {
+                        color: 'rgb(255,0,0)'
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 0, [{
+                            offset: 0,
+                            color: 'rgb(255,255,255)'
+                        }, {
+                            offset: 0,
+                            color: 'rgb(255,255,255)'
+                        }])
+                    }
+                },
+                lineStyle: {width: 0.75},
+                data: y_data_val
+            }
+        ]
+    };
+
+    
+      // 尋牙角度(for chat_mode == 2)
+    if (chat_mode == '2' && ( step_threshold_angle != '0') ) {
+      
+
+        // 如果 step_threshold_angle 不等於 '0'
+        if (step_threshold_angle != '0') {
+            if (y_data_val.includes(step_threshold_angle.toString())) {
+                var index = y_data_val.indexOf(step_threshold_angle.toString());
+                var x_value = x_data_val[index];  // 获取对应的 x 轴值
+
+                option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+                option.series[0].markPoint.data.push({
+                    xAxis: x_value,  
+                    yAxis: step_threshold_angle,  
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    itemStyle: {
+                        color: 'red'  
+                    },
+                    label: {
+                        position: 'top',
+                        formatter: 'Step Threshold Angle: ' + step_threshold_angle
+                    }
+                });
+            }
+        }
+    }
+
+    //step_prr_rpm
+    if ((chat_mode == '1') && (step_prr_rpm != '0' || step_prr_angle != '0')) {
+        
+        //檢查 y_data_val = 0的 都要隱藏
+        for (var i = 0; i < y_data_val.length; i++) {
+            if (y_data_val[i] == 0) {
+                y_data_val[i] = null; 
+            }
+        }
+        option.series[0].data = y_data_val;
+        myChart.setOption(option);
+    }
+
+    
+  
+    if ((chat_mode == '1') && (downshift_torque != '0' || threshold_torque != '0')) {
+ 
+        if (parseFloat(downshift_torque) !== 0) {
+
+                var downshift_torque_num = parseFloat(downshift_torque);
+                for (var i = 0; i < y_data_val.length; i++) {
+                    var y_val = parseFloat(y_data_val[i]); 
+                    if (y_val >= downshift_torque_num && y_val < downshift_torque_num + 0.1) {
+                        var x_value = x_data_val[i]; 
+
+                        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+                        option.series[0].markPoint.data.push({
+                            xAxis: x_value,
+                            yAxis: y_val,  
+                            symbol: 'circle',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'red'
+                            },
+                            label: {
+                                position: 'top',
+                                formatter: 'downshift_torque : ' + downshift_torque
+                            }
+                        });
+                        break;
+                    }
+                }
             }
 
-            maxValues.push(maxVal);
-            minValues.push(minVal);
-        }
+            if (parseFloat(threshold_torque) != '0') {
+                var threshold_torque_num = parseFloat(threshold_torque);
+                for (var i = 0; i < y_data_val.length; i++) {
+                    var y_val = parseFloat(y_data_val[i]);
 
-
-
-        // 获取最大值和最小值
-        var overallMax = Math.max(...maxValues);
-        var overallMin = Math.min(...minValues);
-
-        var markPointData = [];
-
-        if (chat_mode == 1 && threshold_torque_total && downshift_torque_total ) {
-            threshold_torque_total.split(',').forEach(function(threshold_torque) {
-                threshold_torque = parseFloat(threshold_torque);
-
-                 if (threshold_torque !== 0 && threshold_torque !== 0.0) {
-                    console.log("Threshold Torque:", threshold_torque);
-
-                    //檢查每條曲線的值，否有對應的 threshold_torque
-                    for (var i = 0; i <= max_count; i++) {
-                        var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-
-                        var found = false;
-
-                        //threshold_torque的範圍
-                        var rangeStart = threshold_torque + 0.001; 
-                        var rangeEnd = threshold_torque + 0.099; 
-
-         
-
-                        //精準匹配
-                        for (var j = 0; j < yData.length; j++) {
-                            if (Math.abs(yData[j] - threshold_torque) < 0.0001) {
-                                markPointData.push({
-                                    xAxis: xData[j],
-                                    yAxis: yData[j],
-                                    symbol: 'circle',
-                                    symbolSize: 10,
-                                    itemStyle: {
-                                        color: 'blue'
-                                    },
-                                    label: {
-                                        position: 'top',
-                                        formatter: 'threshold_torque: ' + threshold_torque.toFixed(1)
-                                    }
-                                });
-                                found = true;
-                                break;
+                    if (y_val >= threshold_torque_num && y_val < threshold_torque_num + 0.1) {
+                        var x_value = x_data_val[i];  
+                        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+                        option.series[0].markPoint.data.push({
+                            xAxis: x_value,
+                            yAxis: y_val,
+                            symbol: 'circle',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'blue'  
+                            },
+                            label: {
+                                position: 'top',
+                                formatter: 'threshold_torque : ' + threshold_torque
                             }
-                        }
-
-                        //模糊匹配
-                        if (!found) {
-                            for (var j = 0; j < yData.length; j++) {
-                                if (yData[j] >= rangeStart && yData[j] <= rangeEnd) {
-                                    markPointData.push({
-                                        xAxis: xData[j],
-                                        yAxis: yData[j],
-                                        symbol: 'circle',
-                                        symbolSize: 10,
-                                        itemStyle: {
-                                            color: 'blue'
-                                        },
-                                        label: {
-                                            position: 'top',
-                                            formatter: 'threshold_torque: ' + threshold_torque.toFixed(1)
-                                        }
-                                    });
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-
-
+                        });
+                        break;
                     }
+                }
+            }
+    }
+
+    // 尋找並顯示 step_threshold_angle（如果在 chat_mode == '5'）
+    if (chat_mode == '5') {
+        var step_threshold_angle_num = parseFloat(step_threshold_angle);
+
+
+        // 如果 x_data_val 中有與 step_threshold_angle 相等的值，則找到對應的 X 軸位置
+        if (x_data_val.includes(step_threshold_angle_num.toString())) {
+            var index = x_data_val.indexOf(step_threshold_angle_num.toString());
+            var x_value = x_data_val[index];
+
+            // 確保 markLine 存在，如果不存在則初始化
+            option.series[0].markLine = option.series[0].markLine || { data: [] };
+
+            // 隱藏虛線
+            option.series[0].markLine.data.push({
+                xAxis: x_value,  // 在 X 軸上標註 step_threshold_angle 值
+                name: 'Step Threshold Angle',
+                symbol: 'none',  // 确保移除箭头
+                symbolSize: 0,    // 确保没有箭头
+                clip: true,
+                lineStyle: {
+                    type: 'dashed',  // 虚线
+                    color: 'green',   // 绿色
+                    width: 0.75,         // 线宽
+                    opacity: 0    
+                },
+                label: {
+                    //position: 'start',  // 标签位置
+                    //formatter: 'threshold_angle: ' + step_threshold_angle
+                },
+
+                show: true  
+            });
+
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+            option.series[0].markPoint.data.push({
+                xAxis: x_value,  
+                yAxis: threshold_torque,  // 对应的 Y 轴值
+                symbol: 'circle',  // 圆点标注
+                symbolSize: 8,  // 圆点的大小
+                itemStyle: {
+                    color: 'pink'  
+                },
+                label: {
+                    position: 'top',  // 圆点标签位置
+                    formatter: 'threshold_angle:' + step_threshold_angle
                 }
             });
 
-        downshift_torque_total.split(',').forEach(function(downshift_torque) {  
-            downshift_torque = parseFloat(downshift_torque);
-            if (downshift_torque !== 0 && downshift_torque!== 0.0) {
-                console.log("Downshift Torque:", downshift_torque);
-
-                //檢查每條曲線的值，否有對應的 downshift_torque
-                for (var i = 0; i <= max_count; i++) {
-                    var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-
-                    var found = false;
-
-                    //downshift_torque的範圍
-                    var rangeStart = downshift_torque + 0.001; 
-                    var rangeEnd = downshift_torque + 0.099; 
-
-
-
-                    //精準匹配
-                    for (var j = 0; j < yData.length; j++) {
-                        if (Math.abs(yData[j] - downshift_torque) < 0.0001) {
-                            markPointData.push({
-                                xAxis: xData[j],
-                                yAxis: yData[j],
-                                symbol: 'circle',
-                                symbolSize: 10,
-                                itemStyle: {
-                                    color: 'blue'
-                                },
-                                label: {
-                                    position: 'top',
-                                    formatter: 'downshift_torque: ' + downshift_torque.toFixed(1)
-                                }
-                            });
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    //模糊匹配
-                    if (!found) {
-                        for (var j = 0; j < yData.length; j++) {
-                            if (yData[j] >= rangeStart && yData[j] <= rangeEnd) {
-                                markPointData.push({
-                                    xAxis: xData[j],
-                                    yAxis: yData[j],
-                                    symbol: 'circle',
-                                    symbolSize: 10,
-                                    itemStyle: {
-                                        color: 'blue'
-                                    },
-                                    label: {
-                                        position: 'top',
-                                        formatter: 'downshift_torque: ' + downshift_torque.toFixed(1)
-                                    }
-                                });
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-
-
-                }
-            }
-        });
-
-
-
+           
+        }
     }
 
 
 
-    var option = {
-        title: {
-            text: '',
-            subtext: chartData.chart_combine.y_title
-        },
-        grid: {
-            top: 50,
-            bottom: 50,
-            left: 50,
-            right: 50
-        },
-        tooltip: {
-            trigger: 'axis',
-            position: function (pt) {
-                return [pt[0], '10%'];
-            },
-            formatter: generateTooltipContent
-        },
-        legend: {
-            data: idTotal.map((id, index) => `${index + 1} (${id})`)
-        },
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            name: chat_mode == 5 ? 'Angle' : 'Time(Ms)',
-            nameLocation: 'end',
-            nameGap: 0,
-            data: xData
-        },
-        yAxis: {
-            type: 'value',
-            boundaryGap: [0, '10%'],
-            min: overallMin,
-            max: overallMax,
-        },
-        dataZoom: generateDataZoom(),
-        color: colorPalette,
-        series: Array.from({ length: 25 }, (_, i) => {
-            if (chartData[`chart${i}_ycoordinate`]) {
-                var seriesItem = {
-                    name: idTotal[i] ? `${i + 1} (${idTotal[i]})` : `${i + 1}`,
-                    type: 'line',
-                    symbol: 'none',
-                    sampling: 'max',
-                    alignTicks: true,
-                    lineStyle: {
-                        width: 2
-                    },
-                    data: JSON.parse(chartData[`chart${i}_ycoordinate`]),
-                    markPoint: {
-                        data: markPointData
-                    }
-                };
-
     
-                return seriesItem;
-            }
-            return null;
-        }).filter(item => item !== null)
+    //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
+    if ((x_title === "Time(MS)" && (y_title === "Power" || y_title === "RPM")) ||chat_mode == 2) {
+        document.cookie = "limit_val=" + limit_val + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
+        var limit_val = 0;
+    }
+    
+    if ( limit_val == 1) {
+        
+        if(x_title  == "Time(MS)" && y_title =="Angle"){
+            var t1 = 'low angle';
+            var t2 = 'high angle';
+        }else{
+            var t1 = 'low torque';
+            var t2 = 'high torque';
+        }
+
+        option.series[0].markLine = {
+            data: [
+                {yAxis: min_val, name: '',label: {position: 'middle',formatter: t1}}, 
+                {yAxis: max_val, name: '',label: {position: 'middle',formatter: t2}}  
+            ],
+            symbol: 'none',
+            lineStyle: {
+            } 
         };
+    }
+    myChart.setOption(option);
+    myChart.resize({
+      width: window.innerWidth*0.8,
+      height: 400,
+    });
 
-        // 設置圖表選項
-        myChart_combine.setOption(option);
-        myChart_combine.resize({
-            width: window.innerWidth * 0.8,
-            height: 400,
-        });
-    </script>
+
+</script>
+<?php } ?>
+
+針對這段 修改
+if ((chat_mode == '1') && (step_prr_rpm != '0' || step_prr_angle != '0')) {
     
-    //修改 如果 該條曲線 隱藏 那  downshift_torque的圓點 及  threshold_torque的圓點 也要隱藏
+    //檢查 y_data_val = 0的 都要隱藏
+    for (var i = 0; i < y_data_val.length; i++) {
+        if (y_data_val[i] == 0) {
+            y_data_val[i] = null; 
+        }
+    }
+    option.series[0].data = y_data_val;
+    myChart.setOption(option);
+
+    如果 某一段 前後都被隱藏 那中間那段也需要
+}
