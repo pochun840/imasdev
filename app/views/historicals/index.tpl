@@ -347,7 +347,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                         <div class="topnav-right">
 
-                            <?php echo (!empty($data['user_role_title']) && $data['user_role_title'] == "Super admin") ? '<button onclick="deleteinfo()" class="ExportButton"><i class="fa fa-trash-o" style="font-size:26px;color:black"></i></button>' : ''; ?>
+                            <?php echo (!empty($data['user_role_title']) && $data['user_role_title'] == "Super admin") ? '<button onclick="deleteinfo()" class="ExportButton"><i class="fa fa-trash-o" style="font-size:26px;color:white"></i></button>' : ''; ?>
                             <button id="Export-CSV" type="button" class="ExportButton" onclick="csv_download()"><?php echo $text['Export_text']; ?> CSV</button>
                             <button id="Export-Report" type="button" class="ExportButton" onclick="window.open('?url=Historicals/history_result', '_blank');" ><?php echo $text['Export_Report_text']; ?></button>
                             <button id="Combine-btn" type="button" onclick="NextToCombineData()"><?php echo $text['Combine_Data_text']; ?></button>
@@ -1482,6 +1482,14 @@ addMessage();
 
         var markPointData = [];
 
+        // 先获取所有图例的状态，以便判断哪些曲线被隐藏
+        var legendStatus = {}; // 存储每个系列是否隐藏，初始为false（显示）
+        chartData.chart_xcoordinates.forEach((xCoordinate, index) => {
+            // 假设你有一种机制去判断图例是否隐藏，legendStatus['chart' + index] = true / false
+            legendStatus['chart' + index] = true; // 这里根据你的图例显示机制调整
+        });
+
+
         if (chat_mode == 1 && threshold_torque_total && downshift_torque_total ) {
             threshold_torque_total.split(',').forEach(function(threshold_torque) {
                 threshold_torque = parseFloat(threshold_torque);
@@ -1491,6 +1499,10 @@ addMessage();
 
                     //檢查每條曲線的值，否有對應的 threshold_torque
                     for (var i = 0; i <= max_count; i++) {
+
+                        // 如果该曲线被隐藏，则跳过
+                        if (!legendStatus[`chart${i}`]) continue;
+
                         var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
 
                         var found = false;
@@ -1557,6 +1569,11 @@ addMessage();
 
                 //檢查每條曲線的值，否有對應的 downshift_torque
                 for (var i = 0; i <= max_count; i++) {
+
+                    // 如果该曲线被隐藏，则跳过
+                    if (!legendStatus[`chart${i}`]) continue;
+
+
                     var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
 
                     var found = false;
