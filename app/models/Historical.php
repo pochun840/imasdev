@@ -172,7 +172,6 @@ class Historical{
         }
     }
     
-
     
     public function getTotalItemCount() {
 
@@ -187,7 +186,6 @@ class Historical{
     }
 
     
-
     #status 轉換
     public function status_code_change(){
 
@@ -313,7 +311,6 @@ class Historical{
 
     public function get_info_data_by_id($index){
 
-       
         $sql = "SELECT * FROM `fasten_data` WHERE   id = ? ";
         $statement = $this->db->prepare($sql);
         $statement->execute([$index]);

@@ -496,22 +496,18 @@ class Historicals extends Controller
         if (!empty($_COOKIE['checkedsn'])) {
 
             $checkedsn = $_COOKIE['checkedsn'];
-            $checkedsn = str_replace("?url=Historicals/nextinfo/","",$checkedsn);
-            $checkedsn_array = strpos($checkedsn, ',') !== false ? explode(",", $checkedsn) : [$checkedsn];
-            foreach ($checkedsn_array as &$sn) {
-                $parts = explode('-', trim($sn));
-                $sn = $parts[0];
-            }
-            $checked_sn_in = implode("','", $checkedsn_array);
+            $cleaned_str = str_replace("?url=Historicals/nextinfo/","",$checkedsn);
 
-            preg_match_all('/-(\d+)/', $_COOKIE['checkedsn'], $matches);
-            $cleaned_str = implode(", ", $matches[1]);
-            //var_dump( $cleaned_str);die();
             // 取得所有的資料
             $info_final = $this->Historicals_newModel->csv_info($cleaned_str);  
             $data['chat_mode_arr_combine'] = $this->Historicals_newModel->details('chart_type');
             $data['info_final'] = $info_final;
-
+            $checked_sn_in = array();
+            if(!empty($info_final)){
+                foreach($info_final as $kk =>$vv){
+                    $checked_sn_in[] = $vv['system_sn'];
+                }
+            }
 
             // 取得曲線圖 ID
             $id = '';
@@ -522,8 +518,6 @@ class Historicals extends Controller
             $new_id = $id;
             $id_array = explode(',', $new_id);
             $data['id_total'] = $id_array;
-
-
 
 
             // 取得曲線圖的資料
