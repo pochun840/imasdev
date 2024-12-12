@@ -165,9 +165,6 @@ class Historicals extends Controller
             
         }
 
-        //session_unset();  
-        //session_destroy(); 
-
     
     }
 
@@ -368,13 +365,8 @@ class Historicals extends Controller
 
         if(!empty($index)) {
             $data = array();
-            $index_arr = explode("-",$index);
-            //如果$index_arr 不是null
-            if(!empty($index_arr)){
-                
-                #取得詳細資料
-                $data['job_info'] = $this->Historicals_newModel->get_info_data_by_snid($index_arr);
-            }
+
+            $data['job_info'] = $this->Historicals_newModel->get_info_data_by_id($index);
                 
             if(empty($data['job_info'])){
                 $redirectUrl = '?url=Historicals';

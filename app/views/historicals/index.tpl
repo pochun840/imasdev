@@ -400,7 +400,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                     foreach($data['info'] as $k_info =>$v_info){
                                         
                                         
-                                        $link ='?url=Historicals/nextinfo/'.$v_info['system_sn']."-".$v_info['id'];
+                                        $link ='?url=Historicals/nextinfo/'.$v_info['id'];
                                         ?>
                                         <tr>
                                             <td style="text-align: center;">

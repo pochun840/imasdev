@@ -311,15 +311,12 @@ class Historical{
         return  $res;
     }
 
-    public function get_info_data_by_snid($index_arr){
+    public function get_info_data_by_id($index){
 
-        if (count($index_arr) < 2) {
-            throw new Exception("Invalid index array. It should contain at least two elements.");
-        }
-
-        $sql = "SELECT * FROM `fasten_data` WHERE system_sn = ? AND id = ? ";
+       
+        $sql = "SELECT * FROM `fasten_data` WHERE   id = ? ";
         $statement = $this->db->prepare($sql);
-        $statement->execute([$index_arr[0], $index_arr[1]]);
+        $statement->execute([$index]);
         $res = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return  $res;
