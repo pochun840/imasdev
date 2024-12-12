@@ -10,8 +10,8 @@
 
 <script src="<?php echo URLROOT; ?>js/echarts_min.js?v=<?php echo date('YmdHi'); ?>"></script>
 <script src="<?php echo URLROOT; ?>js/html2canvas_min.js?v=<?php echo date('YmdHi'); ?>"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="stylesheet" href="<?php echo URLROOT; ?>css/flatpickr_min.css?v=<?php echo date('YmdHi'); ?>">
+<script src="<?php echo URLROOT; ?>js/flatpickr_date.js?v=<?php echo date('YmdHi'); ?>"></script>
 
 
 <?php if(isset($data['nav'])){
@@ -241,10 +241,10 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                         <div class="input-group mb-2">
                             <span class="input-group-text"><?php echo $text['From_text']; ?>:</span>
-                            <input type="datetime-local" id="FromDate" name="FromDate" class="form-control input-ms" style="margin-right: 7px">
+                            <input type="datetime" id="FromDate" name="FromDate" class="form-control input-ms" style="margin-right: 7px;background-color: white;" placeholder="<?php echo $text['Click_here_text'];?>">
 
                             <span class="input-group-text"><?php echo $text['To_text']; ?>:</span>
-                            <input type="datetime-local" id="ToDate" name="ToDate" class="form-control input-ms" style="margin-right: 7px">
+                            <input type="datetime" id="ToDate" name="ToDate" class="form-control input-ms" style="margin-right: 7px; background-color: white;" placeholder="<?php echo $text['Click_here_text'];?>">
                         </div>
 
                         <div class="input-group mb-2">
@@ -670,8 +670,8 @@ if(!empty($_COOKIE['chat_mode_change'])){
                             <tr>
                                 <td>Job : <input type="text" class="t3" id="Member-Name" maxlength="" value="Esther" style="float: none;width: 130px"></td>
                                 <td>Super Admin : <input type="text" class="t3" id="superAdmin" maxlength="" style="float: none;width: 130px;"></td>
-                                <td>From : <input type="datetime-local" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC;float: none"> </td>
-                                <td>To : <input type="datetime-local" class="t3" id="ToDate" name="ToDate" style="width: 190px; border-radius: 5px;border: 1px solid #CCCCCC;float: none"></td>
+                                <td>From : <input type="datetime" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC;float: none"> </td>
+                                <td>To : <input type="datetime" class="t3" id="ToDate" name="ToDate" style="width: 190px; border-radius: 5px;border: 1px solid #CCCCCC;float: none"></td>
                             </tr>
                         </table>
                     </div>
@@ -784,8 +784,8 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                                 <option value="2">Leader</option>
                                             </select>
                             </td>
-                            <td>From : <input type="datetime-local" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC;float: none"> </td>
-                            <td>To : <input type="datetime-local" class="t3" id="ToDate" name="ToDate" style="width: 190px; border-radius: 5px;border: 1px solid #CCCCCC;float: none"></td>
+                            <td>From : <input type="datetime" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC;float: none"> </td>
+                            <td>To : <input type="datetime" class="t3" id="ToDate" name="ToDate" style="width: 190px; border-radius: 5px;border: 1px solid #CCCCCC;float: none"></td>
                         </tr>
                     </table>
                 </div>
@@ -2125,7 +2125,7 @@ function updateButtonText(allChecked) {
     } else if (language == 'zh-tw') {
         buttonText = allChecked ? '取消全選' : '全選'; // 繁體中文
     } else if (language == 'en-us') {
-        buttonText = allChecked ? 'Deselect All' : 'Select All'; // 英文
+        buttonText = allChecked ? 'Deselect' : 'Select'; // 英文
     }
     
     toggleButton.innerHTML = buttonText;
@@ -2159,12 +2159,23 @@ function initButtonText() {
 // 初始化按鈕文字
 initButtonText();
 
+
+
 flatpickr("#FromDate", {
     enableTime: true,  // 啟用時間選擇
     dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
     time_24hr: true,  // 使用24小時制（可選）
     className: "custom-flatpickr-input"
 });
+
+
+flatpickr("#ToDate", {
+    enableTime: true,  // 啟用時間選擇
+    dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
+    time_24hr: true,  // 使用24小時制（可選）
+    className: "custom-flatpickr-input"
+});
+
 
 
 </script>
