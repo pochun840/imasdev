@@ -1185,8 +1185,8 @@ addMessage();
         }
     }
 
-    //step_prr_rpm
-    if ((chat_mode == '1') && (step_prr_rpm != '0' || step_prr_angle != '0')) {
+    //尋牙都要隱藏
+    if ((chat_mode == '1' || chat_mode == '2' ) && (step_prr_rpm != '0' || step_prr_angle != '0')) {
         
         //檢查 y_data_val = 0的 都要隱藏
         for (var i = 0; i < y_data_val.length; i++) {
@@ -1510,6 +1510,8 @@ addMessage();
             return yData.length === xData.length ? yData : [];
         }).filter(data => data.length > 0);
 
+
+
         // 计算最大值和最小值
         var maxValues = [];
         var minValues = [];
@@ -1569,8 +1571,6 @@ addMessage();
                         //threshold_torque的範圍
                         var rangeStart = threshold_torque + 0.001; 
                         var rangeEnd = threshold_torque + 0.099; 
-
-         
 
                         //精準匹配
                         for (var j = 0; j < yData.length; j++) {
@@ -1770,8 +1770,6 @@ addMessage();
             var check_limit_val = '<?php echo $data['check_limit_val'];?>';
             var myChart_combine = echarts.init(document.getElementById('chart_combine'));
 
-
-
             var colorPalette = [
                 '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
                 '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
@@ -1856,6 +1854,8 @@ addMessage();
             var overallAngleMax = Math.max(...angleValues.map(v => v.max));
             var overallAngleMin = Math.min(...angleValues.map(v => v.min));
 
+            
+
             var option = {
                 title: { text: '', subtext: '' },
                 grid: { top: 80, bottom: 100, left: 50, right: 50 },
@@ -1868,7 +1868,7 @@ addMessage();
                 xAxis: {
                     type: 'category',
                     boundaryGap: false,
-                    name: chat_mode == 6 ? 'Angle' : 'Time',
+                    //name: chat_mode == 6 ? 'Angle' : 'Time',
                     nameLocation: 'end',
                     nameGap: 30,
                     data: xData_s
@@ -1895,8 +1895,8 @@ addMessage();
                             }
                         },
                         axisLine: { lineStyle: { color: '#333' } },
-                        min: 0, // 確保包括最小值
-                        max: overallAngleMax + 1500 
+                        min: 0,
+                        max: overallAngleMax
                     }
                 ],
                 dataZoom: generateDataZoom(),

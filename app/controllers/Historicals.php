@@ -403,12 +403,13 @@ class Historicals extends Controller
                 $no = $data['job_info'][0]['system_sn'];
             }
          
-
+            $temp_x_val = $this->Historicals_newModel->get_column_values_by_index($no,1);
+         
             $csvdata_arr = $this->Historicals_newModel->get_info($no, $chat_mode);
 
 
             if(!empty($csvdata_arr)){
-                $data['chart_info'] = $this->ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr);
+                $data['chart_info'] = $this->ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no);
                 
                 #設定曲線圖的座標名稱
                 $titles = $this->Historicals_newModel->extractXYTitles($data['chart_info']['chat_title']);
@@ -522,6 +523,7 @@ class Historicals extends Controller
 
             // 取得曲線圖的資料
             $final_label = $this->Historicals_newModel->get_result($checked_sn_in, $id, $data['chat_mode']);
+            
             if (empty($final_label)) {
                 $final_label = null;
             } else {
@@ -531,10 +533,14 @@ class Historicals extends Controller
                 $xCoordinates = [];
                 $data_count = 25;
 
+                
+
                 for ($i = 0; $i < $data_count; $i++) {
                     $dataKey = "data$i";
                     if (isset($final_label[$dataKey])) {
                         $dataSet = $final_label[$dataKey];
+
+                        
                         
                         if ($data['chat_mode'] == 5) {
                             $xValues = array_column($dataSet, 2); // angle
@@ -546,10 +552,41 @@ class Historicals extends Controller
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
         
                         } else if ($data['chat_mode'] == 6) {
-                            $xCoordinates[$i] = json_encode(array_keys($dataSet)); //處理X軸
+
+
+                            $tmp_x_val = $this->Historicals_newModel->get_column_values_by_index($id,1);
+                          
+                            $time_position = array_search("Time", $tmp_x_val);
+                            $angle_position = array_search("Angle", $tmp_x_val);
+                            
+                            // 判断是否找到了 "Time" 或 "Angle"
+                            if ($time_position !== false && $angle_position !== false) {
+                                // 比较 "Time" 和 "Angle" 的位置
+                                if ($time_position < $angle_position) {
+                                    // "Time" 在 "Angle" 前面
+                                    $new_array = array_slice($tmp_x_val, $time_position + 1);
+                                    $tmp_x_val = array_slice($tmp_x_val, 0, $time_position);
+                                } else {
+                                    // "Angle" 在 "Time" 前面
+                                    $new_array = array_slice($tmp_x_val, $angle_position + 1);
+                                    $tmp_x_val = array_slice($tmp_x_val, 0, $angle_position);
+                                }
+                            } elseif ($time_position !== false) {
+                                // 只有 "Time" 存在
+                                $new_array = array_slice($tmp_x_val, $time_position + 1);
+                                $tmp_x_val = array_slice($tmp_x_val, 0, $time_position);
+                            } elseif ($angle_position !== false) {
+                                // 只有 "Angle" 存在
+                                $new_array = array_slice($tmp_x_val, $angle_position + 1);
+                                $tmp_x_val = array_slice($tmp_x_val, 0, $angle_position);
+                            } else {
+                                // 如果都没有找到
+                                $new_array = [];
+                            }
 
                            
-                        
+                            $xCoordinates[$i] = json_encode($tmp_x_val); 
+
                             //處理Y軸的torque 
                             $data_torque = array_column($dataSet, 1);
                             $length = count($data_torque);
@@ -561,15 +598,48 @@ class Historicals extends Controller
                             $chartData[$i]['y'] = $this->prepareChartData($data_torque, $TransType, $data['unit']);
                             $chartData[$i]['y_angle'] = $data_angle;
                          
-
-    
                             // 計算 max 和 min 值
                             $chartData[$i]['max'] = floatval(max($chartData[$i]['y']));
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
                             $chartData[$i]['max_angle'] = floatval(max($chartData[$i]['y_angle']));
                             $chartData[$i]['min_angle'] = floatval(min($chartData[$i]['y_angle']));
+
+                            $max_angle_values[] = $chartData[$i]['max_angle'];
+                            $overallMaxAngle = max($max_angle_values);
+                            $data['overall_max_angle'] = $overallMaxAngle; 
                         } else {
-                            $xCoordinates[$i] = json_encode(array_keys($dataSet));
+                            
+                            $tmp_x_val = $this->Historicals_newModel->get_column_values_by_index($id,1);
+                          
+                            $time_position = array_search("Time", $tmp_x_val);
+                            $angle_position = array_search("Angle", $tmp_x_val);
+                            
+                            // 判断是否找到了 "Time" 或 "Angle"
+                            if ($time_position !== false && $angle_position !== false) {
+                                // 比较 "Time" 和 "Angle" 的位置
+                                if ($time_position < $angle_position) {
+                                    // "Time" 在 "Angle" 前面
+                                    $new_array = array_slice($tmp_x_val, $time_position + 1);
+                                    $tmp_x_val = array_slice($tmp_x_val, 0, $time_position);
+                                } else {
+                                    // "Angle" 在 "Time" 前面
+                                    $new_array = array_slice($tmp_x_val, $angle_position + 1);
+                                    $tmp_x_val = array_slice($tmp_x_val, 0, $angle_position);
+                                }
+                            } elseif ($time_position !== false) {
+                                // 只有 "Time" 存在
+                                $new_array = array_slice($tmp_x_val, $time_position + 1);
+                                $tmp_x_val = array_slice($tmp_x_val, 0, $time_position);
+                            } elseif ($angle_position !== false) {
+                                // 只有 "Angle" 存在
+                                $new_array = array_slice($tmp_x_val, $angle_position + 1);
+                                $tmp_x_val = array_slice($tmp_x_val, 0, $angle_position);
+                            } else {
+                                // 如果都没有找到
+                                $new_array = [];
+                            }
+
+                            $xCoordinates[$i] = json_encode($tmp_x_val); 
                             $chartData[$i]['y'] = $this->prepareChartData($dataSet, $TransType, $data['unit']);
                             $chartData[$i]['max'] = floatval(max($chartData[$i]['y']));
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
@@ -594,7 +664,7 @@ class Historicals extends Controller
 
                 
                     if (isset($chart['y_angle'])) {
-                        $data["chart{$key}_ycoordinate_angle"] = json_encode($chart['y_angle']);
+                        $data["chart{$key}_ycoordinate_angle"] = json_encode(array_slice($chart['y_angle'], 1));
                         
                         $angleValues = json_decode($data["chart{$key}_ycoordinate_angle"], true);
                         $data["chart{$key}_ycoordinate_max_angle"] = max($angleValues);
@@ -614,6 +684,10 @@ class Historicals extends Controller
     
                 $data['chart_combine']['x_title'] = $titles['x_title'];
                 $data['chart_combine']['y_title'] = $titles['y_title'];
+
+      
+
+
             }
 
             // 單位換算
@@ -707,7 +781,7 @@ class Historicals extends Controller
     }
 
     #nextinfo 整理曲線圖
-    private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr){
+    private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no){
         $data = array();
         
         if($chat_mode == "5"){
@@ -718,12 +792,30 @@ class Historicals extends Controller
                 $data['y_val'] = json_encode($csvdata_arr['torque']);
                 $data['max'] = max($csvdata_arr['torque']);
                 $data['min'] = min($csvdata_arr['torque']);
+
+
             }
 
         }else if($chat_mode == "6"){
      
+            $csvdata_arr['torque'] = array_map(function($value) {
+                return ($value == 0.0) ? 0 : $value;  
+            }, $csvdata_arr['torque']);
+
+
+
+            $temp = $this->Historicals_newModel->get_column_values_by_index($no, 1);
+
+            $temp = array_map(function($value) {
+                //如果匹配到類似 "1.0" 或 "2.0" 等格式，替換成整数
+                if (preg_match('/^(\d+)\.0$/', (string)$value, $matches)) {
+                    return (int)$matches[1]; 
+                }
+                return $value;  
+            }, $temp);
+
       
-            $data['x_val'] = json_encode(array_keys($csvdata_arr['torque']));
+            $data['x_val'] = json_encode($temp);
             $data['y_val'] = json_encode($csvdata_arr['torque']);
             $data['y_val_1'] = json_encode($csvdata_arr['angle']);
             $data['max'] = max($csvdata_arr['torque']);
@@ -742,26 +834,29 @@ class Historicals extends Controller
                 $data['max'] = max($temp_val);
                 $data['min'] = min($temp_val);
 
+                $data_['y_val_sec'] = $this->Historicals_newModel->get_column_values_by_index($no, 2);
+
             }else{
 
                 $data['y_val'] = json_encode($csvdata_arr);
                 $data['max'] = max($csvdata_arr);
                 $data['min'] = min($csvdata_arr);
             }
-            $data['x_val'] = json_encode(array_keys($csvdata_arr));
+
+            $temp_x_val = array_map(function($value) {
+                //如果匹配到類似 "1.0" 或 "2.0" 等格式，替換成整数
+                if (preg_match('/^(\d+)\.0$/', (string)$value, $matches)) {
+                    return (int)$matches[1]; 
+                }
+                return $value;  
+            }, $temp_x_val);
+
+            $data['x_val'] = json_encode($temp_x_val);
         }
     
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
         return $data;
     }
 
-    public function test_time(){
-
-        $this->view('historicals/index_bk');
-    }
-
-
- 
-    
 
 }

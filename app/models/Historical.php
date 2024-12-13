@@ -574,8 +574,6 @@ class Historical{
 
             $missing_ids = implode(', ', $missing_files);
             echo "<script>alert('找不到檔案編號: $missing_ids');</script>";
-            //echo "<script>alert('找不到檔案編號: $missing_ids'); window.location.href='?url=Historicals';</script>";
-            //exit; 
         }
     
         if (is_null($csv_array)) {
@@ -603,6 +601,51 @@ class Historical{
     
         return $csv_array;  
     }
+
+
+    public function get_column_values_by_index($no, $column_index) {
+        $file_arr = array('_0p5', '_1p0', '_2p0');
+        $no_arr = explode(',', $no);
+        $values_array = array(); 
+    
+        foreach ($no_arr as $key => $val) {
+            if (!empty($val)) {
+                $file_found = false; 
+                foreach ($file_arr as $file_suffix) {
+                    $infile = '../public/data/DATALOG_' . str_pad($val, 10, "0", STR_PAD_LEFT) . $file_suffix . ".csv";
+                    if (file_exists($infile)) {
+                        $csvdata = file_get_contents($infile);
+                        $rows = explode("\n", $csvdata);
+                        foreach ($rows as $row) {
+                            $columns = str_getcsv($row); 
+                            if (!empty($columns) && isset($columns[$column_index - 1])) {
+                                $values_array[] = $columns[$column_index - 1];
+                            }
+                        }
+                        
+                        $file_found = true; 
+                        break; 
+                    }
+                }
+            }
+        }
+    
+
+        if (empty($values_array)) {
+            echo "<script>alert('没有找到相關資料');</script>";
+            return [];
+        }
+
+        if (isset($values_array[0]) && preg_match('/^[a-zA-Z]+$/', $values_array[0])) {
+            array_shift($values_array); 
+        }
+    
+    
+        return $values_array;
+    }
+    
+
+
     
     
     
