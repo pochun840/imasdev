@@ -525,8 +525,8 @@ function nopage(){
 //回到上一頁
 function goBack() {
     if (window.history.length > 1) {
-        // window.history.back(); 
-        window.location.href = '?url=Historicals';
+        window.history.back(); 
+        //window.location.href = '?url=Historicals';
     } else {
         window.location.href = '?url=Historicals';
     }

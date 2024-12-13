@@ -533,8 +533,6 @@ class Historicals extends Controller
                 $xCoordinates = [];
                 $data_count = 25;
 
-                
-
                 for ($i = 0; $i < $data_count; $i++) {
                     $dataKey = "data$i";
                     if (isset($final_label[$dataKey])) {
