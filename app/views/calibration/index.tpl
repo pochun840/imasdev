@@ -780,7 +780,8 @@ function undo() {
     // 如果用戶點選「確定」，則執行撤銷邏輯
     if (userConfirmed) {
         var status_val = '0';
-        
+        var final_count = 0;
+
         $.ajax({
             type: "POST",
             data: {
@@ -855,18 +856,33 @@ async function fetchData() {
 }
 
 // 每 0.3 秒調用一次 fetchData
+var alertShown = false;
+
 intervalId = setInterval(function() {
     fetchData();
     // 判斷 implementCount 是否有值且不為空，並檢查是否達到次數上限
     
-    /*console.log("final_count:", final_count, "Type:", typeof final_count);
-    console.log("implementCount:", implementCount, "Type:", typeof implementCount);
-    if( final_count == implementCount){
-        alert('已達到次數的上限');
-        clearInterval(intervalId); 
-        return;
-    }*/
+    final_count = Number(final_count);
 
+
+
+    implementCount_new = localStorage.getItem('implement_count');
+    implementCount_new = Number(implementCount_new);
+
+    console.log("final_count:", final_count, "Type:", typeof final_count);
+    console.log("implementCount_new:", implementCount_new, "Type:", typeof implementCount_new);
+
+
+    if( final_count > 0 && implementCount_new > 0  &&  final_count - implementCount_new === 1){
+        if (!alertShown) {
+            alertShown = true; 
+            
+            setTimeout(function() {
+                //alert('已達到次數的上限');
+                clearInterval(intervalId);  
+            }, 0);  
+        }
+    }
 
 }, 300);
 
