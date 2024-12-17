@@ -1030,8 +1030,19 @@ class Historical{
             return !empty($value);
         }, ARRAY_FILTER_USE_BOTH);
 
+        unset($filtered_info_arr['seq_name']);
+        unset($filtered_info_arr['checkedjobidarr']);
+        unset($filtered_info_arr['checkedseqidarr']);//checkedseqidarr
+        unset($filtered_info_arr['checkedtaskidarr']);
+        
+
         $query_params = http_build_query($filtered_info_arr); 
+
+        //unset($query_params['seq_name']); 
+
         parse_str($query_params, $params);
+
+    
 
         foreach ($params as $key => $value) {
             if (is_array($value)) {
@@ -1042,11 +1053,10 @@ class Historical{
 
         // 呼叫API
         if (!empty($query_params)) {
-            $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json&" . $query_params;
+            $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json&" . $new_query_string;
         } else {
             $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json";
         }
-
 
         $offset = 0;
         $limit  = 10000;
