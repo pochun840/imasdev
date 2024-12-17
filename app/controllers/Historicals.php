@@ -160,7 +160,7 @@ class Historicals extends Controller
                 $info_data .= "<td style='" . $style . "'>" . $status_arr['status_type'][$v['fasten_status']] . "</td>";
                 $info_data .= "<td>" . $status_arr['error_msg'][$v['error_message']] . "</td>";
                 $info_data .= "<td>" . $v['cc_program_id'] . "</td>";
-                $info_data .= "<td><a href=\"?url=Historicals/nextinfo/" . $v['system_sn'] . "\"><img src=\"./img/info-30.png\" style=\"height: 28px; vertical-align: middle;\" ></a></td>";
+                $info_data .= "<td><a href=\"?url=Historicals/nextinfo/" . $v['id'] . "\"><img src=\"./img/info-30.png\" style=\"height: 28px; vertical-align: middle;\" ></a></td>";
                 $info_data .= "</tr>";
     
                 echo $info_data;
