@@ -470,7 +470,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                         <table class="table" style="font-size: 15px;">
                             <tr style="padding: 0 10px">
                                 <td><?php echo $text['Index_text']; ?>: <?php echo $data['job_info'][0]['system_sn'];?></td>
-                                <td><?php echo $text['Job_info_text']; ?>: <?php echo $data['job_info'][0]['job_name'];?> / <?php echo $data['job_info'][0]['sequence_name']. "/". $data['job_info'][0]['cc_task_name'];?></td>
+                                <td><?php echo $text['Job_info_text']; ?>: <?php echo $data['job_info'][0]['job_name'];?> / <?php echo $data['job_info'][0]['sequence_name']. "/". $data['job_info'][0]['cc_task_id'];?></td>
                                 <td><?php echo $text['Controller_text']; ?>: </td>
                                 <td><?php echo $text['Error_code_text']; ?>: <?php echo  $data['status_arr']['error_msg'][$data['job_info'][0]['error_message']];?></td>
                                 <td><?php echo $text['Status_text']; ?> : <a style="background-color: <?php echo $data['status_arr']['status_color'][$data['job_info'][0]['fasten_status']];?>; padding: 0 10px"><?php echo $data['status_arr']['status_type'][$data['job_info'][0]['fasten_status']];?></a></td>
@@ -2158,8 +2158,6 @@ function initButtonText() {
 
 // 初始化按鈕文字
 initButtonText();
-
-
 
 flatpickr("#FromDate", {
     enableTime: true,  // 啟用時間選擇

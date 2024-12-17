@@ -9,8 +9,6 @@ require_once('../app/libraries/Database.php');
 $db = new Database();
 $db_cc = $db->getDb_cc();  
 
-
-
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: OPTIONS, GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control");
@@ -21,28 +19,28 @@ $ps_text = '
 奇力速 中控搜尋API
 
 介接位址：/api/get_data_api.php&type=xml
-　　　　　/api/get_data_api.php?status_val=0&limit=100&type=xml
+　　　　　/api/get_data_api.php?status_val=0&limit=300&type=xml
 參數說明：barcodesn        => 條碼
 　　　　　controller_val   => 控制器(目前只有GTCS)(暫時不支援)
          job_id           => 工作(job_id,數字)
          sequence_id      => 工序(sequence_id,數字)
          task_id          => 任務(task_id,數字)
-         start_date       => 起始日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
-         end_date         => 結束日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
+         fromdate        => 起始日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
+         todate          => 結束日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
          status_val       => 鎖附結果(0 => ALL, 1 => OK, 2 =>OKALL, 3 =>NG)
          program_val      => 組別(利用program_id查詢,數字)
          s_name           => 模糊搜尋(可以輸入job_name,sequence_name,task_name,barcodesn)
          limit            => 筆數 (數字)
          operator         => 人員(自行key人員名稱)(暫時不支援)
+
         
 
-補通說明: 
-1.job_id 及 seq_id 輸入數字後,會取得對應的名稱,會用名稱去搜尋
+補充說明: 
+1.job_id 及 sequence_id 輸入數字後,會取得對應的名稱,會用名稱去搜尋
 2.輸出格式為:xml && json && array
 3.sequence_id && task_id 支援 一個以上的查詢(id需以,區隔 ex:1,2,3)
-4.
+4.on_flag 目前 預設為 0 
 -->
-
 ';
 //echo $ps_text;
 
@@ -67,12 +65,10 @@ if(!empty($job_id)){
 }
 
 
-
-
 #seq_id (可以用,區隔)
 $seq_id = isset($_GET['sequence_id']) ? $_GET['sequence_id'] : '';
 $seq_id = preg_match('/^(\d+)(,\d+)*$/', $seq_id) ? $seq_id : '';
-//var_dump($seq_id);
+
 if (!empty($seq_id) && !empty($job_id)) {
     $seq_ids = explode(',', $seq_id);
     $seql_select_seqname = "SELECT * FROM sequence WHERE job_id = :job_id AND seq_id IN (" . str_repeat('?,', count($seq_ids) - 1) . '?)';
@@ -90,7 +86,6 @@ if (!empty($seq_id) && !empty($job_id)) {
         $seq_name = $results[0]['seq_name'];
     }
 }
-
 
 
 #task_id (可以用,區隔)
@@ -116,7 +111,7 @@ if (!empty($seq_id) && !empty($job_id) && !empty($task_id)) {
 
 
 #起始日期
-$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
+$start_date = isset($_GET['fromdate']) ? $_GET['fromdate'] : null;
 if ($start_date) {
     $start_date = validateAndFormatDate($start_date);
     $start_date = $start_date. " 00:00:00";
@@ -124,7 +119,7 @@ if ($start_date) {
 
 
 #結束日期
-$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
+$end_date = isset($_GET['todate']) ? $_GET['todate'] : null;
 if ($end_date) {
     $end_date = validateAndFormatDate($end_date);
     $end_date = $end_date. " 23:59:59";
@@ -151,8 +146,7 @@ if(!preg_match('/^[\w\s]+$/', $sname)) $sname = '';
 
 # 筆數
 $limit =isset($_GET['limit']) ? $_GET['limit'] : null;
-if(!preg_match('/^\d+$/', $limit)) $limit = 300;
-
+if(!preg_match('/^\d+$/', $limit)) $limit = 10000;
 
 
 # 輸出類型
@@ -171,7 +165,7 @@ $sql = "SELECT * FROM `fasten_data` ";
 $sql.= "WHERE 1 ";
 
 if($barcodesn) {
-    $sql .= " AND cc_barcodesn  LIKE %" . $barcodesn . "% " ;
+    $sql .= " AND cc_barcodesn  LIKE '%" . $barcodesn . "%' " ;
 }
 
 /*if($operator) {
@@ -220,6 +214,7 @@ if($status){
 }
 
 $sql .= " AND on_flag = 0  ORDER BY data_time DESC LIMIT ".$limit." ";
+
 
 $statement = $db_cc->prepare($sql); 
 $statement->execute(); 

@@ -681,8 +681,6 @@ class Historicals extends Controller
 
                 }
 
-                
-
                 // 設置曲線圖座標名稱
                 $chartTypeDetails = $this->Historicals_newModel->details('chart_type');
                 $data['chat_mode'] = (int)$data['chat_mode'];
@@ -757,7 +755,6 @@ class Historicals extends Controller
     }
     
     
-
     function prepareChartData($final_label_data, $TransType, $unit) {
         if (!empty($TransType)) {
             return $this->Historicals_newModel->unitarr_change($final_label_data, 1, $unit);

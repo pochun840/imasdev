@@ -909,79 +909,114 @@ class Historical{
 
 
     //扭力單位的轉換
-    public function unitarr_change($torValues, $inputType, $TransType){
+    public function unitarr_change($torValue, $inputType, $TransType){
         
+        #輸入扭力單位
         $inputType = (int)$inputType;
+        
+        #輸出扭力單位
         $TransType = (int)$TransType;
 
-        
-        $TorqueUnit = [
-            "N_M" => 1,
-            "KGF_M" => 0,
-            "KGF_CM" => 2,
-            "LBF_IN" => 3
-        ];
+        $new_TorqueUnit = array(
+            "kgf.cm" => 0,
+            "N.m"    => 1,
+            "lbf.in" => 2,
+            "kgf.m"  => 3,
+            "cN.m"   => 4
+        );
 
         $convertedValues = array();
-        foreach($torValues as $torValue) {
-           
-            $torValue = floatval($torValue);
-           
-            if ($inputType == $TorqueUnit["N_M"]) {
-                if ($TransType == $TorqueUnit["KGF_M"]) {
-                
-                    $convertedValues[] = round($torValue * 0.102, 4);
-                } elseif ($TransType == $TorqueUnit["KGF_CM"]) {
-                
-                    $convertedValues[] = round($torValue * 10.2, 2);
-                } elseif ($TransType == $TorqueUnit["LBF_IN"]) {
-                  
-                    $convertedValues[] = round($torValue * 10.2 * 0.86805, 2);
-                } elseif ($TransType == $TorqueUnit["N_M"]) {
-                  
-                    $convertedValues[] = round($torValue, 3);
-                }
-            } 
-            
-            elseif ($inputType == $TorqueUnit["KGF_M"]) {
-                if ($TransType == $TorqueUnit["KGF_M"]) {
-                    $convertedValues[] = round($torValue, 4);
-                } elseif ($TransType == $TorqueUnit["KGF_CM"]) {
-                    $convertedValues[] = round($torValue * 100, 2);
-                } elseif ($TransType == $TorqueUnit["LBF_IN"]) {
-                    
-                    $convertedValues[] = round($torValue * 100 * 0.86805, 2);
-                } elseif ($TransType == $TorqueUnit["N_M"]) {
-                    $convertedValues[] = round($torValue * 9.80392156, 3);
-                }
-            }
 
-            elseif ($inputType == $TorqueUnit["KGF_CM"]) {
-                if ($TransType == $TorqueUnit["KGF_M"]) {
-                    $convertedValues[] = round($torValue * 0.01, 4);
-                } elseif ($TransType == $TorqueUnit["KGF_CM"]) {
-                    $convertedValues[] = round($torValue, 2);
-                } elseif ($TransType == $TorqueUnit["LBF_IN"]) {
-                    $convertedValues[] = round($torValue * 0.86805, 2);
-                } elseif ($TransType == $TorqueUnit["N_M"]) {
-                    $convertedValues[] = round($torValue * 0.0980392156, 3);
-                }
-            }
-
-            elseif ($inputType == $TorqueUnit["LBF_IN"]) {
-                
-                if ($TransType == $TorqueUnit["KGF_M"]) {
-                    $convertedValues[] = round($torValue * 1.152 * 0.01, 4);
-                } elseif ($TransType == $TorqueUnit["KGF_CM"]) {
-                    $convertedValues[] = round($torValue * 1.152, 2);
-                } elseif ($TransType == $TorqueUnit["LBF_IN"]) {
-                    $convertedValues[] = round($torValue, 2);
-                } elseif ($TransType == $TorqueUnit["N_M"]) {
-                    $convertedValues[] = round($torValue * 0.11294117637119998, 3);
-                }
-            }
+        $convertedValues = array();
+        if (!is_array($torValue)) {
+            $torValue = [$torValue];
         }
 
+        foreach($torValue as $torValue){
+            $torValue = floatval($torValue);
+
+            #當輸入的單位是N.m
+            if($inputType == $new_TorqueUnit["N.m"]){
+
+                if($TransType == $new_TorqueUnit["kgf.m"]){
+                    $convertedValues[] = round($torValue * 0.102, 4); // N.m 轉換成 kgf.m
+                }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
+                    $convertedValues[] = round($torValue * 10.2, 2); // N.m 轉換成 Kgf·cm
+                }elseif($TransType == $new_TorqueUnit["lbf.in"]){
+                    $convertedValues[] = round($torValue * 10.2 * 0.86805, 2); // N.m 轉換成 lbf.in
+                }elseif($TransType == $new_TorqueUnit["N.m"]){
+                    $convertedValues[] = round($torValue, 3); // N.m 轉換成 N.m（保持不變）
+                }elseif($TransType == $new_TorqueUnit["cN.m"]){
+                    $convertedValues[] = round(round($torValue * 10.2, 2) * 9.80392156, 1); //N.m 轉換成 cN.m
+                }
+            } 
+
+            #當輸入的單位是kgf.m
+            elseif($inputType == $new_TorqueUnit["kgf.m"]){
+                
+                if($TransType == $new_TorqueUnit["kgf.m"]){
+                    $convertedValues[] = round($torValue, 4); // kgf.m 轉換成 kgf.m（保持不變）
+                }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
+                    $convertedValues[] = round($torValue * 100, 2); // kgf.m 轉換成 Kgf·cm
+                }elseif($TransType == $new_TorqueUnit["lbf.in"]){
+                    $convertedValues[] = round($torValue * 100 * 0.86805, 2); // kgf.m 轉換成 lbf.in
+                }else if($TransType == $new_TorqueUnit["N.m"]){
+                    $convertedValues[] = round($torValue * 9.80392156, 3); // kgf.m 轉換成 N·m
+                }elseif($TransType == $new_TorqueUnit["cN.m"]){
+                    $convertedValues[] = round(round($torValue * 100, 2) * 9.80392156, 1);  // kgf.m 轉換成 cN·m
+                }   
+            }
+
+            #當輸入的單位是Kgf·cm
+            elseif ($inputType == $new_TorqueUnit["kgf.cm"]){
+
+                if($TransType == $new_TorqueUnit["kgf.m"]){
+                    $convertedValues[] = round($torValue * 0.01, 4); // Kgf·cm 轉換成 kgf.m
+                }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
+                    $convertedValues[] = round($torValue, 2); // Kgf·cm 轉換成 Kgf·cm（保持不變）
+                }elseif($TransType == $new_TorqueUnit["lbf.in"]){
+                    $convertedValues[] = round($torValue * 0.86805, 2); // Kgf·cm 轉換成 lbf.in
+                }elseif($TransType == $new_TorqueUnit["N.m"]){
+                    $convertedValues[] = round($torValue * 0.0980392156, 3); // Kgf·cm 轉換成 N·m
+                }elseif($TransType == $new_TorqueUnit["cN.m"]){
+                    $convertedValues[]  =  round($torValue * 9.80392156, 1);  // kgf.cm 轉換成 cN·m
+                }
+
+            }
+
+            #當輸入的單位是lbf.in
+            elseif ($inputType == $new_TorqueUnit["lbf.in"]){
+
+                if($TransType == $new_TorqueUnit["kgf.m"]){
+                    $convertedValues[] = round($torValue * 1.152 * 0.01, 4); // lbf.in 轉換成 kgf.m
+                }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
+                    $convertedValues[] = round($torValue * 1.152, 2); // lbf.in轉換成 Kgf·cm
+                }elseif($TransType == $new_TorqueUnit["lbf.in"]){
+                    $convertedValues[] = round($torValue, 2); // lbf.in 轉換成 lbf.in（保持不變）
+                }elseif($TransType == $new_TorqueUnit["N.m"]){
+                    $convertedValues[] = round($torValue * 0.11294117637119998, 3); // lbf.in 轉換成 N·m
+                }elseif($TransType == $new_TorqueUnit["cN.m"]){
+                    $convertedValues[] = round(round($torValue * 1.152, 2) * 9.80392156, 1); // lbf.in 轉換成 cN·m
+                }
+            }
+
+            #當輸入的單位是cN·m
+            elseif($inputType == $new_TorqueUnit["cN.m"]){
+                
+                if($TransType == $new_TorqueUnit["kgf.m"]){
+                    $convertedValues[] =  round(round($torValue * 0.102, 2) * 0.01, 4); // cN·m 轉換成 kgf.m
+                }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
+                    $convertedValues[] =  round( $torValue * 0.102,2); // cN·m 轉換成 kgf.m
+                }elseif($TransType == $new_TorqueUnit["lbf.in"]){
+                    $convertedValues[] =  round(round($torValue * 0.102, 2) * 0.86805, 2); // cN·m 轉換成 lbf.in
+                }else if($TransType == $new_TorqueUnit["N.m"]){
+                    $convertedValues[] =  round(round($torValue * 0.102, 2) * 0.0980392156, 3); // cN·m 轉換成 N·m
+                }elseif($TransType == $new_TorqueUnit["cN.m"]){
+                    $convertedValues[] = round($torValue, 1);  // cN·m 轉換成 cN·m（保持不變）
+                }
+
+            }
+        }
         return $convertedValues;
     }
 
@@ -1030,25 +1065,32 @@ class Historical{
             return !empty($value);
         }, ARRAY_FILTER_USE_BOTH);
 
+        #移除不使用的value
         unset($filtered_info_arr['seq_name']);
         unset($filtered_info_arr['checkedjobidarr']);
-        unset($filtered_info_arr['checkedseqidarr']);//checkedseqidarr
+        unset($filtered_info_arr['checkedseqidarr']);
         unset($filtered_info_arr['checkedtaskidarr']);
         
 
         $query_params = http_build_query($filtered_info_arr); 
 
-        //unset($query_params['seq_name']); 
-
         parse_str($query_params, $params);
-
-    
 
         foreach ($params as $key => $value) {
             if (is_array($value)) {
                 $params[$key] = implode(',', $value);
             }
+
         }
+
+        if(!empty($params['fromdate'])){
+            $params['fromdate'] = str_replace('-', '', substr($params['fromdate'], 0, 10));
+        }
+
+        if(!empty($params['todate'])){
+            $params['todate'] = str_replace('-', '', substr($params['todate'], 0, 10));
+        }
+
         $new_query_string = http_build_query($params);
 
         // 呼叫API
@@ -1057,6 +1099,7 @@ class Historical{
         } else {
             $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json";
         }
+
 
         $offset = 0;
         $limit  = 10000;
