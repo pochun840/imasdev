@@ -20,24 +20,27 @@ $ps_text = '
 <!--
 奇力速 中控搜尋API
 
-介接位址：/api/get_data_api.php
-　　　　　/api/get_data_api.php?operator=test&status=0&limit=100&type=xml
+介接位址：/api/get_data_api.php&type=xml
+　　　　　/api/get_data_api.php?status_val=0&limit=100&type=xml
 參數說明：barcodesn        => 條碼
-　　　　　controller_val   => 控制器(目前只有GTCS)
-         job              => 工作(job_id,數字)
-         seq              => 工序(sequence_id,數字)
-         task             => 任務(task_id,數字)
-         start_date       => 起始日期(格式為：YYYYMMDDHH (西元年月日小時)，共 10 碼數字)
-         end_date         => 結束日期(格式為：YYYYMMDDHH (西元年月日小時)，共 10 碼數字)
+　　　　　controller_val   => 控制器(目前只有GTCS)(暫時不支援)
+         job_id           => 工作(job_id,數字)
+         sequence_id      => 工序(sequence_id,數字)
+         task_id          => 任務(task_id,數字)
+         start_date       => 起始日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
+         end_date         => 結束日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
          status_val       => 鎖附結果(0 => ALL, 1 => OK, 2 =>OKALL, 3 =>NG)
-         program          => 組別(利用program_id查詢,數字)
+         program_val      => 組別(利用program_id查詢,數字)
          s_name           => 模糊搜尋(可以輸入job_name,sequence_name,task_name,barcodesn)
          limit            => 筆數 (數字)
+         operator         => 人員(自行key人員名稱)(暫時不支援)
         
 
 補通說明: 
 1.job_id 及 seq_id 輸入數字後,會取得對應的名稱,會用名稱去搜尋
 2.輸出格式為:xml && json && array
+3.sequence_id && task_id 支援 一個以上的查詢(id需以,區隔 ex:1,2,3)
+4.
 -->
 
 ';
@@ -69,6 +72,7 @@ if(!empty($job_id)){
 #seq_id (可以用,區隔)
 $seq_id = isset($_GET['sequence_id']) ? $_GET['sequence_id'] : '';
 $seq_id = preg_match('/^(\d+)(,\d+)*$/', $seq_id) ? $seq_id : '';
+//var_dump($seq_id);
 if (!empty($seq_id) && !empty($job_id)) {
     $seq_ids = explode(',', $seq_id);
     $seql_select_seqname = "SELECT * FROM sequence WHERE job_id = :job_id AND seq_id IN (" . str_repeat('?,', count($seq_ids) - 1) . '?)';
@@ -89,14 +93,33 @@ if (!empty($seq_id) && !empty($job_id)) {
 
 
 
-#task_id
+#task_id (可以用,區隔)
 $task_id = isset($_GET['task_id']) ? $_GET['task_id'] : '';
-if(!preg_match('/^\d+$/', $task_id)) $task_id = '';
+$task_id = preg_match('/^(\d+)(,\d+)*$/', $task_id) ? $task_id : '';
+if (!empty($seq_id) && !empty($job_id) && !empty($task_id)) {
+    $task_ids = explode(',', $task_id);
+    $seql_select_taskname = "SELECT * FROM task  WHERE job_id = :job_id AND AND seq_id = :seq_id AND task_id IN (" . str_repeat('?,', count($task_ids) - 1) . '?)';
+    
+    $statement = $db_cc->prepare($seql_select_seqname);
+    $statement->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+    foreach ($seq_ids as $index => $id) {
+        $statement->bindValue($index + 1, (int)$id, PDO::PARAM_INT);
+    }
+    
+    $statement->execute();
+    $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+    if (!empty($results)) {
+        $seq_name = $results[0]['seq_name'];
+    }
+}
+
 
 #起始日期
 $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
 if ($start_date) {
     $start_date = validateAndFormatDate($start_date);
+    $start_date = $start_date. " 00:00:00";
 }
 
 
@@ -104,6 +127,7 @@ if ($start_date) {
 $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
 if ($end_date) {
     $end_date = validateAndFormatDate($end_date);
+    $end_date = $end_date. " 23:59:59";
 }
 
 
@@ -113,8 +137,7 @@ if(!preg_match('/^[\w\s]+$/', $operator)) $operator = '';
 
 
 #組別
-$program = isset($_GET['program']) ? $_GET['program'] : null;
-if(!preg_match('/^\d+$/', $program)) $program = '';
+$program = (!empty($_GET['program_val']) && $_GET['program_val'] !== "0" && $_GET['program_val'] !== "-1") ? (int)$_GET['program_val'] : null;
 
 
 #鎖附狀態
@@ -128,17 +151,19 @@ if(!preg_match('/^[\w\s]+$/', $sname)) $sname = '';
 
 # 筆數
 $limit =isset($_GET['limit']) ? $_GET['limit'] : null;
-if(!preg_match('/^\d+$/', $limit)) $limit = 100;
+if(!preg_match('/^\d+$/', $limit)) $limit = 300;
+
+
 
 # 輸出類型
 $type = $_GET['type'];
 if(empty($type)) $type = 'xml';
 
-function validateAndFormatDate($date){
-    if (preg_match("/^20[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])(0[0-9]|1[0-9]|2[0-4])$/", $date)) {
-        return date('Ymd H:i:s', strtotime($date . '00'));
+function validateAndFormatDate($date) {
+    if (preg_match("/^\d{8}$/", $date)) {
+        return date('Ymd', strtotime($date));  
     }
-    return null; // 如果格式不符合，返回 null
+    return null; 
 }
 
 
@@ -149,9 +174,9 @@ if($barcodesn) {
     $sql .= " AND cc_barcodesn  LIKE %" . $barcodesn . "% " ;
 }
 
-if($operator) {
+/*if($operator) {
     $sql .= " AND cc_operator = '".$operator."'  " ;
-}
+}*/
 
 if($program){
     $sql .="AND cc_program_id = '".$program."'";
@@ -161,10 +186,24 @@ if($sname){
 }
 
 if($start_date){
-    $sql .= " AND	data_time between = '".$start_date."'  AND '".$end_date."' " ;
+    $sql .= " AND data_time between  '".$start_date."'  AND '".$end_date."' " ;
+}
+
+if($job_id && empty($seq_id) && empty($task_id) ){
+    $sql .= " AND cc_job_id = '".$job_id."'  " ;
+}
+
+if($job_id  && $seq_id && empty($task_id)){
+    $seq_id = "'" . str_replace(',', "','", $seq_id) . "'";
+    $sql .= " AND cc_job_id = '".$job_id."' AND cc_seq_id  in  ($seq_id)" ;
 }
 
 
+if($task_id && $seq_id && $task_id){
+    $seq_id  = "'" . str_replace(',', "','", $seq_id) . "'";
+    $task_id = "'" . str_replace(',', "','", $task_id) . "'";
+    $sql .= " AND cc_job_id = '".$job_id."' AND cc_seq_id  in  ($seq_id) AND cc_task_id in ($task_id) " ;
+}
 
 if($status){
     if($status == 0){//ALL 
@@ -180,7 +219,7 @@ if($status){
     }
 }
 
-$sql .= " ORDER BY data_time DESC LIMIT ".$limit." ";
+$sql .= " AND on_flag = 0  ORDER BY data_time DESC LIMIT ".$limit." ";
 
 $statement = $db_cc->prepare($sql); 
 $statement->execute(); 

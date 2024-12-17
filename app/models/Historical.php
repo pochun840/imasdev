@@ -87,7 +87,6 @@ class Historical{
             $info_arr['program_val'] = (int)$info_arr['program_val'];
             $sql .="AND cc_program_id = :cc_program_id";
             $params['cc_program_id'] = $info_arr['program_val'];
-    
         } 
 
 
@@ -141,8 +140,7 @@ class Historical{
     }
 
 
-    #刪除鎖附資料 
-    #20240401 修改成 update on_flag的資料(0:顯示 1:隱藏)
+    #刪除鎖附資料 20240401 修改成 update on_flag的資料(0:顯示 1:隱藏)
     public function del_info($del_info_sn) {
         // SQL 更新語句，將 on_flag 設為 '1'
         $sql = "UPDATE fasten_data SET on_flag = '1' WHERE system_sn = ?";
@@ -1041,23 +1039,40 @@ class Historical{
             }
         }
         $new_query_string = http_build_query($params);
-        //echo $new_query_string;
 
-
-          // 呼叫API
-          if (!empty($query_params)) {
-            $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json&" . $query_params;
+        // 呼叫API
+        if (!empty($query_params)) {
+            $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json&" . $query_params;
         } else {
-            $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json";
+            $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json";
         }
 
 
         $offset = 0;
         $limit  = 10000;
 
+        //使用CURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+    
+        //檢查 CURL 請求是否成功
+        if ($response === false) {
+            echo "Error: " . curl_error($ch);
+            return;
+        } else {
+            if ($response === null) {
+                echo "Error: Failed to decode JSON response.";
+                return;
+            }else{
+                $info_tmp = json_decode($response, true); 
+            }
+        }
+
+        return  $info_tmp;
     }
 
 
-   
-    
 }

@@ -105,59 +105,21 @@ class Historicals extends Controller
         $info_arr = $_POST;
     
         $_SESSION['info_arr'] = $info_arr; 
+
+
+        
+
     
         if (!empty($info_arr)) {
     
-            //value為空的参數被移除
-            $filtered_info_arr = array_filter($info_arr, function($value, $key) {
-                if (is_array($value)) {
-                    return !empty(array_filter($value));
-                }
-                return !empty($value);
-            }, ARRAY_FILTER_USE_BOTH);
+      
     
             $offset = 0;
             $limit  = 10000;
 
-
-            //$aaa = $this->Historicals_newModel->get_data($info_arr);
-
-            //echo $aaa;
-            //$query_params = http_build_query($filtered_info_arr); 
-            
-
-            // 呼叫API
-            if (!empty($query_params)) {
-                $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json&" . $query_params;
-            } else {
-                $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json";
-            }
-
-           
-
-            // 使用CURL
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $response = curl_exec($ch);
-            curl_close($ch);
-    
-            // 检查 CURL 请求是否成功
-            if ($response === false) {
-                echo "Error: " . curl_error($ch);
-                return;
-            } else {
-                // 打印 $response 看看它的内容
-                //var_dump($response); // 用 var_dump() 打印出响应内容
-                // 如果是 JSON 格式的响应，解码它
-                $info_tmp = $response; // 如果是 JSON 数据，解码为 PHP 数组
-                if ($response === null) {
-                    echo "Error: Failed to decode JSON response.";
-                    return;
-                }else{
-                    $info_tmp = json_decode($response, true); 
-                }
-            }
+            #按照POST的資訊 取得資料庫搜尋的結果
+            $info_tmp  = $this->Historicals_newModel->get_data($info_arr);
+          
         }
     
         $torque_arr = $this->Historicals_newModel->details('torque');
@@ -168,9 +130,8 @@ class Historicals extends Controller
 
 
         #按照POST的資訊 取得資料庫搜尋的結果
-        $info_tmp = $this->Historicals_newModel->monitors_info($info_arr,$offset,$limit);
+        //$info_tmp = $this->Historicals_newModel->monitors_info($info_arr,$offset,$limit);
 
-  
         if (!empty($info_tmp)) {
             $info_data = "";
             
@@ -234,7 +195,9 @@ class Historicals extends Controller
             }
            
             #取得該筆的所有完整詳細資料
-            $info_final = $this->Historicals_newModel->csv_info($system_sn_in);
+            $info_arr = $_SESSION['info_arr'];
+            $info_final = $this->Historicals_newModel->get_data($info_arr);
+            //$info_final = $this->Historicals_newModel->csv_info($system_sn_in);
             $newKeys = range(0, 48); 
 
             #扭力轉換 
@@ -287,7 +250,7 @@ class Historicals extends Controller
 
         $offset = 0;
         $limit  = 10000;
-        $info = $this->Historicals_newModel->monitors_info($info_arr, $offset, $limit);
+        $info = $this->Historicals_newModel->get_data($info_arr, $offset, $limit);
         $mode_arr = array('ng_reason','fastening_status','job_info_new','job_info','statistics');
 
         #NG REASON 
