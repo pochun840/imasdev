@@ -99,74 +99,120 @@ class Historicals extends Controller
 
 
     #搜尋資料
-    public function search_info_list(){
+    public function search_info_list() {
 
         $info_arr = array();
         $info_arr = $_POST;
-
+    
         $_SESSION['info_arr'] = $info_arr; 
+    
+        if (!empty($info_arr)) {
+    
+            //value為空的参數被移除
+            $filtered_info_arr = array_filter($info_arr, function($value, $key) {
+                if (is_array($value)) {
+                    return !empty(array_filter($value));
+                }
+                return !empty($value);
+            }, ARRAY_FILTER_USE_BOTH);
+    
+            $offset = 0;
+            $limit  = 10000;
 
 
+            //$aaa = $this->Historicals_newModel->get_data($info_arr);
 
+            //echo $aaa;
+            //$query_params = http_build_query($filtered_info_arr); 
+            
 
+            // 呼叫API
+            if (!empty($query_params)) {
+                $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json&" . $query_params;
+            } else {
+                $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json";
+            }
 
-        $offset = 0;
-        $limit  = 10000;
-        #按照POST的資訊 取得資料庫搜尋的結果
-        $info = $this->Historicals_newModel->monitors_info($info_arr,$offset,$limit);
+           
 
-        #扭力轉換
+            // 使用CURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            curl_close($ch);
+    
+            // 检查 CURL 请求是否成功
+            if ($response === false) {
+                echo "Error: " . curl_error($ch);
+                return;
+            } else {
+                // 打印 $response 看看它的内容
+                //var_dump($response); // 用 var_dump() 打印出响应内容
+                // 如果是 JSON 格式的响应，解码它
+                $info_tmp = $response; // 如果是 JSON 数据，解码为 PHP 数组
+                if ($response === null) {
+                    echo "Error: Failed to decode JSON response.";
+                    return;
+                }else{
+                    $info_tmp = json_decode($response, true); 
+                }
+            }
+        }
+    
         $torque_arr = $this->Historicals_newModel->details('torque');
-
-        #STATUS轉換
         $status_arr = $this->Historicals_newModel->status_code_change();
-        $res_controller_arr = array(1 => 'GTCS', 2 =>'TCG'); 
-
+        $res_controller_arr = array(1 => 'GTCS', 2 => 'TCG'); 
+    
         $system_sns = [];
 
-        if(!empty($info)){
-            $info_data ="";
-            foreach($info as $k =>$v){
-                $color = $status_arr['status_color'][$v['fasten_status']];
-                $style = 'background-color:'.$color.';font-size: 20px';
 
+        #按照POST的資訊 取得資料庫搜尋的結果
+        $info_tmp = $this->Historicals_newModel->monitors_info($info_arr,$offset,$limit);
+
+  
+        if (!empty($info_tmp)) {
+            $info_data = "";
+            
+            foreach ($info_tmp as $k => $v) {
+                
+                $color = $status_arr['status_color'][$v['fasten_status']];
+                $style = 'background-color:' . $color . ';font-size: 20px';
+    
                 // 收集 system_sn
                 $system_sns[] = $v['system_sn'];  
-
-                $info_data  = "<tr>";
-                $info_data .= '<td style="text-align: center;"><input class="form-check-input" type="checkbox" name="test1" id="test1"  value="'.$v['system_sn'].'" style="zoom:1.2;vertical-align: middle;"></td>';
-                $info_data .= "<td id='system_sn'>".$v['system_sn']."</td>";
-                $info_data .= "<td>".$v['data_time']."</td>";
-                $info_data .= "<td></td>";
-                $info_data .= "<td>".$v['cc_barcodesn']."</td>";
-                $info_data .= "<td>".$v['job_name']."</td>";
-                $info_data .= "<td>".$v['sequence_name']."</td>";
-                $info_data .= "<td>".$v['cc_task_id']."</td>";
-                $info_data .= "<td>".$res_controller_arr[$v['cc_equipment']]."</td>";
-                $info_data .= "<td>".$v['step_lowtorque']." ~ ".$v['step_hightorque']."</td>";
-                $info_data .= "<td>".$v['step_lowangle']." ~ ".$v['step_highangle']."</td>";
-                $info_data .= "<td>".$v['fasten_torque'] .$torque_arr[$v['torque_unit']]."</td>";
-                $info_data .= "<td>".$v['fasten_angle']." deg </td>";
-                $info_data .= "<td style='".$style."'>". $status_arr['status_type'][$v['fasten_status']]."</td>";
-                $info_data .= "<td>".$status_arr['error_msg'][$v['error_message']]."</td>";
-                $info_data .= "<td>".$v['cc_program_id']."</td>";
-                $info_data .= "<td><a href=\" ?url=Historicals/nextinfo/".$v['system_sn']." \"><img src=\"./img/info-30.png\" style=\"height: 28px; vertical-align: middle;\" ></a></td>";
-        
-                $info_data .="</tr>";
-                echo $info_data;
-
-                // system_sn 資料傳给前端
-                echo '<script>window.systemSnList = ' . json_encode($system_sns) . ';</script>';
-            }  
-        }else{  
-            # 查無資料
-            $response = '';
-            echo $response;
-            
-        }
-
     
+                $info_data = "<tr>";
+                $info_data .= '<td style="text-align: center;"><input class="form-check-input" type="checkbox" name="test1" id="test1"  value="' . $v['system_sn'] . '" style="zoom:1.2;vertical-align: middle;"></td>';
+                $info_data .= "<td id='system_sn'>" . $v['system_sn'] . "</td>";
+                $info_data .= "<td>" . $v['data_time'] . "</td>";
+                $info_data .= "<td></td>";
+                $info_data .= "<td>" . $v['cc_barcodesn'] . "</td>";
+                $info_data .= "<td>" . $v['job_name'] . "</td>";
+                $info_data .= "<td>" . $v['sequence_name'] . "</td>";
+                $info_data .= "<td>" . $v['cc_task_id'] . "</td>";
+                $info_data .= "<td>" . $res_controller_arr[$v['cc_equipment']] . "</td>";
+                $info_data .= "<td>" . $v['step_lowtorque'] . " ~ " . $v['step_hightorque'] . "</td>";
+                $info_data .= "<td>" . $v['step_lowangle'] . " ~ " . $v['step_highangle'] . "</td>";
+                $info_data .= "<td>" . $v['fasten_torque'] . $torque_arr[$v['torque_unit']] . "</td>";
+                $info_data .= "<td>" . $v['fasten_angle'] . " deg </td>";
+                $info_data .= "<td style='" . $style . "'>" . $status_arr['status_type'][$v['fasten_status']] . "</td>";
+                $info_data .= "<td>" . $status_arr['error_msg'][$v['error_message']] . "</td>";
+                $info_data .= "<td>" . $v['cc_program_id'] . "</td>";
+                $info_data .= "<td><a href=\"?url=Historicals/nextinfo/" . $v['system_sn'] . "\"><img src=\"./img/info-30.png\" style=\"height: 28px; vertical-align: middle;\" ></a></td>";
+                $info_data .= "</tr>";
+    
+                echo $info_data;
+    
+                // system_sn 数据传给前端
+                echo '<script>window.systemSnList = ' . json_encode($system_sns) . ';</script>';
+            }
+        } else {
+      
+            echo '';
+        }
     }
+    
 
     #產生CSV的文件 
     #利用system_sn 取得完整的鎖附資料

@@ -25,11 +25,11 @@ $ps_text = '
 參數說明：barcodesn        => 條碼
 　　　　　controller_val   => 控制器(目前只有GTCS)
          job              => 工作(job_id,數字)
-         seq              => 工序(seq_id,數字)
+         seq              => 工序(sequence_id,數字)
          task             => 任務(task_id,數字)
          start_date       => 起始日期(格式為：YYYYMMDDHH (西元年月日小時)，共 10 碼數字)
          end_date         => 結束日期(格式為：YYYYMMDDHH (西元年月日小時)，共 10 碼數字)
-         status           => 鎖附結果(0 => ALL, 1 => OK, 2 =>OKALL, 3 =>NG)
+         status_val       => 鎖附結果(0 => ALL, 1 => OK, 2 =>OKALL, 3 =>NG)
          program          => 組別(利用program_id查詢,數字)
          s_name           => 模糊搜尋(可以輸入job_name,sequence_name,task_name,barcodesn)
          limit            => 筆數 (數字)
@@ -49,6 +49,7 @@ if(!preg_match('/^[\w\s]+$/', $barcodesn)) $barcodesn = '';
 
 #job_id
 $job_id =  isset($_GET['job_id']) ? $_GET['job_id'] : '';
+
 if(!preg_match('/^\d+$/', $job_id)) $job_id = '';
 if(!empty($job_id)){
     //用job_id 取得 job_name 
@@ -65,18 +66,23 @@ if(!empty($job_id)){
 
 
 
-#seq_id
-$seq_id = isset($_GET['seq_id']) ? $_GET['seq_id'] : '';
-if(!preg_match('/^\d+$/', $seq_id)) $seq_id = '';
-if(!empty($seq_id) && !empty($job_id)){
-    //用job_id  及 seq_id 取得 seq_name 
-    $seql_select_seqname = "SELECT * FROM sequence  WHERE job_id = :job_id AND seq_id = :seq_id "; 
-    $statement = $db_cc->prepare($seql_select_seqname); 
-    $statement->bindValue(':job_id', $job_id, PDO::PARAM_INT); 
-    $statement->bindValue(':seq_id', $seq_id, PDO::PARAM_INT); 
-    $statement->execute(); 
+#seq_id (可以用,區隔)
+$seq_id = isset($_GET['sequence_id']) ? $_GET['sequence_id'] : '';
+$seq_id = preg_match('/^(\d+)(,\d+)*$/', $seq_id) ? $seq_id : '';
+if (!empty($seq_id) && !empty($job_id)) {
+    $seq_ids = explode(',', $seq_id);
+    $seql_select_seqname = "SELECT * FROM sequence WHERE job_id = :job_id AND seq_id IN (" . str_repeat('?,', count($seq_ids) - 1) . '?)';
+    
+    $statement = $db_cc->prepare($seql_select_seqname);
+    $statement->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+    foreach ($seq_ids as $index => $id) {
+        $statement->bindValue($index + 1, (int)$id, PDO::PARAM_INT);
+    }
+    
+    $statement->execute();
     $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-    if(!empty($results)){
+    
+    if (!empty($results)) {
         $seq_name = $results[0]['seq_name'];
     }
 }
@@ -112,7 +118,7 @@ if(!preg_match('/^\d+$/', $program)) $program = '';
 
 
 #鎖附狀態
-$status  =isset($_GET['status']) ? $_GET['status'] : null;
+$status  =isset($_GET['status_val']) ? $_GET['status_val'] : null;
 if(!preg_match('/^\d+$/', $status)) $status = 0;
 
 
@@ -126,7 +132,7 @@ if(!preg_match('/^\d+$/', $limit)) $limit = 100;
 
 # 輸出類型
 $type = $_GET['type'];
-if(!empty($type)) $type = 'xml';
+if(empty($type)) $type = 'xml';
 
 function validateAndFormatDate($date){
     if (preg_match("/^20[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])(0[0-9]|1[0-9]|2[0-4])$/", $date)) {

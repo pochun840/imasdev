@@ -1021,6 +1021,43 @@ class Historical{
     }
 
 
+    #呼叫 get_data_api.php 
+    public function get_data($info_arr){
+
+         //value為空的参數被移除
+         $filtered_info_arr = array_filter($info_arr, function($value, $key) {
+            if (is_array($value)) {
+                return !empty(array_filter($value));
+            }
+            return !empty($value);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        $query_params = http_build_query($filtered_info_arr); 
+        parse_str($query_params, $params);
+
+        foreach ($params as $key => $value) {
+            if (is_array($value)) {
+                $params[$key] = implode(',', $value);
+            }
+        }
+        $new_query_string = http_build_query($params);
+        //echo $new_query_string;
+
+
+          // 呼叫API
+          if (!empty($query_params)) {
+            $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json&" . $query_params;
+        } else {
+            $url = "http://192.168.0.161/imasstg/api/get_data_api.php?type=json";
+        }
+
+
+        $offset = 0;
+        $limit  = 10000;
+
+    }
+
+
    
     
 }
