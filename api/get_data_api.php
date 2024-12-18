@@ -21,17 +21,17 @@ $ps_text = '
 介接位址：/api/get_data_api.php&type=xml
 　　　　　/api/get_data_api.php?status_val=0&limit=300&type=xml
 參數說明：barcodesn        => 條碼
-　　　　　controller_val   => 控制器(目前只有GTCS)(暫時不支援)
+　　　　　controller_val   => 控制器(1=>GTCS,2=>TCG)
          job_id           => 工作(job_id,數字)
          sequence_id      => 工序(sequence_id,數字)
          task_id          => 任務(task_id,數字)
-         fromdate        => 起始日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
-         todate          => 結束日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
+         fromdate         => 起始日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
+         todate           => 結束日期(格式為：YYYYMMDD (西元年月日)，共 8 碼數字)
          status_val       => 鎖附結果(0 => ALL, 1 => OK, 2 =>OKALL, 3 =>NG)
          program_val      => 組別(利用program_id查詢,數字)
          s_name           => 模糊搜尋(可以輸入job_name,sequence_name,task_name,barcodesn)
          limit            => 筆數 (數字)
-         operator         => 人員(自行key人員名稱)(暫時不支援)
+         operator         => 人員(自行key人員名稱)
 
         
 
@@ -125,6 +125,13 @@ if ($end_date) {
     $end_date = $end_date. " 23:59:59";
 }
 
+#檢查日期格式
+function validateAndFormatDate($date) {
+    if (preg_match("/^\d{8}$/", $date)) {
+        return date('Ymd', strtotime($date));  
+    }
+    return null; 
+}
 
 #人員
 $operator = isset($_GET['operator']) ? $_GET['operator'] : null;
@@ -144,6 +151,10 @@ if(!preg_match('/^\d+$/', $status)) $status = 0;
 $sname = isset($_GET['sname']) ? $_GET['sname'] : null;
 if(!preg_match('/^[\w\s]+$/', $sname)) $sname = '';
 
+#控制器
+$controller = isset($_GET['controller_val']) ? $_GET['controller_val'] : null;
+if(!preg_match('/^\d+$/', $controller)) $controller = '';
+
 # 筆數
 $limit =isset($_GET['limit']) ? $_GET['limit'] : null;
 if(!preg_match('/^\d+$/', $limit)) $limit = 10000;
@@ -153,12 +164,6 @@ if(!preg_match('/^\d+$/', $limit)) $limit = 10000;
 $type = $_GET['type'];
 if(empty($type)) $type = 'xml';
 
-function validateAndFormatDate($date) {
-    if (preg_match("/^\d{8}$/", $date)) {
-        return date('Ymd', strtotime($date));  
-    }
-    return null; 
-}
 
 
 $sql = "SELECT * FROM `fasten_data` ";
@@ -168,9 +173,9 @@ if($barcodesn) {
     $sql .= " AND cc_barcodesn  LIKE '%" . $barcodesn . "%' " ;
 }
 
-/*if($operator) {
+if($operator && $operator != "-1") {
     $sql .= " AND cc_operator = '".$operator."'  " ;
-}*/
+} 
 
 if($program){
     $sql .="AND cc_program_id = '".$program."'";
@@ -211,6 +216,10 @@ if($status){
         $sql .=" AND fasten_status  in('7','8') ";
 
     }
+}
+
+if(!empty($controller)){
+    $sql  .= " AND 	cc_equipment =  '".$controller."' ";
 }
 
 $sql .= " AND on_flag = 0  ORDER BY data_time DESC LIMIT ".$limit." ";

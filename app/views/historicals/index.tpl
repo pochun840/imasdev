@@ -233,7 +233,13 @@ if(!empty($_COOKIE['chat_mode_change'])){
                             <input type="text" id="barcodesn" name="barcodesn" class="form-control input-ms" style="margin-right: 7px">
 
                             <span class="input-group-text"><?php echo $text['Operator_text']; ?>:</span>
-                            <input type="text" id="Operator" class="form-control input-ms" style="margin-right: 7px">
+                            <select id="operator" name="operator" class="form-control input-ms" style="margin-right: 7px">
+                                 <option value="-1"><?php echo $text['Choose_text'];?></option>
+                                <?php foreach($data['all_users'] as $k_user =>$v_user){?>
+                                    <option value="<?php echo $v_user['account'];?>"><?php echo $v_user['account'];?></option>
+                                <?php }?>
+                            </select>
+                  
 
                             <span class="input-group-text"><?php echo $text['Select_Job_text']; ?>:</span>
                             <input type="text" class="form-control input-ms" id="JobSelect" placeholder="<?php echo $text['Click_here_text']; ?>.." onfocus="openModal('JobSelect')" onclick="this.blur()">    
@@ -250,13 +256,15 @@ if(!empty($_COOKIE['chat_mode_change'])){
                         <div class="input-group mb-2">
                             <span class="input-group-text"><?php echo $text['Result_Status_text']; ?>:</span>
                             <select id="status" class="form-select" name="" style="margin-right: 7px">
+                                <option value="-1"><?php echo $text['Choose_text'];?></option>
                                 <?php foreach($data['res_status_arr'] as $key_res =>$val_res){?>
                                     <option value="<?php echo $key_res;?>"><?php echo $val_res;?></option>
                                 <?php }?>
                             </select>
 
                             <span class="input-group-text"><?php echo $text['Controller_text']; ?>:</span>
-                            <select id="Controller" class="form-select" name="" style="margin-right: 7px">
+                            <select id="controller" class="form-select" name="" style="margin-right: 7px">
+                                <option value="-1"><?php echo $text['Choose_text'];?></option>
                                 <?php foreach($data['res_controller_arr'] as $key_res_1 =>$val_res_1){?>
                                     <option value="<?php echo $key_res_1;?>"><?php echo $val_res_1;?></option>
                                 <?php }?>
@@ -264,7 +272,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                             <span class="input-group-text"><?php echo $text['Program_text']; ?>:</span>
                             <select id="Program" class="form-select" name="">
-                                <option value="-1"><?php echo "select";?></option>
+                                <option value="-1"><?php echo $text['Choose_text'];?></option>
                                 <?php foreach($data['res_program'] as $key_res_2 => $val_res_2){?>
                                     <option value="<?php echo $val_res_2['template_program_id'];?>"><?php echo $val_res_2['template_program_id'];?></option>
                                 <?php }?>
@@ -322,7 +330,8 @@ if(!empty($_COOKIE['chat_mode_change'])){
 
                             <div for="Controller" class="col-2 t1"><?php echo $text['Controller_text']; ?>:</div>
                             <div class="col-2 t3" style="margin-left: -100px">
-                                <select id="Controller" style="width: 190px;">
+                                <select id="controller" style="width: 190px;">
+                                    <option value="-1"><?php echo "select";?></option>
                                     <?php foreach($data['res_controller_arr'] as $key_res_1 =>$val_res_1){?>
                                             <option value="<?php echo $key_res_1;?>"><?php echo $val_res_1;?></option>
                                     <?php }?>
@@ -413,7 +422,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                             <td><?php echo $v_info['job_name'];?></td>
                                             <td><?php echo $v_info['sequence_name'];?></td>
                                             <td><?php echo $v_info['cc_task_id'];?></td>
-                                            <td><?php echo "GTCS";?></td>
+                                            <td><?php echo $data['res_controller_arr'][$v_info['cc_equipment']];?></td>
                                             <td><?php echo $v_info['step_lowtorque']." ~ ".$v_info['step_hightorque'];?></td>
                                             <td><?php echo $v_info['step_lowangle']." ~ ".$v_info['step_highangle'];?></td>
                                             <td><?php echo $v_info['fasten_torque'].$data['torque_arr'][$v_info['torque_unit']] ;?></td>
@@ -471,7 +480,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                             <tr style="padding: 0 10px">
                                 <td><?php echo $text['Index_text']; ?>: <?php echo $data['job_info'][0]['system_sn'];?></td>
                                 <td><?php echo $text['Job_info_text']; ?>: <?php echo $data['job_info'][0]['job_name'];?> / <?php echo $data['job_info'][0]['sequence_name']. "/". $data['job_info'][0]['cc_task_id'];?></td>
-                                <td><?php echo $text['Controller_text']; ?>: </td>
+                                <td><?php echo $text['Controller_text']; ?>: <?php echo $data['res_controller_arr'][$data['job_info'][0]['cc_equipment']];?></td>
                                 <td><?php echo $text['Error_code_text']; ?>: <?php echo  $data['status_arr']['error_msg'][$data['job_info'][0]['error_message']];?></td>
                                 <td><?php echo $text['Status_text']; ?> : <a style="background-color: <?php echo $data['status_arr']['status_color'][$data['job_info'][0]['fasten_status']];?>; padding: 0 10px"><?php echo $data['status_arr']['status_type'][$data['job_info'][0]['fasten_status']];?></a></td>
                             </tr>

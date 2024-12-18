@@ -42,9 +42,8 @@ class Historicals extends Controller
         $all_roles = array_slice($this->UserModel->GetAllRole(), 0, 3);
         $res_status_arr = ['ALL', 'OK', 'OKALL', 'NG'];
         $res_controller_arr = array(1 => 'GTCS', 2 =>'TCG'); 
-
+        $all_users = $this->UserModel->GetAllUser(); //取得還活著USER
         $torque_arr = $this->Historicals_newModel->details('torque');
-
         $res_program = $this->Historicals_newModel->details('program');
 
 
@@ -52,7 +51,6 @@ class Historicals extends Controller
         $account = $_SESSION['user'];
         $user_permissions =  $this->UserModel->GetUserByName($account);
         
-
         #取得所有的job_id
         $job_arr = $this->Historicals_newModel->get_job_id();
         $status_arr = $this->Historicals_newModel->status_code_change();
@@ -64,6 +62,7 @@ class Historicals extends Controller
             'isMobile' => $isMobile,
             'nav' => $nav,
             'all_roles' => $all_roles,
+            'all_users' => $all_users,
             'res_status_arr' =>  $res_status_arr,
             'res_controller_arr' => $res_controller_arr,
             'res_program' => $res_program,
@@ -78,6 +77,7 @@ class Historicals extends Controller
             'user_role_title' => $user_permissions['Title'],
             'browser' => $browser
         ];
+
 
         $this->view('historicals/index', $data);
     }
@@ -106,14 +106,8 @@ class Historicals extends Controller
     
         $_SESSION['info_arr'] = $info_arr; 
 
-
-        
-
-    
         if (!empty($info_arr)) {
-    
-      
-    
+        
             $offset = 0;
             $limit  = 10000;
 
@@ -436,6 +430,8 @@ class Historicals extends Controller
             $data['nav'] = $this->NavsController->get_nav();
             $data['nopage'] = 0;
             $data['path'] = __FUNCTION__;
+
+            $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
 
             $this->view('historicals/index', $data);
     

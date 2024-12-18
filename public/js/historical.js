@@ -158,11 +158,11 @@ function search_info(){
 
     var fromdate     = fromdate.replace("T", " ");
     var todate       = todate.replace("T", " ");
-    var selectElement = document.getElementById("status");
-    var status_val    = selectElement.value;
+    var status_val   = document.getElementById("status").value;
+    var operator     = document.getElementById("operator").value;
 
-    /*var select_controller = document.getElementById("controller");
-    var controller_val    = select_controller.value;*/
+    var select_controller = document.getElementById("controller");
+    var controller_val    = select_controller.value;
 
     var select_program    = document.getElementById("Program");
     var program_val       = select_program.value;
@@ -217,11 +217,12 @@ function search_info(){
                 sequence_id: checkedseqidarr,
                 seq_name:seqNames,
                 cc_task_id:checkedtaskidarr,
-                //controller_val:controller_val,
+                controller_val:controller_val,
                 program_val:program_val,
                 checkedjobidarr:checkedjobidarr,
                 checkedseqidarr:checkedseqidarr,
-                checkedtaskidarr:checkedtaskidarr
+                checkedtaskidarr:checkedtaskidarr,
+                operator: operator
               },
         url: '?url=Historicals/search_info_list',
         success: function(response) {
