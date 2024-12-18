@@ -1093,13 +1093,14 @@ class Historical{
 
         $new_query_string = http_build_query($params);
 
+        $file_url = str_replace('public/index.php?url=Historicals/search_info_list', '', $_SERVER['REQUEST_URI']);
+
         // 呼叫API
         if (!empty($query_params)) {
-            $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json&" . $new_query_string;
+            $url = "http://".$_SERVER['REMOTE_ADDR'].$file_url."api/get_data_api.php?type=json&" . $new_query_string;
         } else {
-            $url = "http://".$_SERVER['REMOTE_ADDR']."/imasstg/api/get_data_api.php?type=json";
+            $url = "http://".$_SERVER['REMOTE_ADDR'].$file_url."/api/get_data_api.php?type=json";
         }
-
 
         $offset = 0;
         $limit  = 10000;

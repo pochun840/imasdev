@@ -157,7 +157,7 @@ if(!preg_match('/^\d+$/', $controller)) $controller = '';
 
 # 筆數
 $limit =isset($_GET['limit']) ? $_GET['limit'] : null;
-if(!preg_match('/^\d+$/', $limit)) $limit = 10000;
+if(!preg_match('/^\d+$/', $limit)) $limit = 300;
 
 
 # 輸出類型
