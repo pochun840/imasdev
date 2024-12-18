@@ -346,6 +346,7 @@ class Historical{
                 0 => 'Kgf.m',
                 2 => 'Kgf.cm',
                 3 => 'In.lbs',
+                4 => 'cN.m'
             );
         }
 
