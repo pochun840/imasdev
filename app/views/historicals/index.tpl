@@ -1104,9 +1104,7 @@ addMessage();
     var step_threshold_angle = '<?php echo $data['job_info'][0]['step_threshold_angle'];?>';
     var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
     var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
-
     
-
     var option = {
             
             grid: GridConfig.generate('90%', '70%', '3%', '20%'),
@@ -1166,53 +1164,54 @@ addMessage();
     };
 
     
-      // 尋牙角度(for chat_mode == 2)
-    if (chat_mode == '2' && ( step_threshold_angle != '0') ) {
-      
+    if (chat_mode == '2'  && step_prr_rpm != '' && step_prr_angle != '') {
+        if (y_data_val.length > 0) {
+            var x_value = x_data_val[0];
+            var y_value = y_data_val[0]; 
 
-        // 如果 step_threshold_angle 不等於 '0'
-        if (step_threshold_angle != '0') {
-            if (y_data_val.includes(step_threshold_angle.toString())) {
-                var index = y_data_val.indexOf(step_threshold_angle.toString());
-                var x_value = x_data_val[index];  // 获取对应的 x 轴值
-
-                option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-                option.series[0].markPoint.data.push({
-                    xAxis: x_value,  
-                    yAxis: step_threshold_angle,  
-                    symbol: 'circle',
-                    symbolSize: 10,
-                    itemStyle: {
-                        color: 'red'  
-                    },
-                    label: {
-                        position: 'top',
-                        formatter: 'Step Threshold Angle: ' + step_threshold_angle
-                    }
-                });
-            }
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+            option.series[0].markPoint.data.push({
+                xAxis: x_value,  
+                yAxis: y_value,  
+                symbol: 'circle',
+                symbolSize: 8,   
+                itemStyle: {
+                    color: 'blue'  
+                },
+                label: {
+                    position: 'top',
+                    formatter: 'threshold_angle: 0' 
+                }
+            });
         }
     }
 
-    //尋牙都要隱藏
-    if ((chat_mode == '1' || chat_mode == '2' ) && (step_prr_rpm != '0' || step_prr_angle != '0')) {
-        
-        //檢查 y_data_val = 0的 都要隱藏
-        for (var i = 0; i < y_data_val.length; i++) {
-            if (y_data_val[i] == 0) {
-                y_data_val[i] = null; 
-            }
+    /*if (chat_mode == '1'  && step_prr_rpm != '' && step_prr_angle != '') {
+        if (y_data_val.length > 0) {
+            var x_value = x_data_val[0];
+            var y_value = y_data_val[0]; 
+
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+            option.series[0].markPoint.data.push({
+                xAxis: x_value,  
+                yAxis: y_value,  
+                symbol: 'circle',
+                symbolSize: 8,   
+                itemStyle: {
+                    color: 'blue'  
+                },
+                label: {
+                    position: 'top',
+                    formatter: 'threshold_torque:' + y_value 
+                }
+            });
         }
-
-      
-
-        option.series[0].data = y_data_val;
-        myChart.setOption(option);
-    }
+    }*/
 
     
-  
-    if ((chat_mode == '1') && (downshift_torque != '0' || threshold_torque != '0')) {
+
+
+    /*if ((chat_mode == '1') && (downshift_torque != '0' || threshold_torque != '0')) {
  
         if (parseFloat(downshift_torque) !== 0) {
 
@@ -1266,7 +1265,7 @@ addMessage();
                     }
                 }
             }
-    }
+    }*/
 
     // 尋找並顯示 step_threshold_angle（如果在 chat_mode == '5'）
     if (chat_mode == '5') {

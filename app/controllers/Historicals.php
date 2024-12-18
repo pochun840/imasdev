@@ -408,12 +408,18 @@ class Historicals extends Controller
             }
          
             $temp_x_val = $this->Historicals_newModel->get_column_values_by_index($no,1);
+
          
             $csvdata_arr = $this->Historicals_newModel->get_info($no, $chat_mode);
 
 
             if(!empty($csvdata_arr)){
-                $data['chart_info'] = $this->ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no);
+
+                #尋牙轉速
+                $step_prr_rpm   = $data['job_info'][0]['step_prr_rpm'];
+                #尋牙角度
+                $step_prr_angle = $data['job_info'][0]['step_prr_angle'];
+                $data['chart_info'] = $this->ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle );
                 
                 #設定曲線圖的座標名稱
                 $titles = $this->Historicals_newModel->extractXYTitles($data['chart_info']['chat_title']);
@@ -782,7 +788,7 @@ class Historicals extends Controller
     }
 
     #nextinfo 整理曲線圖
-    private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no){
+    private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle){
         $data = array();
         
         if($chat_mode == "5"){
@@ -794,7 +800,6 @@ class Historicals extends Controller
                 $data['max'] = max($csvdata_arr['torque']);
                 $data['min'] = min($csvdata_arr['torque']);
 
-
             }
 
         }else if($chat_mode == "6"){
@@ -803,10 +808,7 @@ class Historicals extends Controller
                 return ($value == 0.0) ? 0 : $value;  
             }, $csvdata_arr['torque']);
 
-
-
             $temp = $this->Historicals_newModel->get_column_values_by_index($no, 1);
-
             $temp = array_map(function($value) {
                 //如果匹配到類似 "1.0" 或 "2.0" 等格式，替換成整数
                 if (preg_match('/^(\d+)\.0$/', (string)$value, $matches)) {
@@ -815,7 +817,6 @@ class Historicals extends Controller
                 return $value;  
             }, $temp);
 
-      
             $data['x_val'] = json_encode($temp);
             $data['y_val'] = json_encode($csvdata_arr['torque']);
             $data['y_val_1'] = json_encode($csvdata_arr['angle']);
@@ -823,6 +824,15 @@ class Historicals extends Controller
             $data['min'] = min($csvdata_arr['torque']);
             $data['max1'] = max($csvdata_arr['angle']);
             $data['min1'] = min($csvdata_arr['angle']);
+
+            $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($no, 3); //angle
+            $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($no, 4); //speed
+            $last_key = $this->find_last_key($y_val_angle, $y_val_speed);
+            if ($last_key !== null) {
+                $data['x_val']   = json_encode(array_slice($temp_x_val, $last_key));
+                $data['y_val']   = json_encode(array_slice($csvdata_arr['torque'], $last_key));
+                $data['y_val_1'] = json_encode(array_slice($csvdata_arr['angle'], $last_key));
+            }
 
         }else{
 
@@ -835,14 +845,17 @@ class Historicals extends Controller
                 $data['max'] = max($temp_val);
                 $data['min'] = min($temp_val);
 
-                $data_['y_val_sec'] = $this->Historicals_newModel->get_column_values_by_index($no, 2);
 
             }else{
 
-                $data['y_val'] = json_encode($csvdata_arr);
+                $data['y_val'] = $this->Historicals_newModel->get_column_values_by_index($no, 3);
                 $data['max'] = max($csvdata_arr);
                 $data['min'] = min($csvdata_arr);
             }
+
+            $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($no, 3); //angle
+            $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($no, 4); //speed
+
 
             $temp_x_val = array_map(function($value) {
                 //如果匹配到類似 "1.0" 或 "2.0" 等格式，替換成整数
@@ -852,12 +865,62 @@ class Historicals extends Controller
                 return $value;  
             }, $temp_x_val);
 
+
             $data['x_val'] = json_encode($temp_x_val);
+            
+            if (!empty($step_prr_rpm) && !empty($step_prr_angle) && $step_prr_rpm > 0 && $step_prr_angle > 0 && $chat_mode != "2")  {
+                $last_key = $this->find_last_key($y_val_angle, $y_val_speed);
+                if ($last_key !== null) {
+                    
+                    $data['y_val'] = json_encode(array_slice($csvdata_arr, $last_key));
+                    
+                    if($chat_mode != "3" && $chat_mode != "4"){
+                        $data['x_val'] = json_encode(array_slice($temp_x_val, $last_key));
+                    }
+                   
+                } 
+
+            } else{
+                //var_dump($data['x_val']);
+            }
+
+            if (!empty($step_prr_rpm) && !empty($step_prr_angle) && $step_prr_rpm > 0 && $step_prr_angle > 0 && $chat_mode == "2") {
+
+                $last_key = $this->find_last_key($y_val_angle, $y_val_speed);
+                if ($last_key !== null) {
+                    $data['x_val'] = json_encode(array_slice($temp_x_val, $last_key));
+                }
+                $data['y_val'] = json_encode(array_slice($data['y_val'], $last_key));
+              
+            }
+        } 
+        
+        if (is_array($data['y_val'])) {
+            $data['y_val'] = json_encode($data['y_val']);
         }
-    
+
+        /*if (is_array($data['y_val_1'])) {
+            $data['y_val_1'] = json_encode($data['y_val_1']);
+        }*/
+
+  
+
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
         return $data;
     }
 
+    private function find_last_key($y_val_angle, $y_val_speed) {
+        $last_key = null;
+
+        // 假設 y_val_angle 和 y_val_speed 的長度是相同的
+        for ($key = 0; $key < count($y_val_angle); $key++) {
+            // 檢查對應位置的數值是否都為 0
+            if ($y_val_angle[$key] == 0 && $y_val_speed[$key] == 0) {
+                $last_key = $key; // 更新最後符合條件的 key
+            }
+        }
+
+        return $last_key;
+    }
 
 }
