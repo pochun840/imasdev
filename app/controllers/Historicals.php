@@ -18,6 +18,7 @@ class Historicals extends Controller
     public function index($page)
     {
 
+
         $nopage = isset($_COOKIE["nopage"]) ? $_COOKIE["nopage"] : "0";
         $limit = 30;
         $offset = 0;

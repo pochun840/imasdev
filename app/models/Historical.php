@@ -1097,11 +1097,13 @@ class Historical{
 
         // 呼叫API
         if (!empty($query_params)) {
-            $url = "http://".$_SERVER['REMOTE_ADDR'].$file_url."api/get_data_api.php?type=json&" . $new_query_string;
+            $url = "http://".$_SERVER['HTTP_HOST'].$file_url."api/get_data_api.php?type=json&" . $new_query_string;
         } else {
-            $url = "http://".$_SERVER['REMOTE_ADDR'].$file_url."/api/get_data_api.php?type=json";
+            $url = "http://".$_SERVER['HTTP_HOST'].$file_url."/api/get_data_api.php?type=json";
         }
 
+     
+        
         $offset = 0;
         $limit  = 10000;
 
