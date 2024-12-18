@@ -213,6 +213,7 @@
             let formData = {};
             formData.hole_id = hole_id;
             formData.action = argument;
+            if (argument == 'clear') { hole_id }
             // formData.OK_green_light = +document.getElementById("OK_Green").checked;
 
             $.ajax({
@@ -221,9 +222,9 @@
                 method: 'POST',
                 data: formData,
                 dataType: "json",
-                timeout: 3000,
+                timeout: 2000,
                 beforeSend: function() {
-                    // $('#overlay').removeClass('hidden');
+                    $('#overlay').removeClass('hidden');
                     const timeElapsed = Date.now();
                     const today = new Date(timeElapsed);
                     
@@ -235,7 +236,7 @@
                     log_div.insertBefore(log,log_div.childNodes[0]);
                 },
             }).done(function(response) { //成功且有回傳值才會執行
-                // $('#overlay').addClass('hidden');
+                $('#overlay').addClass('hidden');
                 // console.log(data);
                 console.log(response);
                 let log = document.createElement('div');
@@ -258,7 +259,7 @@
 
 
             }).fail(function() {
-                // $('#overlay').addClass('hidden');
+                $('#overlay').addClass('hidden');
                 let log = document.createElement('div');
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 log.className = 'col t3';

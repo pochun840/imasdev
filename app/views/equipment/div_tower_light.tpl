@@ -435,12 +435,12 @@ if(!empty($data['tower_light_switch'])) {
                 'buzzer': buzzer
             },
             dataType: "json",
-            timeout: 3000,
+            timeout: 2000,
             beforeSend: function(){
                 const timeElapsed = Date.now();
                 const today = new Date(timeElapsed);
-
-                console.log(today)
+                $('#overlay').removeClass('hidden');
+                // console.log(today)
                 
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
                 let log = document.createElement('div');
@@ -451,6 +451,7 @@ if(!empty($data['tower_light_switch'])) {
 
             },
             success: function(response) {
+                $('#overlay').addClass('hidden');
                 // 處理服務器返回的響應
                 console.log(response);
                 let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
@@ -474,13 +475,15 @@ if(!empty($data['tower_light_switch'])) {
             },
             complete: function(XHR, TS) {
                 XHR = null;
+                $('#overlay').addClass('hidden');
                 console.log("connect_test 執行完成");
             },
             error: function(xhr, status, error) {
+                $('#overlay').addClass('hidden');
                 // console.log("fail");
             }
         }).fail(function() {
-            // $('#overlay').addClass('hidden');
+            $('#overlay').addClass('hidden');
             let log = document.createElement('div');
             let momo = moment().format('YYYY/MM/DD HH:mm:ss A');
             log.className = 'col t3';

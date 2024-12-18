@@ -451,7 +451,7 @@
                             <div class="row">
                                 <div for="to_step_name" class="col-5 t1"><?php echo $text['Step_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
-                                    <input type="text" class="form-control" id="to_step_name"> 
+                                    <input type="text" class="form-control" id="to_step_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')"> 
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -1037,7 +1037,7 @@ function sync_program() {
     console.log(rowSelected)
 
     // 确保至少有一个选中的项
-    if (rowSelected.length  != 0) {
+    if (rowSelected.length  != 0 || true) { //加入true，不需勾選就可以更新
         // 取第一个选中的行的 program_id
         let program_id = extractPartFromurl();
         global_program_id =  program_id;
@@ -1306,6 +1306,9 @@ function extractPartFromurl() {
                 torque_window_max = Tool_Max_Torque
                 torque_window_range_min = delta
                 torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('torque-window').value, +document.getElementById('torque-window').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - torque-window ,  torque-window - tool min torque ) 
+                document.getElementById('torque-window').value = Tool_Min_Torque * 2
+                document.getElementById('torque-window-range').value = delta
+
                 angle_window_max = 30600
                 angle_window_min = 1
                 angle_window_range_max = Number.parseFloat(Math.min( 30600 - +document.getElementById('target-angle').value , +document.getElementById('target-angle').value )).toFixed(4); //取 min ( 30600 - targetangle , targetangle ) 
@@ -1323,7 +1326,7 @@ function extractPartFromurl() {
 
         
         let conditions = [
-            { id: 'step-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+            { id: 'step-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
             { id: 'run-down-speed', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
             { id: 'target-torque', pattern: /^-?\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_Torque, max: Tool_Max_Torque },
             { id: 'target-angle', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: 0, max: 30600 },

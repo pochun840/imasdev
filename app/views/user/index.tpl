@@ -408,6 +408,7 @@ addMessage();
         let user_card = document.getElementById('user-card').value;
 
         let result = validate_adduser(user_id);
+        console.log(user_id)
 
         if(result){
 
@@ -475,7 +476,7 @@ addMessage();
 
     function validate_adduser(user_id) {
 
-        if(user_id == ''){
+        if(user_id == ''){//new user
             let user_name = document.getElementById('user-name').value;
             let user_account = document.getElementById('user-account').value;
             let user_password = document.getElementById('user-password').value;
@@ -487,14 +488,20 @@ addMessage();
             }else{
                 return true;
             }    
-        }else{
+        }else{//edit user
             let user_name = document.getElementById('user-name').value;
             let user_account = document.getElementById('user-account').value;
             let user_password = document.getElementById('user-password').value;
             let user_employee_number = document.getElementById('employee-number').value;
             let user_role = document.getElementById('user-role').value;
 
-            if (user_name == '' || user_account == '' || user_role == '-1' ) {
+            console.log(user_name)
+            console.log(user_account)
+            console.log(user_password)
+            console.log(user_employee_number)
+            console.log(user_role)
+
+            if ( user_account == '' || user_role == '-1' ) {
                 return false;
             }else{
                 return true;

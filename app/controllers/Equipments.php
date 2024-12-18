@@ -266,12 +266,13 @@ class Equipments extends Controller
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
             curl_setopt($curl, CURLOPT_DNS_CACHE_TIMEOUT, 100);
             curl_setopt($curl, CURLOPT_NOSIGNAL, 1);
-            curl_setopt($curl, CURLOPT_TIMEOUT_MS, 50000);
+            curl_setopt($curl, CURLOPT_TIMEOUT_MS, 2000);
 
             curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
 
             $ee = curl_exec($curl);
-            //curl_exec($curl);
+            // var_dump($ee);
+            // curl_exec($curl);
             curl_close($curl);
 
             if($ee){
@@ -494,19 +495,27 @@ class Equipments extends Controller
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
             curl_setopt($curl, CURLOPT_DNS_CACHE_TIMEOUT, 100);
             curl_setopt($curl, CURLOPT_NOSIGNAL, 1);
-            curl_setopt($curl, CURLOPT_TIMEOUT_MS, 5000);
+            curl_setopt($curl, CURLOPT_TIMEOUT_MS, 2000);
 
             curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
 
-            curl_exec($curl);
+            $ee = curl_exec($curl);
 
             curl_close($curl);
 
-            echo json_encode(array('result' => true, 'service_status' => 'yes'));
-            exit();
+            if($ee){
+                echo json_encode(array('result' => true, 'service_status' => 'yes'));
+                exit();
+            }else{
+                echo json_encode(array('result' => false, 'service_status' => 'no'));
+                exit();
+            }
+
+            // echo json_encode(array('result' => true, 'service_status' => 'yes'));
+            // exit();
 
         }else{
-            echo json_encode(array('result' =>'', 'service_status' => 'no'));
+            echo json_encode(array('result' => false, 'service_status' => 'no'));
             exit();
         }
 

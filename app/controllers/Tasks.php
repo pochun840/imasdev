@@ -59,8 +59,8 @@ class Tasks extends Controller
 
                     //判斷如果是target type = torque，是否要監控角度，有的話才顯示Hi A Lo A
                     if ($step['step_targettype'] == 2 && $step['step_monitoringangle'] == 0) {
-                        $tasks[$key]['program'][$key]['step_highangle'] = '-';
-                        $tasks[$key]['program'][$key]['step_lowangle'] = '-';
+                        $tasks[$key]['program'][$key2]['step_highangle'] = '-';
+                        $tasks[$key]['program'][$key2]['step_lowangle'] = '-';
                     }
                 }
 
@@ -90,7 +90,7 @@ class Tasks extends Controller
         }
 
         // var_dump($tasks);
-        // var_dump($tasks[4]['program']);
+        // var_dump($tasks[3]['program']);
 
         $data = [
             'isMobile' => $isMobile,

@@ -216,11 +216,11 @@
                                 if($value['last_job_type'] == 'normal'){
                                     echo   '<div id="">'.$text['Step_text'].'1 '. $value['last_step_name'] .' | <span>'.$value['last_step_targettorque'].'-Nm| '.$text['Hi_text'].' '.$value['last_step_hightorque'].' | '.$text['Lo_text'].' '.$value['last_step_lowtorque'].'</span></div>';
                                 }else{
-                                    foreach ($value['program'] as $key => $value) {
-                                        if($value['step_targettype'] == 1 ){//angle
-                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $value['step_name'] .' | <span>'.$value['step_targetangle'].'&ordm;| '.$text['Hi_text'].' '.$value['step_highangle'].' | '.$text['Lo_text'].' '.$value['step_lowangle'].'</span></div>';
+                                    foreach ($value['program'] as $key => $step) {
+                                        if($step['step_targettype'] == 1 ){//angle
+                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $step['step_name'] .' | <span>'.$step['step_targetangle'].'&ordm;| '.$text['Hi_text'].' '.$step['step_highangle'].' | '.$text['Lo_text'].' '.$step['step_lowangle'].'</span></div>';
                                         }else{
-                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $value['step_name'] .' | <span>'.$value['step_targettorque'].'-Nm| '.$text['Hi_text'].' '.$value['step_hightorque'].' | '.$text['Lo_text'].' '.$value['step_lowtorque'].'</span></div>';
+                                            echo '<div id="">'.$text['Step_text'].($key+1).' '. $step['step_name'] .' | <span>'.$step['step_targettorque'].'-Nm| '.$text['Hi_text'].' '.$step['step_hightorque'].' | '.$text['Lo_text'].' '.$step['step_lowtorque'].'</span></div>';
                                         }
                                     }
                                 }
@@ -686,6 +686,8 @@ function new_task() {
 
         document.getElementById('message').checked = true
         document.getElementById('message').disabled = true
+        //message 超時 預設 3秒
+        document.getElementById('message_timeout').value = 3;
         document.getElementById('Message-setting').style.display = 'block'
     }else{
         document.getElementById('gtcs').disabled = false

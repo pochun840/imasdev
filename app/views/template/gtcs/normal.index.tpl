@@ -1459,14 +1459,14 @@ function cancel_action(){
             downshift_angle_min = 0
 
             conditions = [
-                { id: 'program-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'program-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
                 { id: 'target-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_Torque, max: Tool_Max_Torque },
                 { id: 'offset-value', pattern: /^-?\d{0,6}(\.\d{0,4})?$/, min: offset_min, max: offset_max },
                 { id: 'hi-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: hi_torque_min, max: hi_torque_max },
                 { id: 'Lo-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: lo_torque_min, max: lo_torque_max },
                 { id: 'run-down-speed', pattern: /^\d{1,3}$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
                 { id: 'threshold_torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: torque_threshold_min, max: torque_threshold_max },
-                { id: 'threshold_angle', pattern: /^\d{1,3}$/, min: angle_threshold_min, max: angle_threshold_max },
+                { id: 'threshold_angle', pattern: /^\d{1,5}$/, min: angle_threshold_min, max: angle_threshold_max },
                 { id: 'downshift-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: downshift_torque_min, max: downshift_torque_max },
                 { id: 'downshift-speed', pattern: /^\d{1,5}$/, min: downshift_speed_min, max: downshift_speed_max },
                 { id: 'hi-angle', pattern: /^\d{1,6}$/, min: hi_angle_min, max: hi_angle_max },
@@ -1508,7 +1508,7 @@ function cancel_action(){
             downshift_angle_min = 0
 
             conditions = [
-                { id: 'program-name-a', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'program-name-a', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
                 { id: 'target-angle-a', pattern: /^\d{0,5}$/, min: 0, max: 30600 },
                 { id: 'hi-angle-a', pattern: /^\d{0,5}?$/, min: hi_angle_min, max: hi_angle_max },
                 { id: 'lo-angle-a', pattern: /^\d{0,5}?$/, min: lo_angle_min, max: lo_angle_max },

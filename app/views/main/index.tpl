@@ -217,7 +217,7 @@
             $.ajax({
                 type: "POST",
                 data: { },
-                // dataType: "json",
+                dataType: "json",
                 url: url,
                 beforeSend: function() {
                     $('#overlay').removeClass('hidden');
@@ -225,8 +225,17 @@
             }).done(function(data) { //成功且有回傳值才會執行
                 $('#overlay').addClass('hidden');
                 // console.log(data);
-                alert('success');
+                // alert('success');
+
+                if(data.result == 'success'){
+                    alert('success');
+                }else{
+                    alert(data.error);
+                }
+                
             }).fail(function() {
+                $('#overlay').addClass('hidden');
+                alert('fail');
                 // history.go(0);//失敗就重新整理
             });
         } else {

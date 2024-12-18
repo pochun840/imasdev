@@ -72,6 +72,7 @@
             <input id="modbus_switch" value="1" >
             <input id="tool_status" value="-1" > 
             <input id="last_sn" value="<?php echo $data['last_sn']; ?>" > 
+            <input id="job_repeat" value="<?php echo $data['job_data']['ok_job_stop']; ?>" > 
         </div>
       
 
@@ -293,6 +294,7 @@
                             <label class="col-3 t7" style="margin: 2px 2px"><?php echo $text['barcode_text']; ?>:</label>
                             <div class="col" style="margin: 2px 2px">
                                 <input id="barcode" type="password" class="form-control" placeholder="<?php echo $data['barcode']; ?>" style="font-size: 1.5vmin;height: 28px;" autofocus>
+                                <input id="barcode_mode" value="<?php echo $data['barcode_mode']; ?>" style="display: none;" >
                             </div>
                         </div>
 
@@ -684,6 +686,15 @@
         document.getElementById('tool_task_id').innerHTML = 'Task'+task_id;
         // arm_status
         document.getElementById('arm_status').value = document.getElementById('task_'+task_id+'_enable_arm').value;
+        if(document.getElementById('arm_status').value == 1){ //如果task需要手臂 會先帶入目標座標
+            let target_x = +document.getElementById('task_'+task_id+'_x').value;
+            let target_y = +document.getElementById('task_'+task_id+'_y').value;
+            let bias_x = +document.getElementById('task_'+task_id+'_tolerance').value;
+            let bias_y = +document.getElementById('task_'+task_id+'_tolerance').value;
+            document.getElementById('coordinate').innerHTML = target_x+','+target_y+'['+bias_x+','+bias_y+']';
+        }else{
+            document.getElementById('coordinate').innerHTML = '';
+        }
 
         //socket hole div
         if(document.getElementById('task_'+task_id+'_hole_id').value == '-1'){
@@ -753,19 +764,19 @@
         document.getElementById('tightening_status').innerHTML = '';
         document.getElementById('tightening_repeat').value = ' 0 / 1';
         document.getElementById('tightening_time').value = '0';
-        document.getElementById('target_torque').innerHTML = '<?php echo $data['task_list'][0]['last_step_targettorque']; ?>';
-        document.getElementById('high_torque').value = '<?php echo  $data['task_list'][0]['last_step_hightorque']; ?>';
-        document.getElementById('low_torque').value = '<?php echo  $data['task_list'][0]['last_step_lowtorque']; ?>';
-        document.getElementById('target_angle').innerHTML = '<?php echo  $data['task_list'][0]['last_step_targetangle']; ?>';
-        document.getElementById('high_angle').value = '<?php echo  $data['task_list'][0]['last_step_highangle']; ?>';
-        document.getElementById('low_angle').value = '<?php echo  $data['task_list'][0]['last_step_lowangle']; ?>';
+        document.getElementById('target_torque').innerHTML = '<?php echo @$data['task_list'][0]['last_step_targettorque']; ?>';
+        document.getElementById('high_torque').value = '<?php echo  @@$data['task_list'][0]['last_step_hightorque']; ?>';
+        document.getElementById('low_torque').value = '<?php echo  @$data['task_list'][0]['last_step_lowtorque']; ?>';
+        document.getElementById('target_angle').innerHTML = '<?php echo  @$data['task_list'][0]['last_step_targetangle']; ?>';
+        document.getElementById('high_angle').value = '<?php echo  @$data['task_list'][0]['last_step_highangle']; ?>';
+        document.getElementById('low_angle').value = '<?php echo  @$data['task_list'][0]['last_step_lowangle']; ?>';
         // document.getElementById('screw_info_div').value = '';
         document.getElementById('screw_info').innerHTML = ' - / ' + document.getElementById('stop_on_ng').value;
         // document.getElementById('arm_div').value = '';
         // document.getElementById('coordinate').innerHTML = '';
         // document.getElementById('tool_div').value = '';
         // document.getElementById('tool_name').innerHTML = '';
-        document.getElementById('task_serail').value = '<?php echo $data['task_id'].'  /  '.$data['task_count'] ?>';
+        document.getElementById('task_serail').value = '<?php echo @$data['task_id'].'  /  '.$data['task_count'] ?>';
         // document.getElementById('task_list') = '';
         document.getElementById('task_time').value = 0;
         let task_id = document.getElementById('task_id').value;
@@ -778,19 +789,19 @@
         document.getElementById('Change_Job_Id').value = document.getElementById('job_id').value;
         document.getElementById('socket_hole_number').style.backgroundColor = 'transparent';
 
-        job_singal = '<?php echo $data['job_data']['ok_job']; ?>'; //是否有ok-job的訊號
-        seq_singal  = '<?php echo $data['new_seq_list'][$data['seq_id']]['ok_sequence']; ?>'; //是否有ok-seq的訊號
-        total_seq  = '<?php echo $data['total_seq'];?>'; //seq的數量
-        ct_seq_id  = '<?php echo $data['seq_id'];?>';//當前的seq_id 編號
+        job_singal = '<?php echo @$data['job_data']['ok_job']; ?>'; //是否有ok-job的訊號
+        seq_singal  = '<?php echo @$data['new_seq_list'][$data['seq_id']]['ok_sequence']; ?>'; //是否有ok-seq的訊號
+        total_seq  = '<?php echo @$data['total_seq'];?>'; //seq的數量
+        ct_seq_id  = '<?php echo @$data['seq_id'];?>';//當前的seq_id 編號
 
-        task_message_list = '<?php echo $data['jsonTaskMessageList']; ?>';
-        task_message_list_nn = '<?php echo $data['jsonTaskMessageList']; ?>';
+        task_message_list = '<?php echo @$data['jsonTaskMessageList']; ?>';
+        task_message_list_nn = '<?php echo @$data['jsonTaskMessageList']; ?>';
 
-        ng_auto = '<?php echo $data['ng_auto']; ?>'; 
-        ok_auto = '<?php echo $data['ok_auto'];?>';
+        ng_auto = '<?php echo @$data['ng_auto']; ?>'; 
+        ok_auto = '<?php echo @$data['ok_auto'];?>';
 
-        ok_job_auto = '<?php echo $data['ok_job_auto']; ?>'; 
-        ok_seq_auto = '<?php echo $data['ok_seq_auto'];?>';
+        ok_job_auto = '<?php echo @$data['ok_job_auto']; ?>'; 
+        ok_seq_auto = '<?php echo @$data['ok_seq_auto'];?>';
         
     }
    
@@ -885,7 +896,7 @@
 
 </script>
 
-<!-- operation -->
+<!-- operation fasten result -->
 <script type="text/javascript">
 
     const fasten_status = [
@@ -1139,7 +1150,7 @@
 
 </script>
 
-
+<!-- enable / disable tool -->
 <script>
 
     $(document).ready(async function () {
@@ -1334,18 +1345,18 @@
         data.cc_seq_id = document.getElementById('seq_id').value;
 
         data.cc_task_id = document.getElementById('task_id').value;
-        data.cc_equipment = '<?php echo $data['job_data']['controller_id'];?>';
+        data.cc_equipment = '<?php echo @$data['job_data']['controller_id'];?>';
         data.cc_barcodesn = document.getElementById('barcode').placeholder;
         data.cc_station = '';
         data.cc_operator = '<?php echo $_SESSION['user']; ?>';
 
 
 
-        data.task_count_final = '<?php echo $data['task_count'];?>';
-        data.cc_program_id = '<?php echo $data['task_list'][0]['template_program_id'];?>';
-        data.total_seq_count ='<?php echo $data['total_seq'];?>';
-        data.ok_job ='<?php echo $data['job_data']['ok_job'];?>';
-        data.ok_sequence ='<?php echo $data['ok_sequence'];?>';
+        data.task_count_final = '<?php echo @$data['task_count'];?>';
+        data.cc_program_id = '<?php echo @$data['task_list'][0]['template_program_id'];?>';
+        data.total_seq_count ='<?php echo @$data['total_seq'];?>';
+        data.ok_job ='<?php echo @$data['job_data']['ok_job'];?>';
+        data.ok_sequence ='<?php echo @$data['ok_sequence'];?>';
         data.job_singal  = job_singal;  //OK-JOB 訊號
         data.seq_singal  = seq_singal;   //OK-SEQ 訊號 
         data.total_seq =  total_seq; //需要執行SEQ的數量
@@ -1399,11 +1410,11 @@
 
 
 
-        data.task_count_final = '<?php echo $data['task_count'];?>';
-        data.cc_program_id = '<?php echo $data['task_list'][0]['template_program_id'];?>';
-        data.total_seq_count ='<?php echo $data['total_seq'];?>';
-        data.ok_job ='<?php echo $data['job_data']['ok_job'];?>';
-        data.ok_sequence ='<?php echo $data['ok_sequence'];?>';
+        data.task_count_final = '<?php echo @$data['task_count'];?>';
+        data.cc_program_id = '<?php echo @$data['task_list'][0]['template_program_id'];?>';
+        data.total_seq_count ='<?php echo @$data['total_seq'];?>';
+        data.ok_job ='<?php echo @$data['job_data']['ok_job'];?>';
+        data.ok_sequence ='<?php echo @$data['ok_sequence'];?>';
         data.job_singal  = job_singal;  //OK-JOB 訊號
         data.seq_singal  = seq_singal;   //OK-SEQ 訊號 
         data.total_seq =  total_seq; //需要執行SEQ的數量
@@ -1617,7 +1628,7 @@
     {
         clearTimeout();
         document.getElementById('VirtualMessage').style.display = 'none';
-        force_switch_tool(1);
+        // force_switch_tool(1);
     }
 
     function toggleIdentityVerify()
@@ -1972,7 +1983,7 @@
         //顯示最終鎖附扭力/角度
         document.getElementById('target_torque2').innerHTML = data.fasten_torque;
         document.getElementById('target_angle2').innerHTML = data.fasten_angle;
-        document.getElementById('error1').innerHTML = 'Error : '
+        document.getElementById('error1').innerHTML = 'Error : ' + error_message[data.error_message].status
         document.getElementById('error2').innerHTML = 'Error : '
         if (data.step_targettype == 1) { // target = angle
             document.getElementById('high_torque').value = data.step_hightorque;
@@ -2059,11 +2070,11 @@
         data.cc_station = '';
         data.cc_operator = '<?php echo $_SESSION['user']; ?>';
 
-        data.task_count_final = '<?php echo $data['task_count'];?>';
-        data.cc_program_id = '<?php echo $data['task_list'][0]['template_program_id'];?>';
-        data.total_seq_count ='<?php echo $data['total_seq'];?>';
-        data.ok_job ='<?php echo $data['job_data']['ok_job'];?>';
-        data.ok_sequence ='<?php echo $data['ok_sequence'];?>';
+        data.task_count_final = '<?php echo @$data['task_count'];?>';
+        data.cc_program_id = '<?php echo @$data['task_list'][0]['template_program_id'];?>';
+        data.total_seq_count ='<?php echo @$data['total_seq'];?>';
+        data.ok_job ='<?php echo @$data['job_data']['ok_job'];?>';
+        data.ok_sequence ='<?php echo @$data['ok_sequence'];?>';
         data.job_singal  = job_singal;  //OK-JOB 訊號
         data.seq_singal  = seq_singal;   //OK-SEQ 訊號 
         data.total_seq =  total_seq; //需要執行SEQ的數量
@@ -2243,22 +2254,56 @@
         }
 
 
+        //計算time_dii，message時間差，避免語音還沒結束就被切job
+        let task_message = await getTaskMessage(task_id);
+        let time_diff = 1500; //預設等待1.5秒
+        if (task_message != false) {
+            if (task_message.timeout != 0) {//如果是0秒直接跳過
+                time_diff = 2 - task_message.timeout;
+                time_diff = time_diff * 1000; // 轉換為毫秒
+            }
+            if (task_message.timeout > 2) {//如果超過2秒直接跳過
+                time_diff = 50;
+            }
+        }
+
+
         if(task_id == task_count && final_seq){//最後一個task && 最後一個seq
             // 鎖起子
             // 判斷是否有 job repeat
+            // 要再判斷是否由barcode進入
+            if(document.getElementById('job_repeat').value == 1 && document.getElementById("barcode").placeholder == '' 
+                && document.getElementById("barcode_mode").value != '1'){// job repeat on
+                setTimeout(() => {
+                    change_job(1);
+                    return 0;
+                }, time_diff);
+            }
+            document.cookie = "barcode_mode=1; max-age=-1";
             return 0;
         }else if(task_id == task_count){//非最後一個seq, 切seq
             //如果是OK-SEQ 且 message timeout < 3
-            let task_message = await getTaskMessage(task_id);
-            let time_diff = 1500;
-            if (task_message != false) {
-                if (task_message.timeout != 0) {//如果是0秒直接跳過
-                    time_diff = 2 - task_message.timeout;
-                    time_diff = time_diff * 1000; // 轉換為毫秒
-                }
-                if (task_message.timeout > 2) {//如果超過2秒直接跳過
-                    time_diff = 50;
-                }
+            // let task_message = await getTaskMessage(task_id);
+            // let time_diff = 1500;
+            // if (task_message != false) {
+            //     if (task_message.timeout != 0) {//如果是0秒直接跳過
+            //         time_diff = 2 - task_message.timeout;
+            //         time_diff = time_diff * 1000; // 轉換為毫秒
+            //     }
+            //     if (task_message.timeout > 2) {//如果超過2秒直接跳過
+            //         time_diff = 50;
+            //     }
+            // }
+
+            //如果是 barcode_mode == 0，就不切換下一個seq
+            if (document.getElementById('barcode_mode').value === '0') {
+                //要加鎖起子
+                return 0;
+            }
+
+            if (document.getElementById('barcode_mode').value === '1') {
+                //繼續記錄barcode_mode cookie
+                document.cookie = "barcode_mode=1; max-age=60";
             }
 
             setTimeout(() => {

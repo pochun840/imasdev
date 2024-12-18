@@ -15,4 +15,4 @@ define('FTP_USER', 'iams');
 define('FTP_PASSWORD', 'Kilewsiams');
 
 // IO盒IP
-define('IOBOX_IP', '192.168.111.75'); // 192.168.1.75
+define('IOBOX_IP', '192.168.1.75'); // 192.168.1.75

@@ -328,6 +328,8 @@ class Sequences extends Controller
                         $new_temp_normalstep[$k_cc]['step_downshift_mode'] = $v_cc['step_downshift_mode'];
                         $new_temp_normalstep[$k_cc]['step_downshift_angle'] = $v_cc['step_downshift_angle'];
                         $new_temp_normalstep[$k_cc]['gtcs_job_id'] = $v_cc['gtcs_job_id'];   
+                        $new_temp_normalstep[$k_cc]['gtcs_seq_id'] = $v_cc['gtcs_seq_id'];
+                        $new_temp_normalstep[$k_cc]['tool_name'] = $v_cc['tool_name'];
                     }
 
                     $count = $this->ProductModel->cover_data($new_temp_normalstep,$table_name);
@@ -363,6 +365,8 @@ class Sequences extends Controller
                             $new_temp_advancedstep[$k_cc]['step_angle_mode'] = $v_cc['step_angle_mode'];
                             $new_temp_advancedstep[$k_cc]['step_slope'] = $v_cc['step_slope'];
                             $new_temp_advancedstep[$k_cc]['gtcs_job_id'] = $v_cc['gtcs_job_id'];
+                            $new_temp_advancedstep[$k_cc]['gtcs_seq_id'] = $v_cc['gtcs_seq_id'];
+                            $new_temp_advancedstep[$k_cc]['tool_name'] = $v_cc['tool_name'];
 
                         }
                         $count = $this->ProductModel->cover_data($new_temp_advancedstep,$table_name);
@@ -387,6 +391,21 @@ class Sequences extends Controller
                     }
                     $count = $this->SequenceModel->cover_data($new_temp_task_message);
                 }
+
+                //copy socket tray
+                $res_socket = $this->SequenceModel->check_task_socket_by_id($from_job_id,$from_seq_id);
+                if(!empty($res_socket)){
+
+                    foreach($res_socket as $k_m =>$v_m){
+                        $new_temp_task_socket[$k_m]['job_id']  = $v_m['job_id'];
+                        $new_temp_task_socket[$k_m]['seq_id']  = $to_seq_id;
+                        $new_temp_task_socket[$k_m]['task_id'] = $v_m['task_id'];
+                        $new_temp_task_socket[$k_m]['hole_id']  = $v_m['hole_id'];
+                       
+                    }
+                    $this->SequenceModel->copy_socket_tray($new_temp_task_socket);
+                }
+                
             }
             echo json_encode(array('error' => ''));
             exit();

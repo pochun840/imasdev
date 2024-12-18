@@ -320,7 +320,7 @@
                                 </div>
                             </form>
 
-                            <input id="upload_img" type="file" onchange="openFile(event)" accept="image/gif, image/jpeg, image/png">
+                            <input id="upload_img" type="file" onchange="openFile(event)" accept="image/png">
                             <div class="box tailoring-box">
                                 <img id="output" height="300" style="display:none">
                             </div>
@@ -375,7 +375,7 @@
                             <div class="row">
                                 <div for="to_job_name" class="col-4 t1"><?php echo $text['Job_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
-                                    <input type="text" class="form-control" id="to_job_name" >
+                                    <input type="text" class="form-control" id="to_job_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')"  >
                                 </div>
                             </div>
                         </div>
@@ -991,8 +991,8 @@ function updateCircleSize(value)
         });
 
         //
-        history.go(0);
-        document.getElementById('copyjob').style.display = 'none';
+        // history.go(0);
+        // document.getElementById('copyjob').style.display = 'none';
     }
 
     function delete_job() {
@@ -1230,8 +1230,8 @@ function updateCircleSize(value)
                 matchToInput.value = cells[7].innerText;
 
                 // Lấy giá trị Job ID và Seq ID từ dòng được click và đặt lại cho các select tương ứng
-                var jobID = cells[0].innerText;
-                var seqID = cells[2].innerText;
+                var jobID = cells[1].innerText;
+                var seqID = cells[3].innerText;
 
                 // Tìm option có giá trị bằng Job ID và Seq ID và đặt làm selected
                 for (var j = 0; j < jobIDSelect.options.length; j++) {
@@ -1240,8 +1240,10 @@ function updateCircleSize(value)
                         break;
                     }
                 }
+                console.log(cells)
+                console.log(jobID)
+                console.log(seqID)
                 GetSeqList(seqID);
-
             });
         }
     }
@@ -1343,7 +1345,7 @@ addMessage();
         let Tool_Min_RPM = document.getElementById('tool_min_rpm').value;
 
         let conditions = [
-                { id: 'job_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'job_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
                 { id: 'reverse_rpm', pattern: /^\d{0,5}(\.\d{0,2})?$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
                 { id: 'reverse_Force', pattern: /^\d{0,5}(\.\d{0,2})??$/, min: 1, max: 110 },
                 { id: 'threshold_torque', pattern: /^\d{0,5}(\.\d{0,2})??$/, min: 0, max: 99999 },

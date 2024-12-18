@@ -139,8 +139,8 @@ class Operations extends Controller
 
                     //判斷如果是target type = torque，是否要監控角度，有的話才顯示Hi A Lo A
                     if ($step['step_targettype'] == 2 && $step['step_monitoringangle'] == 0) {
-                        $task_list[$key]['program'][$key]['step_highangle'] = '-';
-                        $task_list[$key]['program'][$key]['step_lowangle'] = '-';
+                        $task_list[$key]['program'][$key2]['step_highangle'] = '-';
+                        $task_list[$key]['program'][$key2]['step_lowangle'] = '-';
                     }
                 }
             }else{
@@ -254,12 +254,15 @@ class Operations extends Controller
         }else{
             $temp_seq = '';
         }
-      
-
-        // $barcode = @$_SESSION['barcode'];
+        
+        //帶入barcode
         $barcode = @$_COOKIE['barcode'];
-        // unset($_SESSION['barcode']);
+        $barcode_mode = @$_COOKIE['barcode_mode'];
+        // var_dump($barcode_mode);
         setcookie('barcode', '', time() - 3600, '/');
+        setcookie('barcode_mode', '', time() - 3600, '/');
+        setcookie("barcode_mode", "", time() - 3600);
+        //判斷barcode是否為seq1 (barcode start)
 
         $last_sn = $this->GetControllerLastSn();
    
@@ -330,6 +333,7 @@ class Operations extends Controller
             'task_count' => $task_count,
             'button_auth' => $button_auth,
             'barcode' => $barcode,
+            'barcode_mode' => $barcode_mode,
             'controller_ip' => $controller_ip,
             'max_seq_id' => @$total_seq[array_key_last($total_seq)]['seq_id'],
             'seq_count' => $total_seq_count,
@@ -954,9 +958,77 @@ class Operations extends Controller
 
         $data = $this->OperationModel->BarcodeMatchCheck($barcode);
 
-        if($data){
+        if(!$data){//找不到就直接return
+            echo json_encode(array('result' => 'no'));
+            exit();
+        }
+
+        //加入barcode判斷機制，job barcdoe start , seq barcode start .... blablabla
+        //1. 確認 job barcode enable
+        //2. 確認 seq barcode enable
+        //3. 確認 seq enable
+        //4. BS之類的條件判斷
+        $job_data = $this->ProductModel->getJobById($data['barcode_selected_job']);
+        $seq_data = $this->SequenceModel->GetSeqById($data['barcode_selected_job'],$data['barcode_selected_seq']);
+        $job_barcode_start = $job_data['barcode_start'];
+        $seq_barcode_start = $seq_data['barcode_start'];
+        $seq_enable = $seq_data['sequence_enable'];
+
+        // seq_id == 1 && seq_barcode_start == 1 && seq_enable == 1  // 切換到指定seq，結束會自動切換seq直到執行完 整個job，結束後不會自動repeat
+        // seq_id == 1 && seq_barcode_start == 1 && seq_enable == 0  // 切換到最近enable的seq_id，結束後不會自動repeat
+        // seq_id == 1 && seq_barcode_start == 0 && seq_enable == 1  // 不可切換
+        // seq_id == 1 && seq_barcode_start == 0 && seq_enable == 0  // 不可切換
+
+        // seq_id != 1 && seq_barcode_start == 1 && seq_enable == 1  // 切換到指定seq，結束後不會自動切seq
+        // seq_id != 1 && seq_barcode_start == 1 && seq_enable == 0  // 不可切換
+        // seq_id != 1 && seq_barcode_start == 0 && seq_enable == 1  // 不可切換
+        // seq_id != 1 && seq_barcode_start == 0 && seq_enable == 0  // 不可切換
+
+        //barcode_mode: 1:會切seq直到執行完job
+        //barcode_mode: 0:只會執行完該seq就停止
+        $barcode_mode = -1;
+
+        if($seq_data['seq_id'] == 1 && $seq_barcode_start == 1 && $seq_enable==1 && $job_barcode_start == 1){
+            $barcode_mode = 1;
+        }
+        if($seq_data['seq_id'] == 1 && $seq_barcode_start == 1 && $seq_enable==0 && $job_barcode_start == 1){
+            $barcode_mode = 1;
+            //找出最近的enable的seq
+            $enable_seq_list = $this->OperationModel->GetSeqEnable($data['barcode_selected_job']);
+            for ($i=1; $i < count($enable_seq_list); $i++) { 
+                if($enable_seq_list[$i]['sequence_enable'] == 1){
+                    $data['barcode_selected_seq'] = $enable_seq_list[$i]['seq_id'];
+                    break;
+                }
+            }
+        }
+        if($seq_data['seq_id'] == 1 && $seq_barcode_start == 0 && $seq_enable==1 ){
+            
+        }
+        if($seq_data['seq_id'] == 1 && $seq_barcode_start == 0 && $seq_enable==0 ){
+            
+        }
+        if($seq_data['seq_id'] != 1 && $seq_barcode_start == 1 && $seq_enable==1 && $job_barcode_start == 1){
+            $barcode_mode = 0;
+        }
+        if($seq_data['seq_id'] != 1 && $seq_barcode_start == 1 && $seq_enable==0 ){
+            
+        }
+        if($seq_data['seq_id'] != 1 && $seq_barcode_start == 0 && $seq_enable==1 ){
+            
+        }
+        if($seq_data['seq_id'] != 1 && $seq_barcode_start == 0 && $seq_enable==0 ){
+            
+        }
+
+        // var_dump($job_data);
+        // var_dump($seq_data);
+        // var_dump($barcode_mode);
+
+        if($data && $barcode_mode >= 0){
             // $_SESSION['barcode'] = $barcode;
             setcookie('barcode', $barcode, time() + 60, '/');
+            setcookie('barcode_mode', $barcode_mode, time() + 60, '/');
             $this->OperationModel->SetConfigValue('current_job_id',$data['barcode_selected_job']);
             $this->OperationModel->SetConfigValue('current_seq_id',$data['barcode_selected_seq']);
             $this->OperationModel->SetConfigValue('current_task_id',1);

@@ -125,11 +125,21 @@ class Settings extends Controller
         //4.將中控設定寫入db，同時更新對應的資料task id與job id
         //5.將設定完成的db透過ftp的方式匯入GTCS的FTP資料夾
         //6.使用modbus指令 讓GTCS更新DB
-        $this->FTP_download();//下載並備份GTCS的db
-        $this->clearSQLiteTables();//清空GTCS的db
-        $this->CCToGTCS($device_id,$device_name);//將中控的設定寫入GTCS db
-        $this->FTP_upload();//上傳寫入完成的GTCS db
-        $this->ImportDB();//下modbus讓GTCS匯入db
+        try {
+            $this->FTP_download();//下載並備份GTCS的db
+            $this->clearSQLiteTables();//清空GTCS的db
+            $this->CCToGTCS($device_id,$device_name);//將中控的設定寫入GTCS db
+            $this->FTP_upload();//上傳寫入完成的GTCS db
+            $this->ImportDB();//下modbus讓GTCS匯入db
+
+            echo json_encode(array('result' => 'success'));
+            exit();
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+            echo json_encode( array('result' => 'error','error' => $e->getMessage() ) );
+            exit();
+        }
+        
     }
 
     public function FTP_download($value='')
@@ -143,7 +153,13 @@ class Settings extends Controller
         $handle = fopen($local_file, 'w');
 
         ### 連接的 FTP 伺服器是 localhost
-        $conn_id = ftp_connect($controller_ip);
+        // $conn_id = ftp_connect($controller_ip);
+        $conn_id = ftp_connect($controller_ip); 
+        if(!$conn_id){
+            echo json_encode( array('result' => 'error','error' => "Couldn't connect to $controller_ip" ) );
+            exit();
+        }
+
 
         ### 登入 FTP, 帳號是 USERNAME, 密碼是 PASSWORD
         $USERNAME = FTP_USER;
@@ -160,12 +176,12 @@ class Settings extends Controller
 
 
         if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
-            echo "下載成功, 並儲存到 $local_file\n";
+            // echo "下載成功, 並儲存到 $local_file\n";
             if ( copy($local_file,$local_file.'666') ) {
-                echo "複製成功, 並儲存到 $local_file SS \n";
+                // echo "複製成功, 並儲存到 $local_file SS \n";
             }
         } else {
-            echo "下載 $remote_file 到 $local_file 失敗\n";
+            // echo "下載 $remote_file 到 $local_file 失敗\n";
         }
 
         ftp_close($conn_id);
@@ -205,9 +221,9 @@ class Settings extends Controller
         // 上传文件到 FTP
         $upload = ftp_fput($conn, $remote_file, $handle, FTP_BINARY); // FTP_ASCII 或 FTP_BINARY
         if (!$upload) {
-            echo 'Could not upload file';
+            // echo 'Could not upload file';
         } else {
-            echo 'File uploaded successfully';
+            // echo 'File uploaded successfully';
         }
 
         // 关闭连接和文件句柄
@@ -231,7 +247,7 @@ class Settings extends Controller
             foreach ($tables as $table) {
                 $query = "DELETE FROM $table";
                 $pdo->exec($query);
-                echo "Table $table cleared successfully<br>";
+                // echo "Table $table cleared successfully<br>";
             }
 
             // 关闭连接
@@ -400,8 +416,8 @@ class Settings extends Controller
             // $this->logMessage('modbus status:'.$modbus->status);
             // $this->logMessage('Import config end');
             // echo json_encode(array('error' => ''));
-            echo $modbus->status;
-            exit();
+            // echo $modbus->status;
+            // exit();
 
         } catch (Exception $e) {
             // Print error information if any
@@ -414,7 +430,7 @@ class Settings extends Controller
             // $this->logMessage('Import config end');
             // echo json_encode(array('error' => 'modbus error'));
             // echo $modbus->status;
-            exit();
+            // exit();
         }
     }
 

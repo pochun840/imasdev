@@ -239,7 +239,7 @@
                             <div class="row">
                                 <div for="add_picture" class="col-4 t1"><?php echo $text['Add_Picture_text']; ?> :</div>
                                 <div class=" col-1 t2 custom-file">
-                                    <input type="file" name="image" id="custom-file" class="input-file" onchange="displayImage()" accept="image/gif, image/jpeg, image/png">
+                                    <input type="file" name="image" id="custom-file" class="input-file" onchange="displayImage()" accept="image/png">
                                     <label for="custom-file" class="file-label" style="height: 30px; width: 30px; ">&#10010;</label>
                                 </div>
 
@@ -338,7 +338,7 @@
                             <div class="row">
                                 <div for="to_seq_name" class="col-4 t1"><?php echo $text['Seq_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
-                                    <input type="text" class="form-control" id="to_seq_name">
+                                    <input type="text" class="form-control" id="to_seq_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')">
                                 </div>
                             </div>
                         </div>
@@ -470,7 +470,7 @@ function displayImage()
         //帶入預設值
         document.getElementById("seq_id").value = seq_id;
         document.getElementById("seq_name").value = '';
-        //document.getElementById("barcode_enable").checked = 0;
+        document.getElementById("barcode_enable").checked = 1; //預設開啟barcode start
         document.getElementById("stop_on_NG").value = 0;
         // document.getElementById('seq_enable').checked = 1;
         document.getElementById('ok_seq').checked = 1;
@@ -899,7 +899,7 @@ addMessage();
     function input_check(argument) {
 
         let conditions = [
-                { id: 'seq_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-\s]+$/, min: null, max: null },
+                { id: 'seq_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
                 { id: 'timeout', pattern: /^\d{0,4}(\.\d{0,1})?$/, min: 0, max: 20 },
             ];
 

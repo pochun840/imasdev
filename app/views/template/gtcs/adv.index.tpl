@@ -220,7 +220,7 @@
                                         <div class="row t1">
                                             <div class="col-5 t1" for=""><?php echo $text['Program_Name_text']; ?> :</div>
                                             <div class="col-5 t2">
-                                                <input type="text" id="program-name" class="form-control input-ms" value="Program-1" maxlength="">
+                                                <input type="text" id="program-name" class="form-control input-ms" value="Program-1" maxlength="" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')">
                                             </div>
                                         </div>
                                         <div class="row t1">
@@ -329,7 +329,7 @@
                             <div class="row">
                                 <div for="to_pro_name" class="col-5 t1"><?php echo $text['Program_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
-                                    <input type="text" class="form-control" id="to_Program_name">
+                                    <input type="text" class="form-control" id="to_Program_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')">
                                 </div>
                             </div>
                         </div>

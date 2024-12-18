@@ -30,7 +30,14 @@ class Operation{
     // 設定config table的設定值
     public function SetConfigValue($config_name,$value)
     {
-        $sql = 'UPDATE system_config SET value = :value WHERE config_name = :config_name ';
+        $exist = $this->CheckConfigValue($config_name);
+        if($exist){
+            $sql = 'UPDATE system_config SET value = :value WHERE config_name = :config_name ';
+        }else{
+            $sql = "INSERT INTO `system_config` ('config_name','value' ) VALUES (:config_name, :value )";
+        }
+
+        // $sql = 'UPDATE system_config SET value = :value WHERE config_name = :config_name ';
         $statement = $this->db->prepare($sql);
         $statement->bindValue(':value', $value);
         $statement->bindValue(':config_name', $config_name);
@@ -38,6 +45,23 @@ class Operation{
         $results = $statement->fetch(PDO::FETCH_ASSOC);
 
         return $results;
+    }
+
+    // 檢查config table的設定值
+    public function CheckConfigValue($config_name)
+    {
+        $sql = "SELECT count(*) as count FROM `system_config` WHERE config_name = :config_name";
+        $statement = $this->db->prepare($sql);
+        $statement->bindValue(':config_name', $config_name);
+        $results = $statement->execute();
+        $rows = $statement->fetch();
+
+        if ($rows['count'] > 0) {
+            return true; // job event已存在
+        }else{
+            return false; // job event不存在
+        }
+
     }
 
     // 取得所有enable的Sequence

@@ -26,8 +26,12 @@
             <i style="width:auto; height:40px" class="fa fa-bell" onclick="ClickNotification()"></i>
             <span id="messageCount" class="badge"></span>
         </div>
-        <div class="personnel"><i style="width:auto; height: 40px;font-size: 26px" class="fa fa-user"></i> Esther</div>
+        <div class="personnel"><i style="width:auto; height: 40px;font-size: 26px" class="fa fa-user"></i> <?php echo $_SESSION['user']; ?></div>
     </header>
+
+    <div style="display:none;">
+        <input id="monitor_mode_value" value="<?php echo $data['monitor_mode']; ?>">
+    </div>
 
     <!-- Notification -->
     <div id="messageBox" class="messageBox" style="display: none;">
@@ -97,18 +101,30 @@
     <div class="main-content">
         <div class="center-content">
             <div class="wrapper">
-                <div class="navbutton active" onclick="handleButtonClick(this, 'monitor')">
-                    <span data-content="<?php echo $text['main_monitor_text'];?>" onclick="showContent('monitor')"></span>
-                    <?php echo $text['main_monitor_text'];?>
-                </div>
-                <div class="navbutton" onclick="handleButtonClick(this, 'station_setting')">
-                    <span data-content="<?php echo $text['station_setting_text'];?>" onclick="showContent('station_setting')"></span>
-                    <?php echo $text['station_setting_text'];?>
-                </div>
-                <div class="navbutton" onclick="handleButtonClick(this, 'station_rule')">
-                    <span data-content="<?php echo $text['station_rule_text'];?>" onclick="showContent('station_rule')"></span>Station Rule
-                    <?php echo $text['station_rule_text'];?>
-                </div>
+
+                <?php if($data['monitor_mode'] == 2){ ?>
+                    <div class="navbutton active" onclick="handleButtonClick(this, 'monitor')">
+                        <span data-content="<?php echo $text['main_monitor_text'];?>" onclick="showContent('monitor')"></span>
+                        <?php echo $text['main_monitor_text'];?>
+                    </div>
+                    <div class="navbutton" onclick="handleButtonClick(this, 'station_setting')">
+                        <span data-content="<?php echo $text['station_setting_text'];?>" onclick="showContent('station_setting')"></span>
+                        <?php echo $text['station_setting_text'];?>
+                    </div>
+                    <div class="navbutton " onclick="handleButtonClick(this, 'station_rule')">
+                        <span data-content="<?php echo $text['station_rule_text'];?>" onclick="showContent('station_rule')"></span>Station Rule
+                        <?php echo $text['station_rule_text'];?>
+                    </div>
+                <?php }else{ ?>
+                    <div class="navbutton active" onclick="handleButtonClick(this, 'station_rule')">
+                        <span data-content="<?php echo $text['station_rule_text'];?>" onclick="showContent('station_rule')"></span>Station Rule
+                        <?php echo $text['station_rule_text'];?>
+                    </div>
+                <?php } ?>
+
+
+
+                
             </div>
 
             <?php
@@ -146,6 +162,13 @@
         // Call highlight_row function with table id
         highlight_row('table-monitor');
         highlight_row('table-Station');
+
+        if (document.getElementById('monitor_mode_value').value == 2){ // 1:client, 2:server
+            showContent('monitor')
+        }else{
+            showContent('station_rule')
+        }
+        
     });
 
     function highlight_row(tableId)

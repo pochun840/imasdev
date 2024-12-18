@@ -402,9 +402,46 @@ class Sequence{
         $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
     
-    
+        return $rows; 
+    }
+
+    //Get socket tray
+    public function check_task_socket_by_id($from_job_id, $from_seq_id) {
+   
+        $sql = "SELECT * FROM `task_socket_tray` WHERE job_id = :job_id AND seq_id = :seq_id order by task_id";
+        $statement = $this->db->prepare($sql);
+        $statement->bindValue(':job_id', $from_job_id);
+        $statement->bindValue(':seq_id', $from_seq_id);
+        
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
     
         return $rows; 
+    }
+
+    //複製socket tray
+    public function copy_socket_tray($new_temp_task_socket)
+    {
+        $sql = "INSERT INTO `task_socket_tray` (job_id, seq_id, task_id, hole_id)
+                VALUES (:job_id, :seq_id, :task_id, :hole_id)";
+        
+        $statement = $this->db->prepare($sql);
+
+        foreach ($new_temp_task_socket as $task_socekt) {
+  
+            if (isset($task_socekt['job_id'], $task_socekt['seq_id'], $task_socekt['task_id'], $task_socekt['hole_id'])) {
+              
+                $statement->bindValue(':job_id', $task_socekt['job_id']);
+                $statement->bindValue(':seq_id', $task_socekt['seq_id']);
+                $statement->bindValue(':task_id', $task_socekt['task_id']);
+                $statement->bindValue(':hole_id', $task_socekt['hole_id']);
+
+                $results = $statement->execute();
+    
+            } 
+        }
+
+        return $results;
     }
     
 

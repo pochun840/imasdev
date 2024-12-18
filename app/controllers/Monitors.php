@@ -43,7 +43,7 @@ class Monitors extends Controller
             'div_rule' => $div_rule,
             'monitor_rows' => $monitor_rows,
             'monitor_server_ip' => $monitor_server_ip['value'],
-            'monitor_mode' => $monitor_mode['value'],
+            'monitor_mode' => @$monitor_mode['value'],
         ];
         $this->view('monitor/index', $data);
 
@@ -170,6 +170,7 @@ class Monitors extends Controller
         }
 
         $monitor_mode = $this->OperationModel->GetConfigValue('monitor_mode'); // 1: client, 2:server
+        $monitor_mode = $monitor_mode['value'];
 
         $message = '';
         $port = 3000;// monitor server websocket port
@@ -186,6 +187,7 @@ class Monitors extends Controller
                 }
 
                 $nodeScript = dirname(dirname(dirname(__FILE__))).'/monitor_server.js';
+                // var_dump($nodeScript);
                 // 构建命令行
                 $cmd = "node $nodeScript";
                 // 打开一个管道以非阻塞模式执行命令
@@ -200,7 +202,7 @@ class Monitors extends Controller
                 exec("taskkill /F /PID $pid", $output, $result);
                 sleep(1);
             }
-            $nodeScript = dirname(dirname(dirname(__FILE__))).'\monitor_client.js';
+            $nodeScript = dirname(dirname(dirname(__FILE__))).'/monitor_client.js';
             // 构建命令行
             $cmd = "node $nodeScript";
             // 打开一个管道以非阻塞模式执行命令
