@@ -317,6 +317,18 @@ class Historical{
         return  $res;
     }
 
+    
+    public function get_info_data_by_sid($index){
+
+        $sql = "SELECT * FROM `fasten_data` WHERE   system_sn = ? ";
+        $statement = $this->db->prepare($sql);
+        $statement->execute([$index]);
+        $res = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return  $res;
+    }
+
+
     public function get_job_id(){
         
         $sql = "SELECT * FROM `job` WHERE job_id != '' ";
@@ -542,19 +554,20 @@ class Historical{
     }
 
 
-    public function get_result($checked_sn_in, $id, $chat_mode) {
+    public function get_result($cleaned_str, $chat_mode) {
         $file_arr = array('_0p5', '_1p0', '_2p0');
-        $no_arr = explode(',', $id);
+        $no_arr = explode(',', $cleaned_str);
         $csv_array = array();
         $found_count = 0; 
         $missing_files = []; 
+
     
         foreach ($no_arr as $key => $val) {
             if (!empty($val)) {
                 $file_found = false; 
                 foreach ($file_arr as $file_suffix) {
                     $infile = '../public/data/DATALOG_' . str_pad($val, 10, "0", STR_PAD_LEFT) . $file_suffix . ".csv";
-                   
+                    
                     if (file_exists($infile)) {
                         $csvdata = file_get_contents($infile);
                         $rows = explode("\n", $csvdata);
@@ -568,13 +581,12 @@ class Historical{
                 }
             }
         }
-    
-        if ($found_count < count($no_arr)) {
 
+        if ($found_count < count($no_arr)) {
             $missing_ids = implode(', ', $missing_files);
-            echo "<script>alert('找不到檔案編號: $missing_ids');</script>";
+            // Handle missing files if needed
         }
-    
+
         if (is_null($csv_array)) {
             $csv_array = null;
         } else {
@@ -583,11 +595,15 @@ class Historical{
             } else {
                 $position = null;
             }
-    
+        
             foreach ($csv_array as &$innerarray) {
                 foreach ($innerarray as $key1 => $va) {
+                    // Add a check to ensure we do not delete data accidentally
                     if (!isset($va[1]) || empty($va[1])) {
-                        unset($innerarray[$key1]);
+                        // Only unset if both va[1] and va[2] are empty
+                        if (empty($va[2])) {
+                            unset($innerarray[$key1]);
+                        }
                     } elseif ($position === 5 || $position === 6) {
                         $innerarray['torque'][$key1] = $va[1];
                         $innerarray['angle'][$key1] = $va[2];
@@ -597,8 +613,8 @@ class Historical{
                 }
             }
         }
-    
-        return $csv_array;  
+
+        return  $csv_array;
     }
 
 

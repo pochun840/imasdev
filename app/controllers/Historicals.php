@@ -413,6 +413,11 @@ class Historicals extends Controller
             $csvdata_arr = $this->Historicals_newModel->get_info($no, $chat_mode);
 
 
+
+            #依照 job_id 判斷  advancedstep or  normalstep
+            $data['job_type'] = intval($data['job_info'][0]['job_id']) > 100 ? "advancedstep" : "normalstep";
+
+            
             if(!empty($csvdata_arr)){
 
                 #尋牙轉速
@@ -426,6 +431,10 @@ class Historicals extends Controller
                 $data['chart_info']['x_title'] = $titles['x_title'];
                 $data['chart_info']['y_title'] = $titles['y_title'];
                 $data['chart_info']['chat_mode'] = $chat_mode;
+
+
+
+                //
             }
             #狀態列表
             $status_arr = $this->Historicals_newModel->status_code_change();
@@ -439,7 +448,6 @@ class Historicals extends Controller
             $data['path'] = __FUNCTION__;
 
             $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
-
             $this->view('historicals/index', $data);
     
         }
@@ -534,7 +542,7 @@ class Historicals extends Controller
 
 
             // 取得曲線圖的資料
-            $final_label = $this->Historicals_newModel->get_result($checked_sn_in, $id, $data['chat_mode']);
+            $final_label = $this->Historicals_newModel->get_result($cleaned_str, $data['chat_mode']);
             
             if (empty($final_label)) {
                 $final_label = null;
@@ -789,17 +797,50 @@ class Historicals extends Controller
 
     #nextinfo 整理曲線圖
     private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle){
+
+        //
+
+        $temp_info = $this->Historicals_newModel->get_info_data_by_sid($no);
+        $threshold_torque_temp  = floatval($temp_info[0]['threshold_torque']);
+        $downshift_torque_temp  = floatval($temp_info[0]['downshift_torque']);
+        $threshold_angle_temp   = intval($temp_info[0]['step_threshold_angle']);
+        
         $data = array();
         
         if($chat_mode == "5"){
     
             if(!empty($csvdata_arr['angle'])){
 
+                //$data['x_val'] = json_encode($this->filterArray($csvdata_arr['angle'], "0", 'string'));
+                //$data['y_val'] = json_encode($this->filterArray($csvdata_arr['torque'], '0.0', 'float'));
+
+                $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($no, 3); //angle
+                $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($no, 4); //speed
+
+                $last_key_1 = $this->getLastZeroKey($y_val_angle);
+                $last_key_2 = $this->find_last_key($y_val_angle, $y_val_speed);
+
+                if(!empty($last_key_1)){
+                    $data['last_key_1'] = $last_key_1; 
+                }else{
+                    $data['last_key_1'] = '';
+                }
+
+                if(!empty($last_key_2)){
+                    $data['last_key_2'] = $last_key_2; 
+                }else{
+                    $data['last_key_2'] = '';
+                }
+                
+
+                //
+
+                
                 $data['x_val'] = json_encode($csvdata_arr['angle']);
                 $data['y_val'] = json_encode($csvdata_arr['torque']);
+
                 $data['max'] = max($csvdata_arr['torque']);
                 $data['min'] = min($csvdata_arr['torque']);
-
             }
 
         }else if($chat_mode == "6"){
@@ -858,7 +899,7 @@ class Historicals extends Controller
 
 
             $temp_x_val = array_map(function($value) {
-                //如果匹配到類似 "1.0" 或 "2.0" 等格式，替換成整数
+                //如果匹配到類似 "1.0" 或 "2.0" 等格式，替換成整數
                 if (preg_match('/^(\d+)\.0$/', (string)$value, $matches)) {
                     return (int)$matches[1]; 
                 }
@@ -880,11 +921,7 @@ class Historicals extends Controller
                    
                 } 
 
-            } else{
-                //var_dump($data['x_val']);
-            }
-
-            if (!empty($step_prr_rpm) && !empty($step_prr_angle) && $step_prr_rpm > 0 && $step_prr_angle > 0 && $chat_mode == "2") {
+            }else if (!empty($step_prr_rpm) && !empty($step_prr_angle) && $step_prr_rpm > 0 && $step_prr_angle > 0 && $chat_mode == "2") {
 
                 $last_key = $this->find_last_key($y_val_angle, $y_val_speed);
                 if ($last_key !== null) {
@@ -892,18 +929,79 @@ class Historicals extends Controller
                 }
                 $data['y_val'] = json_encode(array_slice($data['y_val'], $last_key));
               
+            }else if(empty($step_prr_rpm) && empty($step_prr_angle) && $chat_mode =="1"){
+                $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2); //torque
+                
+
+          
+                
+                
+               
+                $data['y_val'] = json_encode($y_val_torque);
+
+            }else if(empty($step_prr_rpm) && empty($step_prr_angle) && $chat_mode =="3"){
+                $y_val_rpm = $this->Historicals_newModel->get_column_values_by_index($no, 4); //rpm
+                $data['y_val'] = json_encode($y_val_rpm);
+
+            }else if(empty($step_prr_rpm) && empty($step_prr_angle) && $chat_mode =="4"){
+                $y_val_power = $this->Historicals_newModel->get_column_values_by_index($no, 5); //power
+                $data['y_val'] = json_encode($y_val_power);
+
             }
+            
         } 
         
         if (is_array($data['y_val'])) {
             $data['y_val'] = json_encode($data['y_val']);
         }
 
-        /*if (is_array($data['y_val_1'])) {
-            $data['y_val_1'] = json_encode($data['y_val_1']);
-        }*/
+        if(!empty($data['y_val_1'])){
+            if (is_array($data['y_val_1'])) {
+                $data['y_val_1'] = json_encode($data['y_val_1']);
+            }
+        }
+        
+        //這是要取得 threshold_torque
+        if($threshold_torque_temp > 0.1 ){
+            if(!empty($y_val_angle)){
+                #用 $y_val_angle 取得 value = 0 的 最後一筆的key值
+                $last_key = $this->getLastZeroKey($y_val_angle);
+                $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2); //torque
+                $data['control_torque'] = $y_val_torque[$last_key];
+                $data['last_key'] = $last_key;
+            }else{
+                $data['control_torque'] = '';
+                $data['last_key'] = '';
+            }
+        }else{
+            $data['control_torque'] = '';
+            $data['last_key'] = '';
+        }
 
-  
+
+        if ($downshift_torque_temp > 0.1) {
+            // 取得與 torque 相關的數據
+            $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2);
+        
+            // 計算範圍
+            $min_value = round($downshift_torque_temp, 3);  // 取小數點後3位
+            $max_value = $min_value + 0.099;
+        
+            // 使用 array_filter() 來獲取符合條件的項目
+            $matching_keys = array_filter(array_keys($y_val_torque), function($key) use ($y_val_torque, $min_value, $max_value) {
+                return $y_val_torque[$key] >= $min_value && $y_val_torque[$key] <= $max_value;
+            });
+        
+            // 檢查是否有匹配的項目，並設置最後的鍵值
+            if (!empty($matching_keys)) {
+                $data['last_key_downshift_torque'] = reset($matching_keys);  // 使用匹配的第一個鍵
+            } else {
+                $data['last_key_downshift_torque'] = '';  // 沒有匹配項目則設為空
+            }
+        } else {
+            $data['last_key_downshift_torque'] = '';  // 當 downshift_torque_temp <= 0.1 時，設為空
+        }
+        
 
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
         return $data;
@@ -921,6 +1019,37 @@ class Historicals extends Controller
         }
 
         return $last_key;
+    }
+
+
+    
+    private function getLastZeroKey($array) {
+        $last_key = -1;
+        foreach (array_reverse($array, true) as $key => $value) {
+            if ($value == 0) {
+                $last_key = $key;
+                break;
+            }
+        }
+        return $last_key;
+    }
+
+
+    private function filterArray($array, $valueToMatch, $valueType = 'float') {
+        $filteredArray = [];
+        $found = false;
+
+        foreach ($array as $value) {
+            if (($valueType == 'float' && $value == $valueToMatch) || ($valueType == 'string' && $value == $valueToMatch)) {
+                if (!$found) {
+                    $filteredArray[] = $value;  
+                    $found = true;
+                }
+            } elseif ($value !== $valueToMatch) {
+                $filteredArray[] = $value;  
+            }
+        }
+        return $filteredArray;
     }
 
 }

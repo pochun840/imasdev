@@ -87,14 +87,7 @@ function NextToCombineData()
         
     });
 
-    //if(checkedValues.length > 2){
-        //alert('最多只能選取2筆鎖附記錄的資料');    
-    //}
 
-    //if(checkedValues.length < 2){
-        // alert('請選擇2筆鎖附記錄的資料');  
-        //alert('請選擇2筆鎖附記錄的資料');  
-    //}
     
     if(checkboxes[0].parentNode.parentNode.cells[12].innerHTML == '0 deg' || checkboxes[1].parentNode.parentNode.cells[12].innerHTML == '0 deg' ){
         alert('請選擇鎖附角度不為0的資料');
