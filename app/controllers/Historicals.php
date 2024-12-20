@@ -581,7 +581,10 @@ class Historicals extends Controller
                         
                         
                         if ($data['chat_mode'] == 5) {
-                            $xValues = array_column($dataSet, 2); // angle
+
+                            $xValues = array_slice(array_column($dataSet, 2), 1);
+
+
                             $xCoordinates[$i] = json_encode($xValues); // 將 X 軸數據轉換為 JSON 格式
                             $chartData[$i]['y'] = array_column($dataSet, 1); // 將 value[1] 作為 Y 軸數據
                             
@@ -677,6 +680,8 @@ class Historicals extends Controller
                                 $new_array = [];
                             }
 
+
+                            
                             $xCoordinates[$i] = json_encode($tmp_x_val); 
                             $chartData[$i]['y'] = $this->prepareChartData($dataSet, $TransType, $data['unit']);
                             $chartData[$i]['max'] = floatval(max($chartData[$i]['y']));
@@ -689,10 +694,13 @@ class Historicals extends Controller
                 // 設置圖表數據和座標
                 $data['chart_xcoordinates'] = $xCoordinates;
                 foreach ($chartData as $key => $chart) {
+
+                    
                     $data["chart{$key}_ycoordinate"] = json_encode($chart['y']);
+
                     $yValues = json_decode($data["chart{$key}_ycoordinate"], true);
-                    $data["chart{$key}_ycoordinate_max"] = max($yValues);
-                    $data["chart{$key}_ycoordinate_min"] = min($yValues);
+                    $data["chart{$key}_ycoordinate_max"] = max($chart['y']);
+                    $data["chart{$key}_ycoordinate_min"] = min($chart['y']);
 
                     $data["chart{$key}_ycoordinate_max_correct"] = $data['info_final'][$key]['step_hightorque'];
                     $data["chart{$key}_ycoordinate_min_correct"] = $data['info_final'][$key]['step_lowtorque'];
@@ -717,6 +725,8 @@ class Historicals extends Controller
                 $data['chat_mode'] = (int)$data['chat_mode'];
                 $lineTitle = isset($chartTypeDetails[$data['chat_mode']]) ? $chartTypeDetails[$data['chat_mode']] : '';
                 $titles = $this->Historicals_newModel->extractXYTitles($lineTitle);
+
+
     
                 $data['chart_combine']['x_title'] = $titles['x_title'];
                 $data['chart_combine']['y_title'] = $titles['y_title'];
@@ -949,12 +959,6 @@ class Historicals extends Controller
               
             }else if(empty($step_prr_rpm) && empty($step_prr_angle) && $chat_mode =="1"){
                 $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2); //torque
-                
-
-          
-                
-                
-               
                 $data['y_val'] = json_encode($y_val_torque);
 
             }else if(empty($step_prr_rpm) && empty($step_prr_angle) && $chat_mode =="3"){
@@ -1022,6 +1026,11 @@ class Historicals extends Controller
         
 
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
+
+
+        // echo "<pre>";
+        // print_r($data);
+        // echo "</pre>";
         return $data;
     }
 

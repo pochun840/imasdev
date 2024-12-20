@@ -90,7 +90,6 @@
             </div>
 
             <div class="column column-right">
-
                 <div id="mychart" style="width: 600px; height: 300px"></div>
 
                 <div id="">

@@ -1179,7 +1179,6 @@ addMessage();
     
     //type = normalstep && chat_mode = 2 處理 step_threshold_angle
     if (step_prr_rpm != '' && step_prr_angle != ''  && step_prr_rpm > 0 && step_prr_angle > 0 && job_type == 'normalstep' && y_data_val.length > 0 && step_threshold_angle > 0 && chat_mode == '2') {
-            console.log('eee');
             var x_value = x_data_val[0];
             var y_value = y_data_val[0];
 
@@ -1407,6 +1406,26 @@ addMessage();
         var max_val_1 = <?php echo $data['chart_info']['max1']; ?>; // Y軸2的上限
         var min_val_1 = <?php echo $data['chart_info']['min1']; ?>; // Y軸2的上限
 
+        var step_prr_rpm   = '<?php echo $data['job_info'][0]['step_prr_rpm'];?>';
+        var step_prr_angle = '<?php echo $data['job_info'][0]['step_prr_angle'];?>';
+        var step_threshold_angle = parseFloat('<?php echo $data['job_info'][0]['step_threshold_angle']; ?>');
+
+        var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
+        var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
+        var job_type = '<?php echo $data['job_type'];?>';
+        var control_torque = (typeof <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?>) 
+            ? parseFloat('<?php echo htmlspecialchars($data['chart_info']['control_torque'], ENT_QUOTES, 'UTF-8'); ?>') 
+            : 0; 
+
+        var last_key = (typeof <?php echo isset($data['chart_info']['last_key']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['last_key']) ? 'true' : 'false'; ?>) 
+            ? parseInt('<?php echo $data['chart_info']['last_key']; ?>', 10) 
+            : 0; 
+
+        var last_key_downshift_torque = (typeof <?php echo isset($data['chart_info']['last_key_downshift_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['last_key_downshift_torque']) ? 'true' : 'false'; ?>) 
+            ? parseInt('<?php echo $data['chart_info']['last_key_downshift_torque']; ?>', 10) 
+            : 0; 
+
+
         var option = {
             grid: GridConfig.generate('90%', '70%', '3%', '20%'),
 
@@ -1488,6 +1507,33 @@ addMessage();
             ]
         };
 
+
+
+         if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+             option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+            // 精確尋找 threshold_torque
+            var exactMatchIndex = -1;
+                for (var i = y_data_val.length - 1; i >= 0; i--) {  // 從後往前遍歷
+                if (y_data_val[i] == control_torque) {
+                    exactMatchIndex = i;
+                    console.log(exactMatchIndex);
+                    //break;  // 找到最後一筆符合條件的點後停止搜尋
+                }
+            }
+
+            // 如果找到精確匹配的點，則將其標註
+            if (exactMatchIndex !== -1) {
+                var exactXValue = x_data_val[exactMatchIndex];
+                var exactYValue = y_data_val[exactMatchIndex];
+
+                //已找到點標註圓點
+                addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
+
+            }
+
+         }
+
         
         //第一條曲線的上下限
         if (limit_val == 1) {
@@ -1506,7 +1552,21 @@ addMessage();
         myChart.setOption(option);
 
 
-   
+    function addMarkPoint(last_key_downshift_torque, yValue, torqueValue, color , labelText) {
+        option.series[0].markPoint.data.push({
+            xAxis: last_key_downshift_torque,
+            yAxis: yValue,
+            symbol: 'circle',
+            symbolSize: 6,
+            itemStyle: { color: color },  // 動態設定顏色
+            label: { 
+                position: 'top', 
+                formatter: labelText + torqueValue // 動態設定標籤文本
+            }
+        });
+    }
+
+
 
     </script>
 <?php }?>
