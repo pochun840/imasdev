@@ -14,16 +14,32 @@ class Historical{
 
     }
 
-    #取得CSV
-    public function csv_info($system_sn){
+    public function get_system_sn($system_sn){
 
         if($system_sn != 'total'){
             $system_sn_array = explode(", ", $system_sn);
             $system_sn_array = array_map('intval', $system_sn_array);
             $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' AND id IN (" . implode(",", $system_sn_array) . ") ORDER BY data_time DESC";
+        }
+       
+        $statement = $this->db->prepare($sql);
+        $statement->execute();
+        $rows = $statement->fetchall(PDO::FETCH_ASSOC);
+        return $rows;
+  
+    }
+
+    #取得CSV
+    public function csv_info($system_sn){
+
+        if($system_sn != 'total'){
+            $system_sn_array = explode(",", $system_sn);
+            $system_sn_array = array_map('intval', $system_sn_array);
+            $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' AND system_sn IN (" . implode(",", $system_sn_array) . ") ORDER BY data_time DESC";
         }else{
             $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' ORDER BY data_time desc";
         }
+
        
         $statement = $this->db->prepare($sql);
         $statement->execute();
@@ -425,82 +441,7 @@ class Historical{
     }
 
 
-    /*public function connected_ftp($no){
-
-        #FTP連線相關資訊
-        $ftp_server = "192.168.0.135";
-        $ftp_user = "kls";
-        $ftp_pass = "12345678rd";
-        $ftp_dir = "/mnt/ramdisk/FTP/";
-
-        #FTP曲線圖路徑
-
-        if(!empty($no)){
-            $csv_file = "DATALOG_000000".$no."_1p0.csv";
-        }else{
-            //$csv_file = '';
-        }
-
-        #連接到FTP
-        $conn_id = ftp_connect($ftp_server);
-
-        #登錄FTP
-        $login_result = ftp_login($conn_id, $ftp_user, $ftp_pass);;
-
-        if ($conn_id && $login_result){
-            #切換到存放曲線圖路徑
-            if (ftp_chdir($conn_id, $ftp_dir)){
-                #取得.CSV 文件列表
-                $files = ftp_nlist($conn_id, ".");
-                if(empty($csv_file)){
-                    usort($files, function($a, $b) use ($conn_id) {
-                        $mtime_a = ftp_mdtm($conn_id, $a);
-                        $mtime_b = ftp_mdtm($conn_id, $b);
-                        return $mtime_b - $mtime_a; // 从大到小排序
-                    });
-        
-                }else{
-                    #combinedata的頁面過來
-                    $files[0] =  $csv_file;
-                }
-                if($files[0]!= ""){
-
-                    $csv_file = $files[0];
-                    $filename =  $ftp_dir.$csv_file;
-                    if (in_array($csv_file, $files)){
-
-                        #csv 如果存在 並且轉換成陣列
-                        $tempFile = tempnam(sys_get_temp_dir(), 'ftp_');
-                        $ftp_get = ftp_get($conn_id, $tempFile, $filename, FTP_BINARY);
-                        if ($ftp_get) {
-                            $csvdata = array_map('str_getcsv', file($tempFile));
-                            unlink($tempFile);
-                        }else{
-                            #
-                        }
-
-                    } else {
-                        echo "File".$ftp_file."does not exist";
-                    }
-                }else{
-
-
-                }
-            }else{
-                echo "Failed to change directory to".$ftp_dir; 
-            }
-
-            #關閉FTP連線
-            ftp_close($conn_id);
-        }else{
-     
-        }
-
-        return $csvdata;
-
-    }*/
-
-
+    
     public function chat_change($chat_mode)
     {
         $chat_arr = array();
@@ -560,62 +501,68 @@ class Historical{
         $csv_array = array();
         $found_count = 0; 
         $missing_files = []; 
-
     
         foreach ($no_arr as $key => $val) {
-            if (!empty($val)) {
+            if (!empty(trim($val))) {
                 $file_found = false; 
                 foreach ($file_arr as $file_suffix) {
-                    $infile = '../public/data/DATALOG_' . str_pad($val, 10, "0", STR_PAD_LEFT) . $file_suffix . ".csv";
-                    
+                    $infile = '../public/data/DATALOG_' . str_pad(trim($val), 10, "0", STR_PAD_LEFT) . $file_suffix . ".csv";
+                   // echo "Checking file: $infile\n";
+    
                     if (file_exists($infile)) {
                         $csvdata = file_get_contents($infile);
-                        $rows = explode("\n", $csvdata);
-                        $csv_array['data' . $key] = array_map('str_getcsv', $rows);
-                        $found_count++; 
-                        $file_found = true; 
+                        if (!empty($csvdata)) {
+                            $rows = explode("\n", $csvdata);
+                            $csv_array['data' . $key] = array_map('str_getcsv', $rows);
+                            $found_count++; 
+                            $file_found = true; 
+                            break; 
+                        } else {
+                            //echo "File is empty: $infile\n";
+                        }
+                    } else {
+                        //echo "File does not exist: $infile\n";
                     }
                 }
                 if (!$file_found) {
-                    $missing_files[] = $val; 
+                    $missing_files[] = trim($val); 
                 }
             }
         }
-
+    
         if ($found_count < count($no_arr)) {
             $missing_ids = implode(', ', $missing_files);
-            // Handle missing files if needed
+            echo "Missing files for IDs: $missing_ids\n";
         }
-
-        if (is_null($csv_array)) {
-            $csv_array = null;
+    
+        if (empty($csv_array)) {
+            return null;
+        }
+    
+        if (!empty($chat_mode)) {
+            $position = (int)$chat_mode;
         } else {
-            if (!empty($chat_mode)) {
-                $position = (int)$chat_mode;
-            } else {
-                $position = null;
-            }
-        
-            foreach ($csv_array as &$innerarray) {
-                foreach ($innerarray as $key1 => $va) {
-                    // Add a check to ensure we do not delete data accidentally
-                    if (!isset($va[1]) || empty($va[1])) {
-                        // Only unset if both va[1] and va[2] are empty
-                        if (empty($va[2])) {
-                            unset($innerarray[$key1]);
-                        }
-                    } elseif ($position === 5 || $position === 6) {
-                        $innerarray['torque'][$key1] = $va[1];
-                        $innerarray['angle'][$key1] = $va[2];
-                    } else {
-                        $innerarray[$key1] = $va[$position];
+            $position = null;
+        }
+    
+        foreach ($csv_array as &$innerarray) {
+            foreach ($innerarray as $key1 => $va) {
+                if (!isset($va[1]) || empty($va[1])) {
+                    if (empty($va[2])) {
+                        unset($innerarray[$key1]);
                     }
+                } elseif ($position === 5 || $position === 6) {
+                    $innerarray['torque'][$key1] = $va[1];
+                    $innerarray['angle'][$key1] = $va[2];
+                } else {
+                    $innerarray[$key1] = $va[$position] ?? null;
                 }
             }
         }
-
-        return  $csv_array;
+    
+        return $csv_array;
     }
+    
 
 
     public function get_column_values_by_index($no, $column_index) {
@@ -1072,79 +1019,77 @@ class Historical{
 
 
     #呼叫 get_data_api.php 
-    public function get_data($info_arr){
+    public function get_data($info_arr) {
 
-         //value為空的参數被移除
-         $filtered_info_arr = array_filter($info_arr, function($value, $key) {
-            if (is_array($value)) {
-                return !empty(array_filter($value));
-            }
-            return !empty($value);
-        }, ARRAY_FILTER_USE_BOTH);
+        #移除值為空的參數
+        $filtered_info_arr = array_filter($info_arr, function($value) {
+            return is_array($value) ? !empty(array_filter($value)) : !empty($value);
+        });
 
-        #移除不使用的value
-        unset($filtered_info_arr['seq_name']);
-        unset($filtered_info_arr['checkedjobidarr']);
-        unset($filtered_info_arr['checkedseqidarr']);
-        unset($filtered_info_arr['checkedtaskidarr']);
-        
+        #移除不使用的參數
+        $unused_keys = ['seq_name', 'checkedjobidarr', 'checkedseqidarr', 'checkedtaskidarr'];
+        foreach ($unused_keys as $key) {
+            unset($filtered_info_arr[$key]);
+        }
 
-        $query_params = http_build_query($filtered_info_arr); 
-
+        #處理查詢參數
+        $query_params = http_build_query($filtered_info_arr);
         parse_str($query_params, $params);
 
         foreach ($params as $key => $value) {
             if (is_array($value)) {
                 $params[$key] = implode(',', $value);
             }
-
         }
 
-        if(!empty($params['fromdate'])){
-            $params['fromdate'] = str_replace('-', '', substr($params['fromdate'], 0, 10));
+        if (!empty($params['system_sn'])) {
+            $params['system_sn'] = trim($params['system_sn']);
         }
 
-        if(!empty($params['todate'])){
-            $params['todate'] = str_replace('-', '', substr($params['todate'], 0, 10));
+        foreach (['fromdate', 'todate'] as $date_key) {
+            if (!empty($params[$date_key])) {
+                $params[$date_key] = str_replace('-', '', substr($params[$date_key], 0, 10));
+            }
         }
 
         $new_query_string = http_build_query($params);
 
-        $file_url = str_replace('public/index.php?url=Historicals/search_info_list', '', $_SERVER['REQUEST_URI']);
+        #處理 URL
+        $file_url = preg_replace(
+            '/public\/index\.php\?url=Historicals\/(search_info_list|history_result|combinedata)/',
+            '',
+            $_SERVER['REQUEST_URI']
+        );
 
-        // 呼叫API
-        if (!empty($query_params)) {
-            $url = "http://".$_SERVER['HTTP_HOST'].$file_url."api/get_data_api.php?type=json&" . $new_query_string;
-        } else {
-            $url = "http://".$_SERVER['HTTP_HOST'].$file_url."/api/get_data_api.php?type=json";
+        $url = "http://" . $_SERVER['HTTP_HOST'] . $file_url . "/api/get_data_api.php?type=json";
+        if (!empty($new_query_string)) {
+            $url .= "&" . $new_query_string;
         }
 
-     
-        
-        $offset = 0;
-        $limit  = 10000;
+        $url = str_replace('%2C+', ',', $url);
 
-        //使用CURL
+        #使用 CURL 發送請求
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+        ]);
+
         $response = curl_exec($ch);
+        $curl_error = curl_error($ch);
         curl_close($ch);
-    
-        //檢查 CURL 請求是否成功
+
+        #檢查 CURL 請求結果
         if ($response === false) {
-            echo "Error: " . curl_error($ch);
-            return;
-        } else {
-            if ($response === null) {
-                echo "Error: Failed to decode JSON response.";
-                return;
-            }else{
-                $info_tmp = json_decode($response, true); 
-            }
+            throw new Exception("CURL Error: $curl_error");
         }
 
-        return  $info_tmp;
+        $info_tmp = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("JSON Decode Error: " . json_last_error_msg());
+        }
+
+        return $info_tmp;
     }
 
 

@@ -77,29 +77,44 @@ function deleteinfo() {
 }
 
 // Next To Combine data(最多只能選2筆)
-function NextToCombineData()
-{    
+function NextToCombineData() {    
+    // 獲取所有選中的checkbox元素
     var checkboxes = document.querySelectorAll('input[type="checkbox"][name="test1"]:checked');
     var checkedValues = [];
 
+    console.log(checkboxes);
+    
+
+    // 收集選中的值
     checkboxes.forEach(function(checkbox) {
         checkedValues.push(checkbox.value);
-        
     });
 
+    // 檢查是否選中至少兩項
+    /*if (checkedValues.length < 2) {
+        alert('請選擇至少兩筆資料進行合併');
+        return;
+    }*/
 
-    
-    if(checkboxes[0].parentNode.parentNode.cells[12].innerHTML == '0 deg' || checkboxes[1].parentNode.parentNode.cells[12].innerHTML == '0 deg' ){
-        alert('請選擇鎖附角度不為0的資料');
-        return; 
+    // 檢查選中項的角度是否為 0
+    for (var i = 0; i < checkboxes.length; i++) {
+        var angleCell = checkboxes[i].parentNode.parentNode.cells[12]; // 獲取角度欄位
+        if (angleCell && angleCell.innerHTML.trim() === '0 deg') {
+            alert('請選擇鎖附角度不為0的資料');
+            return;
+        }
     }
 
-    //if(checkedValues.length == 2){
-        var checkedsn = checkedValues.join(', ');
-        document.cookie = "checkedsn=" + checkedsn + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
-        window.location.href = '?url=Historicals/combinedata';    
-    //}
+    // 合併選中項的資料
+    var checkedsn = checkedValues.join(', ');
+    // 設定cookie，保存選中的系統序號
+    document.cookie = "checked_system_sn=" + checkedsn + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
+    
+    // 跳轉到合併資料頁面
+    window.location.href = '?url=Historicals/combinedata';    
 }
+
+
 var queryresult ='';
 // 下載CSV
 function csv_download(){

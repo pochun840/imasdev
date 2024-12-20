@@ -1262,6 +1262,37 @@ addMessage();
             }
         }
     }
+
+
+    // chart_mode == 5
+    if (chat_mode == '5' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+        // 精確尋找 threshold_torque
+        var exactMatchIndex = -1;
+            for (var i = y_data_val.length - 1; i >= 0; i--) {  // 從後往前遍歷
+            if (y_data_val[i] == control_torque) {
+                exactMatchIndex = i;
+                console.log(exactMatchIndex);
+                //break;  // 找到最後一筆符合條件的點後停止搜尋
+            }
+        }
+
+        // 如果找到精確匹配的點，則將其標註
+        if (exactMatchIndex !== -1) {
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];
+
+            //已找到點標註圓點
+            addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
+        }
+    }
+
+
+
+
+
+
+
         
     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
     if ((x_title === "Time(MS)" && (y_title === "Power" || y_title === "RPM")) ||chat_mode == 2) {
@@ -2106,7 +2137,7 @@ const language = '<?php echo $data['language'];?>';
     
 // 根據 language 設定按鈕文字
 function updateButtonText(allChecked) {
-    //let buttonText = 'Select All'; // 預設為英文
+    let buttonText = 'Select All'; // 預設為英文
 
     if (language == 'zh-cn') {
         buttonText = allChecked ? '取消全选' : '全选'; // 簡體中文

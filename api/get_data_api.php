@@ -32,13 +32,15 @@ $ps_text = '
          s_name           => 模糊搜尋(可以輸入job_name,sequence_name,task_name,barcodesn)
          limit            => 筆數 (數字)
          operator         => 人員(自行key人員名稱)
+         system_sn        => 控制器鎖附紀錄ID
+         
 
         
 
 補充說明: 
 1.job_id 及 sequence_id 輸入數字後,會取得對應的名稱,會用名稱去搜尋
 2.輸出格式為:xml && json && array
-3.sequence_id && task_id 支援 一個以上的查詢(id需以,區隔 ex:1,2,3)
+3.sequence_id && task_id && system_sn 支援 一個以上的查詢(id需以,區隔 ex:1,2,3)
 4.on_flag 目前 預設為 0 
 -->
 ';
@@ -155,6 +157,13 @@ if(!preg_match('/^[\w\s]+$/', $sname)) $sname = '';
 $controller = isset($_GET['controller_val']) ? $_GET['controller_val'] : null;
 if(!preg_match('/^\d+$/', $controller)) $controller = '';
 
+#控制器鎖附紀錄ID
+$system_sn = isset($_GET['system_sn']) ? $_GET['system_sn'] : '';
+$system_sn = preg_match('/^(\d+)(,\d+)*$/', $system_sn) ? $system_sn : '';
+
+
+
+
 # 筆數
 $limit =isset($_GET['limit']) ? $_GET['limit'] : null;
 if(!preg_match('/^\d+$/', $limit)) $limit = 300;
@@ -168,6 +177,11 @@ if(empty($type)) $type = 'xml';
 
 $sql = "SELECT * FROM `fasten_data` ";
 $sql.= "WHERE 1 ";
+
+if($system_sn){
+    $system_sn = "'" . str_replace(',', "','", $system_sn) . "'";
+    $sql .= " AND  system_sn in ($system_sn)";
+}
 
 if($barcodesn) {
     $sql .= " AND cc_barcodesn  LIKE '%" . $barcodesn . "%' " ;

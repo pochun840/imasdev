@@ -248,6 +248,7 @@ class Historicals extends Controller
         $info = $this->Historicals_newModel->get_data($info_arr, $offset, $limit);
         $mode_arr = array('ng_reason','fastening_status','job_info_new','job_info','statistics');
 
+
         #NG REASON 
         foreach($mode_arr as $key =>$val){
             
@@ -408,11 +409,8 @@ class Historicals extends Controller
             }
          
             $temp_x_val = $this->Historicals_newModel->get_column_values_by_index($no,1);
-
          
             $csvdata_arr = $this->Historicals_newModel->get_info($no, $chat_mode);
-
-
 
             #依照 job_id 判斷  advancedstep or  normalstep
             $data['job_type'] = intval($data['job_info'][0]['job_id']) > 100 ? "advancedstep" : "normalstep";
@@ -434,7 +432,7 @@ class Historicals extends Controller
 
 
 
-                //
+                
             }
             #狀態列表
             $status_arr = $this->Historicals_newModel->status_code_change();
@@ -448,6 +446,12 @@ class Historicals extends Controller
             $data['path'] = __FUNCTION__;
 
             $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
+
+          
+            // echo "<pre>";
+            // print_r($data['chart_info']);
+            // echo "</pre>";
+
             $this->view('historicals/index', $data);
     
         }
@@ -514,13 +518,32 @@ class Historicals extends Controller
         // 用 cookie 取得已勾選的 id
 
         
-        if (!empty($_COOKIE['checkedsn'])) {
+        if (!empty($_COOKIE['checked_system_sn'])) {
 
-            $checkedsn = $_COOKIE['checkedsn'];
-            $cleaned_str = str_replace("?url=Historicals/nextinfo/","",$checkedsn);
+            $checkedsn = $_COOKIE['checked_system_sn'];
+
+            if (strpos($checkedsn, "?url=Historicals/nextinfo/") !== false) {
+                // 如果包含，移除 "?url=Historicals/nextinfo/"
+                $checkedsn = str_replace("?url=Historicals/nextinfo/", "", $checkedsn);
+                $tmp = $this->Historicals_newModel->get_system_sn($checkedsn);
+                if(!empty($tmp)){
+                    $checkedsn  = '';
+                    foreach($tmp as $kv =>$vv){
+                        $checkedsn .= $vv['system_sn'].","; 
+                    }
+                }
+                $checkedsn = rtrim($checkedsn, ',');
+            } else {
+                //$checkedsn = explode(",",$checkedsn);
+            }
+
+
+            $info_arr = array();
+            $info_arr['system_sn'] =  $checkedsn;
 
             // 取得所有的資料
-            $info_final = $this->Historicals_newModel->csv_info($cleaned_str);  
+            //$info_final = $this->Historicals_newModel->get_data($info_arr);
+            $info_final = $this->Historicals_newModel->csv_info($checkedsn);  
             $data['chat_mode_arr_combine'] = $this->Historicals_newModel->details('chart_type');
             $data['info_final'] = $info_final;
             $checked_sn_in = array();
@@ -542,7 +565,7 @@ class Historicals extends Controller
 
 
             // 取得曲線圖的資料
-            $final_label = $this->Historicals_newModel->get_result($cleaned_str, $data['chat_mode']);
+            $final_label = $this->Historicals_newModel->get_result($checkedsn, $data['chat_mode']);
             
             if (empty($final_label)) {
                 $final_label = null;
