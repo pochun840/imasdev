@@ -448,9 +448,6 @@ class Historicals extends Controller
             $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
 
           
-            // echo "<pre>";
-            // print_r($data['chart_info']);
-            // echo "</pre>";
 
             $this->view('historicals/index', $data);
     
@@ -857,8 +854,6 @@ class Historicals extends Controller
                 
 
                 //
-
-                
                 $data['x_val'] = json_encode($csvdata_arr['angle']);
                 $data['y_val'] = json_encode($csvdata_arr['torque']);
 

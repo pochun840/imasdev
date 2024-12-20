@@ -1288,10 +1288,37 @@ addMessage();
     }
 
 
+    if (chat_mode == '5' && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(downshift_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
+        // 將 downshift_torque 轉換為浮動數
+        var downshiftTorqueFloat = parseFloat(downshift_torque);
 
+        // 嘗試精確匹配
+        var exactMatchIndex = findExactMatch(y_data_val, downshiftTorqueFloat);
 
+        if (exactMatchIndex !== -1) {
+            // 找到精確匹配
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];
 
+            //已找到點標註圓點
+            addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+        } else {
+            // 如果沒有精確匹配，則進行範圍匹配
+            var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
+
+            if (rangeMatchIndex !== -1) {
+                // 找到範圍匹配
+                var rangeXValue = x_data_val[rangeMatchIndex];
+                var rangeYValue = y_data_val[rangeMatchIndex];
+
+                //已找到點標註圓點
+                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:');
+
+            }
+        }
+    }
 
         
     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
