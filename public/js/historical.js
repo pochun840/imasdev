@@ -558,3 +558,79 @@ var chat_modeno = getCookie('chat_modeno');
 var limit_val = getCookie('limit_val');
 var chat_mode_change = getCookie('chat_mode_change');
 
+
+//處理 Torque
+function processTorque(torqueValue, labelPrefix, color) {
+    if (torqueValue !== 0 && torqueValue !== 0.0) {
+        console.log(`${labelPrefix}:`, torqueValue);
+
+        for (var i = 0; i <= max_count; i++) {
+            // 如果該曲線被隱藏，則跳過
+            if (!legendStatus[`chart${i}`]) continue;
+
+            var yData = getChartData(i);
+            if (!yData.length) continue;
+
+            var found = false;
+
+            // 精準匹配
+            found = findExactMatch(yData, torqueValue, labelPrefix, color);
+            if (!found) {
+                // 模糊匹配
+                findRangeMatch(yData, torqueValue, labelPrefix, color);
+            }
+        }
+    }
+}
+
+
+//獲取圖表數據
+function getChartData(chartIndex) {
+    return chartData[`chart${chartIndex}_ycoordinate`]
+        ? JSON.parse(chartData[`chart${chartIndex}_ycoordinate`])
+        : [];
+}
+
+
+//精準匹配
+function findExactMatch(yData, targetValue, labelPrefix, color) {
+    for (var j = 0; j < yData.length; j++) {
+        if (Math.abs(yData[j] - targetValue) < 0.0001) {
+            addMarkPoint(j, yData[j], targetValue, labelPrefix, color);
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//模糊匹配
+function findRangeMatch(yData, targetValue, labelPrefix, color) {
+    var rangeStart = targetValue + 0.001;
+    var rangeEnd = targetValue + 0.099;
+
+    for (var j = 0; j < yData.length; j++) {
+        if (yData[j] >= rangeStart && yData[j] <= rangeEnd) {
+            addMarkPoint(j, yData[j], targetValue, labelPrefix, color);
+            break;
+        }
+    }
+}
+
+
+//添加標記點 
+function addMarkPoint(index, yValue, targetValue, labelPrefix, color) {
+    markPointData.push({
+        xAxis: xData[index],
+        yAxis: yValue,
+        symbol: 'circle',
+        symbolSize: 10,
+        itemStyle: {
+            color: color,
+        },
+        label: {
+            position: 'top',
+            formatter: `${labelPrefix}: ${targetValue.toFixed(1)}`,
+        },
+    });
+}

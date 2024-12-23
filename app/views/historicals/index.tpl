@@ -1211,7 +1211,7 @@ addMessage();
 
 
     //type = normalstep && chat_mode = 1   &&  threshold_torque != '0' 處理  threshold_torque
-    if (chat_mode == '1' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+    if (chat_mode == '1'  && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
         // 精確尋找 threshold_torque
@@ -1267,6 +1267,72 @@ addMessage();
             }
         }
     }
+
+    if ((chat_mode == '3' || chat_mode == '4') && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+        var y_val_torque = <?php echo  $data['chart_info']['y_val_torque']; ?>;
+
+        //精確尋找threshold_torque
+        var exactMatchIndex = -1;
+        for (var i = y_val_torque.length - 1; i >= 0; i--) {  
+            if (y_val_torque[i] == control_torque) {
+                exactMatchIndex = i;
+                console.log("找到匹配点，索引:", exactMatchIndex);
+                break;
+            }
+        }
+
+        // 需要用圓點標註
+        if (exactMatchIndex !== -1) {
+            var exactXValue = x_data_val[exactMatchIndex]; 
+            var exactYValue = y_data_val[exactMatchIndex];
+            addMarkPoint(last_key, exactYValue, threshold_torque, 'blue', 'threshold_torque:');
+        } 
+    }
+
+
+    if ((chat_mode == '3' || chat_mode == '4')  && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+        var y_val_torque = <?php echo  $data['chart_info']['y_val_torque']; ?>;
+
+        // 將 downshift_torque 轉換為浮動數字
+        var downshiftTorqueFloat = parseFloat(downshift_torque);
+
+        // 嘗試精確匹配
+        var exactMatchIndex = findExactMatch(y_val_torque, downshiftTorqueFloat);
+
+        if (exactMatchIndex !== -1) {
+            // 找到精確匹配
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];  // 使用 y_data_val 來標註 Y 軸
+
+            // 已找到點，標註圓點
+            addMarkPoint(last_key_downshift_torque, exactYValue, downshift_torque, 'green', 'downshift_torque:'); 
+        } else {
+            // 如果沒有精確匹配，則進行範圍匹配
+            var rangeMatchIndex = findRangeMatch(y_val_torque, downshiftTorqueFloat);
+
+            if (rangeMatchIndex !== -1) {
+                // 找到範圍匹配
+                var rangeXValue = x_data_val[rangeMatchIndex];
+                var rangeYValue = y_data_val[rangeMatchIndex];  // 使用 y_data_val 來標註 Y 軸
+
+                // 已找到點，標註圓點
+                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque, 'green', 'downshift_torque:');
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 
     // chart_mode == 5
@@ -1689,23 +1755,22 @@ addMessage();
             '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
         ];
 
-        // 解析X轴数据
+        //解析X軸數值
         var xCoordinatesArray = chartData.chart_xcoordinates.map(x => JSON.parse(x));
 
-        // 找到最長的 X 軸數據
+        // 找到最長的X軸數值
         var xData = xCoordinatesArray.reduce((longest, current) => {
             return current.length > longest.length ? current : longest;
         }, []);
 
-        // 針對最長 X 軸數據處理 Y 軸數據
+        // 針對最長X軸數值處理Y軸數值
         var seriesData = Array.from({ length: 25 }, (_, i) => {
             var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
             return yData.length === xData.length ? yData : [];
         }).filter(data => data.length > 0);
 
 
-
-        // 计算最大值和最小值
+        // 計算最大值和最小值
         var maxValues = [];
         var minValues = [];
         for (var i = 0; i <= max_count; i++) {
@@ -1715,7 +1780,7 @@ addMessage();
                 minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
                 threshold_torque =  parseFloat(chartData[`chart${i}_ycoordinate_threshold_torque`]);
                 
-                console.log(threshold_torque);
+                //console.log(threshold_torque);
             } else if (chat_mode == 5) {
                 maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
                 minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
@@ -1727,7 +1792,6 @@ addMessage();
             maxValues.push(maxVal);
             minValues.push(minVal);
         }
-
 
 
         // 获取最大值和最小值
@@ -1744,146 +1808,39 @@ addMessage();
         });
 
 
-        if (chat_mode == 1 && threshold_torque_total && downshift_torque_total ) {
-            threshold_torque_total.split(',').forEach(function(threshold_torque) {
-                threshold_torque = parseFloat(threshold_torque);
+        if (chat_mode == 1  && threshold_torque_total && downshift_torque_total) {
+           
+            var xAxisData = chartData['xcoordinate'] ? JSON.parse(chartData['xcoordinate']) : []; // 默認為原始 X 軸數據
+            var yAxisData = chartData['ycoordinate'] ? JSON.parse(chartData['ycoordinate']) : []; // 默認為原始 Y 軸數據
 
-                 if (threshold_torque !== 0 && threshold_torque !== 0.0) {
-                    console.log("Threshold Torque:", threshold_torque);
-
-                    //檢查每條曲線的值，否有對應的 threshold_torque
-                    for (var i = 0; i <= max_count; i++) {
-
-                        // 如果该曲线被隐藏，则跳过
-                        if (!legendStatus[`chart${i}`]) continue;
-
-                        var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-
-                        var found = false;
-
-                        //threshold_torque的範圍
-                        var rangeStart = threshold_torque + 0.001; 
-                        var rangeEnd = threshold_torque + 0.099; 
-
-                        //精準匹配
-                        for (var j = 0; j < yData.length; j++) {
-                            if (Math.abs(yData[j] - threshold_torque) < 0.0001) {
-                                markPointData.push({
-                                    xAxis: xData[j],
-                                    yAxis: yData[j],
-                                    symbol: 'circle',
-                                    symbolSize: 10,
-                                    itemStyle: {
-                                        color: 'blue'
-                                    },
-                                    label: {
-                                        position: 'top',
-                                        formatter: 'threshold_torque: ' + threshold_torque.toFixed(1)
-                                    }
-                                });
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        //模糊匹配
-                        if (!found) {
-                            for (var j = 0; j < yData.length; j++) {
-                                if (yData[j] >= rangeStart && yData[j] <= rangeEnd) {
-                                    markPointData.push({
-                                        xAxis: xData[j],
-                                        yAxis: yData[j],
-                                        symbol: 'circle',
-                                        symbolSize: 10,
-                                        itemStyle: {
-                                            color: 'blue'
-                                        },
-                                        label: {
-                                            position: 'top',
-                                            formatter: 'threshold_torque: ' + threshold_torque.toFixed(1)
-                                        }
-                                    });
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-
-
-                    }
-                }
+            // 處理 threshold_torque_total
+            threshold_torque_total.split(',').forEach(function (threshold_torque) {
+                processTorque(
+                    parseFloat(threshold_torque),
+                    'threshold_torque',
+                    'blue',
+                    xAxisData,
+                    yAxisData
+                );
             });
 
-        downshift_torque_total.split(',').forEach(function(downshift_torque) {  
-            downshift_torque = parseFloat(downshift_torque);
-            if (downshift_torque !== 0 && downshift_torque!== 0.0) {
-                console.log("Downshift Torque:", downshift_torque);
+            // 處理 downshift_torque_total
+            downshift_torque_total.split(',').forEach(function (downshift_torque) {
+                processTorque(
+                    parseFloat(downshift_torque),
+                    'downshift_torque',
+                    'blue',
+                    xAxisData,
+                    yAxisData
+                );
+            });
+        }
 
-                for (var i = 0; i <= max_count; i++) {
-                    if (!legendStatus[`chart${i}`]) continue;
-
-
-                    var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-
-                    var found = false;
-
-                    var rangeStart = downshift_torque + 0.001; 
-                    var rangeEnd = downshift_torque + 0.099; 
+        if (chat_mode == 5 && threshold_torque_total && downshift_torque_total) {
 
 
-
-                    //精準匹配
-                    for (var j = 0; j < yData.length; j++) {
-                        if (Math.abs(yData[j] - downshift_torque) < 0.0001) {
-                            markPointData.push({
-                                xAxis: xData[j],
-                                yAxis: yData[j],
-                                symbol: 'circle',
-                                symbolSize: 10,
-                                itemStyle: {
-                                    color: 'blue'
-                                },
-                                label: {
-                                    position: 'top',
-                                    formatter: 'downshift_torque: ' + downshift_torque.toFixed(1)
-                                }
-                            });
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    //模糊匹配
-                    if (!found) {
-                        for (var j = 0; j < yData.length; j++) {
-                            if (yData[j] >= rangeStart && yData[j] <= rangeEnd) {
-                                markPointData.push({
-                                    xAxis: xData[j],
-                                    yAxis: yData[j],
-                                    symbol: 'circle',
-                                    symbolSize: 10,
-                                    itemStyle: {
-                                        color: 'blue'
-                                    },
-                                    label: {
-                                        position: 'top',
-                                        formatter: 'downshift_torque: ' + downshift_torque.toFixed(1)
-                                    }
-                                });
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-
-
-                }
-            }
-        });
-
-
-
-    }
+        
+        }
 
 
 

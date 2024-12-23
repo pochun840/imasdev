@@ -447,6 +447,11 @@ class Historicals extends Controller
 
             $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
 
+
+            echo "<pre>";
+            print_r($data['chart_info']);
+            echo "</pre>";
+
             $this->view('historicals/index', $data);
     
         }
@@ -561,6 +566,8 @@ class Historicals extends Controller
 
             // 取得曲線圖的資料
             $final_label = $this->Historicals_newModel->get_result($checkedsn, $data['chat_mode']);
+
+            
             
             if (empty($final_label)) {
                 $final_label = null;
@@ -678,7 +685,6 @@ class Historicals extends Controller
                                 $new_array = [];
                             }
 
-
                             
                             $xCoordinates[$i] = json_encode($tmp_x_val); 
                             $chartData[$i]['y'] = $this->prepareChartData($dataSet, $TransType, $data['unit']);
@@ -724,13 +730,8 @@ class Historicals extends Controller
                 $lineTitle = isset($chartTypeDetails[$data['chat_mode']]) ? $chartTypeDetails[$data['chat_mode']] : '';
                 $titles = $this->Historicals_newModel->extractXYTitles($lineTitle);
 
-
-    
                 $data['chart_combine']['x_title'] = $titles['x_title'];
                 $data['chart_combine']['y_title'] = $titles['y_title'];
-
-      
-
 
             }
 
@@ -771,6 +772,10 @@ class Historicals extends Controller
             $threshold_torque = '';
             $downshift_torque = '';
 
+
+            $last_keys_1 = array(); 
+            $last_keys_2 = array(); 
+
             foreach ($info_final as $item) {
                 if (isset($item['threshold_torque'])) {
                     $threshold_torque .= $item['threshold_torque'] . ',';
@@ -778,6 +783,28 @@ class Historicals extends Controller
                 if (isset($item['downshift_torque'])) {
                     $downshift_torque.= $item['downshift_torque'] . ',';
                 }
+
+                if(!empty($item['system_sn'])){
+
+                    $threshold_torque_temp  = floatval($item['threshold_torque']);
+                    $downshift_torque_temp  = floatval($item['downshift_torque']);
+
+                    if (!empty($threshold_torque_temp) && $threshold_torque_temp > 0.1) {
+                        $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); // angle
+                        $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); // speed
+            
+                        $last_key_1 = $this->getLastZeroKey($y_val_angle);
+                        $last_key_2 = $this->find_last_key($y_val_angle, $y_val_speed);
+            
+                        $last_keys_1[] = $last_key_1.",";
+                        $last_keys_2[] = $last_key_2.",";
+
+                        //echo $last_key_1;
+                    }
+
+                    
+                }
+
             }
 
             $threshold_torque = rtrim($threshold_torque, ',');
@@ -786,6 +813,9 @@ class Historicals extends Controller
             $downshift_torque = rtrim($downshift_torque, ',');
             $data['downshift_torque'] = $downshift_torque;
 
+            
+            $last_key_1 = rtrim($last_key_1, ',');
+            $data['last_key_1'] = $last_key_1;
 
 
             $this->view('historicals/index', $data);
@@ -903,23 +933,32 @@ class Historicals extends Controller
 
         }else{
 
-            if(($chat_mode == "1" || $chat_mode == "3" || $chat_mode == "4") && $unitvalue != "1"){
-            
+            if (($chat_mode == "1" || $chat_mode == "3" || $chat_mode == "4") && $unitvalue != "1") {
                 $TransType = $unitvalue;
                 $torValues = $csvdata_arr;
                 $temp_val = $this->Historicals_newModel->unitarr_change($torValues, 1, $TransType);
+
+                
                 $data['y_val'] = json_encode($temp_val);
                 $data['max'] = max($temp_val);
                 $data['min'] = min($temp_val);
 
 
-            }else{
+            }else{  
+              
 
                 $data['y_val'] = $this->Historicals_newModel->get_column_values_by_index($no, 3);
                 $data['max'] = max($csvdata_arr);
                 $data['min'] = min($csvdata_arr);
             }
 
+
+
+           
+
+            //$data['y_val'] = json_encode($temp_val);
+
+            //var_dump($data['y_val']);die();
             $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($no, 3); //angle
             $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($no, 4); //speed
 
@@ -970,6 +1009,16 @@ class Historicals extends Controller
             }
             
         } 
+
+        
+
+        if ($chat_mode == "3" || $chat_mode == "4") {
+            $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2); 
+            $data['y_val_torque'] = json_encode($y_val_torque);
+        } elseif ($chat_mode == "2" || $chat_mode == "5") {
+            $y_val_torque = [];
+            $data['y_val_torque'] = json_encode($y_val_torque);
+        }
         
         if (is_array($data['y_val'])) {
             $data['y_val'] = json_encode($data['y_val']);
@@ -1023,6 +1072,7 @@ class Historicals extends Controller
         }
         
 
+        $data['y_val'] = json_encode(array_values(array_diff_key(json_decode($data['y_val'], true) ?: [], [0 => null])));
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
 
 
