@@ -447,8 +447,6 @@ class Historicals extends Controller
 
             $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
 
-          
-
             $this->view('historicals/index', $data);
     
         }
@@ -1028,9 +1026,6 @@ class Historicals extends Controller
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
 
 
-        // echo "<pre>";
-        // print_r($data);
-        // echo "</pre>";
         return $data;
     }
 

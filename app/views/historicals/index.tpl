@@ -589,11 +589,17 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                 </label>
                                 <label style="padding-left: 5%">
                                     <?php echo $text['Torque_Unit_text']; ?> :
-                                        <select id="unit" style="width: 100px" onchange="unit_change_combine(this)" >
-                                          <?php foreach($data['torque_mode_arr'] as $k_torque => $v_torque){?>
-                                                <option  value="<?php echo $k_torque;?>"  <?php if( $data['unit'] == $k_torque){echo "selected";}else{echo "";}?>  > <?php echo $text[$v_torque];?> </option>
-                                          <?php } ?>        
+                                       <select id="unit" style="width: 100px" onchange="unit_change_combine(this)">
+                                            <?php foreach ($data['torque_mode_arr'] as $k_torque => $v_torque) { ?>
+                                                <option value="<?php echo $k_torque; ?>" 
+                                                    <?php 
+                                                        echo (isset($data['unit']) && $data['unit'] == $k_torque) ? "selected" : ""; 
+                                                    ?>>
+                                                    <?php echo $text[$v_torque]; ?>
+                                                </option>
+                                            <?php } ?>
                                         </select>
+
                                 </label>&nbsp;
                                 <button id="downland_combine" type="button" class="t2 ExportButton"><?php echo $text['Export_text']; ?> HTML</button>
                             </div>
@@ -1394,7 +1400,9 @@ addMessage();
 
 <?php if ($path == "nextinfo" && isset($data['chart_info']['chat_mode']) && $data['chart_info']['chat_mode'] == "6") { ?>
     <script>
+      
         var myChart = echarts.init(document.getElementById('chartinfo'));
+        var chat_mode = '<?php echo $data['chart_info']['chat_mode']?>';
 
         var x_data_val = <?php echo $data['chart_info']['x_val']; ?>; // X軸
         var y_data_val = <?php echo $data['chart_info']['y_val']; ?>; // Y軸1(torque)
@@ -1409,7 +1417,7 @@ addMessage();
         var step_prr_rpm   = '<?php echo $data['job_info'][0]['step_prr_rpm'];?>';
         var step_prr_angle = '<?php echo $data['job_info'][0]['step_prr_angle'];?>';
         var step_threshold_angle = parseFloat('<?php echo $data['job_info'][0]['step_threshold_angle']; ?>');
-
+    
         var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
         var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
         var job_type = '<?php echo $data['job_type'];?>';
@@ -1509,9 +1517,8 @@ addMessage();
 
 
 
-         if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
-             option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-
+        if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {    
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
             // 精確尋找 threshold_torque
             var exactMatchIndex = -1;
                 for (var i = y_data_val.length - 1; i >= 0; i--) {  // 從後往前遍歷
@@ -1529,12 +1536,69 @@ addMessage();
 
                 //已找到點標註圓點
                 addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
-
             }
+        }
 
-         }
+        if (chat_mode == '6' && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(downshift_torque)) {
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
-        
+            // 將 downshift_torque 轉換為浮動數
+            var downshiftTorqueFloat = parseFloat(downshift_torque);
+
+            // 嘗試精確匹配
+            var exactMatchIndex = findExactMatch(y_data_val, downshiftTorqueFloat);
+
+            if (exactMatchIndex !== -1) {
+                // 找到精確匹配
+                var exactXValue = x_data_val[exactMatchIndex];
+                var exactYValue = y_data_val[exactMatchIndex];
+
+                //已找到點標註圓點
+                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+            } else {
+                // 如果沒有精確匹配，則進行範圍匹配
+                var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
+
+                if (rangeMatchIndex !== -1) {
+                    // 找到範圍匹配
+                    var rangeXValue = x_data_val[rangeMatchIndex];
+                    var rangeYValue = y_data_val[rangeMatchIndex];
+
+                    //已找到點標註圓點
+                    addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:');
+
+                }
+            }
+        }
+
+        if(chat_mode == '6' && job_type == 'normalstep' && step_threshold_angle > 0 ){
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+            var x_value = x_data_val[0];
+            var y_value = y_data_val_1[0];
+
+            // 根據 chat_mode 決定 label 的 formatter 格式
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+            var labelFormatter = 'threshold_angle:' + step_threshold_angle;
+
+            // 新增 markPoint 資料
+            option.series[0].markPoint.data.push({
+                xAxis: x_value, 
+                yAxis: y_value,  
+                symbol: 'circle', 
+                symbolSize: 6,   
+                itemStyle: {
+                    color: 'blue'  
+                },
+                label: {
+                    position: 'top', 
+                    formatter: labelFormatter
+                }
+            });
+
+        }
+
         //第一條曲線的上下限
         if (limit_val == 1) {
             option.series.push({
@@ -1565,6 +1629,29 @@ addMessage();
             }
         });
     }
+
+    
+    function findExactMatch(data, targetValue) {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] === targetValue) {
+                return i; // 找到精確匹配的索引
+            }
+        }
+        return -1; // 如果沒有找到，返回 -1
+    }
+
+    function findRangeMatch(data, targetValue) {
+        let rangeStart = targetValue;
+        let rangeEnd = targetValue + 0.099; // 設定範圍上限
+
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] >= rangeStart && data[i] <= rangeEnd) {
+                return i; // 找到範圍內匹配的索引
+            }
+        }
+        return -1; // 如果沒有找到，返回 -1
+    }
+
 
 
 
