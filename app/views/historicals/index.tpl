@@ -1758,6 +1758,9 @@ addMessage();
         //解析X軸數值
         var xCoordinatesArray = chartData.chart_xcoordinates.map(x => JSON.parse(x));
 
+ 
+
+
         // 找到最長的X軸數值
         var xData = xCoordinatesArray.reduce((longest, current) => {
             return current.length > longest.length ? current : longest;
@@ -1765,10 +1768,19 @@ addMessage();
 
         // 針對最長X軸數值處理Y軸數值
         var seriesData = Array.from({ length: 25 }, (_, i) => {
-            var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-            return yData.length === xData.length ? yData : [];
-        }).filter(data => data.length > 0);
+        var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
 
+        // 如果 yData 长度与 xData 不一致，填充或截断
+        if (yData.length !== xData.length) {
+            // 截断 yData 使其与 xData 长度一致
+            yData = yData.slice(0, xData.length);
+            // 如果 yData 长度小于 xData，填充 null
+            while (yData.length < xData.length) {
+                yData.push(null); // 填充缺失的部分
+            }
+        }
+        return yData;
+        }).filter(data => data.length > 0);
 
         // 計算最大值和最小值
         var maxValues = [];
@@ -1807,40 +1819,49 @@ addMessage();
             legendStatus['chart' + index] = true; // 这里根据你的图例显示机制调整
         });
 
-
-        if (chat_mode == 1  && threshold_torque_total && downshift_torque_total) {
-           
-            var xAxisData = chartData['xcoordinate'] ? JSON.parse(chartData['xcoordinate']) : []; // 默認為原始 X 軸數據
-            var yAxisData = chartData['ycoordinate'] ? JSON.parse(chartData['ycoordinate']) : []; // 默認為原始 Y 軸數據
-
-            // 處理 threshold_torque_total
-            threshold_torque_total.split(',').forEach(function (threshold_torque) {
+        function processTorqueData(torqueData, torqueType, color) {
+            torqueData.split(',').forEach(function (torque) {
                 processTorque(
-                    parseFloat(threshold_torque),
-                    'threshold_torque',
-                    'blue',
-                    xAxisData,
-                    yAxisData
-                );
-            });
-
-            // 處理 downshift_torque_total
-            downshift_torque_total.split(',').forEach(function (downshift_torque) {
-                processTorque(
-                    parseFloat(downshift_torque),
-                    'downshift_torque',
-                    'blue',
-                    xAxisData,
-                    yAxisData
+                    parseFloat(torque),
+                    torqueType,
+                    color,
+                    xData,
+                    seriesData
                 );
             });
         }
 
-        if (chat_mode == 5 && threshold_torque_total && downshift_torque_total) {
 
 
-        
+        if (chat_mode == 1 && threshold_torque_total && downshift_torque_total) {
+            if (Array.isArray(threshold_torque_total) && threshold_torque_total.length > 0) {
+                // 遍历 threshold_torque_total 数组
+                threshold_torque_total.forEach((torque, index) => {
+                    var thresholdTorque = parseFloat(torque);
+                    
+                    if (thresholdTorque > 0) {
+                        markPointData.push({
+                            type: 'max',
+                            name: 'Threshold Torque ' + (index + 1),  
+                            coord: [xData[index], thresholdTorque],  
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: {
+                                color: 'blue'
+                            }
+                        });
+                    }
+                });
+            }
+    
+            processTorqueData(threshold_torque_total, 'threshold_torque', 'blue');
+            processTorqueData(downshift_torque_total, 'downshift_torque', 'green');
         }
+
+
+     
+
+     
 
 
 

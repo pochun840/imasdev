@@ -651,6 +651,8 @@ class Historicals extends Controller
                         } else {
                             
                             $tmp_x_val = $this->Historicals_newModel->get_column_values_by_index($id,1);
+                       
+                            
                           
                             $time_position = array_search("Time", $tmp_x_val);
                             $angle_position = array_search("Angle", $tmp_x_val);
@@ -685,6 +687,8 @@ class Historicals extends Controller
                             $chartData[$i]['y'] = $this->prepareChartData($dataSet, $TransType, $data['unit']);
                             $chartData[$i]['max'] = floatval(max($chartData[$i]['y']));
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
+
+
                         }
                     }
 
@@ -768,50 +772,47 @@ class Historicals extends Controller
             $downshift_torque = '';
 
 
-            $last_keys_1 = array(); 
-            $last_keys_2 = array(); 
-
+            $last_keys_1_temp = array(); 
+            $last_keys_2_temp = array(); 
+            
             foreach ($info_final as $item) {
                 if (isset($item['threshold_torque'])) {
                     $threshold_torque .= $item['threshold_torque'] . ',';
                 }
                 if (isset($item['downshift_torque'])) {
-                    $downshift_torque.= $item['downshift_torque'] . ',';
+                    $downshift_torque .= $item['downshift_torque'] . ',';
                 }
-
-                if(!empty($item['system_sn'])){
-
+            
+                if (!empty($item['system_sn'])) {
                     $threshold_torque_temp  = floatval($item['threshold_torque']);
                     $downshift_torque_temp  = floatval($item['downshift_torque']);
-
+            
                     if (!empty($threshold_torque_temp) && $threshold_torque_temp > 0.1) {
                         $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); // angle
                         $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); // speed
             
                         $last_key_1 = $this->getLastZeroKey($y_val_angle);
                         $last_key_2 = $this->find_last_key($y_val_angle, $y_val_speed);
+        
+                        $last_keys_1_temp[] = $last_key_1;
+                        $last_keys_2_temp[] = $last_key_2;
             
-                        $last_keys_1[] = $last_key_1.",";
-                        $last_keys_2[] = $last_key_2.",";
-
-                        //echo $last_key_1;
+    
                     }
-
-                    
                 }
-
             }
-
+            
             $threshold_torque = rtrim($threshold_torque, ',');
             $data['threshold_torque'] = $threshold_torque;
 
             $downshift_torque = rtrim($downshift_torque, ',');
             $data['downshift_torque'] = $downshift_torque;
 
-            
-            $last_key_1 = rtrim($last_key_1, ',');
-            $data['last_key_1'] = $last_key_1;
 
+            if(!empty($last_keys_1_temp)){
+                $data['last_key_threshold_torque'] = $last_keys_1_temp;
+  
+            }
 
             $this->view('historicals/index', $data);
         
