@@ -447,11 +447,6 @@ class Historicals extends Controller
 
             $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
 
-
-            echo "<pre>";
-            print_r($data['chart_info']);
-            echo "</pre>";
-
             $this->view('historicals/index', $data);
     
         }
@@ -1010,7 +1005,7 @@ class Historicals extends Controller
             
         } 
 
-        
+
 
         if ($chat_mode == "3" || $chat_mode == "4") {
             $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2); 
