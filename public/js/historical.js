@@ -91,10 +91,10 @@ function NextToCombineData() {
     });
 
     // 檢查是否選中至少兩項
-    /*if (checkedValues.length < 2) {
+    if (checkedValues.length < 2) {
         alert('請選擇至少兩筆資料進行合併');
         return;
-    }*/
+    }
 
     // 檢查選中項的角度是否為 0
     for (var i = 0; i < checkboxes.length; i++) {
