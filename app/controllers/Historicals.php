@@ -651,9 +651,7 @@ class Historicals extends Controller
                         } else {
                             
                             $tmp_x_val = $this->Historicals_newModel->get_column_values_by_index($id,1);
-                       
-                            
-                          
+                    
                             $time_position = array_search("Time", $tmp_x_val);
                             $angle_position = array_search("Angle", $tmp_x_val);
                             
@@ -688,6 +686,15 @@ class Historicals extends Controller
                             $chartData[$i]['max'] = floatval(max($chartData[$i]['y']));
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
 
+                            if($data['chat_mode'] == 3 || $data['chat_mode'] == 4 ){
+                                if (isset($dataSet[0])) {
+                                    unset($dataSet[0]); 
+                                }
+                                $values = array_column($dataSet, 'value');
+                                
+                                $data["chart{$i}_ycoordinate_torque_rpm"] = json_encode(array_values($dataSet));
+                                
+                            }
 
                         }
                     }
@@ -722,6 +729,8 @@ class Historicals extends Controller
 
 
                 }
+
+               
 
                 // 設置曲線圖座標名稱
                 $chartTypeDetails = $this->Historicals_newModel->details('chart_type');
@@ -813,6 +822,12 @@ class Historicals extends Controller
                 $data['last_key_threshold_torque'] = $last_keys_1_temp;
   
             }
+
+
+            //echo  "<pre>";
+            //print_r($data);
+            //echo  "</pre>";
+            // die();
 
             $this->view('historicals/index', $data);
         

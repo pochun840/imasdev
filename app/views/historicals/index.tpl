@@ -1268,10 +1268,11 @@ addMessage();
         }
     }
 
-    if ((chat_mode == '3' || chat_mode == '4') && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+    if ((chat_mode == '3'  || chat_mode == '4' ) && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
-        var y_val_torque = <?php echo  $data['chart_info']['y_val_torque']; ?>;
+        var y_val_torque = <?php echo isset($data['chart_info']['y_val_torque']) ? $data['chart_info']['y_val_torque'] : '[]'; ?>;
+
 
         //精確尋找threshold_torque
         var exactMatchIndex = -1;
@@ -1291,11 +1292,10 @@ addMessage();
         } 
     }
 
-
-    if ((chat_mode == '3' || chat_mode == '4')  && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+    if ((chat_mode == '3'  ||  chat_mode == '4')  && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
-        var y_val_torque = <?php echo  $data['chart_info']['y_val_torque']; ?>;
+        var y_val_torque = <?php echo isset($data['chart_info']['y_val_torque']) ? $data['chart_info']['y_val_torque'] : '[]'; ?>;
 
         // 將 downshift_torque 轉換為浮動數字
         var downshiftTorqueFloat = parseFloat(downshift_torque);
@@ -1325,15 +1325,7 @@ addMessage();
         }
     }
 
-
-
-
-
-
-
-
-
-
+    
 
     // chart_mode == 5
     if (chat_mode == '5' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
@@ -1796,7 +1788,12 @@ addMessage();
             } else if (chat_mode == 5) {
                 maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
                 minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
-            } else {
+            } else if(chat_mode == 3) {
+                var y_val_touque_rpm = chartData[`chart${i}_ycoordinate_torque_rpm`];
+
+
+
+            }else {
                 maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]);
                 minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]);
             }
@@ -1857,6 +1854,11 @@ addMessage();
             processTorqueData(threshold_torque_total, 'threshold_torque', 'blue');
             processTorqueData(downshift_torque_total, 'downshift_torque', 'green');
         }
+
+
+        /*if(chat_mode == 3 && threshold_torque_total && downshift_torque_total){
+           console.log(y_val_touque_rpm)
+        }*/
 
 
      
