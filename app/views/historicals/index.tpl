@@ -413,7 +413,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                         ?>
                                         <tr>
                                             <td style="text-align: center;">
-                                                <input class="form-check-input" type="checkbox" name="test1" id="test1"  value="<?php echo $link;?>" style="zoom:1.2;vertical-align: middle;">
+                                                <input class="form-check-input" type="checkbox" name="test1" id="test1"  value="<?php echo $v_info['id'];?>" style="zoom:1.2;vertical-align: middle;">
                                             </td>
                                             <td><?php echo $v_info['system_sn'];?></td>
                                             <td><?php echo $v_info['data_time'];?></td>
@@ -1720,7 +1720,7 @@ addMessage();
 <!----combine op----->
 
 <?php if ($path == "combinedata" && $data['chat_mode'] != "6"){?>
-         <script>
+        <script>
         var chartData = <?php echo json_encode($data); ?>;
         var idTotal = <?php echo json_encode($data['id_total']); ?>;
         var chat_mode = '<?php echo $data['chat_mode'];?>';
@@ -1728,14 +1728,17 @@ addMessage();
         var max_count = '<?php echo $data['id_count'];?>';
         var myChart_combine = echarts.init(document.getElementById('chart_combine'));
 
-        
-        var threshold_torque_total = <?php echo json_encode($data['threshold_torque']); ?>;
-        var downshift_torque_total = <?php echo json_encode($data['downshift_torque']); ?>;
+        var threshold_torque_total  = <?php echo isset($data['threshold_torque']) ? json_encode($data['threshold_torque']) : '[]'; ?>;
+        var downshift_torque_total  = <?php echo isset($data['downshift_torque']) ? json_encode($data['downshift_torque']) : '[]'; ?>;
+        var threshold_angle_total   = <?php echo isset($data['threshold_angle_total'])  ? json_encode($data['threshold_angle_total']) : '[]'; ?>;
+
+        var last_key_threshold_torque = <?php echo isset($data['last_key_threshold_torque']) ? json_encode($data['last_key_threshold_torque']) : '[]'; ?>;
+        var last_key_threshold_angle  = <?php echo isset($data['last_key_threshold_angle']) ? json_encode($data['last_key_threshold_angle']) : '[]'; ?>;
+        var last_key_downshift_torque = <?php echo isset($data['last_key_downshift_torque']) ? json_encode($data['last_key_downshift_torque']) : '[]'; ?>;
+
 
         // 定義顏色調色盤
         var colorPalette = [
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
             '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
             '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
             '#f5b041', '#5dade2', '#a2d9ce', '#d91d3a', '#ff9c00',
@@ -1747,193 +1750,182 @@ addMessage();
             '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
         ];
 
-        //解析X軸數值
+        // 解析 X 軸數值
         var xCoordinatesArray = chartData.chart_xcoordinates.map(x => JSON.parse(x));
-
- 
-
-
-        // 找到最長的X軸數值
-        var xData = xCoordinatesArray.reduce((longest, current) => {
-            return current.length > longest.length ? current : longest;
-        }, []);
-
-        // 針對最長X軸數值處理Y軸數值
+        var xData = xCoordinatesArray.reduce((longest, current) => current.length > longest.length ? current : longest, []);
         var seriesData = Array.from({ length: 25 }, (_, i) => {
-        var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-
-        // 如果 yData 长度与 xData 不一致，填充或截断
-        if (yData.length !== xData.length) {
-            // 截断 yData 使其与 xData 长度一致
-            yData = yData.slice(0, xData.length);
-            // 如果 yData 长度小于 xData，填充 null
-            while (yData.length < xData.length) {
-                yData.push(null); // 填充缺失的部分
+            var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
+            // 填充或截斷 yData
+            if (yData.length !== xData.length) {
+                yData = yData.slice(0, xData.length);
+                while (yData.length < xData.length) {
+                    yData.push(null);
+                }
             }
-        }
-        return yData;
+            return yData;
         }).filter(data => data.length > 0);
 
         // 計算最大值和最小值
-        var maxValues = [];
-        var minValues = [];
+        var maxValues = [], minValues = [];
         for (var i = 0; i <= max_count; i++) {
-            var maxVal, minVal;
-            if (chat_mode == 1) {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
-                threshold_torque =  parseFloat(chartData[`chart${i}_ycoordinate_threshold_torque`]);
-                
-                //console.log(threshold_torque);
-            } else if (chat_mode == 5) {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
-            } else if(chat_mode == 3) {
-                var y_val_touque_rpm = chartData[`chart${i}_ycoordinate_torque_rpm`];
-
-
-
-            }else {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]);
-            }
-
+            var maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]) || 0;
+            var minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]) || 0;
             maxValues.push(maxVal);
             minValues.push(minVal);
         }
-
-
-        // 获取最大值和最小值
         var overallMax = Math.max(...maxValues);
         var overallMin = Math.min(...minValues);
 
-        var markPointData = [];
+        // 處理標記點數據
+        function processMarkPointData(chat_mode) {
+            var markPointData = [];
 
-        // 先获取所有图例的状态，以便判断哪些曲线被隐藏
-        var legendStatus = {}; // 存储每个系列是否隐藏，初始为false（显示）
-        chartData.chart_xcoordinates.forEach((xCoordinate, index) => {
-            // 假设你有一种机制去判断图例是否隐藏，legendStatus['chart' + index] = true / false
-            legendStatus['chart' + index] = true; // 这里根据你的图例显示机制调整
-        });
+            if ((chat_mode == 1 || chat_mode == 5 || chat_mode == 3  || chat_mode ==4 )  && threshold_torque_total && threshold_torque_total.length > 0 && downshift_torque_total && downshift_torque_total.length > 0) {
+                var thresholdArray = threshold_torque_total.split(',').map(Number);
+                var downshiftArray = downshift_torque_total.split(',').map(Number);
+                //console.log(downshiftArray);
 
-        function processTorqueData(torqueData, torqueType, color) {
-            torqueData.split(',').forEach(function (torque) {
-                processTorque(
-                    parseFloat(torque),
-                    torqueType,
-                    color,
-                    xData,
-                    seriesData
-                );
-            });
-        }
+                // 標註 threshold_torque 點
+                last_key_threshold_torque.forEach((threshold, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
 
-
-
-        if (chat_mode == 1 && threshold_torque_total && downshift_torque_total) {
-            if (Array.isArray(threshold_torque_total) && threshold_torque_total.length > 0) {
-                // 遍历 threshold_torque_total 数组
-                threshold_torque_total.forEach((torque, index) => {
-                    var thresholdTorque = parseFloat(torque);
+                    //查找 yData 中是否包含 threshold_torque
+                    var yValue = yData[threshold];
                     
-                    if (thresholdTorque > 0) {
+                    if (yValue !== undefined) {
                         markPointData.push({
                             type: 'max',
-                            name: 'Threshold Torque ' + (index + 1),  
-                            coord: [xData[index], thresholdTorque],  
+                            name: `threshold_torque ${index + 1}`,
+                            coord: [threshold, yValue], 
                             symbol: 'circle',
                             symbolSize: 6,
-                            itemStyle: {
-                                color: 'blue'
+                            itemStyle: { color: 'blue' },
+                            label: {
+                                show: true,
+                                formatter: `threshold_torque: ${thresholdArray[index]}`,
+                                position: 'top' 
+                            }
+                        });
+                    }
+                });
+
+                // 標註 downshift_torque 點
+                last_key_downshift_torque.forEach((downshift, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
+
+                    //查找 yData 中是否包含 downshift_torque
+                    var yValue = yData[downshift];
+                    
+                    if (yValue !== undefined) {
+                        markPointData.push({
+                            type: 'max',
+                            name: `downshift_torque ${index + 1}`,
+                            coord: [downshift, yValue], 
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: 'green' },
+                            label: {
+                                show: true,
+                                formatter: `downshift_torque: ${downshiftArray[index]}`,
+                                position: 'top' 
                             }
                         });
                     }
                 });
             }
-    
-            processTorqueData(threshold_torque_total, 'threshold_torque', 'blue');
-            processTorqueData(downshift_torque_total, 'downshift_torque', 'green');
+
+
+            if(chat_mode == 2 && last_key_threshold_angle ) {
+                var threshold_angle_array = threshold_angle_total.split(',').map(Number);
+                console.log(last_key_threshold_angle);
+
+                last_key_threshold_angle.forEach((threshold, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
+
+                    //查找 yData 中是否包含 threshold_angle
+                    var yValue = yData[threshold];
+                    
+                    if (yValue !== undefined) {
+                        markPointData.push({
+                            type: 'max',
+                            name: `threshold_angle ${index + 1}`,
+                            coord: [threshold, yValue], 
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: 'blue' },
+                            label: {
+                                show: true,
+                                formatter: `threshold_angle:${threshold_angle_array[index]}`,
+                                position: 'top' 
+                            }
+                        });
+                    }
+                });
+            }
+
+        
+            return markPointData;
         }
 
+        var markPointData = processMarkPointData(chat_mode);
 
-        /*if(chat_mode == 3 && threshold_torque_total && downshift_torque_total){
-           console.log(y_val_touque_rpm)
-        }*/
-
-
-     
-
-     
-
-
-
-    var option = {
-        title: {
-            text: '',
-            subtext: chartData.chart_combine.y_title
-        },
-        grid: {
-            top: 50,
-            bottom: 50,
-            left: 50,
-            right: 50
-        },
-        tooltip: {
-            trigger: 'axis',
-            position: function (pt) {
-                return [pt[0], '10%'];
+        var option = {
+            title: {
+                text: '',
+                subtext: chartData.chart_combine.y_title
             },
-            formatter: generateTooltipContent
-        },
-        legend: {
-            data: idTotal.map((id, index) => `${index + 1} (${id})`)
-        },
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            name: chat_mode == 5 ? 'Angle' : 'Time(Ms)',
-            nameLocation: 'end',
-            nameGap: 0,
-            data: xData
-        },
-        yAxis: {
-            type: 'value',
-            boundaryGap: [0, '10%'],
-            min: overallMin,
-            max: overallMax,
-        },
-        dataZoom: generateDataZoom(),
-        color: colorPalette,
-        series: Array.from({ length: 25 }, (_, i) => {
-            if (chartData[`chart${i}_ycoordinate`]) {
-                var seriesItem = {
-                    name: idTotal[i] ? `${i + 1} (${idTotal[i]})` : `${i + 1}`,
-                    type: 'line',
-                    symbol: 'none',
-                    sampling: 'max',
-                    alignTicks: true,
-                    lineStyle: {
-                        width: 2
-                    },
-                    data: JSON.parse(chartData[`chart${i}_ycoordinate`]),
-                    markPoint: {
-                        data: markPointData
-                    }
-                };
+            grid: {
+                top: 50,
+                bottom: 50,
+                left: 50,
+                right: 50
+            },
+            tooltip: {
+                trigger: 'axis',
+                position: function (pt) { return [pt[0], '10%']; },
+                formatter: generateTooltipContent
+            },
+            legend: {
+                data: idTotal.map((id, index) => `${index + 1} (${id})`)
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                name: chat_mode == 5 ? 'Angle' : 'Time(Ms)',
+                nameLocation: 'end',
+                nameGap: 0,
+                data: xData
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '10%'],
+                min: overallMin,
+                max: overallMax,
+            },
+            dataZoom: generateDataZoom(),
+            color: colorPalette,
+            series: Array.from({ length: 25 }, (_, i) => {
+                if (chartData[`chart${i}_ycoordinate`]) {
 
-    
-                return seriesItem;
-            }
-            return null;
-        }).filter(item => item !== null)
+                    var yData = JSON.parse(chartData[`chart${i}_ycoordinate`]);
+                    //console.log(`Curve ${i + 1} (${idTotal[i] || ''}):`, yData);
+                    return {
+                        name: idTotal[i] ? `${i + 1} (${idTotal[i]})` : `${i + 1}`,
+                        type: 'line',
+                        symbol: 'none',
+                        sampling: 'max',
+                        alignTicks: true,
+                        lineStyle: { width: 1.25 },
+                        data: yData,
+                        markPoint: { data: markPointData }
+                    };
+                }
+                return null;
+            }).filter(item => item !== null)
         };
 
-        // 設置圖表選項
         myChart_combine.setOption(option);
-        myChart_combine.resize({
-            width: window.innerWidth * 0.8,
-            height: 400,
-        });
+        myChart_combine.resize({ width: window.innerWidth * 0.8, height: 400 });
     </script>
 <?php }else if($path == "combinedata" && $data['chat_mode'] == "6"){?>
         <script>
@@ -2290,19 +2282,31 @@ const toggleButton = document.getElementById('toggle-select-all');
 const language = '<?php echo $data['language'];?>';
     
 // 根據 language 設定按鈕文字
-function updateButtonText(allChecked) {
-    let buttonText = 'Select All'; // 預設為英文
+    function updateButtonText(allChecked) {
+        let buttonText = 'Select All';
 
-    if (language == 'zh-cn') {
-        buttonText = allChecked ? '取消全选' : '全选'; // 簡體中文
-    } else if (language == 'zh-tw') {
-        buttonText = allChecked ? '取消全選' : '全選'; // 繁體中文
-    } else if (language == 'en-us') {
-        buttonText = allChecked ? 'Deselect' : 'Select'; // 英文
+        // 預設為英文
+        if (language == 'zh-cn') {
+            buttonText = allChecked ? '取消全选' : '全选';
+            // 簡體中文
+        } else if (language == 'zh-tw') {
+            buttonText = allChecked ? '取消全選' : '全選';
+            // 繁體中文
+        } else if (language == 'en-us') {
+            buttonText = allChecked ? 'Deselect' : 'Select';
+            // 英文
+        }
+
+        // 確保 toggleButton 是有效的 DOM 元素
+        if (toggleButton) {
+            toggleButton.innerHTML = buttonText;
+        } else {
+            //console.error('toggleButton is null or not defined');
+        }
     }
-    
-    toggleButton.innerHTML = buttonText;
-}
+
+// 假設在某處你獲取 toggleButton
+//const toggleButton = document.getElementById('your-button-id')
 
 // 點擊按鈕觸發的函數：全選或取消全選
 function selectAllCheckboxes() {

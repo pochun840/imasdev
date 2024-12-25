@@ -617,7 +617,6 @@ function findRangeMatch(yData, targetValue, labelPrefix, color) {
     }
 }
 
-
 //添加標記點 
 function addMarkPoint(index, yValue, targetValue, labelPrefix, color) {
     markPointData.push({
@@ -634,3 +633,4 @@ function addMarkPoint(index, yValue, targetValue, labelPrefix, color) {
         },
     });
 }
+

@@ -29,16 +29,31 @@ class Historical{
   
     }
 
+    public function get_temp_id($system_sn){
+        $system_sn_array = explode(",", $system_sn);
+        $system_sn_array = array_map('intval', $system_sn_array);
+        $sql = "SELECT system_sn FROM `fasten_data` WHERE on_flag ='0'  AND id IN (" . implode(",", $system_sn_array) . ") ORDER BY data_time DESC ";
+        //echo $sql;die();
+        $statement = $this->db->prepare($sql);
+        $statement->execute();
+        $rows = $statement->fetchall(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+
+
     #取得CSV
     public function csv_info($system_sn){
 
         if($system_sn != 'total'){
             $system_sn_array = explode(",", $system_sn);
             $system_sn_array = array_map('intval', $system_sn_array);
-            $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' AND system_sn IN (" . implode(",", $system_sn_array) . ") ORDER BY data_time DESC";
+            $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0'  AND id IN (" . implode(",", $system_sn_array) . ") ORDER BY data_time DESC";
+
         }else{
-            $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0' ORDER BY data_time desc";
+            $sql = "SELECT * FROM `fasten_data` WHERE on_flag ='0'  ORDER BY data_time desc";
         }
+
+        //echo $sql;die();
 
        
         $statement = $this->db->prepare($sql);
@@ -532,7 +547,7 @@ class Historical{
     
         if ($found_count < count($no_arr)) {
             $missing_ids = implode(', ', $missing_files);
-            echo "Missing files for IDs: $missing_ids\n";
+            //echo "Missing files for IDs: $missing_ids\n";
         }
     
         if (empty($csv_array)) {
@@ -605,11 +620,6 @@ class Historical{
     
         return $values_array;
     }
-    
-
-
-    
-    
     
 
     public function get_info($no, $chat_mode){

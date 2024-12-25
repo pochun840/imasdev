@@ -139,7 +139,7 @@ class Historicals extends Controller
                 $system_sns[] = $v['system_sn'];  
     
                 $info_data = "<tr>";
-                $info_data .= '<td style="text-align: center;"><input class="form-check-input" type="checkbox" name="test1" id="test1"  value="' . $v['system_sn'] . '" style="zoom:1.2;vertical-align: middle;"></td>';
+                $info_data .= '<td style="text-align: center;"><input class="form-check-input" type="checkbox" name="test1" id="test1"  value="' . $v['id'] . '" style="zoom:1.2;vertical-align: middle;"></td>';
                 $info_data .= "<td id='system_sn'>" . $v['system_sn'] . "</td>";
                 $info_data .= "<td>" . $v['data_time'] . "</td>";
                 $info_data .= "<td></td>";
@@ -511,8 +511,6 @@ class Historicals extends Controller
         $torque_arr = $this->Historicals_newModel->details('torque');
 
         // 用 cookie 取得已勾選的 id
-
-        
         if (!empty($_COOKIE['checked_system_sn'])) {
 
             $checkedsn = $_COOKIE['checked_system_sn'];
@@ -535,9 +533,10 @@ class Historicals extends Controller
 
             $info_arr = array();
             $info_arr['system_sn'] =  $checkedsn;
-
+      
             // 取得所有的資料
             //$info_final = $this->Historicals_newModel->get_data($info_arr);
+
             $info_final = $this->Historicals_newModel->csv_info($checkedsn);  
             $data['chat_mode_arr_combine'] = $this->Historicals_newModel->details('chart_type');
             $data['info_final'] = $info_final;
@@ -560,10 +559,12 @@ class Historicals extends Controller
 
 
             // 取得曲線圖的資料
-            $final_label = $this->Historicals_newModel->get_result($checkedsn, $data['chat_mode']);
+            $temp_sn = $this->Historicals_newModel->get_temp_id($checkedsn);
+            $temp_sn = implode(',', array_column($temp_sn, 'system_sn'));
+            $final_label = $this->Historicals_newModel->get_result($temp_sn, $data['chat_mode']);
 
-            
-            
+
+                
             if (empty($final_label)) {
                 $final_label = null;
             } else {
@@ -651,6 +652,14 @@ class Historicals extends Controller
                         } else {
                             
                             $tmp_x_val = $this->Historicals_newModel->get_column_values_by_index($id,1);
+                            $tmp_x_val = array_map(function($value) {
+                                //如果匹配到類似 "1.0" 或 "2.0" 等格式，替換成整数
+                                if (preg_match('/^(\d+)\.0$/', (string)$value, $matches)) {
+                                    return (int)$matches[1]; 
+                                }
+                                return $value;  
+                            },  $tmp_x_val);
+                            
                     
                             $time_position = array_search("Time", $tmp_x_val);
                             $angle_position = array_search("Angle", $tmp_x_val);
@@ -680,8 +689,10 @@ class Historicals extends Controller
                                 $new_array = [];
                             }
 
-                            
+                       
+
                             $xCoordinates[$i] = json_encode($tmp_x_val); 
+
                             $chartData[$i]['y'] = $this->prepareChartData($dataSet, $TransType, $data['unit']);
                             $chartData[$i]['max'] = floatval(max($chartData[$i]['y']));
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
@@ -779,6 +790,7 @@ class Historicals extends Controller
 
             $threshold_torque = '';
             $downshift_torque = '';
+            $threshold_angle  = '';
 
 
             $last_keys_1_temp = array(); 
@@ -791,10 +803,19 @@ class Historicals extends Controller
                 if (isset($item['downshift_torque'])) {
                     $downshift_torque .= $item['downshift_torque'] . ',';
                 }
-            
+
+                if (isset($item['step_threshold_angle'])) {
+                    $threshold_angle .= $item['step_threshold_angle'] . ',';
+                    $data['threshold_angle_total'] = rtrim($threshold_angle,',');
+                    //echo $threshold_angle;
+                }
+                
+                //echo $downshift_torque;
                 if (!empty($item['system_sn'])) {
                     $threshold_torque_temp  = floatval($item['threshold_torque']);
                     $downshift_torque_temp  = floatval($item['downshift_torque']);
+                    $threshold_angle_temp   = $item['step_threshold_angle'];
+
             
                     if (!empty($threshold_torque_temp) && $threshold_torque_temp > 0.1) {
                         $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); // angle
@@ -808,14 +829,77 @@ class Historicals extends Controller
             
     
                     }
+
+                    if(!empty($downshift_torque_temp) && $downshift_torque_temp > 0.1){
+             
+                        $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 2); // torque
+                     
+
+                        $lower_bound = $item['downshift_torque'] + 0.000; // 下限
+                        $upper_bound = $item['downshift_torque'] + 0.099; // 上限
+                        $found_key = null;
+                        foreach ($y_val_torque as $key => $value) {
+                            if ($value >= $lower_bound && $value <= $upper_bound) {
+                                $found_key = $key;
+                                break; 
+                            }
+                        }
+
+                        $last_downshift_torque_key_tmp[] = $found_key;
+
+                    }
+
+                    if( $item['step_threshold_angle'] > 0 ){
+     
+                        #先不處理尋牙 
+                        #尋找 step_threshold_angle_key  在csv檔案裡 angle = 0的 key值
+                        $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); // angle
+
+                        $last_key_threshold_angle = $this->getLastZeroKey($y_val_angle);
+                        $last_keys_threshold_angle_temp[] = $last_key_threshold_angle;
+
+                        $threshold_angle = $item['step_threshold_angle'].",";
+                        
+                    }
+
+                    if( $item['step_threshold_angle'] > 0  && $item['step_prr_angle'] > 0){
+                        #尋找 step_threshold_angle_key  在csv檔案裡 angle = 0 && 的key值
+
+                        $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); //angle
+                        $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); //speed
+            
+
+                        
+
+                    }
+                    
+                    if($data['chat_mode'] == 3 ){
+                        $y_val_speed  = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); // speed
+                        $y_val_speed  = json_encode(array_values(array_map('floatval', array_slice($y_val_speed, 1))));
+                        $last_speed_y_val[] = $y_val_speed;
+
+                    }
+
+                  
                 }
             }
             
-            $threshold_torque = rtrim($threshold_torque, ',');
-            $data['threshold_torque'] = $threshold_torque;
 
-            $downshift_torque = rtrim($downshift_torque, ',');
-            $data['downshift_torque'] = $downshift_torque;
+            if($data['chat_mode'] != 2 ){
+                $threshold_torque = rtrim($threshold_torque, ',');
+                $data['threshold_torque'] = $threshold_torque;
+
+                $downshift_torque = rtrim($downshift_torque, ',');
+                $data['downshift_torque'] = $downshift_torque;
+            }
+
+            /*if($data['chat_mode'] == 2 ){  
+                $threshold_angle = rtrim($threshold_angle, ',');
+                $data['threshold_angle'] =  $threshold_angle;
+
+            }*/
+
+            
 
 
             if(!empty($last_keys_1_temp)){
@@ -823,12 +907,26 @@ class Historicals extends Controller
   
             }
 
+            
+            if(!empty($last_downshift_torque_key_tmp)){
+                $data['last_key_downshift_torque'] = $last_downshift_torque_key_tmp;
+  
+            }
 
-            //echo  "<pre>";
-            //print_r($data);
-            //echo  "</pre>";
-            // die();
+            if(!empty($last_keys_threshold_angle_temp)){
+                $data['last_key_threshold_angle']  = $last_keys_threshold_angle_temp;
+            }
 
+    
+            if(!empty($last_speed_y_val)){
+                $data['last_speed_y_val_rpm'] = $last_speed_y_val;
+            }
+
+          
+            /*echo "<pre>";
+            print_r($data);
+            echo "</pre>";*/
+            
             $this->view('historicals/index', $data);
         
         }
