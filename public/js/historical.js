@@ -634,3 +634,17 @@ function addMarkPoint(index, yValue, targetValue, labelPrefix, color) {
     });
 }
 
+//合併專用的調色盤
+function getColorPalette() {
+    return [
+        '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+        '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+        '#f5b041', '#5dade2', '#a2d9ce', '#d91d3a', '#ff9c00',
+        '#6c5b7b', '#c06c84', '#f67280', '#ffbe0b', '#2a9d8f',
+        '#e9c46a', '#f1faee', '#264653', '#2a9d8f', '#e76f51',
+        '#f9a826', '#e63946', '#f1faee', '#a8dadc', '#457b9d',
+        '#1d3557', '#f1faee', '#e63946', '#f1faee', '#a8dadc',
+        '#f77f00', '#d62839', '#003049', '#f1faee', '#e9c46a',
+        '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
+    ];
+}

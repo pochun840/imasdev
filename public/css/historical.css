@@ -1070,3 +1070,76 @@ svg
     margin-right: 10px;
 }
 
+
+
+/* 分頁容器樣式 */
+.pagination {
+    display: flex; /* 使用 flexbox 排版方式，使子元素水平排列 */
+    justify-content: center; /* 水平居中對齊所有分頁元素 */
+    align-items: center; /* 垂直居中對齊所有分頁元素 */
+    padding: 10px; /* 給分頁容器添加內邊距 */
+    margin-top: 20px; /* 在分頁容器上方添加外邊距 */
+    font-family: Arial, sans-serif; /* 設置字型為 Arial，無襯線字型 */
+    background-color: #f8f9fa; /* 設置背景顏色為淺灰色 */
+    border-radius: 8px; /* 設置圓角邊框，半徑為 8px */
+}
+
+/* 分頁頁碼的樣式 */
+.pagination a, .pagination .current-page {
+    text-decoration: none; /* 取消文字的下劃線 */
+    color: #007bff; /* 設置文字顏色為藍色 */
+    padding: 8px 12px; /* 設置內邊距，增大點擊範圍 */
+    margin: 0 5px; /* 設置每個分頁元素的左右外邊距 */
+    border-radius: 4px; /* 設置圓角邊框，半徑為 4px */
+    font-size: 16px; /* 設置文字大小 */
+    display: inline-block; /* 使元素呈現為塊狀元素，並且讓它們在一行內顯示 */
+    transition: background-color 0.3s ease; /* 設置背景顏色變化的過渡動畫效果 */
+}
+
+/* 當前頁的樣式 */
+.pagination .current-page {
+    background-color: #007bff; /* 設置背景顏色為藍色 */
+    color: white; /* 設置文字顏色為白色 */
+    font-weight: bold; /* 設置字體加粗 */
+    cursor: default; /* 設置鼠標為預設狀態，避免被點擊 */
+}
+
+/* 鼠標懸停時的樣式 */
+.pagination a:hover {
+    background-color: #0056b3; /* 懸停時背景顏色變深 */
+    color: white; /* 懸停時文字顏色變為白色 */
+}
+
+/* 上一頁和下一頁按鈕的樣式 */
+.pagination .prev, .pagination .next {
+    padding: 8px 16px; /* 設置按鈕的內邊距 */
+    background-color: #007bff; /* 設置背景顏色為藍色 */
+    color: white; /* 設置文字顏色為白色 */
+    border-radius: 4px; /* 設置圓角邊框，半徑為 4px */
+    font-size: 16px; /* 設置文字大小 */
+    cursor: pointer; /* 設置鼠標為指針形狀 */
+    transition: background-color 0.3s ease; /* 設置背景顏色變化的過渡動畫效果 */
+}
+
+/* 上一頁和下一頁按鈕懸停效果 */
+.pagination .prev:hover, .pagination .next:hover {
+    background-color: #0056b3; /* 懸停時背景顏色變深 */
+}
+
+/* 禁用的分頁按鈕樣式 */
+.pagination .disabled {
+    color: #aaa; /* 設置文字顏色為灰色 */
+    cursor: not-allowed; /* 禁用時鼠標顯示為禁止狀態 */
+}
+
+/* 響應式設計：當屏幕尺寸小於 768px 時，調整樣式 */
+@media (max-width: 768px) {
+    .pagination a, .pagination .current-page {
+        font-size: 14px; /* 調整文字大小 */
+        padding: 6px 10px; /* 減小內邊距 */
+    }
+    .pagination .prev, .pagination .next {
+        padding: 6px 12px; /* 減小按鈕內邊距 */
+    }
+}
+

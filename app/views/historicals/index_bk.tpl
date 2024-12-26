@@ -413,7 +413,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                         ?>
                                         <tr>
                                             <td style="text-align: center;">
-                                                <input class="form-check-input" type="checkbox" name="test1" id="test1"  value="<?php echo $link;?>" style="zoom:1.2;vertical-align: middle;">
+                                                <input class="form-check-input" type="checkbox" name="test1" id="test1"  value="<?php echo $v_info['id'];?>" style="zoom:1.2;vertical-align: middle;">
                                             </td>
                                             <td><?php echo $v_info['system_sn'];?></td>
                                             <td><?php echo $v_info['data_time'];?></td>
@@ -589,11 +589,17 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                 </label>
                                 <label style="padding-left: 5%">
                                     <?php echo $text['Torque_Unit_text']; ?> :
-                                        <select id="unit" style="width: 100px" onchange="unit_change_combine(this)" >
-                                          <?php foreach($data['torque_mode_arr'] as $k_torque => $v_torque){?>
-                                                <option  value="<?php echo $k_torque;?>"  <?php if( $data['unit'] == $k_torque){echo "selected";}else{echo "";}?>  > <?php echo $text[$v_torque];?> </option>
-                                          <?php } ?>        
+                                       <select id="unit" style="width: 100px" onchange="unit_change_combine(this)">
+                                            <?php foreach ($data['torque_mode_arr'] as $k_torque => $v_torque) { ?>
+                                                <option value="<?php echo $k_torque; ?>" 
+                                                    <?php 
+                                                        echo (isset($data['unit']) && $data['unit'] == $k_torque) ? "selected" : ""; 
+                                                    ?>>
+                                                    <?php echo $text[$v_torque]; ?>
+                                                </option>
+                                            <?php } ?>
                                         </select>
+
                                 </label>&nbsp;
                                 <button id="downland_combine" type="button" class="t2 ExportButton"><?php echo $text['Export_text']; ?> HTML</button>
                             </div>
@@ -1101,12 +1107,23 @@ addMessage();
     var chat_mode = '<?php echo $data['chart_info']['chat_mode'];?>';
     var step_prr_rpm   = '<?php echo $data['job_info'][0]['step_prr_rpm'];?>';
     var step_prr_angle = '<?php echo $data['job_info'][0]['step_prr_angle'];?>';
-    var step_threshold_angle = '<?php echo $data['job_info'][0]['step_threshold_angle'];?>';
+    var step_threshold_angle = parseFloat('<?php echo $data['job_info'][0]['step_threshold_angle']; ?>');
+
     var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
     var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
     var job_type = '<?php echo $data['job_type'];?>';
-    var control_torque ='<?php echo $data['control_torque'];?>'; 
-    
+    var control_torque = (typeof <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?>) 
+        ? parseFloat('<?php echo htmlspecialchars($data['chart_info']['control_torque'], ENT_QUOTES, 'UTF-8'); ?>') 
+        : 0; 
+
+    var last_key = (typeof <?php echo isset($data['chart_info']['last_key']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['last_key']) ? 'true' : 'false'; ?>) 
+        ? parseInt('<?php echo $data['chart_info']['last_key']; ?>', 10) 
+        : 0; 
+
+    var last_key_downshift_torque = (typeof <?php echo isset($data['chart_info']['last_key_downshift_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['last_key_downshift_torque']) ? 'true' : 'false'; ?>) 
+        ? parseInt('<?php echo $data['chart_info']['last_key_downshift_torque']; ?>', 10) 
+        : 0; 
+
     var option = {
             
             grid: GridConfig.generate('90%', '70%', '3%', '20%'),
@@ -1166,104 +1183,208 @@ addMessage();
     };
 
     
-    //type = normalstep && chat_mode = 1 && chat_mode = 2 處理尋牙
-    if (step_prr_rpm != '' && step_prr_angle != ''  && step_prr_rpm > 0 && step_prr_angle > 0 && job_type == 'normalstep' && y_data_val.length > 0) {
-            var x_value = x_data_val[0];
-            var y_value = y_data_val[0];
+    //type = normalstep && chat_mode = 2  || chat_mode = 5 處理 step_threshold_angle
+    if (step_prr_rpm != '' && step_prr_angle != '' && step_prr_rpm > 0 && step_prr_angle > 0 && job_type == 'normalstep' && y_data_val.length > 0 && step_threshold_angle > 0 && (chat_mode == '2' || chat_mode == '5')) {
+        var x_value = x_data_val[0];
+        var y_value = y_data_val[0];
 
-            // 確保 markPoint 已經初始化
-            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
-            // 根據 chat_mode 決定 label 的 formatter 格式
-            var labelFormatter = '';
-            if (chat_mode == '2') {
-                labelFormatter = 'threshold_angle: 0';
-            } else if (chat_mode == '1') {
-                labelFormatter = 'threshold_torque:' + y_value;
+        // 根據 chat_mode 決定 label 的 formatter 格式
+        var labelFormatter = 'threshold_angle:' + step_threshold_angle;
+
+        // 將 markPoint 資料加入到數據中
+        option.series[0].markPoint.data.push({
+            xAxis: x_value,  
+            yAxis: y_value,  
+            symbol: 'circle',
+            symbolSize: 6,   
+            itemStyle: {
+                color: 'blue'  
+            },
+            label: {
+                position: 'top',
+                formatter: labelFormatter
             }
-
-            // 將 markPoint 資料加入到數據中
-            option.series[0].markPoint.data.push({
-                xAxis: x_value,  
-                yAxis: y_value,  
-                symbol: 'circle',
-                symbolSize: 6,   
-                itemStyle: {
-                    color: 'blue'  
-                },
-                label: {
-                    position: 'top',
-                    formatter: labelFormatter
-                }
-            });
+        });
     }
 
-    if ((chat_mode == '1') && threshold_torque != '0' && job_type == 'normalstep' && control_torque != '' ) {
-        console.log(threshold_torque);
-        console.log('wwee');
-    }
-
-    
 
 
-   
+    //type = normalstep && chat_mode = 1   &&  threshold_torque != '0' 處理  threshold_torque
+    if (chat_mode == '1'  && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
-    // 尋找並顯示 step_threshold_angle（如果在 chat_mode == '5'）
-    /*if (chat_mode == '5') {
-        var step_threshold_angle_num = parseFloat(step_threshold_angle);
-
-
-        // 如果 x_data_val 中有與 step_threshold_angle 相等的值，則找到對應的 X 軸位置
-        if (x_data_val.includes(step_threshold_angle_num.toString())) {
-            var index = x_data_val.indexOf(step_threshold_angle_num.toString());
-            var x_value = x_data_val[index];
-
-            // 確保 markLine 存在，如果不存在則初始化
-            option.series[0].markLine = option.series[0].markLine || { data: [] };
-
-            // 隱藏虛線
-            option.series[0].markLine.data.push({
-                xAxis: x_value,  // 在 X 軸上標註 step_threshold_angle 值
-                name: 'Step Threshold Angle',
-                symbol: 'none',  // 确保移除箭头
-                symbolSize: 0,    // 确保没有箭头
-                clip: true,
-                lineStyle: {
-                    type: 'dashed',  // 虚线
-                    color: 'green',   // 绿色
-                    width: 0.75,         // 线宽
-                    opacity: 0    
-                },
-                label: {
-                    //position: 'start',  // 标签位置
-                    //formatter: 'threshold_angle: ' + step_threshold_angle
-                },
-
-                show: true  
-            });
-
-            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-            option.series[0].markPoint.data.push({
-                xAxis: x_value,  
-                yAxis: threshold_torque,  // 对应的 Y 轴值
-                symbol: 'circle',  // 圆点标注
-                symbolSize: 8,  // 圆点的大小
-                itemStyle: {
-                    color: 'pink'  
-                },
-                label: {
-                    position: 'top',  // 圆点标签位置
-                    formatter: 'threshold_angle:' + step_threshold_angle
-                }
-            });
-
-           
+        // 精確尋找 threshold_torque
+        var exactMatchIndex = -1;
+            for (var i = y_data_val.length - 1; i >= 0; i--) {  // 從後往前遍歷
+            if (y_data_val[i] == control_torque) {
+                exactMatchIndex = i;
+                console.log(exactMatchIndex);
+                //break;  // 找到最後一筆符合條件的點後停止搜尋
+            }
         }
-    }*/
+
+        // 如果找到精確匹配的點，則將其標註
+        if (exactMatchIndex !== -1) {
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];
+
+            //已找到點標註圓點
+            addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
+
+        }
+    }
+
+    //type = normalstep && chat_mode = 1   &&  downshift_torque != '0' 處理  downshift_torque
+    if (chat_mode == '1' && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(downshift_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+        // 將 downshift_torque 轉換為浮動數
+        var downshiftTorqueFloat = parseFloat(downshift_torque);
+
+        // 嘗試精確匹配
+        var exactMatchIndex = findExactMatch(y_data_val, downshiftTorqueFloat);
+
+        if (exactMatchIndex !== -1) {
+            // 找到精確匹配
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];
+
+            //已找到點標註圓點
+            addMarkPoint(exactMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+        } else {
+            // 如果沒有精確匹配，則進行範圍匹配
+            var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
+
+            if (rangeMatchIndex !== -1) {
+                // 找到範圍匹配
+                var rangeXValue = x_data_val[rangeMatchIndex];
+                var rangeYValue = y_data_val[rangeMatchIndex];
+
+                //已找到點標註圓點
+                addMarkPoint(rangeMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:');
+
+            }
+        }
+    }
+
+    if ((chat_mode == '3'  || chat_mode == '4' ) && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+        var y_val_torque = <?php echo isset($data['chart_info']['y_val_torque']) ? $data['chart_info']['y_val_torque'] : '[]'; ?>;
 
 
+        //精確尋找threshold_torque
+        var exactMatchIndex = -1;
+        for (var i = y_val_torque.length - 1; i >= 0; i--) {  
+            if (y_val_torque[i] == control_torque) {
+                exactMatchIndex = i;
+                console.log("找到匹配点，索引:", exactMatchIndex);
+                break;
+            }
+        }
+
+        // 需要用圓點標註
+        if (exactMatchIndex !== -1) {
+            var exactXValue = x_data_val[exactMatchIndex]; 
+            var exactYValue = y_data_val[exactMatchIndex];
+            addMarkPoint(last_key, exactYValue, threshold_torque, 'blue', 'threshold_torque:');
+        } 
+    }
+
+    if ((chat_mode == '3'  ||  chat_mode == '4')  && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+        var y_val_torque = <?php echo isset($data['chart_info']['y_val_torque']) ? $data['chart_info']['y_val_torque'] : '[]'; ?>;
+
+        // 將 downshift_torque 轉換為浮動數字
+        var downshiftTorqueFloat = parseFloat(downshift_torque);
+
+        // 嘗試精確匹配
+        var exactMatchIndex = findExactMatch(y_val_torque, downshiftTorqueFloat);
+
+        if (exactMatchIndex !== -1) {
+            // 找到精確匹配
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];  // 使用 y_data_val 來標註 Y 軸
+
+            // 已找到點，標註圓點
+            addMarkPoint(last_key_downshift_torque, exactYValue, downshift_torque, 'green', 'downshift_torque:'); 
+        } else {
+            // 如果沒有精確匹配，則進行範圍匹配
+            var rangeMatchIndex = findRangeMatch(y_val_torque, downshiftTorqueFloat);
+
+            if (rangeMatchIndex !== -1) {
+                // 找到範圍匹配
+                var rangeXValue = x_data_val[rangeMatchIndex];
+                var rangeYValue = y_data_val[rangeMatchIndex];  // 使用 y_data_val 來標註 Y 軸
+
+                // 已找到點，標註圓點
+                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque, 'green', 'downshift_torque:');
+            }
+        }
+    }
 
     
+
+    // chart_mode == 5
+    if (chat_mode == '5' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+        // 精確尋找 threshold_torque
+        var exactMatchIndex = -1;
+            for (var i = y_data_val.length - 1; i >= 0; i--) {  // 從後往前遍歷
+            if (y_data_val[i] == control_torque) {
+                exactMatchIndex = i;
+                console.log(exactMatchIndex);
+                //break;  // 找到最後一筆符合條件的點後停止搜尋
+            }
+        }
+
+        // 如果找到精確匹配的點，則將其標註
+        if (exactMatchIndex !== -1) {
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];
+
+            //已找到點標註圓點
+            addMarkPoint(exactMatchIndex, exactYValue, threshold_torque,'blue','threshold_torque:');
+        }
+    }
+
+
+    if (chat_mode == '5' && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(downshift_torque)) {
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+        // 將 downshift_torque 轉換為浮動數
+        var downshiftTorqueFloat = parseFloat(downshift_torque);
+
+        // 嘗試精確匹配
+        var exactMatchIndex = findExactMatch(y_data_val, downshiftTorqueFloat);
+
+        if (exactMatchIndex !== -1) {
+            // 找到精確匹配
+            var exactXValue = x_data_val[exactMatchIndex];
+            var exactYValue = y_data_val[exactMatchIndex];
+
+            //已找到點標註圓點
+            addMarkPoint(exactMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+        } else {
+            // 如果沒有精確匹配，則進行範圍匹配
+            var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
+
+            if (rangeMatchIndex !== -1) {
+                // 找到範圍匹配
+                var rangeXValue = x_data_val[rangeMatchIndex];
+                var rangeYValue = y_data_val[rangeMatchIndex];
+
+                //已找到點標註圓點
+                addMarkPoint(rangeMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:');
+
+            }
+        }
+    }
+
+        
     //如果 limit_val=1 曲線圖 要顯示上下限 min_val 及 max_val
     if ((x_title === "Time(MS)" && (y_title === "Power" || y_title === "RPM")) ||chat_mode == 2) {
         document.cookie = "limit_val=" + limit_val + "; expires=" + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
@@ -1296,13 +1417,51 @@ addMessage();
       height: 400,
     });
 
+    function findExactMatch(data, targetValue) {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] === targetValue) {
+                return i; // 找到精確匹配的索引
+            }
+        }
+        return -1; // 如果沒有找到，返回 -1
+    }
+
+    function findRangeMatch(data, targetValue) {
+        let rangeStart = targetValue;
+        let rangeEnd = targetValue + 0.099; // 設定範圍上限
+
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] >= rangeStart && data[i] <= rangeEnd) {
+                return i; // 找到範圍內匹配的索引
+            }
+        }
+        return -1; // 如果沒有找到，返回 -1
+    }
+
+    function addMarkPoint(last_key_downshift_torque, yValue, torqueValue, color , labelText) {
+        option.series[0].markPoint.data.push({
+            xAxis: last_key_downshift_torque,
+            yAxis: yValue,
+            symbol: 'circle',
+            symbolSize: 6,
+            itemStyle: { color: color },  // 動態設定顏色
+            label: { 
+                position: 'top', 
+                formatter: labelText + torqueValue // 動態設定標籤文本
+            }
+        });
+    }
+
+
 
 </script>
 <?php } ?>
 
 <?php if ($path == "nextinfo" && isset($data['chart_info']['chat_mode']) && $data['chart_info']['chat_mode'] == "6") { ?>
     <script>
+      
         var myChart = echarts.init(document.getElementById('chartinfo'));
+        var chat_mode = '<?php echo $data['chart_info']['chat_mode']?>';
 
         var x_data_val = <?php echo $data['chart_info']['x_val']; ?>; // X軸
         var y_data_val = <?php echo $data['chart_info']['y_val']; ?>; // Y軸1(torque)
@@ -1313,6 +1472,26 @@ addMessage();
 
         var max_val_1 = <?php echo $data['chart_info']['max1']; ?>; // Y軸2的上限
         var min_val_1 = <?php echo $data['chart_info']['min1']; ?>; // Y軸2的上限
+
+        var step_prr_rpm   = '<?php echo $data['job_info'][0]['step_prr_rpm'];?>';
+        var step_prr_angle = '<?php echo $data['job_info'][0]['step_prr_angle'];?>';
+        var step_threshold_angle = parseFloat('<?php echo $data['job_info'][0]['step_threshold_angle']; ?>');
+    
+        var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
+        var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
+        var job_type = '<?php echo $data['job_type'];?>';
+        var control_torque = (typeof <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?>) 
+            ? parseFloat('<?php echo htmlspecialchars($data['chart_info']['control_torque'], ENT_QUOTES, 'UTF-8'); ?>') 
+            : 0; 
+
+        var last_key = (typeof <?php echo isset($data['chart_info']['last_key']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['last_key']) ? 'true' : 'false'; ?>) 
+            ? parseInt('<?php echo $data['chart_info']['last_key']; ?>', 10) 
+            : 0; 
+
+        var last_key_downshift_torque = (typeof <?php echo isset($data['chart_info']['last_key_downshift_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['last_key_downshift_torque']) ? 'true' : 'false'; ?>) 
+            ? parseInt('<?php echo $data['chart_info']['last_key_downshift_torque']; ?>', 10) 
+            : 0; 
+
 
         var option = {
             grid: GridConfig.generate('90%', '70%', '3%', '20%'),
@@ -1395,7 +1574,90 @@ addMessage();
             ]
         };
 
-        
+
+
+        if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {    
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+            // 精確尋找 threshold_torque
+            var exactMatchIndex = -1;
+                for (var i = y_data_val.length - 1; i >= 0; i--) {  // 從後往前遍歷
+                if (y_data_val[i] == control_torque) {
+                    exactMatchIndex = i;
+                    console.log(exactMatchIndex);
+                    //break;  // 找到最後一筆符合條件的點後停止搜尋
+                }
+            }
+
+            // 如果找到精確匹配的點，則將其標註
+            if (exactMatchIndex !== -1) {
+                var exactXValue = x_data_val[exactMatchIndex];
+                var exactYValue = y_data_val[exactMatchIndex];
+
+                //已找到點標註圓點
+                addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
+            }
+        }
+
+        if (chat_mode == '6' && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(downshift_torque)) {
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+            // 將 downshift_torque 轉換為浮動數
+            var downshiftTorqueFloat = parseFloat(downshift_torque);
+
+            // 嘗試精確匹配
+            var exactMatchIndex = findExactMatch(y_data_val, downshiftTorqueFloat);
+
+            if (exactMatchIndex !== -1) {
+                // 找到精確匹配
+                var exactXValue = x_data_val[exactMatchIndex];
+                var exactYValue = y_data_val[exactMatchIndex];
+
+                //已找到點標註圓點
+                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+            } else {
+                // 如果沒有精確匹配，則進行範圍匹配
+                var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
+
+                if (rangeMatchIndex !== -1) {
+                    // 找到範圍匹配
+                    var rangeXValue = x_data_val[rangeMatchIndex];
+                    var rangeYValue = y_data_val[rangeMatchIndex];
+
+                    //已找到點標註圓點
+                    addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:');
+
+                }
+            }
+        }
+
+        if(chat_mode == '6' && job_type == 'normalstep' && step_threshold_angle > 0 ){
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+            var x_value = x_data_val[0];
+            var y_value = y_data_val_1[0];
+
+            // 根據 chat_mode 決定 label 的 formatter 格式
+            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+
+            var labelFormatter = 'threshold_angle:' + step_threshold_angle;
+
+            // 新增 markPoint 資料
+            option.series[0].markPoint.data.push({
+                xAxis: x_value, 
+                yAxis: y_value,  
+                symbol: 'circle', 
+                symbolSize: 6,   
+                itemStyle: {
+                    color: 'blue'  
+                },
+                label: {
+                    position: 'top', 
+                    formatter: labelFormatter
+                }
+            });
+
+        }
+
         //第一條曲線的上下限
         if (limit_val == 1) {
             option.series.push({
@@ -1411,6 +1673,47 @@ addMessage();
         }
 
         myChart.setOption(option);
+
+
+    function addMarkPoint(last_key_downshift_torque, yValue, torqueValue, color , labelText) {
+        option.series[0].markPoint.data.push({
+            xAxis: last_key_downshift_torque,
+            yAxis: yValue,
+            symbol: 'circle',
+            symbolSize: 6,
+            itemStyle: { color: color },  // 動態設定顏色
+            label: { 
+                position: 'top', 
+                formatter: labelText + torqueValue // 動態設定標籤文本
+            }
+        });
+    }
+
+    
+    function findExactMatch(data, targetValue) {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] === targetValue) {
+                return i; // 找到精確匹配的索引
+            }
+        }
+        return -1; // 如果沒有找到，返回 -1
+    }
+
+    function findRangeMatch(data, targetValue) {
+        let rangeStart = targetValue;
+        let rangeEnd = targetValue + 0.099; // 設定範圍上限
+
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] >= rangeStart && data[i] <= rangeEnd) {
+                return i; // 找到範圍內匹配的索引
+            }
+        }
+        return -1; // 如果沒有找到，返回 -1
+    }
+
+
+
+
     </script>
 <?php }?>
 <!----nextinfo ed----->
@@ -1418,7 +1721,7 @@ addMessage();
 <!----combine op----->
 
 <?php if ($path == "combinedata" && $data['chat_mode'] != "6"){?>
-         <script>
+        <script>
         var chartData = <?php echo json_encode($data); ?>;
         var idTotal = <?php echo json_encode($data['id_total']); ?>;
         var chat_mode = '<?php echo $data['chat_mode'];?>';
@@ -1426,14 +1729,17 @@ addMessage();
         var max_count = '<?php echo $data['id_count'];?>';
         var myChart_combine = echarts.init(document.getElementById('chart_combine'));
 
-        
-        var threshold_torque_total = <?php echo json_encode($data['threshold_torque']); ?>;
-        var downshift_torque_total = <?php echo json_encode($data['downshift_torque']); ?>;
+        var threshold_torque_total  = <?php echo isset($data['threshold_torque']) ? json_encode($data['threshold_torque']) : '[]'; ?>;
+        var downshift_torque_total  = <?php echo isset($data['downshift_torque']) ? json_encode($data['downshift_torque']) : '[]'; ?>;
+        var threshold_angle_total   = <?php echo isset($data['threshold_angle_total'])  ? json_encode($data['threshold_angle_total']) : '[]'; ?>;
+
+        var last_key_threshold_torque = <?php echo isset($data['last_key_threshold_torque']) ? json_encode($data['last_key_threshold_torque']) : '[]'; ?>;
+        var last_key_threshold_angle  = <?php echo isset($data['last_key_threshold_angle']) ? json_encode($data['last_key_threshold_angle']) : '[]'; ?>;
+        var last_key_downshift_torque = <?php echo isset($data['last_key_downshift_torque']) ? json_encode($data['last_key_downshift_torque']) : '[]'; ?>;
+
 
         // 定義顏色調色盤
         var colorPalette = [
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
             '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
             '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
             '#f5b041', '#5dade2', '#a2d9ce', '#d91d3a', '#ff9c00',
@@ -1445,271 +1751,209 @@ addMessage();
             '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
         ];
 
-        // 解析X轴数据
+        // 解析 X 軸數值
         var xCoordinatesArray = chartData.chart_xcoordinates.map(x => JSON.parse(x));
-
-        // 找到最長的 X 軸數據
-        var xData = xCoordinatesArray.reduce((longest, current) => {
-            return current.length > longest.length ? current : longest;
-        }, []);
-
-        // 針對最長 X 軸數據處理 Y 軸數據
+        var xData = xCoordinatesArray.reduce((longest, current) => current.length > longest.length ? current : longest, []);
         var seriesData = Array.from({ length: 25 }, (_, i) => {
             var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-            return yData.length === xData.length ? yData : [];
+            // 填充或截斷 yData
+            if (yData.length !== xData.length) {
+                yData = yData.slice(0, xData.length);
+                while (yData.length < xData.length) {
+                    yData.push(null);
+                }
+            }
+            return yData;
         }).filter(data => data.length > 0);
 
-
-
-        // 计算最大值和最小值
-        var maxValues = [];
-        var minValues = [];
+        // 計算最大值和最小值
+        var maxValues = [], minValues = [];
         for (var i = 0; i <= max_count; i++) {
-            var maxVal, minVal;
-            if (chat_mode == 1) {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
-                threshold_torque =  parseFloat(chartData[`chart${i}_ycoordinate_threshold_torque`]);
-                
-                console.log(threshold_torque);
-            } else if (chat_mode == 5) {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max_correct`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min_correct`]);
-            } else {
-                maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]);
-                minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]);
-            }
-
+            var maxVal = parseFloat(chartData[`chart${i}_ycoordinate_max`]) || 0;
+            var minVal = parseFloat(chartData[`chart${i}_ycoordinate_min`]) || 0;
             maxValues.push(maxVal);
             minValues.push(minVal);
         }
-
-
-
-        // 获取最大值和最小值
         var overallMax = Math.max(...maxValues);
         var overallMin = Math.min(...minValues);
 
-        var markPointData = [];
+        // 處理標記點數據
+        function processMarkPointData(chat_mode) {
+            var markPointData = [];
 
-        // 先获取所有图例的状态，以便判断哪些曲线被隐藏
-        var legendStatus = {}; // 存储每个系列是否隐藏，初始为false（显示）
-        chartData.chart_xcoordinates.forEach((xCoordinate, index) => {
-            // 假设你有一种机制去判断图例是否隐藏，legendStatus['chart' + index] = true / false
-            legendStatus['chart' + index] = true; // 这里根据你的图例显示机制调整
-        });
+            if ((chat_mode == 1 || chat_mode == 5 || chat_mode == 3  || chat_mode ==4 )  && threshold_torque_total && threshold_torque_total.length > 0 && downshift_torque_total && downshift_torque_total.length > 0) {
+                var thresholdArray = threshold_torque_total.split(',').map(Number);
+                var downshiftArray = downshift_torque_total.split(',').map(Number);
+                //console.log(downshiftArray);
 
+                // 標註 threshold_torque 點
+                last_key_threshold_torque.forEach((threshold, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
 
-        if (chat_mode == 1 && threshold_torque_total && downshift_torque_total ) {
-            threshold_torque_total.split(',').forEach(function(threshold_torque) {
-                threshold_torque = parseFloat(threshold_torque);
-
-                 if (threshold_torque !== 0 && threshold_torque !== 0.0) {
-                    console.log("Threshold Torque:", threshold_torque);
-
-                    //檢查每條曲線的值，否有對應的 threshold_torque
-                    for (var i = 0; i <= max_count; i++) {
-
-                        // 如果该曲线被隐藏，则跳过
-                        if (!legendStatus[`chart${i}`]) continue;
-
-                        var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-
-                        var found = false;
-
-                        //threshold_torque的範圍
-                        var rangeStart = threshold_torque + 0.001; 
-                        var rangeEnd = threshold_torque + 0.099; 
-
-                        //精準匹配
-                        for (var j = 0; j < yData.length; j++) {
-                            if (Math.abs(yData[j] - threshold_torque) < 0.0001) {
-                                markPointData.push({
-                                    xAxis: xData[j],
-                                    yAxis: yData[j],
-                                    symbol: 'circle',
-                                    symbolSize: 10,
-                                    itemStyle: {
-                                        color: 'blue'
-                                    },
-                                    label: {
-                                        position: 'top',
-                                        formatter: 'threshold_torque: ' + threshold_torque.toFixed(1)
-                                    }
-                                });
-                                found = true;
-                                break;
+                    //查找 yData 中是否包含 threshold_torque
+                    var yValue = yData[threshold];
+                    
+                    if (yValue !== undefined) {
+                        markPointData.push({
+                            type: 'max',
+                            name: `threshold_torque ${index + 1}`,
+                            coord: [threshold, yValue], 
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: 'blue' },
+                            label: {
+                                show: true,
+                                formatter: `threshold_torque: ${thresholdArray[index]}`,
+                                position: 'top' 
                             }
-                        }
+                        });
+                    }
+                });
 
-                        //模糊匹配
-                        if (!found) {
-                            for (var j = 0; j < yData.length; j++) {
-                                if (yData[j] >= rangeStart && yData[j] <= rangeEnd) {
-                                    markPointData.push({
-                                        xAxis: xData[j],
-                                        yAxis: yData[j],
-                                        symbol: 'circle',
-                                        symbolSize: 10,
-                                        itemStyle: {
-                                            color: 'blue'
-                                        },
-                                        label: {
-                                            position: 'top',
-                                            formatter: 'threshold_torque: ' + threshold_torque.toFixed(1)
-                                        }
-                                    });
-                                    found = true;
-                                    break;
-                                }
+                // 標註 downshift_torque 點
+                last_key_downshift_torque.forEach((downshift, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
+
+                    //查找 yData 中是否包含 downshift_torque
+                    var yValue = yData[downshift];
+                    
+                    if (yValue !== undefined) {
+                        markPointData.push({
+                            type: 'max',
+                            name: `downshift_torque ${index + 1}`,
+                            coord: [downshift, yValue], 
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: 'green' },
+                            label: {
+                                show: true,
+                                formatter: `downshift_torque: ${downshiftArray[index]}`,
+                                position: 'top' 
                             }
-                        }
-
-
+                        });
                     }
-                }
-            });
-
-        downshift_torque_total.split(',').forEach(function(downshift_torque) {  
-            downshift_torque = parseFloat(downshift_torque);
-            if (downshift_torque !== 0 && downshift_torque!== 0.0) {
-                console.log("Downshift Torque:", downshift_torque);
-
-                for (var i = 0; i <= max_count; i++) {
-                    if (!legendStatus[`chart${i}`]) continue;
-
-
-                    var yData = chartData[`chart${i}_ycoordinate`] ? JSON.parse(chartData[`chart${i}_ycoordinate`]) : [];
-
-                    var found = false;
-
-                    var rangeStart = downshift_torque + 0.001; 
-                    var rangeEnd = downshift_torque + 0.099; 
-
-
-
-                    //精準匹配
-                    for (var j = 0; j < yData.length; j++) {
-                        if (Math.abs(yData[j] - downshift_torque) < 0.0001) {
-                            markPointData.push({
-                                xAxis: xData[j],
-                                yAxis: yData[j],
-                                symbol: 'circle',
-                                symbolSize: 10,
-                                itemStyle: {
-                                    color: 'blue'
-                                },
-                                label: {
-                                    position: 'top',
-                                    formatter: 'downshift_torque: ' + downshift_torque.toFixed(1)
-                                }
-                            });
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    //模糊匹配
-                    if (!found) {
-                        for (var j = 0; j < yData.length; j++) {
-                            if (yData[j] >= rangeStart && yData[j] <= rangeEnd) {
-                                markPointData.push({
-                                    xAxis: xData[j],
-                                    yAxis: yData[j],
-                                    symbol: 'circle',
-                                    symbolSize: 10,
-                                    itemStyle: {
-                                        color: 'blue'
-                                    },
-                                    label: {
-                                        position: 'top',
-                                        formatter: 'downshift_torque: ' + downshift_torque.toFixed(1)
-                                    }
-                                });
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-
-
-                }
+                });
             }
-        });
 
 
+            if(chat_mode == 2 && last_key_threshold_angle ) {
+                var threshold_angle_array = threshold_angle_total.split(',').map(Number);
+                console.log(last_key_threshold_angle);
 
-    }
+                last_key_threshold_angle.forEach((threshold, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
 
+                    //查找 yData 中是否包含 threshold_angle
+                    var yValue = yData[threshold];
+                    
+                    if (yValue !== undefined) {
+                        markPointData.push({
+                            type: 'max',
+                            name: `threshold_angle ${index + 1}`,
+                            coord: [threshold, yValue], 
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: 'blue' },
+                            label: {
+                                show: true,
+                                formatter: `threshold_angle:${threshold_angle_array[index]}`,
+                                position: 'top' 
+                            }
+                        });
+                    }
+                });
+            }
 
+            if(chat_mode == 5 && last_key_threshold_angle ) {
+                var threshold_angle_array = threshold_angle_total.split(',').map(Number);
+                console.log(last_key_threshold_angle);
 
-    var option = {
-        title: {
-            text: '',
-            subtext: chartData.chart_combine.y_title
-        },
-        grid: {
-            top: 50,
-            bottom: 50,
-            left: 50,
-            right: 50
-        },
-        tooltip: {
-            trigger: 'axis',
-            position: function (pt) {
-                return [pt[0], '10%'];
+                last_key_threshold_angle.forEach((threshold, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
+
+                    //查找 yData 中是否包含 threshold_angle
+                    var yValue = yData[threshold];
+                    
+                    if (yValue !== undefined) {
+                        markPointData.push({
+                            type: 'max',
+                            name: `threshold_angle ${index + 1}`,
+                            coord: [threshold, yValue], 
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: 'blue' },
+                            label: {
+                                show: true,
+                                formatter: `threshold_angle:${threshold_angle_array[index]}`,
+                                position: 'top' 
+                            }
+                        });
+                    }
+                });
+            }
+        
+            return markPointData;
+        }
+
+        var markPointData = processMarkPointData(chat_mode);
+
+        var option = {
+            title: {
+                text: '',
+                subtext: chartData.chart_combine.y_title
             },
-            formatter: generateTooltipContent
-        },
-        legend: {
-            data: idTotal.map((id, index) => `${index + 1} (${id})`)
-        },
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            name: chat_mode == 5 ? 'Angle' : 'Time(Ms)',
-            nameLocation: 'end',
-            nameGap: 0,
-            data: xData
-        },
-        yAxis: {
-            type: 'value',
-            boundaryGap: [0, '10%'],
-            min: overallMin,
-            max: overallMax,
-        },
-        dataZoom: generateDataZoom(),
-        color: colorPalette,
-        series: Array.from({ length: 25 }, (_, i) => {
-            if (chartData[`chart${i}_ycoordinate`]) {
-                var seriesItem = {
-                    name: idTotal[i] ? `${i + 1} (${idTotal[i]})` : `${i + 1}`,
-                    type: 'line',
-                    symbol: 'none',
-                    sampling: 'max',
-                    alignTicks: true,
-                    lineStyle: {
-                        width: 2
-                    },
-                    data: JSON.parse(chartData[`chart${i}_ycoordinate`]),
-                    markPoint: {
-                        data: markPointData
-                    }
-                };
+            grid: {
+                top: 50,
+                bottom: 50,
+                left: 50,
+                right: 50
+            },
+            tooltip: {
+                trigger: 'axis',
+                position: function (pt) { return [pt[0], '10%']; },
+                formatter: generateTooltipContent
+            },
+            legend: {
+                data: idTotal.map((id, index) => `${index + 1} (${id})`)
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                name: chat_mode == 5 ? 'Angle' : 'Time(Ms)',
+                nameLocation: 'end',
+                nameGap: 0,
+                data: xData
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '10%'],
+                min: overallMin,
+                max: overallMax,
+            },
+            dataZoom: generateDataZoom(),
+            color: colorPalette,
+            series: Array.from({ length: 25 }, (_, i) => {
+                if (chartData[`chart${i}_ycoordinate`]) {
 
-    
-                return seriesItem;
-            }
-            return null;
-        }).filter(item => item !== null)
+                    var yData = JSON.parse(chartData[`chart${i}_ycoordinate`]);
+                    //console.log(`Curve ${i + 1} (${idTotal[i] || ''}):`, yData);
+                    return {
+                        name: idTotal[i] ? `${i + 1} (${idTotal[i]})` : `${i + 1}`,
+                        type: 'line',
+                        symbol: 'none',
+                        sampling: 'max',
+                        alignTicks: true,
+                        lineStyle: { width: 1.25 },
+                        data: yData,
+                        markPoint: { data: markPointData }
+                    };
+                }
+                return null;
+            }).filter(item => item !== null)
         };
 
-        // 設置圖表選項
         myChart_combine.setOption(option);
-        myChart_combine.resize({
-            width: window.innerWidth * 0.8,
-            height: 400,
-        });
+        myChart_combine.resize({ width: window.innerWidth * 0.8, height: 400 });
     </script>
 <?php }else if($path == "combinedata" && $data['chat_mode'] == "6"){?>
         <script>
@@ -1717,7 +1961,15 @@ addMessage();
             var chat_mode = '<?php echo $data['chat_mode'];?>';
             var idTotal = <?php echo json_encode($data['id_total']); ?>;
             var check_limit_val = '<?php echo $data['check_limit_val'];?>';
-            var myChart_combine = echarts.init(document.getElementById('chart_combine'));
+            var myChart_combine = echarts.init(document.getElementById('chart_combine'));   
+            var threshold_angle_total   = <?php echo isset($data['threshold_angle_total'])  ? json_encode($data['threshold_angle_total']) : '[]'; ?>;
+            var threshold_torque_total  = <?php echo isset($data['threshold_torque']) ? json_encode($data['threshold_torque']) : '[]'; ?>;
+            var downshift_torque_total  = <?php echo isset($data['downshift_torque']) ? json_encode($data['downshift_torque']) : '[]'; ?>;
+
+            var last_key_threshold_torque = <?php echo isset($data['last_key_threshold_torque']) ? json_encode($data['last_key_threshold_torque']) : '[]'; ?>;
+            var last_key_threshold_angle  = <?php echo isset($data['last_key_threshold_angle']) ? json_encode($data['last_key_threshold_angle']) : '[]'; ?>;
+            var last_key_downshift_torque = <?php echo isset($data['last_key_downshift_torque']) ? json_encode($data['last_key_downshift_torque']) : '[]'; ?>;
+
 
             var colorPalette = [
                 '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -1803,7 +2055,105 @@ addMessage();
             var overallAngleMax = Math.max(...angleValues.map(v => v.max));
             var overallAngleMin = Math.min(...angleValues.map(v => v.min));
 
-            
+            if (last_key_threshold_torque.length > 0) {
+                console.log(last_key_threshold_torque); 
+                var threshold_torque_array = threshold_torque_total.split(',').map(Number); 
+                last_key_threshold_torque.forEach((threshold, index) => {
+                    // 確保對應的曲線數據存在
+                    if (seriesData[index * 2]) { 
+                        var torqueSeries = seriesData[index * 2]; 
+                        var torqueData = torqueSeries.data; 
+                        var yValue = torqueData[threshold];
+
+                        if (yValue !== undefined) {
+                            torqueSeries.markPoint = torqueSeries.markPoint || { data: [] }; 
+                            torqueSeries.markPoint.data.push({
+                                type: 'max',
+                                name: `threshold_torque ${index + 1}`,
+                                coord: [threshold, yValue],
+                                symbol: 'circle',
+                                symbolSize: 6,
+                                itemStyle: { color: 'blue' },
+                                label: {
+                                    show: true,
+                                    formatter: `threshold_torque: ${threshold_torque_array[index]}`,
+                                    position: 'top'
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            if (last_key_downshift_torque.length > 0) {
+                console.log(last_key_downshift_torque); 
+                var downshift_torque_array = downshift_torque_total.split(',').map(Number); 
+                last_key_downshift_torque.forEach((threshold, index) => {
+                    if (seriesData[index * 2]) { 
+                        var torqueSeries = seriesData[index * 2]; 
+                        var torqueData = torqueSeries.data; 
+
+                        var yValue = torqueData[threshold];
+
+                        if (yValue !== undefined) {
+                            torqueSeries.markPoint = torqueSeries.markPoint || { data: [] }; 
+
+                            // 添加標註點
+                            torqueSeries.markPoint.data.push({
+                                type: 'max',
+                                name: `downshift_torque ${index + 1}`,
+                                coord: [threshold, yValue],
+                                symbol: 'circle',
+                                symbolSize: 6,
+                                itemStyle: { color: 'green' },
+                                label: {
+                                    show: true,
+                                    formatter: `downshift_torque: ${downshift_torque_array[index]}`,
+                                    position: 'top'
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+
+
+
+            if (last_key_threshold_angle.length > 0) {
+                var threshold_angle_array = threshold_angle_total.split(',').map(Number); 
+                console.log(last_key_threshold_angle);
+
+                last_key_threshold_angle.forEach((threshold, index) => {
+                    if (seriesData[index * 2 + 1]) { 
+                        var angleSeries = seriesData[index * 2 + 1];
+                        var angleData = angleSeries.data; 
+
+                        // 查找 yData 中是否包含 threshold 對應的值
+                        var yValue = angleData[threshold];
+
+                        if (yValue !== undefined) {
+                            angleSeries.markPoint = angleSeries.markPoint || { data: [] }; 
+                            angleSeries.markPoint.data.push({
+                                type: 'max',
+                                name: `threshold_angle ${index + 1}`,
+                                coord: [threshold, yValue],
+                                symbol: 'circle',
+                                symbolSize: 6,
+                                itemStyle: { color: 'blue' },
+                                label: {
+                                    show: true,
+                                    formatter: `threshold_angle:${threshold_angle_array[index]}`,
+                                    position: 'top'
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+
+                        
 
             var option = {
                 title: { text: '', subtext: '' },
@@ -2066,19 +2416,31 @@ const toggleButton = document.getElementById('toggle-select-all');
 const language = '<?php echo $data['language'];?>';
     
 // 根據 language 設定按鈕文字
-function updateButtonText(allChecked) {
-    //let buttonText = 'Select All'; // 預設為英文
+    function updateButtonText(allChecked) {
+        let buttonText = 'Select All';
 
-    if (language == 'zh-cn') {
-        buttonText = allChecked ? '取消全选' : '全选'; // 簡體中文
-    } else if (language == 'zh-tw') {
-        buttonText = allChecked ? '取消全選' : '全選'; // 繁體中文
-    } else if (language == 'en-us') {
-        buttonText = allChecked ? 'Deselect' : 'Select'; // 英文
+        // 預設為英文
+        if (language == 'zh-cn') {
+            buttonText = allChecked ? '取消全选' : '全选';
+            // 簡體中文
+        } else if (language == 'zh-tw') {
+            buttonText = allChecked ? '取消全選' : '全選';
+            // 繁體中文
+        } else if (language == 'en-us') {
+            buttonText = allChecked ? 'Deselect' : 'Select';
+            // 英文
+        }
+
+        // 確保 toggleButton 是有效的 DOM 元素
+        if (toggleButton) {
+            toggleButton.innerHTML = buttonText;
+        } else {
+            //console.error('toggleButton is null or not defined');
+        }
     }
-    
-    toggleButton.innerHTML = buttonText;
-}
+
+// 假設在某處你獲取 toggleButton
+//const toggleButton = document.getElementById('your-button-id')
 
 // 點擊按鈕觸發的函數：全選或取消全選
 function selectAllCheckboxes() {

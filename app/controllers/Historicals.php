@@ -526,8 +526,6 @@ class Historicals extends Controller
                     }
                 }
                 $checkedsn = rtrim($checkedsn, ',');
-            } else {
-                //$checkedsn = explode(",",$checkedsn);
             }
 
 
@@ -535,8 +533,6 @@ class Historicals extends Controller
             $info_arr['system_sn'] =  $checkedsn;
       
             // 取得所有的資料
-            //$info_final = $this->Historicals_newModel->get_data($info_arr);
-
             $info_final = $this->Historicals_newModel->csv_info($checkedsn);  
             $data['chat_mode_arr_combine'] = $this->Historicals_newModel->details('chart_type');
             $data['info_final'] = $info_final;
@@ -563,8 +559,6 @@ class Historicals extends Controller
             $temp_sn = implode(',', array_column($temp_sn, 'system_sn'));
             $final_label = $this->Historicals_newModel->get_result($temp_sn, $data['chat_mode']);
 
-
-                
             if (empty($final_label)) {
                 $final_label = null;
             } else {
@@ -578,14 +572,9 @@ class Historicals extends Controller
                     $dataKey = "data$i";
                     if (isset($final_label[$dataKey])) {
                         $dataSet = $final_label[$dataKey];
-
-                        
-                        
                         if ($data['chat_mode'] == 5) {
 
                             $xValues = array_slice(array_column($dataSet, 2), 1);
-
-
                             $xCoordinates[$i] = json_encode($xValues); // 將 X 軸數據轉換為 JSON 格式
                             $chartData[$i]['y'] = array_column($dataSet, 1); // 將 value[1] 作為 Y 軸數據
                             
@@ -594,7 +583,6 @@ class Historicals extends Controller
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
         
                         } else if ($data['chat_mode'] == 6) {
-
 
                             $tmp_x_val = $this->Historicals_newModel->get_column_values_by_index($id,1);
                           
@@ -689,10 +677,7 @@ class Historicals extends Controller
                                 $new_array = [];
                             }
 
-                       
-
                             $xCoordinates[$i] = json_encode($tmp_x_val); 
-
                             $chartData[$i]['y'] = $this->prepareChartData($dataSet, $TransType, $data['unit']);
                             $chartData[$i]['max'] = floatval(max($chartData[$i]['y']));
                             $chartData[$i]['min'] = floatval(min($chartData[$i]['y']));
@@ -702,7 +687,6 @@ class Historicals extends Controller
                                     unset($dataSet[0]); 
                                 }
                                 $values = array_column($dataSet, 'value');
-                                
                                 $data["chart{$i}_ycoordinate_torque_rpm"] = json_encode(array_values($dataSet));
                                 
                             }
@@ -728,8 +712,6 @@ class Historicals extends Controller
                     $data["chart{$key}_ycoordinate_threshold_torque"] =  $data['info_final'][$key]['threshold_torque'];
                     $data["chart{$key}_ycoordinate_downshift_torque"] =  $data['info_final'][$key]['downshift_torque'];
                     //$data["chart{$key}_ycoordinate_step_threshold_angle"] =  $data['info_final'][$key]['step_threshold_angle'];
-
-                
                     if (isset($chart['y_angle'])) {
                         $data["chart{$key}_ycoordinate_angle"] = json_encode(array_slice($chart['y_angle'], 1));
                         
@@ -737,11 +719,7 @@ class Historicals extends Controller
                         $data["chart{$key}_ycoordinate_max_angle"] = max($angleValues);
                         $data["chart{$key}_ycoordinate_min_angle"] = min($angleValues);
                     }
-
-
                 }
-
-               
 
                 // 設置曲線圖座標名稱
                 $chartTypeDetails = $this->Historicals_newModel->details('chart_type');
@@ -796,7 +774,7 @@ class Historicals extends Controller
             $last_keys_1_temp = array(); 
             $last_keys_2_temp = array(); 
             
-            foreach ($info_final as $item) {
+            foreach ($info_final as $key => $item) {
                 if (isset($item['threshold_torque'])) {
                     $threshold_torque .= $item['threshold_torque'] . ',';
                 }
@@ -807,7 +785,6 @@ class Historicals extends Controller
                 if (isset($item['step_threshold_angle'])) {
                     $threshold_angle .= $item['step_threshold_angle'] . ',';
                     $data['threshold_angle_total'] = rtrim($threshold_angle,',');
-                    //echo $threshold_angle;
                 }
                 
                 //echo $downshift_torque;
@@ -848,10 +825,9 @@ class Historicals extends Controller
                         $last_downshift_torque_key_tmp[] = $found_key;
 
                     }
-
-                    if( $item['step_threshold_angle'] > 0 ){
+  
+                    if( $item['step_threshold_angle'] > 0  &&  ($data['chat_mode'] == 2 || $data['chat_mode'] == 6) ){
      
-                        #先不處理尋牙 
                         #尋找 step_threshold_angle_key  在csv檔案裡 angle = 0的 key值
                         $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); // angle
 
@@ -860,18 +836,20 @@ class Historicals extends Controller
 
                         $threshold_angle = $item['step_threshold_angle'].",";
                         
-                    }
+                        if( $item['step_prr_angle'] > 0){
+                            //有尋牙 尋找angle && rpm 都等於0 的最後一筆 key值
+                            $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); // angle
+                            $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); // speed
 
-                    if( $item['step_threshold_angle'] > 0  && $item['step_prr_angle'] > 0){
-                        #尋找 step_threshold_angle_key  在csv檔案裡 angle = 0 && 的key值
+                            $prr_key  = $this->find_last_key($y_val_angle, $y_val_speed);  
+                            $keyToFind = $key;
+                            
 
-                        $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); //angle
-                        $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); //speed
-            
 
+                        }
                         
-
                     }
+
                     
                     if($data['chat_mode'] == 3 ){
                         $y_val_speed  = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); // speed
@@ -912,11 +890,51 @@ class Historicals extends Controller
                 $data['last_speed_y_val_rpm'] = $last_speed_y_val;
             }
 
+
+            if(!empty($prr_key)){
           
-            /*echo "<pre>";
-            print_r($data);
-            echo "</pre>";*/
-            
+                /*$decodedArray = json_decode($data['chart_xcoordinates'][$keyToFind], true); 
+                if (!empty($decodedArray) && isset($prr_key)) {
+                    // 使用 array_search() 查找該值在陣列中的位置
+                    $keyPosition = array_search($prr_key, $decodedArray);  // 查找數值
+                
+                    // 如果找到了該值，刪除該索引之前的所有元素
+                    if ($keyPosition !== false) {
+                        // 使用 array_slice() 從找到的位置開始重整陣列
+                        $decodedArray = array_slice($decodedArray, $keyPosition);
+                        
+                        // 將修改後的陣列轉換為 JSON 字符串
+                        $jsonResult = json_encode($decodedArray);
+                        $data['chart_xcoordinates'][$keyToFind] = $jsonResult;
+                    } 
+                }*/
+
+                /*$name = 'chart'.$keyToFind.'_ycoordinate';
+                $array = json_decode($data[$name], true);  
+
+                if (array_key_exists($prr_key, $array)) {
+                    $keyPosition_1 = array_search($prr_key, array_keys($array));
+                    $array = array_slice($array, $keyPosition_1 + 1, null, true);
+                    $values = array_values($array);  
+                    $jsonResult_1 = json_encode($values);
+                    $data[$name] = $jsonResult_1;
+                } */
+               
+
+    
+
+
+                
+
+                
+            }
+
+
+
+
+
+
+      
             $this->view('historicals/index', $data);
         
         }

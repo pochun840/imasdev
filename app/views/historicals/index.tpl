@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="<?php echo URLROOT; ?>css/nav.css" type="text/css">
 <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/datatables.min.css">
 
-<link rel="stylesheet" href="<?php echo URLROOT; ?>css/historical.css?v=202404111200" type="text/css">
+<link rel="stylesheet" href="<?php echo URLROOT; ?>css/historical.css" type="text/css">
 
 <script src="<?php echo URLROOT; ?>js/flatpickr.js"></script>
 <script src="js/historical.js?v=<?php echo date('YmdHi'); ?>"></script>
@@ -443,26 +443,45 @@ if(!empty($_COOKIE['chat_mode_change'])){
                             </table>
 
 
-                            <?php if( $data['nopage'] ==  "1"){ ?>
-                            <div class="pagination" align="center">
-                                <?php if ($data['page'] > 1): ?>
-                                    <a href="?url=Historicals&p=<?php echo ($data['page'] - 1); ?>"> Pre  &nbsp;&nbsp;</a>
-                                <?php endif; ?>
-                                
-                                <?php for ($i = 1; $i <= $data['totalPages']; $i++): ?>
-                                    <?php if ($i == $data['page']): ?>
-                                        <span class="current-page"><?php echo $i; ?></span>
-                                    <?php else: ?>
-                                        <a href="?url=Historicals&p=<?php echo $i; ?>"><?php echo "&nbsp;&nbsp$i&nbsp;&nbsp"; ?>&nbsp;&nbsp;</a>
+                            <?php if( $data['nopage'] == "1" ){ ?>
+                                <div class="pagination" align="center">
+                                    <!-- 上一頁 -->
+                                    <?php if ($data['page'] > 1): ?>
+                                        <a class="prev" href="?url=Historicals&p=<?php echo ($data['page'] - 1); ?>">Pre</a>
                                     <?php endif; ?>
-                                <?php endfor; ?>
-                                
-                                <?php if ($data['page'] < $data['totalPages']): ?>
-                                    <a href="?url=Historicals&p=<?php echo ($data['page'] + 1); ?>"> Next  &nbsp;&nbsp;</a>
-                                <?php endif; ?>
+                                    
+                                    <!-- 顯示第一頁 -->
+                                    <?php if ($data['page'] > 3): ?>
+                                        <a class="page-link" href="?url=Historicals&p=1">1</a>
+                                        <span class="ellipsis">...</span>
+                                    <?php endif; ?>
+                                    
+                                    <!-- 顯示中間的頁碼 -->
+                                    <?php
+                                    $start = max(1, $data['page'] - 2); // 顯示當前頁之前的兩頁
+                                    $end = min($data['totalPages'], $data['page'] + 2); // 顯示當前頁之後的兩頁
+                                    
+                                    for ($i = $start; $i <= $end; $i++): ?>
+                                        <?php if ($i == $data['page']): ?>
+                                            <span class="current-page"><?php echo $i; ?></span>
+                                        <?php else: ?>
+                                            <a class="page-link" href="?url=Historicals&p=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
 
-                            </div>
+                                    <!-- 顯示最後一頁 -->
+                                    <?php if ($data['page'] < $data['totalPages'] - 2): ?>
+                                        <span class="ellipsis">...</span>
+                                        <a class="page-link" href="?url=Historicals&p=<?php echo $data['totalPages']; ?>"><?php echo $data['totalPages']; ?></a>
+                                    <?php endif; ?>
+                                    
+                                    <!-- 下一頁 -->
+                                    <?php if ($data['page'] < $data['totalPages']): ?>
+                                        <a class="next" href="?url=Historicals&p=<?php echo ($data['page'] + 1); ?>">Next</a>
+                                    <?php endif; ?>
+                                </div>
                             <?php } ?>
+
                         </div>
                     </div>
                 </div>
@@ -1091,8 +1110,6 @@ addMessage();
 <!----nextinfo op----->
 <?php if ($path == "nextinfo" && isset($data['chart_info']['chat_mode']) && $data['chart_info']['chat_mode'] != "6") { ?>
 <script>
-
-    
     var myChart = echarts.init(document.getElementById('chartinfo'));
 
     var x_data_val = <?php echo  $data['chart_info']['x_val']; ?>;
@@ -1252,7 +1269,7 @@ addMessage();
             var exactYValue = y_data_val[exactMatchIndex];
 
             //已找到點標註圓點
-            addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+            addMarkPoint(exactMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:'); 
         } else {
             // 如果沒有精確匹配，則進行範圍匹配
             var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
@@ -1263,7 +1280,7 @@ addMessage();
                 var rangeYValue = y_data_val[rangeMatchIndex];
 
                 //已找到點標註圓點
-                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:');
+                addMarkPoint(rangeMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:');
 
             }
         }
@@ -1347,7 +1364,7 @@ addMessage();
             var exactYValue = y_data_val[exactMatchIndex];
 
             //已找到點標註圓點
-            addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
+            addMarkPoint(exactMatchIndex, exactYValue, threshold_torque,'blue','threshold_torque:');
         }
     }
 
@@ -1367,7 +1384,7 @@ addMessage();
             var exactYValue = y_data_val[exactMatchIndex];
 
             //已找到點標註圓點
-            addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+            addMarkPoint(exactMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:'); 
         } else {
             // 如果沒有精確匹配，則進行範圍匹配
             var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
@@ -1378,7 +1395,7 @@ addMessage();
                 var rangeYValue = y_data_val[rangeMatchIndex];
 
                 //已找到點標註圓點
-                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:');
+                addMarkPoint(rangeMatchIndex, rangeYValue, downshift_torque,'green','downshift_torque:');
 
             }
         }
@@ -1721,7 +1738,7 @@ addMessage();
 <!----combine op----->
 
 <?php if ($path == "combinedata" && $data['chat_mode'] != "6"){?>
-        <script>
+    <script>
         var chartData = <?php echo json_encode($data); ?>;
         var idTotal = <?php echo json_encode($data['id_total']); ?>;
         var chat_mode = '<?php echo $data['chat_mode'];?>';
@@ -1738,18 +1755,9 @@ addMessage();
         var last_key_downshift_torque = <?php echo isset($data['last_key_downshift_torque']) ? json_encode($data['last_key_downshift_torque']) : '[]'; ?>;
 
 
-        // 定義顏色調色盤
-        var colorPalette = [
-            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-            '#f5b041', '#5dade2', '#a2d9ce', '#d91d3a', '#ff9c00',
-            '#6c5b7b', '#c06c84', '#f67280', '#ffbe0b', '#2a9d8f',
-            '#e9c46a', '#f1faee', '#264653', '#2a9d8f', '#e76f51',
-            '#f9a826', '#e63946', '#f1faee', '#a8dadc', '#457b9d',
-            '#1d3557', '#f1faee', '#e63946', '#f1faee', '#a8dadc',
-            '#f77f00', '#d62839', '#003049', '#f1faee', '#e9c46a',
-            '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
-        ];
+        //顏色選擇
+        var colorPalette = getColorPalette();
+          
 
         // 解析 X 軸數值
         var xCoordinatesArray = chartData.chart_xcoordinates.map(x => JSON.parse(x));
@@ -1936,6 +1944,12 @@ addMessage();
                 if (chartData[`chart${i}_ycoordinate`]) {
 
                     var yData = JSON.parse(chartData[`chart${i}_ycoordinate`]);
+
+                     // chat_mode == 2 時隱藏值為 0 的曲線
+                    if (chat_mode == 2 && yData.every(val => val === 0)) {
+                        return null; // 若值全為 0，返回 null，將該系列隱藏
+                    }
+                    
                     //console.log(`Curve ${i + 1} (${idTotal[i] || ''}):`, yData);
                     return {
                         name: idTotal[i] ? `${i + 1} (${idTotal[i]})` : `${i + 1}`,
@@ -1971,19 +1985,9 @@ addMessage();
             var last_key_downshift_torque = <?php echo isset($data['last_key_downshift_torque']) ? json_encode($data['last_key_downshift_torque']) : '[]'; ?>;
 
 
-            var colorPalette = [
-                '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-                '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-                '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-                '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-                '#f5b041', '#5dade2', '#a2d9ce', '#d91d3a', '#ff9c00',
-                '#6c5b7b', '#c06c84', '#f67280', '#ffbe0b', '#2a9d8f',
-                '#e9c46a', '#f1faee', '#264653', '#2a9d8f', '#e76f51',
-                '#f9a826', '#e63946', '#f1faee', '#a8dadc', '#457b9d',
-                '#1d3557', '#f1faee', '#e63946', '#f1faee', '#a8dadc',
-                '#f77f00', '#d62839', '#003049', '#f1faee', '#e9c46a',
-                '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
-            ];
+            //顏色選擇
+            var colorPalette = getColorPalette();
+          
 
             var max_count = '<?php echo $data['id_count'];?>';
             var xCoordinatesArray = chartData_s.chart_xcoordinates.map(x => JSON.parse(x));

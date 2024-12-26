@@ -804,7 +804,6 @@ class Historical{
     }
     public function for_history($mode){
         
-
         $sql = '';
         $after_date = date('Ymd 23:59:59');
         $before_date = date('Ymd', strtotime('-7 days')) . ' 00:00:00';
