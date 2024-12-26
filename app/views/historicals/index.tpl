@@ -1183,31 +1183,32 @@ addMessage();
     };
 
     
-    //type = normalstep && chat_mode = 2 處理 step_threshold_angle
-    if (step_prr_rpm != '' && step_prr_angle != ''  && step_prr_rpm > 0 && step_prr_angle > 0 && job_type == 'normalstep' && y_data_val.length > 0 && step_threshold_angle > 0 && chat_mode == '2') {
-            var x_value = x_data_val[0];
-            var y_value = y_data_val[0];
+    //type = normalstep && chat_mode = 2  || chat_mode = 5 處理 step_threshold_angle
+    if (step_prr_rpm != '' && step_prr_angle != '' && step_prr_rpm > 0 && step_prr_angle > 0 && job_type == 'normalstep' && y_data_val.length > 0 && step_threshold_angle > 0 && (chat_mode == '2' || chat_mode == '5')) {
+        var x_value = x_data_val[0];
+        var y_value = y_data_val[0];
 
-            option.series[0].markPoint = option.series[0].markPoint || { data: [] };
+        option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
-            // 根據 chat_mode 決定 label 的 formatter 格式
-            var labelFormatter = '';
-            labelFormatter = 'threshold_angle:' + step_threshold_angle;
-            // 將 markPoint 資料加入到數據中
-            option.series[0].markPoint.data.push({
-                xAxis: x_value,  
-                yAxis: y_value,  
-                symbol: 'circle',
-                symbolSize: 6,   
-                itemStyle: {
-                    color: 'blue'  
-                },
-                label: {
-                    position: 'top',
-                    formatter: labelFormatter
-                }
-            });
+        // 根據 chat_mode 決定 label 的 formatter 格式
+        var labelFormatter = 'threshold_angle:' + step_threshold_angle;
+
+        // 將 markPoint 資料加入到數據中
+        option.series[0].markPoint.data.push({
+            xAxis: x_value,  
+            yAxis: y_value,  
+            symbol: 'circle',
+            symbolSize: 6,   
+            itemStyle: {
+                color: 'blue'  
+            },
+            label: {
+                position: 'top',
+                formatter: labelFormatter
+            }
+        });
     }
+
 
 
     //type = normalstep && chat_mode = 1   &&  threshold_torque != '0' 處理  threshold_torque

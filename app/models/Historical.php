@@ -1085,6 +1085,7 @@ class Historical{
             CURLOPT_RETURNTRANSFER => true,
         ]);
 
+
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
         curl_close($ch);

@@ -893,24 +893,14 @@ class Historicals extends Controller
                 $data['downshift_torque'] = $downshift_torque;
             }
 
-            /*if($data['chat_mode'] == 2 ){  
-                $threshold_angle = rtrim($threshold_angle, ',');
-                $data['threshold_angle'] =  $threshold_angle;
-
-            }*/
-
-            
-
 
             if(!empty($last_keys_1_temp)){
                 $data['last_key_threshold_torque'] = $last_keys_1_temp;
-  
             }
 
             
             if(!empty($last_downshift_torque_key_tmp)){
                 $data['last_key_downshift_torque'] = $last_downshift_torque_key_tmp;
-  
             }
 
             if(!empty($last_keys_threshold_angle_temp)){
@@ -980,6 +970,7 @@ class Historicals extends Controller
 
                 //$data['x_val'] = json_encode($this->filterArray($csvdata_arr['angle'], "0", 'string'));
                 //$data['y_val'] = json_encode($this->filterArray($csvdata_arr['torque'], '0.0', 'float'));
+
 
                 $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($no, 3); //angle
                 $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($no, 4); //speed
@@ -1115,6 +1106,13 @@ class Historicals extends Controller
                 $y_val_power = $this->Historicals_newModel->get_column_values_by_index($no, 5); //power
                 $data['y_val'] = json_encode($y_val_power);
 
+            }else if(!empty($step_prr_rpm) && !empty($step_prr_angle) && $step_prr_rpm > 0 && $step_prr_angle > 0 && $chat_mode == "5"){
+                //echo "eeert";die();
+                $last_key = $this->find_last_key($y_val_angle, $y_val_speed);
+                if ($last_key !== null) {
+                    $data['x_val'] = json_encode(array_slice($temp_x_val, $last_key));
+                }
+                $data['y_val'] = json_encode(array_slice($data['y_val'], $last_key));
             }
             
         } 
@@ -1183,7 +1181,6 @@ class Historicals extends Controller
 
         $data['y_val'] = json_encode(array_values(array_diff_key(json_decode($data['y_val'], true) ?: [], [0 => null])));
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
-
 
         return $data;
     }
