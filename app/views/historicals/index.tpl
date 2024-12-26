@@ -1961,7 +1961,15 @@ addMessage();
             var chat_mode = '<?php echo $data['chat_mode'];?>';
             var idTotal = <?php echo json_encode($data['id_total']); ?>;
             var check_limit_val = '<?php echo $data['check_limit_val'];?>';
-            var myChart_combine = echarts.init(document.getElementById('chart_combine'));
+            var myChart_combine = echarts.init(document.getElementById('chart_combine'));   
+            var threshold_angle_total   = <?php echo isset($data['threshold_angle_total'])  ? json_encode($data['threshold_angle_total']) : '[]'; ?>;
+            var threshold_torque_total  = <?php echo isset($data['threshold_torque']) ? json_encode($data['threshold_torque']) : '[]'; ?>;
+            var downshift_torque_total  = <?php echo isset($data['downshift_torque']) ? json_encode($data['downshift_torque']) : '[]'; ?>;
+
+            var last_key_threshold_torque = <?php echo isset($data['last_key_threshold_torque']) ? json_encode($data['last_key_threshold_torque']) : '[]'; ?>;
+            var last_key_threshold_angle  = <?php echo isset($data['last_key_threshold_angle']) ? json_encode($data['last_key_threshold_angle']) : '[]'; ?>;
+            var last_key_downshift_torque = <?php echo isset($data['last_key_downshift_torque']) ? json_encode($data['last_key_downshift_torque']) : '[]'; ?>;
+
 
             var colorPalette = [
                 '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -2047,7 +2055,105 @@ addMessage();
             var overallAngleMax = Math.max(...angleValues.map(v => v.max));
             var overallAngleMin = Math.min(...angleValues.map(v => v.min));
 
-            
+            if (last_key_threshold_torque.length > 0) {
+                console.log(last_key_threshold_torque); 
+                var threshold_torque_array = threshold_torque_total.split(',').map(Number); 
+                last_key_threshold_torque.forEach((threshold, index) => {
+                    // 確保對應的曲線數據存在
+                    if (seriesData[index * 2]) { 
+                        var torqueSeries = seriesData[index * 2]; 
+                        var torqueData = torqueSeries.data; 
+                        var yValue = torqueData[threshold];
+
+                        if (yValue !== undefined) {
+                            torqueSeries.markPoint = torqueSeries.markPoint || { data: [] }; 
+                            torqueSeries.markPoint.data.push({
+                                type: 'max',
+                                name: `threshold_torque ${index + 1}`,
+                                coord: [threshold, yValue],
+                                symbol: 'circle',
+                                symbolSize: 6,
+                                itemStyle: { color: 'blue' },
+                                label: {
+                                    show: true,
+                                    formatter: `threshold_torque: ${threshold_torque_array[index]}`,
+                                    position: 'top'
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            if (last_key_downshift_torque.length > 0) {
+                console.log(last_key_downshift_torque); 
+                var downshift_torque_array = downshift_torque_total.split(',').map(Number); 
+                last_key_downshift_torque.forEach((threshold, index) => {
+                    if (seriesData[index * 2]) { 
+                        var torqueSeries = seriesData[index * 2]; 
+                        var torqueData = torqueSeries.data; 
+
+                        var yValue = torqueData[threshold];
+
+                        if (yValue !== undefined) {
+                            torqueSeries.markPoint = torqueSeries.markPoint || { data: [] }; 
+
+                            // 添加標註點
+                            torqueSeries.markPoint.data.push({
+                                type: 'max',
+                                name: `downshift_torque ${index + 1}`,
+                                coord: [threshold, yValue],
+                                symbol: 'circle',
+                                symbolSize: 6,
+                                itemStyle: { color: 'green' },
+                                label: {
+                                    show: true,
+                                    formatter: `downshift_torque: ${downshift_torque_array[index]}`,
+                                    position: 'top'
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+
+
+
+            if (last_key_threshold_angle.length > 0) {
+                var threshold_angle_array = threshold_angle_total.split(',').map(Number); 
+                console.log(last_key_threshold_angle);
+
+                last_key_threshold_angle.forEach((threshold, index) => {
+                    if (seriesData[index * 2 + 1]) { 
+                        var angleSeries = seriesData[index * 2 + 1];
+                        var angleData = angleSeries.data; 
+
+                        // 查找 yData 中是否包含 threshold 對應的值
+                        var yValue = angleData[threshold];
+
+                        if (yValue !== undefined) {
+                            angleSeries.markPoint = angleSeries.markPoint || { data: [] }; 
+                            angleSeries.markPoint.data.push({
+                                type: 'max',
+                                name: `threshold_angle ${index + 1}`,
+                                coord: [threshold, yValue],
+                                symbol: 'circle',
+                                symbolSize: 6,
+                                itemStyle: { color: 'blue' },
+                                label: {
+                                    show: true,
+                                    formatter: `threshold_angle:${threshold_angle_array[index]}`,
+                                    position: 'top'
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+
+                        
 
             var option = {
                 title: { text: '', subtext: '' },
