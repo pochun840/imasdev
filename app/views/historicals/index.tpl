@@ -1864,6 +1864,33 @@ addMessage();
                 });
             }
 
+            if(chat_mode == 5 && last_key_threshold_angle ) {
+                var threshold_angle_array = threshold_angle_total.split(',').map(Number);
+                console.log(last_key_threshold_angle);
+
+                last_key_threshold_angle.forEach((threshold, index) => {
+                    var yData = JSON.parse(chartData[`chart${index}_ycoordinate`]);
+
+                    //查找 yData 中是否包含 threshold_angle
+                    var yValue = yData[threshold];
+                    
+                    if (yValue !== undefined) {
+                        markPointData.push({
+                            type: 'max',
+                            name: `threshold_angle ${index + 1}`,
+                            coord: [threshold, yValue], 
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: 'blue' },
+                            label: {
+                                show: true,
+                                formatter: `threshold_angle:${threshold_angle_array[index]}`,
+                                position: 'top' 
+                            }
+                        });
+                    }
+                });
+            }
         
             return markPointData;
         }
