@@ -380,16 +380,15 @@ class Historicals extends Controller
                 exit();
             }
 
+
             $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
             $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
  
+            #檢查chat_mode cookie,驗證是否為數字，否則設置為默認值
+            $chat_mode = filter_var($_COOKIE['chat_mode_change'] ?? 1, FILTER_VALIDATE_INT, ["options" => ["default" => 1, "min_range" => 1]]);
 
-            #檢查chat_mode cookie
-            $chat_mode = isset($_COOKIE['chat_mode_change']) ? $_COOKIE['chat_mode_change'] : "1";
-    
-            #取得unitvalue
-            $unitvalue = isset($_GET['unitvalue']) ? $_GET['unitvalue'] : $data['job_info'][0]['torque_unit'];
-    
+            #取得unitvalue,驗證是否為數字，否則設置為默認值
+            $unitvalue = filter_var($_GET['unitvalue'] ?? $data['job_info'][0]['torque_unit'], FILTER_VALIDATE_INT, ["options" => ["default" => $data['job_info'][0]['torque_unit']]]);    
             $data['unitvalue'] = $unitvalue;
     
             #曲線圖模式
@@ -430,10 +429,7 @@ class Historicals extends Controller
                 $data['chart_info']['x_title'] = $titles['x_title'];
                 $data['chart_info']['y_title'] = $titles['y_title'];
                 $data['chart_info']['chat_mode'] = $chat_mode;
-
-
-
-                
+               
             }
             #狀態列表
             $status_arr = $this->Historicals_newModel->status_code_change();
@@ -508,7 +504,6 @@ class Historicals extends Controller
         $data['unit'] = !empty($_GET['unit']) ? $_GET['unit'] : 1;
         $TransType = $data['unit'];
 
-
         $torque_arr = $this->Historicals_newModel->details('torque');
 
         // 用 cookie 取得已勾選的 id
@@ -553,7 +548,6 @@ class Historicals extends Controller
             $new_id = $id;
             $id_array = explode(',', $new_id);
             $data['id_total'] = $id_array;
-
 
             // 取得曲線圖的資料
             $temp_sn = $this->Historicals_newModel->get_temp_id($checkedsn);
@@ -615,7 +609,6 @@ class Historicals extends Controller
                                 $new_array = [];
                             }
 
-                           
                             $xCoordinates[$i] = json_encode($tmp_x_val); 
 
                             //處理Y軸的torque 
@@ -701,7 +694,6 @@ class Historicals extends Controller
                 $data['chart_xcoordinates'] = $xCoordinates;
                 foreach ($chartData as $key => $chart) {
 
-                    
                     $data["chart{$key}_ycoordinate"] = json_encode($chart['y']);
 
                     $yValues = json_decode($data["chart{$key}_ycoordinate"], true);
@@ -771,7 +763,6 @@ class Historicals extends Controller
             $downshift_torque = '';
             $threshold_angle  = '';
 
-
             $last_keys_1_temp = array(); 
             $last_keys_2_temp = array(); 
             
@@ -805,7 +796,6 @@ class Historicals extends Controller
                         $last_keys_1_temp[] = $last_key_1;
                         $last_keys_2_temp[] = $last_key_2;
             
-    
                     }
 
                     if(!empty($downshift_torque_temp) && $downshift_torque_temp > 0.1){
@@ -921,21 +911,9 @@ class Historicals extends Controller
                     $data[$name] = $jsonResult_1;
                 } */
                
-
-    
-
-
-                
-
-                
             }
 
 
-
-
-
-
-      
             $this->view('historicals/index', $data);
         
         }
@@ -1126,7 +1104,6 @@ class Historicals extends Controller
                 $data['y_val'] = json_encode($y_val_power);
 
             }else if(!empty($step_prr_rpm) && !empty($step_prr_angle) && $step_prr_rpm > 0 && $step_prr_angle > 0 && $chat_mode == "5"){
-                //echo "eeert";die();
                 $last_key = $this->find_last_key($y_val_angle, $y_val_speed);
                 if ($last_key !== null) {
                     $data['x_val'] = json_encode(array_slice($temp_x_val, $last_key));
