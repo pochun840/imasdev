@@ -27,6 +27,7 @@ class Historicals extends Controller
 
         if($nopage == "1") {
             $page = isset($_GET['p']) ? $_GET['p'] : 1;
+            $page = filter_var($page, FILTER_VALIDATE_INT, ["options" => ["default" => 1, "min_range" => 1]]);
             $offset = ($page - 1) * $limit;
             $totalItems = $this->Historicals_newModel->getTotalItemCount();
 
