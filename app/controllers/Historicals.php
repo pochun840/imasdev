@@ -185,7 +185,6 @@ class Historicals extends Controller
         $data_array = array('True');
         $this->logMessage('historicals-3','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
 
-
         if(!empty($_COOKIE['systemSnval'])){
             $system_sn = $_COOKIE['systemSnval'];
             if($system_sn != 'total'){
@@ -213,7 +212,6 @@ class Historicals extends Controller
 
             #狀態轉換 
             $status_arr = $this->Historicals_newModel->status_code_change();
-
 
             #控制器轉換
             $res_controller_arr = array(0 => '', 1 => 'GTCS', 2 =>'TCG'); 
