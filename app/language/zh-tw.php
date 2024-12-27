@@ -619,3 +619,74 @@ $error_message['WORKPIECE_RECOVERY'] = '工件復歸按確認';
 
 //task error message
 $error_message['task_setting'] = '請至少選擇一個組別';
+
+
+//log status-----------------------------------------------------------------------------------------------------
+$log_status['result-1'] = '成功';
+$log_status['result-2'] = '失敗';
+
+$log_status['job-1'] = '新增工作';
+$log_status['job-2'] = '編輯工作';
+$log_status['job-3'] = '複製工作';
+$log_status['job-4'] = '刪除工作';
+$log_status['job-5'] = '編輯職位圖片';
+
+$log_status['barcode-1'] = '編輯條碼';
+$log_status['barcode-2'] = '刪除條碼';
+
+$log_status['seq-1'] = '新增工序';
+$log_status['seq-2'] = '編輯工序';
+$log_status['seq-3'] = '複製工序';
+$log_status['seq-4'] = '刪除工序';
+$log_status['seq-5'] = '編輯工序影像';
+$log_status['seq-6'] = '啟用/停用工序';
+
+$log_status['task-1'] = '新增任務';
+$log_status['task-2'] = '編輯任務';
+$log_status['task-3'] = '刪除任務';
+$log_status['task-4'] = '編輯任務訊息';
+$log_status['task-5'] = '編輯任務位置';
+
+$log_status['login'] = '登入';
+$log_status['logout'] = '登出';
+$log_status['idlogin'] = 'id登入';
+
+$log_status['program-1'] = '新增組別';
+$log_status['program-2'] = '編輯組別';
+$log_status['program-3'] = '複製組別';
+$log_status['program-4'] = '刪除組別';
+
+$log_status['program-5'] = '新增組別';
+$log_status['program-6'] = '編輯組別';
+
+$log_status['program-7'] = '新增步驟';
+$log_status['program-8'] = '編輯步驟';
+$log_status['program-9'] = '複製步驟';
+$log_status['program-10'] = '刪除步驟';
+
+$log_status['program-11'] = '將組別同步到任務';
+
+$log_status['operation-1'] = '呼叫作業';
+$log_status['operation-2'] = '驗證操作';
+$log_status['operation-3'] = 'ng 停止重置';
+$log_status['operation-4'] = '重置任務';
+$log_status['operation-5'] = '條碼呼叫作業';
+
+$log_status['user-1'] = '新增使用者';
+$log_status['user-2'] = '編輯使用者';
+$log_status['user-3'] = '刪除使用者';
+$log_status['user-4'] = '新增角色';
+$log_status['user-5'] = '編輯角色權限';
+$log_status['user-6'] = '刪除角色';
+
+$log_status['setting-1'] = '編輯設定';
+
+$log_status['monitor-1'] = '編輯監控模式';
+$log_status['monitor-2'] = '編輯監控伺服器ip';
+$log_status['monitor-3'] = '新增站';
+$log_status['monitor-4'] = '編輯站';
+$log_status['monitor-5'] = '刪除站';
+
+$log_status['equipment-1'] = '編輯控制器ip';
+$log_status['equipment-2'] = '編輯塔燈腳位';
+//log status-----------------------------------------------------------------------------------------------------

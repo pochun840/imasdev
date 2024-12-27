@@ -156,7 +156,14 @@
                                     echo '<td>'.$job['job_id'].'</td>';
                                     echo '<td>'.$job['job_name'].'</td>';
                                     echo '<td><img src="'.$job['img'].'" style="max-height: 100px;display: inline-block;"></td>';
-                                    echo '<td>'.$job['seq_count'].' '.$text['Seq_text'].' / '.$job['task_count'].' '.$text['Task_text'].' <br> '.$text['Arm_text'].' '.'</td>';
+                                    echo '<td>'.$job['seq_count'].' '.$text['Seq_text'].' / '.$job['task_count'].' '.$text['Task_text'].' <br>';
+                                        if($job['arm'] == 1){//arm
+                                            echo $text['Arm_text'].'<br>';
+                                        }
+                                        if($job['socket'] == 1){//socket
+                                            echo $text['Socket_Tray_text'].'<br>';
+                                        }   
+                                    echo '</td>';
                                     echo '<td style="text-align: left">';
                                     echo '<div class="dropdown">';
                                     echo '<label><img src="./img/info-30.png" alt="" style="height: 30px; float: left; margin-right: 5px; margin-bottom: 10px" onclick="PictureDetailFunction('.$job['job_id'].')"> '.$text['Detail_text'].' </label>';
@@ -318,6 +325,9 @@
                                     </div>
                                     <input id="size" type="text" value="0" style="display:none;" disabled >
                                 </div>
+                                <div style="display:none;">
+                                    <input type="" id="edit_job_mode" value="new">
+                                </div>
                             </form>
 
                             <input id="upload_img" type="file" onchange="openFile(event)" accept="image/png">
@@ -375,7 +385,7 @@
                             <div class="row">
                                 <div for="to_job_name" class="col-4 t1"><?php echo $text['Job_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
-                                    <input type="text" class="form-control" id="to_job_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')"  >
+                                    <input type="text" class="form-control" id="to_job_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]/g, '')"  >
                                 </div>
                             </div>
                         </div>
@@ -401,7 +411,7 @@
             </header>
 
             <div class="modal-body">
-                <form id="barcode_form" onsubmit="return false;">
+                <div id="barcode_form" onsubmit="return false;">
                     <div class="row">
                         <div class="col-3 t1"><?php echo $text['Barcode_text']; ?> :</div>
                         <div class="col-9 t2">
@@ -438,7 +448,7 @@
                         </div>
                         <button class="button button3" style="margin-right: 15px" onclick="save_barcode()"><?php echo $text['Save_text']; ?></button>
                     </div>
-                </form>
+                </div>
                 <hr>
                 <div class="scrollbar-barcode-table" id="style-barcode-table">
                     <div class="force-overflow-barcode-table">
@@ -676,6 +686,7 @@ function updateCircleSize(value)
         let barcode_start = document.getElementById('barcode_start').checked; // $('input[name=Downshift_Enable]:checked').val();
         let job_repeat = document.getElementById('job_repeat').checked; // $('input[name=Downshift_Enable]:checked').val();
         let tower_light = document.getElementById('Tower-Light').checked; // $('input[name=Downshift_Enable]:checked').val();
+        let edit_job_mode = document.getElementById('edit_job_mode').value;
     
         var formData = new FormData();
         // 添加表单数据
@@ -693,6 +704,7 @@ function updateCircleSize(value)
         formData.append('barcode_start', barcode_start);
         formData.append('ok_job_stop', job_repeat);
         formData.append('tower_light', tower_light);
+        formData.append('edit_job_mode', edit_job_mode);
 
         // 添加图片数据
         var fileInput = $('#upload_img')[0].files[0];
@@ -839,6 +851,9 @@ function updateCircleSize(value)
         //remove is-invalid class
         remove_invalid('JobNew');
 
+        //
+        document.getElementById('edit_job_mode').value = 'new'
+
         //get job id
         let job_id = get_job_id_normal();
         if(job_id > 99){ //避免新增超過99個seq
@@ -917,6 +932,8 @@ function updateCircleSize(value)
 
                 //remove is-invalid class
                 remove_invalid('JobNew');
+
+                document.getElementById('edit_job_mode').value = 'edit'
 
                 document.getElementById('modal_head').innerHTML = '<?php echo $text['Edit_Job_text']; ?>'; //'New Job'
                 document.getElementById('JobNew').style.display='block'
@@ -1345,7 +1362,7 @@ addMessage();
         let Tool_Min_RPM = document.getElementById('tool_min_rpm').value;
 
         let conditions = [
-                { id: 'job_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
+                { id: 'job_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]+$/, min: null, max: null },
                 { id: 'reverse_rpm', pattern: /^\d{0,5}(\.\d{0,2})?$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
                 { id: 'reverse_Force', pattern: /^\d{0,5}(\.\d{0,2})??$/, min: 1, max: 110 },
                 { id: 'threshold_torque', pattern: /^\d{0,5}(\.\d{0,2})??$/, min: 0, max: 99999 },

@@ -190,6 +190,21 @@ class Products extends Controller
 
             if ($input_check) {
                 $jobs = $this->ProductModel->EditJob($data_array);
+
+                if($data_array['edit_job_mode'] == 'new'){ //new job
+                    if($jobs){//user log
+                        $this->logMessage('job-1','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('job-1','result-2',json_encode($data_array));
+                    }
+                }else{ //edit job
+                    if($jobs){//user log
+                        $this->logMessage('job-2','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('job-2','result-2',json_encode($data_array));
+                    }
+                }
+                
             }
         }
 
@@ -214,7 +229,13 @@ class Products extends Controller
                 if($is_uploaded){
                     // 把img url寫入資料庫
                     // echo 'Image Successfully Uploaded';
-                    $this->ProductModel->SetJobImage($data_array['job_id'],$image_upload_path);
+                    $result = $this->ProductModel->SetJobImage($data_array['job_id'],$image_upload_path);
+
+                    if($result){//user log
+                        $this->logMessage('job-5','result-1',json_encode(array("job_id"=>$data_array['job_id'], "image_upload_path"=>$image_upload_path)));
+                    }else{
+                        $this->logMessage('job-5','result-2',json_encode(array("job_id"=>$data_array['job_id'], "image_upload_path"=>$image_upload_path)));
+                    }
                 }
                 else{
                     // echo 'Something Went Wrong!';
@@ -254,6 +275,14 @@ class Products extends Controller
         if ($input_check) {
             
             $result  = $this->ProductModel->CopyJob($from_job_id,$to_job_id,$to_job_name);  //單純copy job 功能
+
+            if($result){//user log
+                $this->logMessage('job-3','result-1',json_encode(array("from_job_id"=>$from_job_id, "to_job_id"=>$to_job_id, "to_job_name"=>$to_job_name)));
+            }else{
+                $this->logMessage('job-3','result-2',json_encode(array("from_job_id"=>$from_job_id, "to_job_id"=>$to_job_id, "to_job_name"=>$to_job_name)));
+            }
+
+
             $select_seq = $this->ProductModel->check_seq_by_job_id($from_job_id,$to_job_id); //用$from_job_id,$to_job_id 找出對應的seq資料
             if(!empty($select_seq)){
 
@@ -448,6 +477,11 @@ class Products extends Controller
 
         if ($input_check) {
             $result = $this->ProductModel->DeleteJobById($job_id);
+            if($result){//user log
+                $this->logMessage('job-4','result-1',json_encode(array("job_id"=>$job_id)));
+            }else{
+                $this->logMessage('job-4','result-2',json_encode(array("job_id"=>$job_id)));
+            }
         }else{
             echo json_encode(array('error' => $error_message));
             exit();
@@ -521,6 +555,13 @@ class Products extends Controller
 
         if ($input_check) {
             $result = $this->ProductModel->EditBarcode($barcode,$match_from,$match_to,$job_id,$seq_id);
+
+            if($result){//user log
+                $this->logMessage('barcode-1','result-1',json_encode(array("barcode"=>$barcode,"match_from"=>$match_from,"match_to"=>$match_to,"job_id"=>$job_id,"seq_id"=>$seq_id)));
+            }else{
+                $this->logMessage('barcode-1','result-2',json_encode(array("barcode"=>$barcode,"match_from"=>$match_from,"match_to"=>$match_to,"job_id"=>$job_id,"seq_id"=>$seq_id)));
+            }
+
         }else{
             echo json_encode(array('result' => '', 'error' => $error_message));
             exit();
@@ -544,6 +585,11 @@ class Products extends Controller
         
         if ($input_check) {
             $result = $this->ProductModel->DeleteBarcode($id);
+            if($result){//user log
+                $this->logMessage('barcode-2','result-1',json_encode(array("id"=>$id)));
+            }else{
+                $this->logMessage('barcode-2','result-2',json_encode(array("id"=>$id)));
+            }
         }else{
             echo json_encode(array('result' => '', 'error' => $error_message));
             exit();

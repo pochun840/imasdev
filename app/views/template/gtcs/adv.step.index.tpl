@@ -398,6 +398,9 @@
                                   				</select>
                                             </div>
                                         </div>
+                                        <div style="display:none;">
+                                            <input id="edit_step_mode" value="new">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -451,7 +454,7 @@
                             <div class="row">
                                 <div for="to_step_name" class="col-5 t1"><?php echo $text['Step_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
-                                    <input type="text" class="form-control" id="to_step_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')"> 
+                                    <input type="text" class="form-control" id="to_step_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]/g, '')"> 
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -740,6 +743,9 @@ function new_step() {
 
         $('input[type=radio][name="monitor-option"]').change();
         $('input[type=checkbox][name="MonitorAngle-ON-OFF"]').change();
+
+        document.getElementById('edit_step_mode').value = 'new';
+
         //show modal
         document.getElementById('StepNew').style.display = 'block'
     }
@@ -775,6 +781,7 @@ function new_step_save() {
     let lo_torque = document.getElementById("lo-torque").value;
     let hi_angle = document.getElementById("hi-angle").value;
     let lo_angle = document.getElementById("lo-angle").value;
+    let edit_step_mode = document.getElementById('edit_step_mode').value;
 
     let record_angle_val = document.getElementById("record-angle-val").value;
 
@@ -811,6 +818,7 @@ function new_step_save() {
     formData.append('torque_window_range', torque_window_range);
     formData.append('angle_window', angle_window);
     formData.append('angle_window_range', angle_window_range);
+    formData.append('edit_step_mode', edit_step_mode);
 
     formData.append('record_angle_val', record_angle_val);
     
@@ -897,6 +905,8 @@ function edit_adv_step(step_id) {
                 document.getElementById("MonitorAngle-ON-OFF").checked = true;//預設關閉
                 document.getElementById("AngleStop-ON-OFF").checked = false;//預設關閉
             }
+
+            document.getElementById('edit_step_mode').value = 'edit';
 
             option_list_update();//更新顯示
 
@@ -1243,7 +1253,7 @@ function extractPartFromurl() {
                 torque_window_min = Tool_Min_Torque
                 torque_window_max = Tool_Max_Torque
                 torque_window_range_min = delta
-                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('target-torque').value, +document.getElementById('target-torque').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - target torque ,  target torque - tool min torque ) 
+                torque_window_range_max = Number.parseFloat(document.getElementById('target-torque').value).toFixed(4); //取 min ( tool max torque  - target torque ,  target torque - tool min torque ) 
                 angle_window_max = 30600
                 angle_window_min = 1
                 angle_window_range_max = 30599
@@ -1254,7 +1264,7 @@ function extractPartFromurl() {
                 torque_window_min = Tool_Min_Torque
                 torque_window_max = Tool_Max_Torque
                 torque_window_range_min = delta
-                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('target-torque').value, +document.getElementById('target-torque').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - target torque ,  target torque - tool min torque ) 
+                torque_window_range_max = Number.parseFloat(document.getElementById('target-torque').value).toFixed(4); //取 min ( tool max torque  - target torque ,  target torque - tool min torque ) 
                 angle_window_max = 30600
                 angle_window_min = 1
                 angle_window_range_max = 30599
@@ -1294,7 +1304,7 @@ function extractPartFromurl() {
                 torque_window_min = Tool_Min_Torque
                 torque_window_max = Tool_Max_Torque
                 torque_window_range_min = delta
-                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('torque-window').value, +document.getElementById('torque-window').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - torque-window ,  torque-window - tool min torque ) 
+                torque_window_range_max = Number.parseFloat(document.getElementById('torque-window').value).toFixed(4); //取 min ( tool max torque  - torque-window ,  torque-window - tool min torque ) 
                 angle_window_max = 30600
                 angle_window_min = 1
                 angle_window_range_max = Number.parseFloat(Math.min( 30600 - +document.getElementById('target-angle').value , +document.getElementById('target-angle').value )).toFixed(4); //取 min ( 30600 - targetangle , targetangle ) 
@@ -1305,7 +1315,7 @@ function extractPartFromurl() {
                 torque_window_min = Tool_Min_Torque
                 torque_window_max = Tool_Max_Torque
                 torque_window_range_min = delta
-                torque_window_range_max = Number.parseFloat(Math.min(+Tool_Max_Torque - +document.getElementById('torque-window').value, +document.getElementById('torque-window').value - +Tool_Min_Torque)).toFixed(4); //取 min ( tool max torque  - torque-window ,  torque-window - tool min torque ) 
+                torque_window_range_max = Number.parseFloat(document.getElementById('torque-window').value).toFixed(4); //取 min ( tool max torque  - torque-window ,  torque-window - tool min torque ) 
                 document.getElementById('torque-window').value = Tool_Min_Torque * 2
                 document.getElementById('torque-window-range').value = delta
 
@@ -1326,7 +1336,7 @@ function extractPartFromurl() {
 
         
         let conditions = [
-            { id: 'step-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
+            { id: 'step-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]+$/, min: null, max: null },
             { id: 'run-down-speed', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_RPM, max: Tool_Max_RPM },
             { id: 'target-torque', pattern: /^-?\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_Torque, max: Tool_Max_Torque },
             { id: 'target-angle', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: 0, max: 30600 },

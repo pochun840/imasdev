@@ -73,11 +73,11 @@ class Templates extends Controller
         }
 
         $tools_info = [];
-        $tools_info['tool_name'] = $_COOKIE['tool_name'];
-        $tools_info['max_torque'] = $_COOKIE['max_torque'];
-        $tools_info['min_torque'] = $_COOKIE['min_torque'];
-        $tools_info['max_rpm'] = $_COOKIE['max_rpm'];
-        $tools_info['min_rpm'] = $_COOKIE['min_rpm'];
+        $tools_info['tool_name'] = @$_COOKIE['tool_name'];
+        $tools_info['max_torque'] = @$_COOKIE['max_torque'];
+        $tools_info['min_torque'] = @$_COOKIE['min_torque'];
+        $tools_info['max_rpm'] = @$_COOKIE['max_rpm'];
+        $tools_info['min_rpm'] = @$_COOKIE['min_rpm'];
 
         $data = [
             'isMobile' => $isMobile,
@@ -107,11 +107,11 @@ class Templates extends Controller
         }
 
         $tools_info = [];
-        $tools_info['tool_name'] = $_COOKIE['tool_name'];
-        $tools_info['max_torque'] = $_COOKIE['max_torque'];
-        $tools_info['min_torque'] = $_COOKIE['min_torque'];
-        $tools_info['max_rpm'] = $_COOKIE['max_rpm'];
-        $tools_info['min_rpm'] = $_COOKIE['min_rpm'];
+        $tools_info['tool_name'] = @$_COOKIE['tool_name'];
+        $tools_info['max_torque'] = @$_COOKIE['max_torque'];
+        $tools_info['min_torque'] = @$_COOKIE['min_torque'];
+        $tools_info['max_rpm'] = @$_COOKIE['max_rpm'];
+        $tools_info['min_rpm'] = @$_COOKIE['min_rpm'];
 
         $data = [
             'isMobile' => $isMobile,
@@ -162,11 +162,11 @@ class Templates extends Controller
         }
 
         $tools_info = [];
-        $tools_info['tool_name'] = $_COOKIE['tool_name'];
-        $tools_info['max_torque'] = $_COOKIE['max_torque'];
-        $tools_info['min_torque'] = $_COOKIE['min_torque'];
-        $tools_info['max_rpm'] = $_COOKIE['max_rpm'];
-        $tools_info['min_rpm'] = $_COOKIE['min_rpm'];
+        $tools_info['tool_name'] = @$_COOKIE['tool_name'];
+        $tools_info['max_torque'] = @$_COOKIE['max_torque'];
+        $tools_info['min_torque'] = @$_COOKIE['min_torque'];
+        $tools_info['max_rpm'] = @$_COOKIE['max_rpm'];
+        $tools_info['min_rpm'] = @$_COOKIE['min_rpm'];
 
         $data = [
             'isMobile' => $isMobile,
@@ -322,6 +322,22 @@ class Templates extends Controller
 
             if ($input_check) {
                 $step = $this->TemplateModel->EditProgram_Normal($data_array);
+
+                if ($data_array['edit_program_mode'] == 'new') {
+                    if($step){//user log
+                        $this->logMessage('program-1','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('program-1','result-2',json_encode($data_array));
+                    }
+                }else{
+                    if($step){//user log
+                        $this->logMessage('program-2','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('program-2','result-2',json_encode($data_array));
+                    }
+                }
+
+
             }
         }
 
@@ -383,6 +399,13 @@ class Templates extends Controller
 
         if ($input_check) {
             $result = $this->TemplateModel->Copypro($from_pro_id,$to_pro_id,$to_pro_name,$job_type);
+
+            if ($result) {
+                $this->logMessage('program-3','result-1',json_encode( array('from_pro_id'=> $from_pro_id,'to_pro_id'=> $to_pro_id,'to_pro_name'=> $to_pro_name,'job_type'=> $job_type)));
+            }else{
+                $this->logMessage('program-3','result-2',json_encode( array('from_pro_id'=> $from_pro_id,'to_pro_id'=> $to_pro_id,'to_pro_name'=> $to_pro_name,'job_type'=> $job_type)));
+            }
+
             echo json_encode(array('error' => ''));
             exit();
         }else{
@@ -404,10 +427,16 @@ class Templates extends Controller
 
         if($input_check){
             //delete program 
-            $seq_data = $this->TemplateModel->DeleteProgramById($program_id);            
+            $result = $this->TemplateModel->DeleteProgramById($program_id);
+
+            if($result){
+                $this->logMessage('program-4','result-1',json_encode( array('program_id'=> $program_id)));
+            }else{
+                $this->logMessage('program-4','result-2',json_encode( array('program_id'=> $program_id)));
+            }
         }
 
-        echo json_encode(array('error' => '','result' => $seq_data));
+        echo json_encode(array('error' => '','result' => $result));
     }
 
     //get gtcs templates
@@ -442,7 +471,13 @@ class Templates extends Controller
         }
 
         if($input_check){
-            $this->TemplateModel->EditProgram_Advanced_Name($data);
+            $result = $this->TemplateModel->EditProgram_Advanced_Name($data);
+
+            if($result){
+                $this->logMessage('program-6','result-1',json_encode( $data ));
+            }else{
+                $this->logMessage('program-6','result-2',json_encode( $data ));
+            }
         }
 
     }
@@ -500,8 +535,13 @@ class Templates extends Controller
         if($input_check){
             //create template seq
             //create default first step by program_target
-            $this->TemplateModel->EditProgram_Advanced($data);
-            
+            $result = $this->TemplateModel->EditProgram_Advanced($data);
+
+            if($result){
+                $this->logMessage('program-5','result-1',json_encode( $data ));
+            }else{
+                $this->logMessage('program-5','result-2',json_encode( $data ));
+            }
         }
 
         echo json_encode(array('error' => $error_message));
@@ -682,10 +722,32 @@ class Templates extends Controller
         }else{ 
             $data['tool_name'] = '';
         }
+        //edit_step_mode
+        if( isset($_POST['edit_step_mode'])  ){
+            $data['edit_step_mode'] = $_POST['edit_step_mode'];
+        }else{ 
+            $data['edit_step_mode'] = 'new';
+        }
 
 
         if($input_check){
             $result = $this->TemplateModel->EditStep_Advanced($data);
+
+
+            if($data['edit_step_mode'] == 'new'){
+                if($result){
+                    $this->logMessage('program-7','result-1',json_encode( $data ));
+                }else{
+                    $this->logMessage('program-7','result-2',json_encode( $data ));
+                }
+            }else{
+                if($result){
+                    $this->logMessage('program-8','result-1',json_encode( $data ));
+                }else{
+                    $this->logMessage('program-8','result-2',json_encode( $data ));
+                }
+            }
+            
             echo json_encode(array('error' => $error_message,'result' => $result));
         }else{
             echo json_encode(array('error' => $error_message));
@@ -767,6 +829,14 @@ class Templates extends Controller
 
         if ($input_check) {
             $result = $this->TemplateModel->Copystep($from_pro_id,$from_step_id,$to_step_id,$to_step_name,$job_type);
+
+            if($result){
+                $this->logMessage('program-9','result-1',json_encode( array('from_pro_id' => $from_pro_id,'from_step_id' => $from_step_id, 'to_step_id' => $to_step_id, 'to_step_name' => $to_step_name,'job_type' => $job_type ) ));
+            }else{
+                $this->logMessage('program-9','result-2',json_encode( array('from_pro_id' => $from_pro_id,'from_step_id' => $from_step_id, 'to_step_id' => $to_step_id, 'to_step_name' => $to_step_name,'job_type' => $job_type ) ));
+            }
+
+
             echo json_encode(array('error' => ''));
             exit();
         }else{
@@ -793,10 +863,16 @@ class Templates extends Controller
 
         if($input_check){
             //delete program 
-            $seq_data = $this->TemplateModel->DeleteStepById($program_id,$step_id);            
+            $result = $this->TemplateModel->DeleteStepById($program_id,$step_id);
+
+            if($result){
+                $this->logMessage('program-10','result-1',json_encode( array('program_id' => $program_id,'step_id' => $step_id ) ));
+            }else{
+                $this->logMessage('program-10','result-2',json_encode( array('program_id' => $program_id,'step_id' => $step_id ) ));
+            }
         }
 
-        echo json_encode(array('error' => '','result' => $seq_data));
+        echo json_encode(array('error' => '','result' => $result));
     }
 
     //sync program
@@ -929,7 +1005,13 @@ class Templates extends Controller
                 $res = $this->TemplateModel->cover_data($new_temp_normalstep,$table_name);
             }
 
-           
+           if($res){
+                $this->logMessage('program-11','result-1',json_encode( array('jobid'=> $jobid, 'program_id'=> $program_id) ));
+           }else{
+                $this->logMessage('program-11','result-2',json_encode( array('jobid'=> $jobid, 'program_id'=> $program_id) ));
+           }
+
+
         }
         
     }

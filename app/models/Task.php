@@ -292,6 +292,8 @@ class Task{
         $statement->bindValue(':seq_id', $seq_id);
         $statement->bindValue(':task_id', $task_id);
         $results = $statement->execute();
+
+        return $results;
     }
 
     public function ReOrderTasksId($job_id,$seq_id,$task_id)

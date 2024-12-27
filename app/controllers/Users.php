@@ -35,25 +35,25 @@ class Users extends Controller
     }
 
     // 取得所有Jobs
-    public function index2(){
+    // public function index2(){
 
-        $isMobile = $this->isMobileCheck();
-        $nav = $this->NavsController->get_nav();
-        $all_users = $this->UserModel->GetAllUser();
-        $permission_list = $this->UserModel->GetAllPermissions();
-        $all_roles = $this->UserModel->GetAllRole();
+    //     $isMobile = $this->isMobileCheck();
+    //     $nav = $this->NavsController->get_nav();
+    //     $all_users = $this->UserModel->GetAllUser();
+    //     $permission_list = $this->UserModel->GetAllPermissions();
+    //     $all_roles = $this->UserModel->GetAllRole();
 
-        $data = [
-            'isMobile' => $isMobile,
-            'nav' => $nav,
-            'all_users' => $all_users,
-            'permission_list' => $permission_list,
-            'all_roles' => $all_roles,
-        ];
+    //     $data = [
+    //         'isMobile' => $isMobile,
+    //         'nav' => $nav,
+    //         'all_users' => $all_users,
+    //         'permission_list' => $permission_list,
+    //         'all_roles' => $all_roles,
+    //     ];
         
-        $this->view('user/index2', $data);
+    //     $this->view('user/index2', $data);
 
-    }
+    // }
 
     //role setting page
     public function role_setting(){
@@ -84,6 +84,104 @@ class Users extends Controller
         ];
         
         $this->view('user/role_setting', $data);
+    }
+
+    //user log page
+    public function user_log(){
+
+
+        $isMobile = $this->isMobileCheck();
+        $nav = $this->NavsController->get_nav();
+        $all_users = $this->UserModel->GetAllUser();
+        $permission_list = $this->UserModel->GetAllPermissions();
+        $all_roles = $this->UserModel->GetAllRole();
+
+        $permission_list = array_filter($permission_list);
+        
+        $data = [
+            'isMobile' => $isMobile,
+            'nav' => $nav,
+            'all_users' => $all_users,
+            'permission_list' => $permission_list,
+            'all_roles' => $all_roles,
+        ];
+        
+        $this->view('user/user_log', $data);
+    }
+
+    public function GetAllLogAPI()
+    {
+        $data['operator'] = '';
+        $data['action'] = '';
+        $data['result_type'] = '';
+        $data['ip'] = '';
+        $data['date_from'] = '';
+        $data['date_to'] = '';
+
+        $data_array = $_POST;
+        $input_check = true;
+        $error_message = '';
+
+        if( !empty($_POST['operator']) && isset($_POST['operator']) ){
+            $data_array['operator'] = $_POST['operator'];
+        }else{ 
+            $data_array['operator'] = '-1';
+        }
+        if( !empty($_POST['action']) && isset($_POST['action']) ){
+            $data_array['action'] = $_POST['action'];
+        }else{ 
+            $data_array['action'] = '-1';
+        }
+        if( !empty($_POST['result_type']) && isset($_POST['result_type']) ){
+            $data_array['result_type'] = $_POST['result_type'];
+        }else{ 
+            $data_array['result_type'] = '-1';
+        }
+        if( !empty($_POST['ip']) && isset($_POST['ip']) ){
+            $data_array['ip'] = $_POST['ip'];
+        }else{ 
+            $data_array['ip'] = '';
+        }
+        if( !empty($_POST['date_from']) && isset($_POST['date_from']) ){
+            $data_array['date_from'] = $_POST['date_from'];
+        }else{ 
+            $data_array['date_from'] = '';
+        }
+        if( !empty($_POST['date_to']) && isset($_POST['date_to']) ){
+            $data_array['date_to'] = $_POST['date_to'];
+        }else{ 
+            $data_array['date_to'] = '';
+        }
+
+        // var_dump($data_array);
+
+
+
+        // //get all items
+        $item_list = $this->UserModel->GetAllItem($data_array);
+
+        //multi language
+        $language = @$_SESSION['language'];
+        
+        //權限
+        // 如果檔案存在就引入它
+        if(file_exists('../app/language/' . $language . '.php')){
+            require_once '../app/language/' . $language . '.php';
+        } else { //預設採用簡體中文
+            require_once '../app/language/zh-cn.php';
+        }
+
+        //處理user log config mapping
+        foreach ($item_list as $key => $value) {
+            $item_list[$key]['action'] = @$log_status[$item_list[$key]['action']];
+            $item_list[$key]['result'] = @$log_status[$item_list[$key]['result']];
+            // $item_list[$key]['detail'] = '';
+        }
+
+
+        echo json_encode(["data" => $item_list]);
+
+        exit();
     }
 
 
@@ -119,10 +217,13 @@ class Users extends Controller
             $user_id = $this->UserModel->AddUser($user_account,$user_password,$user_name,$user_employee_number,$user_card);
             if (isset($user_id)) {
                 $this->UserModel->AddUserRole($user_id,$role);
-                $this->logMessage('add user','','success: user:'.$user_account);
+                // $this->logMessage('add user','','success: user:'.$user_account);
                 $result = true;
+
+                $this->logMessage('user-1','result-1',json_encode( array('user_account'=> $user_account, 'user_name'=> $user_name) ));
             }else{
                 $result = false;
+                $this->logMessage('user-1','result-2',json_encode( array('user_account'=> $user_account, 'user_name'=> $user_name) ));
             }
 
             if(!$result){
@@ -180,10 +281,12 @@ class Users extends Controller
             $results = $this->UserModel->EditUser($user_id,$user_password,$user_name,$user_employee_number,$user_card);
             if ($results) {
                 $this->UserModel->EditUserRole($user_id,$role);
-                $this->logMessage('edit user','','success: user_id:'.$user_id);
+                // $this->logMessage('edit user','','success: user_id:'.$user_id);
                 $result = true;
+                $this->logMessage('user-2','result-1',json_encode( array('user_id'=> $user_id, 'user_name'=> $user_name, 'user_employee_number'=> $user_employee_number, 'user_card'=> $user_card) ));
             }else{
                 $result = false;
+                $this->logMessage('user-2','result-2',json_encode( array('user_id'=> $user_id, 'user_name'=> $user_name, 'user_employee_number'=> $user_employee_number, 'user_card'=> $user_card) ));
             }
 
             if(!$result){
@@ -249,9 +352,13 @@ class Users extends Controller
             }
 
             if(!$result){
+                $this->logMessage('user-4','result-2',json_encode( array('role_name'=> $role_name) ));
+
                 echo json_encode(array('error' => 'fail'));
                 exit();
             }else{
+                $this->logMessage('user-4','result-1',json_encode( array('role_name'=> $role_name) ));
+
                 echo json_encode(array('error' => ''));
                 exit();
             }
@@ -279,10 +386,14 @@ class Users extends Controller
             $result = $this->UserModel->DeleteRole($role_id);
 
             if(!$result){
+                $this->logMessage('user-6','result-2',json_encode( array('role_id'=> $role_id) ));
+
                 echo json_encode(array('error' => 'Already Assign'));
                 exit();
             }else{
-                $this->logMessage('delete role','','success: role_id:'.$role_id);
+                $this->logMessage('user-6','result-1',json_encode( array('role_id'=> $role_id) ));
+
+                // $this->logMessage('delete role','','success: role_id:'.$role_id);
                 echo json_encode(array('error' => ''));
                 exit();
             }
@@ -301,10 +412,14 @@ class Users extends Controller
             $user_data = $this->UserModel->AssiginPermissionByRoleId($role_id,$role_permissions);
 
             if(!$user_data){
+                $this->logMessage('user-5','result-2',json_encode( array('role_id'=> $role_id,'role_permissions'=> $role_permissions ) ));
+
                 echo json_encode(array('error' => 'fail'));
                 exit();
             }else{
-                $this->logMessage('edit role','','success: role_id:'.$role_id.', permissions:'.json_encode($role_permissions));
+                $this->logMessage('user-5','result-1',json_encode( array('role_id'=> $role_id,'role_permissions'=> $role_permissions ) ));
+
+                // $this->logMessage('edit role','','success: role_id:'.$role_id.', permissions:'.json_encode($role_permissions));
                 echo json_encode(array('error' => ''));
                 exit();
             }
@@ -347,9 +462,11 @@ class Users extends Controller
             $result = $this->UserModel->DelUser($user_id);
 
             if(!$result){
+                $this->logMessage('user-3','result-2',json_encode( array('user_id'=> $user_id) ));
                 echo json_encode(array('error' => 'fail'));
                 exit();
             }else{
+                $this->logMessage('user-3','result-1',json_encode( array('user_id'=> $user_id) ));
                 echo json_encode(array('error' => ''));
                 exit();
             }

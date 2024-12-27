@@ -197,6 +197,13 @@ class Equipments extends Controller
     {
         //看要不要加驗證
         $result = $this->EquipmentModel->SetTowerPin($_POST);
+
+        if($result){
+            $this->logMessage('equipment-2','result-1',json_encode( $_POST ));
+        }else{
+            $this->logMessage('equipment-2','result-2',json_encode( $_POST ));
+        }
+
         // $result = '';
         echo json_encode($result);
         exit();
@@ -407,9 +414,11 @@ class Equipments extends Controller
         $result = $this->EquipmentModel->Save_Controller_IP($ip);
 
         if($result){
+            $this->logMessage('equipment-1','result-1',json_encode( array('ip'=> $ip) ));
             echo json_encode(array('result' =>'', 'service_status' => 'yes'));
             exit();
         }else{
+            $this->logMessage('equipment-1','result-2',json_encode( array('ip'=> $ip) ));
             echo json_encode(array('result' =>'', 'service_status' => 'no'));
             exit();
         }

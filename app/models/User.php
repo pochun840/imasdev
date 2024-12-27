@@ -357,5 +357,63 @@ class User{
         }
     }
 
+    public function GetAllItem($params)
+    {
+        // $sql = "SELECT system_log.*,datetime(system_log.timestamp, '+8 hours') AS utc_8_time  
+        //         FROM system_log
+        //         ORDER BY utc_8_time DESC LIMIT 500
+        //         ";
+
+        // 构建查询
+        $sql = "SELECT system_log.*,datetime(system_log.timestamp, '+8 hours') AS utc_8_time FROM system_log WHERE 1=1 "; // 使用 1=1 方便后续拼接条件
+        $conditions = [];
+        $bindParams = [];
+
+        // 根据参数添加条件
+        if ($params['operator'] !== '-1') {
+            $conditions[] = "account = :operator";
+            $bindParams[':operator'] = $params['operator'];
+        }
+
+        if ($params['action'] !== '-1') {
+            $conditions[] = "action LIKE :action"; // 使用 LIKE 进行模糊查询
+            $bindParams[':action'] = '%' . $params['action'] . '%'; // 在前后添加通配符
+        }
+
+        if ($params['result_type'] !== '-1') {
+            $conditions[] = "result = :result_type";
+            $bindParams[':result_type'] = $params['result_type'];
+        }
+
+        if (!empty($params['date_from'])) {
+            $conditions[] = "utc_8_time >= :date_from";
+            $bindParams[':date_from'] = $params['date_from'];
+        }
+
+        if (!empty($params['date_to'])) {
+            $conditions[] = "utc_8_time <= :date_to";
+            $bindParams[':date_to'] = $params['date_to'];
+        }
+
+        if (!empty($params['ip'])) {
+            $conditions[] = "ip LIKE :ip"; // 使用 LIKE 进行模糊查询
+            $bindParams[':ip'] = '%' . $params['ip'] . '%'; // 在前后添加通配符
+
+        }
+
+        // 拼接条件到查询中
+        if (!empty($conditions)) {
+            $sql .= " AND " . implode(" AND ", $conditions);
+        }
+        $sql .= " ORDER BY utc_8_time DESC LIMIT 500";
+
+        // var_dump($sql);
+
+        $statement = $this->db->prepare($sql);
+        $statement->execute($bindParams);
+
+        return $statement->fetchall(PDO::FETCH_ASSOC);
+    }
+
 
 }

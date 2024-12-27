@@ -102,7 +102,22 @@ class Monitors extends Controller
 
 
         if ($input_check) {
-            $jobs = $this->MonitorModel->editMonitor($data_array);
+            $result = $this->MonitorModel->editMonitor($data_array);
+
+            if($data_array['mode'] == 'add'){//new
+                if($result){
+                    $this->logMessage('monitor-3','result-1',json_encode( $data_array ));
+                }else{
+                    $this->logMessage('monitor-3','result-2',json_encode( $data_array ));
+                }
+
+            }else{//edit
+                if($result){
+                    $this->logMessage('monitor-4','result-1',json_encode( $data_array ));
+                }else{
+                    $this->logMessage('monitor-4','result-2',json_encode( $data_array ));
+                }
+            }
         }
 
         echo json_encode(array('error' => $error_message));
@@ -123,7 +138,12 @@ class Monitors extends Controller
         }
 
         if ($input_check) {
-            $jobs = $this->MonitorModel->deleteMonitor($station_id);
+            $result = $this->MonitorModel->deleteMonitor($station_id);
+            if($result){
+                $this->logMessage('monitor-5','result-1',json_encode( array('station_id'=> $station_id) ));
+            }else{
+                $this->logMessage('monitor-5','result-2',json_encode( array('station_id'=> $station_id) ));
+            }
         }
 
         echo json_encode(array('error' => $error_message));
@@ -224,7 +244,9 @@ class Monitors extends Controller
                 $pid = file_get_contents($pidFile);
                 // echo "Node process PID: $pid";
                 exec("taskkill /F /PID $pid", $output, $result);
-                $message .= $result;
+                // var_dump($output);
+                // $message .= $result;
+                sleep(1);
                 exec("tasklist | findstr $pid", $output, $result);
                 if(empty($output)){
                     $message = '服務已關閉';
@@ -238,8 +260,11 @@ class Monitors extends Controller
                 $pid = file_get_contents($pidFile);
                 // echo "Node client process PID: $pid";
                 exec("taskkill /F /PID $pid", $output, $result);
-                $message .= $result;
+                // var_dump($output);
+                // $message .= $result;
+                sleep(1);
                 exec("tasklist | findstr $pid", $output, $result);
+                // var_dump($output);
                 if(empty($output)){
                     // var_dump(empty($output));
                     $message = '服務已關閉';
@@ -247,32 +272,73 @@ class Monitors extends Controller
             } else {
                 echo "PID file not found.";
             }
-            sleep(2);
+            sleep(1);
 
             echo json_encode(array('result' => $message, 'service_status' => $service_status));
             exit();
         }
 
         if($action == 'check'){
-            $connection = @fsockopen('localhost', $port);
-            if (is_resource($connection)) {
-                fclose($connection);
-                $message = "服務執行中";
-                $service_status = 'yes';
-            } else {
-                $message = "未能找到服務";
-                $service_status = 'no';
-            }
-
-            // $pidFile = '..\node_pid_client.txt';
-            // if (file_exists($pidFile)) {
-            //     $pid = file_get_contents($pidFile);
-            //     // echo "Node client process PID: $pid";
-            //     exec("tasklist | findstr $pid", $output, $result);
-            //     var_dump($output);
-            //     var_dump($result);
-            //     $message .= $result;
+            // $connection = @fsockopen('localhost', $port);
+            // if (is_resource($connection)) {
+            //     fclose($connection);
+            //     $message = "服務執行中";
+            //     $service_status = 'yes';
+            // } else {
+            //     $message = "未能找到服務";
+            //     $service_status = 'no';
             // }
+
+            if( $monitor_mode == 2 ){ // server才需要開
+                $connection = @fsockopen('localhost', $port);
+                if (is_resource($connection)) {
+                    fclose($connection);
+                    $message = "服務執行中";
+                    $service_status = 'yes';
+                } else {
+                    $message = "未能找到服務";
+                    $service_status = 'no';
+                }
+
+                $pidFile = '..\node_pid_client.txt';
+                if (file_exists($pidFile)) {
+                    $pid = file_get_contents($pidFile);
+                    // echo "Node process PID: $pid";
+                    exec("tasklist | findstr $pid", $output, $result);
+                    // var_dump($output);
+                    if(empty($output)){
+                        $message = '未能找到服務';
+                        $service_status = 'yes';
+                    }else{
+                        $message = '服務執行中';
+                        $service_status = 'no';
+                    }
+                } else {
+                    // echo "PID file not found.";
+                    $message = '未能找到服務';
+                    $service_status = 'no';
+                }
+                
+            }
+            if( $monitor_mode == 1 ){ // server才需要開
+                $pidFile = '..\node_pid_client.txt';
+                if (file_exists($pidFile)) {
+                    $pid = file_get_contents($pidFile);
+                    // echo "Node process PID: $pid";
+                    exec("tasklist | findstr $pid", $output, $result);
+                    if(empty($output)){
+                        $message = '未能找到服務';
+                        $service_status = 'no';
+                    }else{
+                        $message = '服務執行中';
+                        $service_status = 'yes';
+                    }
+                } else {
+                    // echo "PID file not found.";
+                    $message = '未能找到服務';
+                    $service_status = 'no';
+                }
+            }
 
             echo json_encode(array('result' => $message, 'service_status' => $service_status));
             exit();
@@ -311,6 +377,7 @@ class Monitors extends Controller
 
         if ($input_check) {
             $this->OperationModel->SetConfigValue('monitor_server_ip',$data_array['server_ip']);
+            $this->logMessage('monitor-2','result-1',json_encode( array('monitor_server_ip'=> $data_array['server_ip']) ));
         }
 
         echo json_encode(array('error' => $error_message));
@@ -331,6 +398,7 @@ class Monitors extends Controller
 
         if ($input_check) {
             $this->OperationModel->SetConfigValue('monitor_mode',$data_array['monitor_mode']);
+            $this->logMessage('monitor-1','result-1',json_encode( array('monitor_mode'=> $data_array['monitor_mode']) ));
         }
 
         echo json_encode(array('error' => $error_message));

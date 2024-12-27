@@ -232,7 +232,22 @@ class Tasks extends Controller
             }
 
             if ($input_check) {
-                $jobs = $this->TaskModel->EditTask($data_array);
+                $res = $this->TaskModel->EditTask($data_array);
+
+                if($data_array['edit_task_mode'] == 'new'){ //new task
+                    if($res){//user log
+                        $this->logMessage('task-1','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('task-1','result-2',json_encode($data_array));
+                    }
+                }else{ //edit task
+                    if($res){//user log
+                        $this->logMessage('task-2','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('task-2','result-2',json_encode($data_array));
+                    }
+                }
+
                 //add socket hole
                 $this->TaskModel->edit_task_socket_hole($data_array);
 
@@ -268,7 +283,12 @@ class Tasks extends Controller
                 if($is_uploaded){
                     // 把img url寫入資料庫
                     // echo 'Image Successfully Uploaded';
-                    $this->TaskModel->SetTaskImage($data_array['job_id'],$data_array['seq_id'],$data_array['task_id'],$image_upload_path,$file_type,$data_array['message_text'],$data_array['message_timeout']);
+                    $res = $this->TaskModel->SetTaskImage($data_array['job_id'],$data_array['seq_id'],$data_array['task_id'],$image_upload_path,$file_type,$data_array['message_text'],$data_array['message_timeout']);
+                    if($res){//user log
+                        $this->logMessage('task-4','result-1',json_encode(array("job_id"=>$data_array['job_id'],"seq_id"=>$data_array['seq_id'], "task_id"=>$data_array['task_id'],"image_upload_path"=>$image_upload_path,"file_type"=>$file_type,"message_text"=>$data_array['message_text'],"message_timeout"=>$data_array['message_timeout'])));
+                    }else{
+                        $this->logMessage('task-4','result-2',json_encode(array("job_id"=>$data_array['job_id'],"seq_id"=>$data_array['seq_id'], "task_id"=>$data_array['task_id'],"image_upload_path"=>$image_upload_path,"file_type"=>$file_type,"message_text"=>$data_array['message_text'],"message_timeout"=>$data_array['message_timeout'])));
+                    }
                 }
                 else{
                     // echo 'Something Went Wrong!';
@@ -280,7 +300,13 @@ class Tasks extends Controller
                 // 沒有上傳檔案
                 $image_upload_path = '';
                 $file_type = '';
-                $this->TaskModel->SetTaskImage($data_array['job_id'],$data_array['seq_id'],$data_array['task_id'],$image_upload_path,$file_type,$data_array['message_text'],$data_array['message_timeout']);
+                $res = $this->TaskModel->SetTaskImage($data_array['job_id'],$data_array['seq_id'],$data_array['task_id'],$image_upload_path,$file_type,$data_array['message_text'],$data_array['message_timeout']);
+                if($res){//user log
+                    $this->logMessage('task-4','result-1',json_encode(array("job_id"=>$data_array['job_id'],"seq_id"=>$data_array['seq_id'], "task_id"=>$data_array['task_id'],"image_upload_path"=>$image_upload_path,"file_type"=>$file_type,"message_text"=>$data_array['message_text'],"message_timeout"=>$data_array['message_timeout'])));
+                }else{
+                    $this->logMessage('task-4','result-2',json_encode(array("job_id"=>$data_array['job_id'],"seq_id"=>$data_array['seq_id'], "task_id"=>$data_array['task_id'],"image_upload_path"=>$image_upload_path,"file_type"=>$file_type,"message_text"=>$data_array['message_text'],"message_timeout"=>$data_array['message_timeout'])));
+                }
+
             }
         }
 
@@ -337,6 +363,13 @@ class Tasks extends Controller
         if($input_check){
             $tasks_data = $this->TaskModel->DeleteTasksById($job_id,$seq_id,$task_id);
             $this->TaskModel->ReOrderTasksId($job_id,$seq_id,$task_id);
+
+            if($tasks_data){//user log
+                $this->logMessage('task-3','result-1',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id, "task_id"=>$task_id)));
+            }else{
+                $this->logMessage('task-3','result-2',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id, "task_id"=>$task_id)));
+            }
+
         }
 
         echo json_encode($tasks_data);
@@ -363,6 +396,12 @@ class Tasks extends Controller
 
         foreach ($items as $key => $value) {
             $tasks_data = $this->TaskModel->EditPositionOnly($job_id,$seq_id,$value['index'],$value['img_div']);
+        }
+
+        if($tasks_data){//user log
+            $this->logMessage('task-5','result-1',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id)));
+        }else{
+            $this->logMessage('task-5','result-2',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id)));
         }
         
         // if($input_check){

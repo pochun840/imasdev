@@ -253,11 +253,14 @@ class Template{
              echo "Record updated successfully.";
          } else {
              echo "No record found.";
-         }        
+         }
+
+         return $results;
       
     }
 
     public function EditProgram_Advanced_Name($data){
+        $results = false;
         if( $this->CheckProgramExist($data['program_id'])){
             $sql = "UPDATE `gtcs_advancedstep_template` 
             SET template_program_name = :template_program_name
@@ -267,8 +270,6 @@ class Template{
             $statement->bindValue(':template_program_id', $data['program_id']);
             $statement->bindValue(':template_program_name', $data['program_name']);
             $results = $statement->execute();
-
-
         } 
         
         return $results;
@@ -593,6 +594,15 @@ class Template{
         $statement2->bindValue(':template_program_id', $template_program_id);
         $statement2->bindValue(':template_step_id', $step_id);
         $results2 = $statement2->execute();
+
+
+        if($results && $results2){
+            return true;
+        }else{
+            return false;
+        }
+
+        // return $results;
     }
 
 

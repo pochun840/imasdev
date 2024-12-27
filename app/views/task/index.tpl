@@ -261,6 +261,7 @@
                             </div>
                             <div style="display:none;">
                                 <input id="pure_message" value="0">
+                                <input id="edit_task_mode" value="new">
                             </div>
                         </div>
 
@@ -711,7 +712,9 @@ function new_task() {
     document.getElementById("task_id").value = task_id;
     document.getElementById("close_modal_1").setAttribute("onclick", "close_modal()");
     document.getElementById("close_modal_2").setAttribute("onclick", "close_modal()");
-    
+
+    //
+    document.getElementById('edit_task_mode').value = 'new';
     document.getElementById("TemplateContainer").innerHTML = '';
 
     document.getElementById('TaskNew').style.display = 'block'
@@ -746,6 +749,7 @@ function new_task_save() {
     let message_text = document.getElementById("message_text").value;
     let delaytime = document.getElementById("delaytime").value;
     // let img_div = document.getElementById('img-container').innerHTML;//Tolerance 
+    let edit_task_mode = document.getElementById('edit_task_mode').value;
     
     let controller_id = 1;//目前只有GTCS
     let enable_arm = document.getElementById('arm').checked;
@@ -805,6 +809,7 @@ function new_task_save() {
     formData.append('controller_id', controller_id);
     formData.append('enable_arm', +enable_arm);
     formData.append('sockect_hole', +sockect_hole);
+    formData.append('edit_task_mode', edit_task_mode);
 
     let virtual_message_check = document.getElementById('message').checked
     formData.append('virtual_message_check', virtual_message_check);
@@ -986,6 +991,7 @@ function edit_task() {
             document.getElementById('message').disabled = false
         }
 
+        document.getElementById('edit_task_mode').value = 'edit';
         document.getElementById('TaskNew').style.display = 'block'
     });
 

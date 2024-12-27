@@ -83,12 +83,12 @@ if(!empty($data['tower_light_switch'])) {
                                     </div>
                                 </div>
                                 <div class="row t3">
-                                    <div class="col-3 t3"><?php echo $text['Green_text']; ?></div>
+                                    <div class="col-3 t3"><?php echo $text['Yellow_text']; ?></div>
                                     <div class="col-1 t3">
-                                        <select id="greenlight_pin" style="width: auto" >
+                                        <select id="yellowlight_pin" style="width: auto" >
                                              <?php 
                                                 for ($i=0; $i < 12; $i++) { 
-                                                    if($data['light_pin']['green_light'] == $i){
+                                                    if($data['light_pin']['yellow_light'] == $i){
                                                         echo '<option value="'.$i.'"selected>pin'.$i.'</option>';
                                                     }else{
                                                         echo '<option value="'.$i.'">pin'.$i.'</option>';    
@@ -99,12 +99,12 @@ if(!empty($data['tower_light_switch'])) {
                                     </div>
                                 </div>
                                 <div class="row t3">
-                                    <div class="col-3 t3"><?php echo $text['Yellow_text']; ?></div>
+                                    <div class="col-3 t3"><?php echo $text['Green_text']; ?></div>
                                     <div class="col-1 t3">
-                                        <select id="yellowlight_pin" style="width: auto" >
+                                        <select id="greenlight_pin" style="width: auto" >
                                              <?php 
                                                 for ($i=0; $i < 12; $i++) { 
-                                                    if($data['light_pin']['yellow_light'] == $i){
+                                                    if($data['light_pin']['green_light'] == $i){
                                                         echo '<option value="'.$i.'"selected>pin'.$i.'</option>';
                                                     }else{
                                                         echo '<option value="'.$i.'">pin'.$i.'</option>';    
@@ -153,13 +153,13 @@ if(!empty($data['tower_light_switch'])) {
                                           <input id="test_Red" type="checkbox" checked="checked">
                                           <span class="checkmark checkmark_red"></span>
                                         </label>
-                                        <label class="light_test"><?php echo $text['Green_text']; ?>
-                                          <input id="test_Green" type="checkbox">
-                                          <span class="checkmark checkmark_green"></span>
-                                        </label>
                                         <label class="light_test"><?php echo $text['Yellow_text']; ?>
                                           <input id="test_Yellow" type="checkbox">
                                           <span class="checkmark checkmark_yellow"></span>
+                                        </label>
+                                        <label class="light_test"><?php echo $text['Green_text']; ?>
+                                          <input id="test_Green" type="checkbox">
+                                          <span class="checkmark checkmark_green"></span>
                                         </label>
                                         <label class="light_test"><?php echo $text['Buzzer_text']; ?>
                                           <input id="test_Buzzer" type="checkbox">

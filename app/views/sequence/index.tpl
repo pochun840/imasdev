@@ -288,6 +288,9 @@
                                 <input id="timeout" type="number" min=1 max=99 class="form-control input-ms" maxlength="2" >
                             </div>
                         </div>
+                        <div style="display:none;">
+                            <input type="" id="edit_seq_mode" value="new">
+                        </div>
                     </form>
                 </div>
 
@@ -338,7 +341,7 @@
                             <div class="row">
                                 <div for="to_seq_name" class="col-4 t1"><?php echo $text['Seq_Name_text']; ?> :</div>
                                 <div class="col-5 t2">
-                                    <input type="text" class="form-control" id="to_seq_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.]/g, '')">
+                                    <input type="text" class="form-control" id="to_seq_name" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]/g, '')">
                                 </div>
                             </div>
                         </div>
@@ -485,6 +488,8 @@ function displayImage()
         //remove is-invalid class
         remove_invalid('SeqNew');
 
+        document.getElementById('edit_seq_mode').value = 'new';
+
         document.getElementById('SeqNew').style.display='block'
 
     }
@@ -500,6 +505,7 @@ function displayImage()
         let ok_seq = document.getElementById('ok_seq').checked; // $('input[name=Downshift_Enable]:checked').val();
         let timeout = document.getElementById("timeout").value;
         let ok_seq_stop = 1;
+        let edit_seq_mode = document.getElementById('edit_seq_mode').value;
 
         var formData = new FormData();
         // 添加表单数据
@@ -513,6 +519,7 @@ function displayImage()
         formData.append('ok_seq', ok_seq);
         formData.append('timeout', timeout);
         formData.append('ok_seq_stop', ok_seq_stop);
+        formData.append('edit_seq_mode', edit_seq_mode);
         // 添加图片数据
         var fileInput = $('#custom-file')[0].files[0];
         formData.append('image', fileInput);
@@ -685,6 +692,8 @@ function displayImage()
                     document.getElementById('image-preview').style.display = 'block';
                     document.getElementById('preview-container').style.display = 'block';
                 }
+
+                document.getElementById('edit_seq_mode').value = 'edit';
 
                 document.getElementById('modal_head').innerHTML = '<?php echo $text['Edit_Seq_text']; ?>'; //'Edit Seq'
                 document.getElementById('SeqNew').style.display='block'
@@ -899,7 +908,7 @@ addMessage();
     function input_check(argument) {
 
         let conditions = [
-                { id: 'seq_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
+                { id: 'seq_name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]+$/, min: null, max: null },
                 { id: 'timeout', pattern: /^\d{0,4}(\.\d{0,1})?$/, min: 0, max: 20 },
             ];
 

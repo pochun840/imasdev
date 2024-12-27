@@ -448,6 +448,19 @@ class Settings extends Controller
         $this->OperationModel->SetConfigValue('auto_switch',$_POST['auto_switch']);
         $this->OperationModel->SetConfigValue('tower_light_switch',$_POST['tower_light_switch']);
         $this->OperationModel->SetConfigValue('buzzer_switch',$_POST['buzzer_switch']);
+        $this->OperationModel->SetConfigValue('gender_switch',$_POST['gender']);
+
+        $this->logMessage('setting-1','result-1',json_encode( array('auth_skip'=> $_POST['switch_next_seq'],
+                                                                    'auth_back'=> $_POST['switch_previous_seq'],
+                                                                    'auth_task_reset'=> $_POST['auth_task_reset'],
+                                                                    'auth_job_change'=> $_POST['auth_job_change'],
+                                                                    'auth_seq_change'=> $_POST['auth_seq_change'],
+                                                                    'manger_verify'=> $_POST['manger_verify'],
+                                                                    'stop_on_ng'=> $_POST['stop_on_ng'],
+                                                                    'auto_switch'=> $_POST['auto_switch'],
+                                                                    'tower_light_switch'=> $_POST['tower_light_switch'],
+                                                                    'gender_switch'=> $_POST['gender'],
+                                                                    'buzzer_switch'=> $_POST['buzzer_switch'] ) ));
 
         echo json_encode(array('error' => $error_message));
 
@@ -463,6 +476,9 @@ class Settings extends Controller
 
         $this->OperationModel->SetConfigValue('language_setting',$_POST['language_setting']);
         $this->OperationModel->SetConfigValue('count_method_setting',$_POST['count_method_setting']);
+
+        $this->logMessage('setting-1','result-1',json_encode( array('language_setting'=> $_POST['language_setting'],
+                                                                    'count_method_setting'=> $_POST['count_method_setting'] ) ));
         //count_method_setting
         $_SESSION['language'] = $_POST['language_setting'];
         echo json_encode(array('error' => $error_message));
@@ -476,6 +492,8 @@ class Settings extends Controller
     public function Voice_Playback_Sound(){
         $error_message = '';
         $this->OperationModel->SetConfigValue('gender_switch',$_POST['gender']);
+
+        $this->logMessage('setting-1','result-1',json_encode( array('gender_switch'=> $_POST['gender']) ));
         //$this->OperationModel->SetConfigValue('auto_switch',$_POST['auto_switch']);
         echo json_encode(array('error' => $error_message));
         exit();

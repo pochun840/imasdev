@@ -706,31 +706,36 @@ function list_select(element) {
 
 function del_role() {
     let selected_role = document.getElementsByClassName('selected');
-    for (var row = 0; row < selected_role.length; row++) {
 
-        if(selected_role[row].value > 0){
-            $.ajax({ // 提醒
-                type: "POST",
-                data: {
-                    'role_id': selected_role[row].value
-                },
-                dataType: "json",
-                url: "?url=Users/delete_role",
-            }).done(function(data) { //成功且有回傳值才會執行
-                if (data.error != '') {
-                    Swal.fire({ // DB sync notice
-                        title: 'Error',
-                        text: data.error,
-                    })
-                } else {
-                    history.go(0);
-                }
-                console.log(data);
-            }).fail(function() {
-                history.go(0); //失敗就重新整理
-            });
+    let result = confirm('請確定是否要刪除選取的管理身分')
+
+    if(result){
+        for (var row = 0; row < selected_role.length; row++) {
+
+            if(selected_role[row].value > 0){
+                $.ajax({ // 提醒
+                    type: "POST",
+                    data: {
+                        'role_id': selected_role[row].value
+                    },
+                    dataType: "json",
+                    url: "?url=Users/delete_role",
+                }).done(function(data) { //成功且有回傳值才會執行
+                    if (data.error != '') {
+                        Swal.fire({ // DB sync notice
+                            title: 'Error',
+                            text: data.error,
+                        })
+                    } else {
+                        history.go(0);
+                    }
+                    console.log(data);
+                }).fail(function() {
+                    history.go(0); //失敗就重新整理
+                });
+            }
+
         }
-
     }
 
 

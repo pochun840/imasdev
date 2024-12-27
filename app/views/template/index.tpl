@@ -143,6 +143,16 @@
         </div>
     </div>
 <script>
+    $(document).ready(function () {
+        //預設帶入GTCS與第一支起子，智能模式
+        document.getElementById('ControllerSelect').value = 'GTCS'
+        document.getElementById('tool_selected').selectedIndex = 1
+        document.getElementById('normal-job').checked = true
+        const event_change = new Event("change"); // 創建一個該元素綁定的事件
+        document.getElementById('ControllerSelect').dispatchEvent(event_change);
+    });
+
+
     document.getElementById('ControllerSelect').addEventListener('change', function () {
         var selectedValue = this.value;
         var jobTypeContainer = document.getElementById('jobTypeContainer');

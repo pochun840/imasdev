@@ -72,6 +72,8 @@ class Mains extends Controller
     // 退出登錄並清除身份驗證令牌
     public function logout() {
         $data = array();
+
+        $username = @$_COOKIE['user'];
         setcookie('user', '', time() - 3600, '/');
         setcookie('auth_token', '', time() - 3600, '/');
 
@@ -81,6 +83,8 @@ class Mains extends Controller
         $current_job_id = $this->OperationModel->SetConfigValue('current_job_id',$job_id);
         //$current_job_id = $this->OperationModel->SetConfigValue('current_seq_id',$seq_id);
         //$current_job_id = $this->OperationModel->SetConfigValue('current_task_id',$task_id);
+
+        $this->logMessage('logout','result-1',json_encode(array("account"=>$username)));
 
         $this->view('login/index', $data);
         // header("Location:".$_SERVER['REQUEST_URI']."  ");

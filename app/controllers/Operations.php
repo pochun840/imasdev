@@ -392,6 +392,7 @@ class Operations extends Controller
                 // $this->logMessage('modbus status:'.$modbus->status);
                 // $this->logMessage('Import config end');
                 // echo json_encode(array('error' => ''));
+                $this->logMessage('operation-1','result-1',json_encode( array('job_id'=> $job_id,'seq_id'=> $seq_id, 'raw' => $_POST ) ));
                 echo $modbus->status;
                 exit();
 
@@ -405,6 +406,7 @@ class Operations extends Controller
                 // $this->logMessage('modbus status:'.$modbus->status);
                 // $this->logMessage('Import config end');
                 // echo json_encode(array('error' => 'modbus error'));
+                $this->logMessage('operation-1','result-2',json_encode( array('job_id'=> $job_id,'seq_id'=> $seq_id, 'raw' => $_POST ) ));
                 echo $modbus->status;
                 exit();
             }
@@ -451,6 +453,9 @@ class Operations extends Controller
                 $current_job_id = $this->OperationModel->SetConfigValue('current_job_id',$job_id);
                 $current_job_id = $this->OperationModel->SetConfigValue('current_seq_id',$seq_id);
                 $current_job_id = $this->OperationModel->SetConfigValue('current_task_id',$task_id);
+
+                $this->logMessage('operation-1','result-1',json_encode( array('job_id'=> $job_id,'seq_id'=> $seq_id,'task_id'=> $task_id,'direction'=> $direction,'raw' => $_POST ) ));
+
                 echo json_encode(array('error' => $error_message));
                 exit();
             }else{
@@ -478,6 +483,9 @@ class Operations extends Controller
                 $current_job_id = $this->OperationModel->SetConfigValue('current_job_id',$job_id);
                 $current_job_id = $this->OperationModel->SetConfigValue('current_seq_id',$seq_id);
                 $current_job_id = $this->OperationModel->SetConfigValue('current_task_id',$task_id);
+
+                $this->logMessage('operation-1','result-1',json_encode( array('job_id'=> $job_id,'seq_id'=> $seq_id,'task_id'=> $task_id,'direction'=> $direction,'raw' => $_POST ) ));
+
                 echo json_encode(array('error' => $error_message));
                 exit();
 
@@ -798,6 +806,10 @@ class Operations extends Controller
 
         if($check == 1 && in_array($user_data['RoleID'],$role_checked) ){
             $result = true;
+            $this->logMessage('operation-2','result-1',json_encode( array('action'=> $action,'card'=> $card, 'raw' => $_POST ) ));
+        }else{
+            $result = false;
+            $this->logMessage('operation-2','result-2',json_encode( array('action'=> $action,'card'=> $card, 'raw' => $_POST ) ));
         }
 
         echo json_encode(array('result' => $result));
@@ -852,14 +864,14 @@ class Operations extends Controller
             $hole_id = -1;
         }
 
-        /*$check = $this->pingDomain('192.168.1.75',502);
-        if($check > 0){
+        // $check = $this->pingDomain(IOBOX_IP,502,0.3);
+        // if($check > 0){
 
-        }else{
-            // 可以避免io沒開的時候 會卡很久，但某些機器判斷會有問題 暫時先移除
-            echo json_encode(array('result' => 'no con'));
-            exit();
-        }*/
+        // }else{
+        //     // 可以避免io沒開的時候 會卡很久，但某些機器判斷會有問題 暫時先移除
+        //     echo json_encode(array('result' => 'no con'));
+        //     exit();
+        // }
 
         //要加先判斷連線是否通，不然會等太久
 
@@ -897,13 +909,59 @@ class Operations extends Controller
 
     }
 
-    public function pingDomain($domain,$port)
+    public function Get_Socket_Hole2()
+    {
+        if (isset($_GET['hole_id'])) {
+            $hole_id = $_GET['hole_id'];
+        }else{
+            $hole_id = -1;
+        }
+
+        if( isset($_GET['Socket_Hole']) ){
+            $post['light_signal'] = 'get_socket';
+            $post['hole_id'] = $hole_id;
+            $url_split = explode('/',$_SERVER['PHP_SELF']);
+
+            $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].'/'.$url_split[1].'/api/set_io_signal.php';
+
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_POST, TRUE);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($post));
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+
+            curl_setopt($curl, CURLOPT_USERAGENT, 'api');
+
+            // curl_setopt($curl, CURLOPT_TIMEOUT, 1); //if your connect is longer than 1s it lose data in POST better is finish script in recevie
+            curl_setopt($curl, CURLOPT_HEADER, 0);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, false);
+            curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
+            curl_setopt($curl, CURLOPT_DNS_CACHE_TIMEOUT, 100);
+            curl_setopt($curl, CURLOPT_NOSIGNAL, 1);
+            curl_setopt($curl, CURLOPT_TIMEOUT_MS, 100);
+
+            curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
+
+            $content = curl_exec($curl);
+
+            curl_close($curl);
+            echo json_encode( array('result' => '1') );
+            exit();
+        }else{
+            echo json_encode( array('result' => '0') );
+            exit();    
+        }
+
+    }
+
+    public function pingDomain($domain,$port,$dealy = 0.3)
     {
         error_reporting(0);
         $starttime = microtime(true);
 
         try {
-          $file = fsockopen ($domain, $port, $errno, $errstr, 0.1);
+          $file = fsockopen ($domain, $port, $errno, $errstr, 0.3);
         } catch (Exception $e) {
           
         }
@@ -1032,9 +1090,13 @@ class Operations extends Controller
             $this->OperationModel->SetConfigValue('current_job_id',$data['barcode_selected_job']);
             $this->OperationModel->SetConfigValue('current_seq_id',$data['barcode_selected_seq']);
             $this->OperationModel->SetConfigValue('current_task_id',1);
+
+            $this->logMessage('operation-5','result-1',json_encode( array('barcode'=> $barcode, 'raw' => $_POST ) ));
+
             echo json_encode(array('result' => 'yes'));
             exit();
         }else{
+            $this->logMessage('operation-5','result-2',json_encode( array('barcode'=> $barcode, 'raw' => $_POST ) ));
             echo json_encode(array('result' => 'no'));
             exit();
         }

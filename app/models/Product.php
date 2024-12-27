@@ -16,13 +16,17 @@ class Product{
         $sql = "SELECT
                   job.*,
                   COUNT(DISTINCT seq.seq_id) AS seq_count,
-                  COUNT(DISTINCT task.task_id) AS task_count
+                  COUNT( task.task_id) AS task_count,
+                  max(task.enable_arm) AS arm,
+                  max(tst.hole_id) AS socket
                 FROM
                   job
                 LEFT JOIN
                   sequence as seq ON job.job_id = seq.job_id
                 LEFT JOIN
                   task ON seq.seq_id = task.seq_id AND seq.job_id = task.job_id
+                LEFT JOIN 
+                  task_socket_tray tst on task.job_id = tst.job_id and task.seq_id = tst.seq_id and task.task_id = tst.task_id
                 GROUP BY
                   job.job_id;
                 ";
@@ -202,8 +206,10 @@ class Product{
         $statement->bindValue(':job_id', $job_id);
         $results = $statement->execute();
 
-
-        
+        //刪除task_socket_tray
+        $stmt = $this->db->prepare('DELETE FROM task_socket_tray WHERE job_id = :job_id');
+        $stmt->bindValue(':job_id', $job_id);
+        $results = $stmt->execute();        
 
         
         return $results;
@@ -573,8 +579,8 @@ class Product{
         }
         if( $table_name == 'ccs_advancedstep'){
             foreach ($new_array as $item) {
-                $sql = "INSERT INTO $table_name ('job_id','seq_id','task_id','step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope','gtcs_job_id' )
-                    VALUES ( :job_id,:seq_id,:task_id,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope,:gtcs_job_id )";
+                $sql = "INSERT INTO $table_name ('job_id','seq_id','task_id','step_id','step_name','step_targettype','step_targetangle','step_targettorque','step_delayttime','step_tooldirection','step_rpm','step_offsetdirection','step_torque_jointoffset','step_monitoringmode','step_torwin_target','step_torquewindow','step_angwin_target','step_anglewindow','step_hightorque','step_lowtorque','step_monitoringangle','step_highangle','step_lowangle','torque_unit','step_angle_mode','step_slope','gtcs_job_id','gtcs_seq_id','tool_name' )
+                    VALUES ( :job_id,:seq_id,:task_id,:step_id,:step_name,:step_targettype,:step_targetangle,:step_targettorque,:step_delayttime,:step_tooldirection,:step_rpm,:step_offsetdirection,:step_torque_jointoffset,:step_monitoringmode,:step_torwin_target,:step_torquewindow,:step_angwin_target,:step_anglewindow,:step_hightorque,:step_lowtorque,:step_monitoringangle,:step_highangle,:step_lowangle,:torque_unit,:step_angle_mode,:step_slope,:gtcs_job_id,:gtcs_seq_id,:tool_name )";
                 
                 $statement = $this->db->prepare($sql);
         
@@ -612,6 +618,8 @@ class Product{
                     'step_angle_mode' => $item['step_angle_mode'],
                     'step_slope' => $item['step_slope'],
                     'gtcs_job_id' => $item['gtcs_job_id'],
+                    'gtcs_seq_id' =>$item['gtcs_seq_id'],
+                    'tool_name' =>$item['tool_name']
 
                 ])) {
                     $insertedCount++;

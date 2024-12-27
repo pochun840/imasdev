@@ -599,3 +599,73 @@ $error_message['WORKPIECE_RECOVERY'] = '工件复归按确认';
 
 //task error message
 $error_message['task_setting'] = '请至少选择一个组别';
+
+//log status-----------------------------------------------------------------------------------------------------
+$log_status['result-1'] = '成功';
+$log_status['result-2'] = '失败';
+
+$log_status['job-1'] = '新增工作';
+$log_status['job-2'] = '编辑工作';
+$log_status['job-3'] = '复制工作';
+$log_status['job-4'] = '删除工作';
+$log_status['job-5'] = '编辑职位图片';
+
+$log_status['barcode-1'] = '编辑条码';
+$log_status['barcode-2'] = '删除条码';
+
+$log_status['seq-1'] = '新增工序';
+$log_status['seq-2'] = '编辑工序';
+$log_status['seq-3'] = '复制工序';
+$log_status['seq-4'] = '删除工序';
+$log_status['seq-5'] = '编辑工序影像';
+$log_status['seq-6'] = '启用/停用工序';
+
+$log_status['task-1'] = '新增任务';
+$log_status['task-2'] = '编辑任务';
+$log_status['task-3'] = '删除任务';
+$log_status['task-4'] = '编辑任务讯息';
+$log_status['task-5'] = '编辑任务位置';
+
+$log_status['login'] = '登入';
+$log_status['logout'] = '登出';
+$log_status['idlogin'] = 'id登入';
+
+$log_status['program-1'] = '新增组别';
+$log_status['program-2'] = '编辑组别';
+$log_status['program-3'] = '复制组别';
+$log_status['program-4'] = '删除组别';
+
+$log_status['program-5'] = '新增组别';
+$log_status['program-6'] = '编辑组别';
+
+$log_status['program-7'] = '新增步骤';
+$log_status['program-8'] = '编辑步骤';
+$log_status['program-9'] = '复制步骤';
+$log_status['program-10'] = '删除步骤';
+
+$log_status['program-11'] = '将组别同步到任务';
+
+$log_status['operation-1'] = '呼叫作业';
+$log_status['operation-2'] = '验证操作';
+$log_status['operation-3'] = 'ng 停止重置';
+$log_status['operation-4'] = '重置任务';
+$log_status['operation-5'] = '条码呼叫作业';
+
+$log_status['user-1'] = '新增使用者';
+$log_status['user-2'] = '编辑使用者';
+$log_status['user-3'] = '删除使用者';
+$log_status['user-4'] = '新增角色';
+$log_status['user-5'] = '编辑角色权限';
+$log_status['user-6'] = '删除角色';
+
+$log_status['setting-1'] = '编辑设定';
+
+$log_status['monitor-1'] = '编辑监控模式';
+$log_status['monitor-2'] = '编辑监控伺服器ip';
+$log_status['monitor-3'] = '新增站';
+$log_status['monitor-4'] = '编辑站';
+$log_status['monitor-5'] = '删除站';
+
+$log_status['equipment-1'] = '编辑控制器ip';
+$log_status['equipment-2'] = '编辑塔灯脚位';
+//log status-----------------------------------------------------------------------------------------------------

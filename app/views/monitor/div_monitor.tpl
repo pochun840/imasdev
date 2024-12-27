@@ -156,6 +156,7 @@
 
 <!-- monitor server ws link -->
 <script type="text/javascript">
+    <?php if($data['monitor_mode'] == 2){ //server mode再連線 ?>
     // const wsServer = 'ws://192.168.0.115:3000';
     const server_ip = '<?php echo $data['monitor_server_ip']; ?>';
     const wsServer = 'ws://'+server_ip+':3000';
@@ -185,6 +186,7 @@
     websocket.onerror = function (evt, e) {
         console.log('Error occured: ' + evt.data);
     };
+    <?php } ?>
 
     // 用于跟踪IP到表格行的映射
     const ipToTableRow = new Map();

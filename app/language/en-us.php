@@ -679,3 +679,73 @@ $text['server_text'] = 'Server';
 
 //task error message
 $error_message['task_setting'] = 'Please select at least one program';
+
+//log status-----------------------------------------------------------------------------------------------------
+$log_status['result-1'] = 'success';
+$log_status['result-2'] = 'fail';
+
+$log_status['job-1'] = 'new job';
+$log_status['job-2'] = 'edit job';
+$log_status['job-3'] = 'copy job';
+$log_status['job-4'] = 'delete job';
+$log_status['job-5'] = 'edit job image';
+
+$log_status['barcode-1'] = 'edit barcode';
+$log_status['barcode-2'] = 'delete barcode';
+
+$log_status['seq-1'] = 'new sequence';
+$log_status['seq-2'] = 'edit sequence';
+$log_status['seq-3'] = 'copy sequence';
+$log_status['seq-4'] = 'delete sequence';
+$log_status['seq-5'] = 'edit sequence image';
+$log_status['seq-6'] = 'enable/disable sequence';
+
+$log_status['task-1'] = 'new task';
+$log_status['task-2'] = 'edit task';
+$log_status['task-3'] = 'delete task';
+$log_status['task-4'] = 'edit task message';
+$log_status['task-5'] = 'edit task position';
+
+$log_status['login'] = 'login';
+$log_status['logout'] = 'logout';
+$log_status['idlogin'] = 'idlogin';
+
+$log_status['program-1'] = 'new normal program template';
+$log_status['program-2'] = 'edit normal program template';
+$log_status['program-3'] = 'copy program template';
+$log_status['program-4'] = 'delete program template';
+
+$log_status['program-5'] = 'new advanced program template';
+$log_status['program-6'] = 'edit advanced program template';
+
+$log_status['program-7']  = 'new advanced step';
+$log_status['program-8']  = 'edit advanced step';
+$log_status['program-9']  = 'copy advanced step';
+$log_status['program-10'] = 'delete advanced step';
+
+$log_status['program-11'] = 'sync program to task';
+
+$log_status['operation-1'] = 'call job';
+$log_status['operation-2'] = 'auth action';
+$log_status['operation-3'] = 'ng stop reset';
+$log_status['operation-4'] = 'reset task';
+$log_status['operation-5'] = 'barcode call job';
+
+$log_status['user-1'] = 'add user';
+$log_status['user-2'] = 'edit user';
+$log_status['user-3'] = 'delete user';
+$log_status['user-4'] = 'add role';
+$log_status['user-5'] = 'edit role permission';
+$log_status['user-6'] = 'delete role';
+
+$log_status['setting-1'] = 'edit setting';
+
+$log_status['monitor-1'] = 'edit monitor mode';
+$log_status['monitor-2'] = 'edit monitor server ip';
+$log_status['monitor-3'] = 'add station';
+$log_status['monitor-4'] = 'edit station';
+$log_status['monitor-5'] = 'delete station';
+
+$log_status['equipment-1'] = 'edit controller ip';
+$log_status['equipment-2'] = 'edit tower light pin';
+//log status-----------------------------------------------------------------------------------------------------

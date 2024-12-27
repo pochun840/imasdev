@@ -93,6 +93,9 @@
                 <div class="navbutton" onclick="handleButtonClick(this, 'station')">
                     <span data-content="<?php echo $text['Station_Setting_text']; ?>" onclick="showContent('station')"></span><?php echo $text['Station_Setting_text']; ?>
                 </div>
+                <div class="navbutton" onclick="handleButtonClick(this, 'user_log')">
+                    <span data-content="<?php echo 'user log'; ?>" onclick="showContent('user_log')"></span><?php echo 'user log'; ?>
+                </div>
             </div>
 
             <!-- Member List -->
@@ -265,6 +268,10 @@ function showContent(contentType)
 
     if(contentType == 'member'){
         window.location.href = "index.php?url=Users";
+    }
+
+    if(contentType == 'user_log'){
+        window.location.href = "index.php?url=Users/user_log";
     }
 }
 
@@ -550,29 +557,36 @@ addMessage();
         // let document.getElementsByClassName('selected')[0].cells[1].innerText;
         console.log(checked_user.length);
 
-        for (var i = checked_user.length - 1; i >= 0; i--) {
-            // checked_user[i].value;
-            // console.log(checked_user[i].value);
-            $.ajax({ // 提醒
-                type: "POST",
-                data: { 
-                    'user_id': checked_user[i].value
-                     },
-                dataType: "json",
-                url: "?url=Users/del_user",
-            }).done(function(data) { //成功且有回傳值才會執行
-                if (data.error != '') {             
-                    Swal.fire({ // DB sync notice
-                        title: 'Error',
-                        text: '',
-                    })
-                } else {
-                    window.location = window.location.href;
-                }
-                // console.log(data);
-            }).fail(function () {
-                // history.go(0);//失敗就重新整理
-            });
+        let result = false;
+        if( checked_user.length > 0){
+            result = confirm('確認刪除勾選的帳戶')
+        }
+        console.log(result)
+        if(result){
+            for (var i = checked_user.length - 1; i >= 0; i--) {
+                // checked_user[i].value;
+                // console.log(checked_user[i].value);
+                $.ajax({ // 提醒
+                    type: "POST",
+                    data: { 
+                        'user_id': checked_user[i].value
+                         },
+                    dataType: "json",
+                    url: "?url=Users/del_user",
+                }).done(function(data) { //成功且有回傳值才會執行
+                    if (data.error != '') {             
+                        Swal.fire({ // DB sync notice
+                            title: 'Error',
+                            text: '',
+                        })
+                    } else {
+                        window.location = window.location.href;
+                    }
+                    // console.log(data);
+                }).fail(function () {
+                    // history.go(0);//失敗就重新整理
+                });
+            }
         }
 
     }

@@ -128,7 +128,22 @@ class Sequences extends Controller
             
 
             if ($input_check) {
-                $jobs = $this->SequenceModel->EditSeq($data_array);
+                $result = $this->SequenceModel->EditSeq($data_array);
+
+                if($data_array['edit_seq_mode'] == 'new'){ //new seq
+                    if($result){//user log
+                        $this->logMessage('seq-1','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('seq-1','result-2',json_encode($data_array));
+                    }
+                }else{ //edit seq
+                    if($result){//user log
+                        $this->logMessage('seq-2','result-1',json_encode($data_array));
+                    }else{
+                        $this->logMessage('seq-2','result-2',json_encode($data_array));
+                    }
+                }
+                
             }
         }
 
@@ -153,7 +168,13 @@ class Sequences extends Controller
                 if($is_uploaded){
                     // 把img url寫入資料庫
                     // echo 'Image Successfully Uploaded';
-                    $this->SequenceModel->SetSeqImage($data_array['job_id'],$data_array['seq_id'],$image_upload_path);
+                    $result = $this->SequenceModel->SetSeqImage($data_array['job_id'],$data_array['seq_id'],$image_upload_path);
+
+                    if($result){//user log
+                        $this->logMessage('seq-5','result-1',json_encode(array("job_id"=>$data_array['job_id'],"seq_id"=>$data_array['seq_id'], "image_upload_path"=>$image_upload_path)));
+                    }else{
+                        $this->logMessage('seq-5','result-2',json_encode(array("job_id"=>$data_array['job_id'],"seq_id"=>$data_array['seq_id'], "image_upload_path"=>$image_upload_path)));
+                    }
                 }
                 else{
                     // echo 'Something Went Wrong!';
@@ -221,6 +242,12 @@ class Sequences extends Controller
 
         if ($input_check) {
             $res = $this->SequenceModel->EnableDisableSeq($job_id,$seq_id,$status);
+
+            if($res){//user log
+                $this->logMessage('seq-6','result-1',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id, "status"=>$status)));
+            }else{
+                $this->logMessage('seq-6','result-2',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id, "status"=>$status)));
+            }
         }
 
         $data = [
@@ -269,6 +296,12 @@ class Sequences extends Controller
 
         if ($input_check) {
             $result = $this->SequenceModel->CopySeq($from_job_id,$from_seq_id,$to_seq_id,$to_seq_name);
+
+            if($result){//user log
+                $this->logMessage('seq-3','result-1',json_encode(array("from_job_id"=>$from_job_id,"from_seq_id"=>$from_seq_id,"to_seq_id"=>$to_seq_id,"to_seq_name"=>$to_seq_name)));
+            }else{
+                $this->logMessage('seq-3','result-2',json_encode(array("from_job_id"=>$from_job_id,"from_seq_id"=>$from_seq_id,"to_seq_id"=>$to_seq_id,"to_seq_name"=>$to_seq_name)));
+            }
 
             //透過job_id 及 $from_seq_id  找出對應的task 
             $temp_task = $this->SequenceModel->check_task_by_seq_id($from_job_id, $from_seq_id,$to_seq_id);
@@ -434,6 +467,12 @@ class Sequences extends Controller
         if($input_check){
             //delete sequecne table
             $seq_data = $this->SequenceModel->DeleteSeqById($job_id,$seq_id);
+
+            if($seq_data){//user log
+                $this->logMessage('seq-4','result-1',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id)));
+            }else{
+                $this->logMessage('seq-4','result-2',json_encode(array("job_id"=>$job_id,"seq_id"=>$seq_id)));
+            }
             //delete normalsetp table
             // if($job_id>100){
             //     $seq_data = $this->SequenceModel->delete_advancedstep_by_job_seq_id($job_id,$seq_id);

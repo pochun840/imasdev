@@ -582,6 +582,9 @@
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
+                                        <div style="display:none;">
+                                            <input type="" id="edit_program_mode" value="new">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -964,6 +967,8 @@ function new_program() {
     document.getElementById("pre-run-rpm-a").value = document.getElementById("tool_min_rpm").value;
     document.getElementById("pre-run-angle-a").value = '360';
 
+    //
+    document.getElementById('edit_program_mode').value = 'new';
     //show modal
     document.getElementById('ProgramNew').style.display = 'block'
 
@@ -995,6 +1000,7 @@ function new_program_save() {
     let Pre_run = document.getElementById("Pre-run").checked;//checkbox
     let pre_run_rpm = document.getElementById("pre-run-rpm").value;
     let pre_run_angle = document.getElementById("pre-run-angle").value;
+    let edit_program_mode = document.getElementById('edit_program_mode').value;
 
     if(target_type == 2){
         program_id = document.getElementById("program-id").value;
@@ -1073,6 +1079,7 @@ function new_program_save() {
         formData.append('pre_run_rpm', pre_run_rpm);
         formData.append('pre_run_angle', pre_run_angle);
         formData.append('Monitoring_ON_OFF', Monitoring_ON_OFF);
+        formData.append('edit_program_mode', edit_program_mode);
 
         let url = '?url=Templates/edit_program';
         $.ajax({
@@ -1172,6 +1179,8 @@ function edit_program(program_id) {
             document.getElementById("Pre-run-a").checked = +response['step_prr'];//checkbox
             document.getElementById("pre-run-rpm-a").value = response['step_prr_rpm'];
             document.getElementById("pre-run-angle-a").value = response['step_prr_angle'];
+
+            document.getElementById('edit_program_mode').value = 'edit';
 
             document.getElementById('modal_head').innerHTML = '<?php echo $text['Edit_Program_text'];?>'; //'New Job'
             document.getElementById('ProgramNew').style.display = 'block'
@@ -1459,7 +1468,7 @@ function cancel_action(){
             downshift_angle_min = 0
 
             conditions = [
-                { id: 'program-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
+                { id: 'program-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]+$/, min: null, max: null },
                 { id: 'target-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_Torque, max: Tool_Max_Torque },
                 { id: 'offset-value', pattern: /^-?\d{0,6}(\.\d{0,4})?$/, min: offset_min, max: offset_max },
                 { id: 'hi-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: hi_torque_min, max: hi_torque_max },
@@ -1508,7 +1517,7 @@ function cancel_action(){
             downshift_angle_min = 0
 
             conditions = [
-                { id: 'program-name-a', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.]+$/, min: null, max: null },
+                { id: 'program-name-a', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]+$/, min: null, max: null },
                 { id: 'target-angle-a', pattern: /^\d{0,5}$/, min: 0, max: 30600 },
                 { id: 'hi-angle-a', pattern: /^\d{0,5}?$/, min: hi_angle_min, max: hi_angle_max },
                 { id: 'lo-angle-a', pattern: /^\d{0,5}?$/, min: lo_angle_min, max: lo_angle_max },

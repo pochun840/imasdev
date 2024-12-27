@@ -135,6 +135,10 @@ class Logins extends Controller
 
             if($user){
                 $id_login = true;
+                // $this->logMessage('idlogin','result-1',json_encode(array("card"=>$password)));
+            }else{
+                $_SESSION['user'] = null;
+                $this->logMessage('idlogin','result-2',json_encode(array("card"=>$password)));
             }
             $input = 123;
             $output = 546;
@@ -152,7 +156,7 @@ class Logins extends Controller
             // $reslut = $this->active_sessions('admin');
             $reslut = true;
             $_SESSION['user'] = $username;
-            $this->logMessage('login','','success');
+            $this->logMessage('login','result-1',json_encode(array("account"=>$username)));
 
             if($reslut){
 
@@ -173,9 +177,12 @@ class Logins extends Controller
             setcookie('user', $username, time() + $this->timeout_seconds, '/');
             $_SESSION['user'] = $username;
 
+            $this->logMessage('idlogin','result-1',json_encode(array("card"=>$password)));
+
             return true;
         }else{
-            $this->logMessage('login','','account:'.$username.' login fail');
+            $_SESSION['user'] = null;
+            $this->logMessage('login','result-2',json_encode(array("account"=>$username)));
             // exit();
             return false;
         }
