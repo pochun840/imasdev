@@ -689,4 +689,8 @@ $log_status['monitor-5'] = '刪除站';
 
 $log_status['equipment-1'] = '編輯控制器ip';
 $log_status['equipment-2'] = '編輯塔燈腳位';
+
+$log_status['historicals-1'] = '删除紀錄';
+$log_status['historicals-2'] = '匯出報告';
+$log_status['historicals-3'] = '匯出CSV';
 //log status-----------------------------------------------------------------------------------------------------

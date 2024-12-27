@@ -668,4 +668,10 @@ $log_status['monitor-5'] = '删除站';
 
 $log_status['equipment-1'] = '编辑控制器ip';
 $log_status['equipment-2'] = '编辑塔灯脚位';
+
+$log_status['historicals-1'] = '删除记录';
+$log_status['historicals-2'] = '导出报告';
+$log_status['historicals-3'] = '导出CSV';
+
+
 //log status-----------------------------------------------------------------------------------------------------

@@ -748,4 +748,8 @@ $log_status['monitor-5'] = 'delete station';
 
 $log_status['equipment-1'] = 'edit controller ip';
 $log_status['equipment-2'] = 'edit tower light pin';
+
+$log_status['historicals-1'] = 'delete record';
+$log_status['historicals-2'] = 'export report';
+$log_status['historicals-3'] = 'export CSV';
 //log status-----------------------------------------------------------------------------------------------------

@@ -89,13 +89,20 @@ class Historicals extends Controller
 
         $del_info_sn_arr = array();
         $del_info_sn = $_POST['values'];
-        
         $res = $this->Historicals_newModel->del_info($del_info_sn);
-
         #紀錄log 
-        $temp_value = implode(", ", $del_info_sn); 
-        $detail = 'success: system_sn:'.$temp_value;
-        $this->logMessage('del_historicals', $res,$detail);
+        $del_info_sn_string = implode(',', $del_info_sn);
+        $narrate = "historicals:" . $del_info_sn_string;
+        $data_array = explode(":", $narrate);
+
+        if($res == "success"){
+            //成功
+            $this->logMessage('historicals-1','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+        }else{
+            //失敗
+            $this->logMessage('historicals-1','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+        }
+
         return $res;
     }
 
@@ -174,6 +181,11 @@ class Historicals extends Controller
     #產生CSV的文件 
     #利用system_sn 取得完整的鎖附資料
     public function csv_downland(){
+
+        $data_array = array('True');
+        $this->logMessage('historicals-3','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+
+
         if(!empty($_COOKIE['systemSnval'])){
             $system_sn = $_COOKIE['systemSnval'];
             if($system_sn != 'total'){
@@ -233,6 +245,11 @@ class Historicals extends Controller
   
     #鎖附資料 圖表 
     public function history_result(){
+
+        $data_array = array('True');
+        $this->logMessage('historicals-2','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+
+
         
         $data = array();
         $status_arr = $this->Historicals_newModel->status_code_change();

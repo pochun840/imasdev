@@ -174,9 +174,8 @@ class Historical{
     #刪除鎖附資料 20240401 修改成 update on_flag的資料(0:顯示 1:隱藏)
     public function del_info($del_info_sn) {
         // SQL 更新語句，將 on_flag 設為 '1'
-        $sql = "UPDATE fasten_data SET on_flag = '1' WHERE id = ?";
+        $sql = "UPDATE fasten_data SET on_flag = '1' WHERE id = ?"; 
         $statement = $this->db->prepare($sql);
-    
         $this->db->beginTransaction();
         
         try {
