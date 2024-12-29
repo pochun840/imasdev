@@ -66,7 +66,6 @@ if(!empty($job_id)){
     }
 }
 
-
 #seq_id (可以用,區隔)
 $seq_id = isset($_GET['sequence_id']) ? $_GET['sequence_id'] : '';
 $seq_id = preg_match('/^(\d+)(,\d+)*$/', $seq_id) ? $seq_id : '';

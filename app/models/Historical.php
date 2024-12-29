@@ -1002,7 +1002,7 @@ class Historical{
     }
 
     #判斷瀏覽器的種類
-    public function getBrowserType() {
+    /*public function getBrowserType() {
         
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         // 判斷瀏覽器
@@ -1023,7 +1023,7 @@ class Historical{
         } else {
             return 'Unknown Browser';
         }
-    }
+    }*/
 
 
     #呼叫 get_data_api.php 
