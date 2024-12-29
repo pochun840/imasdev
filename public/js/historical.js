@@ -514,21 +514,39 @@ function getCookie(cookieName) {
     }
     return '';
 }
-function nopage(){
-    //0 =>不分頁 1=>分頁
-    var currentValue = document.cookie.replace(/(?:(?:^|.*;\s*)nopage\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var newValue = (currentValue === "1") ? "0" : "1";
-    document.cookie = "nopage=" + newValue; 
 
-    if(newValue == "0"){
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.delete('p');
-        const newUrl = window.location.pathname + '?' + urlParams.toString();
-        window.history.replaceState({}, '', newUrl);
-        
-    }
-    history.go(0);
+function setCookie(name, value) {
+    document.cookie = `${name}=${value}; path=/;`;
 }
+
+function updateUrlParam(param, value) {
+    const url = new URL(window.location);
+    if (value === null) {
+        url.searchParams.delete(param);
+    } else {
+        url.searchParams.set(param, value);
+    }
+    window.history.replaceState({}, '', url.toString());
+}
+
+function nopage() {
+    const currentValue = getCookie('nopage') || '0';  // 默认为 '0'，表示不分页
+    const newValue = currentValue === '1' ? '0' : '1';
+
+    // 只在分页状态发生变化时更新 cookie 和 URL
+    if (currentValue !== newValue) {
+        setCookie('nopage', newValue);  // 更新 cookie
+
+        // 如果禁用分页（newValue == '0'），删除分页参数 'p'，否则保留分页
+        if (newValue === '0') {
+            updateUrlParam('p', null);  // 删除分页参数
+        }
+
+        // 刷新页面，更新状态
+        history.go(0);
+    }
+}
+
 
 
 //回到上一頁

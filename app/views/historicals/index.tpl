@@ -215,12 +215,12 @@ if(!empty($_COOKIE['chat_mode_change'])){
                 <div class="navbutton active" onclick="handleButtonClick(this, 'fastening')">
                     <span data-content="<?php echo $text['Fastening_Record_text']; ?>" onclick="showContent('fastening')"></span><?php echo $text['Fastening_Record_text']; ?>
                 </div>
-                <div class="navbutton" onclick="handleButtonClick(this, 'workflowlog')">
+                <!--<div class="navbutton" onclick="handleButtonClick(this, 'workflowlog')">
                     <span data-content="<?php echo $text['Work_Flow_Log_text']; ?>" onclick="showContent('workflowlog')"></span><?php echo $text['Work_Flow_Log_text']; ?>
-                </div>
-                <div class="navbutton" onclick="handleButtonClick(this, 'useraccess')">
+                </div>-->
+                <!--<div class="navbutton" onclick="handleButtonClick(this, 'useraccess')">
                     <span data-content="<?php echo $text['User_Access_Logging_text']; ?>" onclick="showContent('useraccess')"></span><?php echo $text['User_Access_Logging_text']; ?>
-                </div>
+                </div>-->
             </div>
 
             <!-- Fastening Setting -->

@@ -114,6 +114,7 @@ class Historicals extends Controller
         $info_arr = $_POST;
     
         $_SESSION['info_arr'] = $info_arr; 
+        $nopage = isset($_COOKIE["nopage"]) ? $_COOKIE["nopage"] : "0";
 
         if (!empty($info_arr)) {
         
@@ -131,13 +132,10 @@ class Historicals extends Controller
     
         $system_sns = [];
 
-
-        #按照POST的資訊 取得資料庫搜尋的結果
-        //$info_tmp = $this->Historicals_newModel->monitors_info($info_arr,$offset,$limit);
-
         if (!empty($info_tmp)) {
             $info_data = "";
-            
+
+        
             foreach ($info_tmp as $k => $v) {
                 
                 $color = $status_arr['status_color'][$v['fasten_status']];
@@ -167,14 +165,9 @@ class Historicals extends Controller
                 $info_data .= "</tr>";
     
                 echo $info_data;
-    
-                // system_sn 数据传给前端
                 echo '<script>window.systemSnList = ' . json_encode($system_sns) . ';</script>';
             }
-        } else {
-      
-            echo '';
-        }
+        } 
     }
     
 

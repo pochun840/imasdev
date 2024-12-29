@@ -203,7 +203,7 @@ class Historical{
     
     public function getTotalItemCount() {
 
-        $sql = "SELECT COUNT(*) as total_count FROM fasten_data order by data_time desc  ";
+        $sql = "SELECT COUNT(*) as total_count FROM fasten_data where  on_flag = 0 order by data_time desc  ";
         $statement = $this->db->prepare($sql);
         $statement->execute();
         $result = $statement->fetchall(PDO::FETCH_ASSOC);
