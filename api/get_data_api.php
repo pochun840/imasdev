@@ -161,11 +161,6 @@ $system_sn = isset($_GET['system_sn']) ? $_GET['system_sn'] : '';
 $system_sn = preg_match('/^(\d+)(,\d+)*$/', $system_sn) ? $system_sn : '';
 
 
-# 分頁參數
-$page = isset($_GET['page']) ? (int)$_GET['page'] : null;
-if ($page !== null && (!preg_match('/^\d+$/', $page) || $page <= 0)) {
-    $page = 1; // 預設為第 1 頁
-}
 
 # 筆數
 $limit =isset($_GET['limit']) ? $_GET['limit'] : null;
@@ -240,8 +235,6 @@ if(!empty($controller)){
 }
 
 $sql .= " AND on_flag = 0  ORDER BY data_time DESC LIMIT ".$limit." ";
-
-
 
 
 $statement = $db_cc->prepare($sql); 

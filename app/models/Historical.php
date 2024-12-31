@@ -1063,11 +1063,12 @@ class Historical{
         $new_query_string = http_build_query($params);
 
         #處理 URL
-        $file_url = preg_replace(
-            '/public\/index\.php\?url=Historicals\/(search_info_list|history_result|combinedata)/',
-            '',
-            $_SERVER['REQUEST_URI']
-        );
+        $file_url = preg_replace([
+            '/public\/index\.php\?url=Historicals\/(search_info_list|history_result|combinedata)/', 
+            '/public\/index\.php\?url=Historicals\/csv_downland/'
+        ], '', $_SERVER['REQUEST_URI']);
+
+
 
         $url = "http://" . $_SERVER['HTTP_HOST'] . $file_url . "/api/get_data_api.php?type=json";
         if (!empty($new_query_string)) {
@@ -1075,6 +1076,7 @@ class Historical{
         }
 
         $url = str_replace('%2C+', ',', $url);
+
 
         #使用 CURL 發送請求
         $ch = curl_init();
@@ -1100,6 +1102,9 @@ class Historical{
 
         return $info_tmp;
     }
+
+
+    
 
 
 }

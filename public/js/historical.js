@@ -1,35 +1,8 @@
 
 //清除 資料  回到最原始的紀錄
-function clear_button(){
-
-    //預設status: ALL
-    var status_val= '0';
-    $.ajax({
-        type: "POST",
-        data: {
-              status_val: status_val
-              },
-        url: '?url=Historicals/search_info_list',
-        success: function(response) {
-            if (response.trim() === '') {
-               alert('查無資料');
-               window.location.href = '?url=Historicals';
-               history.go(0);
-
-            } else {
-                queryresult = response;
-                document.getElementById("tbody1").innerHTML = response;
-                history.go(0);
-                
-            }
-        },
-        error: function(error) {
-        
-        }
-    }).fail(function () {
-
-    });
-    history.go(0); 
+function clear_button() {
+    // 直接轉回到 Historicals 頁面
+    window.location.href = '?url=Historicals';
 }
 
 
@@ -241,6 +214,13 @@ function search_info(){
             } else {
                 queryresult = response;
                 document.getElementById("tbody1").innerHTML = response;
+
+                // 移除分頁元素（如果有）
+                var paginationElement = document.querySelector('.pagination');
+                if (paginationElement) {
+                    paginationElement.remove();
+                }
+
             }
         },
         error: function(error) {
@@ -666,3 +646,19 @@ function getColorPalette() {
         '#2a9d8f', '#f1faee', '#264653', '#e63946', '#f1faee'
     ];
 }
+
+//日期時間選擇器
+flatpickr("#FromDate", {
+    enableTime: true,  // 啟用時間選擇
+    dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
+    time_24hr: true,  // 使用24小時制（可選）
+    className: "custom-flatpickr-input"
+});
+
+
+flatpickr("#ToDate", {
+    enableTime: true,  // 啟用時間選擇
+    dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
+    time_24hr: true,  // 使用24小時制（可選）
+    className: "custom-flatpickr-input"
+});

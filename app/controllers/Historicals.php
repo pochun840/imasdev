@@ -115,16 +115,23 @@ class Historicals extends Controller
     
         $_SESSION['info_arr'] = $info_arr; 
         $nopage = isset($_COOKIE["nopage"]) ? $_COOKIE["nopage"] : "0";
+        $limit = 30;  // 每頁顯示 30 筆資料
+        $page = isset($_GET['p']) ? $_GET['p'] : 1; 
+        $page = filter_var($page, FILTER_VALIDATE_INT, ["options" => ["default" => 1, "min_range" => 1]]);
+    
+        // 計算偏移量
+        $offset = ($page - 1) * $limit;
 
         if (!empty($info_arr)) {
         
-            $offset = 0;
-            $limit  = 10000;
-
             #按照POST的資訊 取得資料庫搜尋的結果
             $info_tmp  = $this->Historicals_newModel->get_data($info_arr);
+            //計算總筆數  
+            $totalItems = count($info_tmp);
           
         }
+        // 計算總頁數
+        $totalPages = ceil($totalItems / $limit);
     
         $torque_arr = $this->Historicals_newModel->details('torque');
         $status_arr = $this->Historicals_newModel->status_code_change();
@@ -135,7 +142,12 @@ class Historicals extends Controller
         if (!empty($info_tmp)) {
             $info_data = "";
 
-        
+            
+            /*$data = array(
+               'info' => $info_tmp
+            );*/
+
+            //$this->view('historicals/search_index_info', $data);
             foreach ($info_tmp as $k => $v) {
                 
                 $color = $status_arr['status_color'][$v['fasten_status']];
@@ -165,7 +177,7 @@ class Historicals extends Controller
                 $info_data .= "</tr>";
     
                 echo $info_data;
-                echo '<script>window.systemSnList = ' . json_encode($system_sns) . ';</script>';
+                //echo '<script>window.systemSnList = ' . json_encode($system_sns) . ';</script>';
             }
         } 
     }
@@ -173,66 +185,64 @@ class Historicals extends Controller
 
     #產生CSV的文件 
     #利用system_sn 取得完整的鎖附資料
-    public function csv_downland(){
-
+    public function csv_downland() {
+        // 初始化
         $data_array = array('True');
-        $this->logMessage('historicals-3','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+        $this->logMessage('historicals-3', 'result-1', json_encode($data_array, JSON_UNESCAPED_UNICODE));
+    
+        $info_arr = $_SESSION['info_arr'];
+        $info_final = $this->Historicals_newModel->get_data($info_arr);
 
 
-        if(!empty($_COOKIE['systemSnval'])){
-            $system_sn = $_COOKIE['systemSnval'];
-            if($system_sn != 'total'){
-                $pos = strpos($system_sn, ',');
-
-                if ($pos !== false) {
-                    $system_sn_array = explode(",", $system_sn);
-                    $system_sn_in = implode("','", $system_sn_array);
-                
-                }else{
-                    $system_sn_in = $system_sn;
-                }
-            }else{
-                $system_sn_in = 'total';
-            }
-           
-            #取得該筆的所有完整詳細資料
-            $info_arr = $_SESSION['info_arr'];
-            $info_final = $this->Historicals_newModel->get_data($info_arr);
-            //$info_final = $this->Historicals_newModel->csv_info($system_sn_in);
-            $newKeys = range(0, 48); 
-
-            #扭力轉換 
+        if(!empty($info_final)){
+            // 扭力、狀態、控制器轉換
             $torque_change = $this->Historicals_newModel->details('torque');
-
-            #狀態轉換 
             $status_arr = $this->Historicals_newModel->status_code_change();
-
-
-            #控制器轉換
-            $res_controller_arr = array(0 => '', 1 => 'GTCS', 2 =>'TCG'); 
-
-            //整理陣列 
-            foreach($info_final as $kk =>$vv){
-                $info_final[$kk]['torque_unit']    = $torque_change[$vv['torque_unit']];
-                $info_final[$kk]['fasten_status']  = $status_arr['status_type'][$vv['fasten_status']];
-                $info_final[$kk]['cc_equipment']   = $res_controller_arr[$vv['cc_equipment']];
+            $res_controller_arr = array(0 => '', 1 => 'GTCS', 2 => 'TCG'); 
+    
+            // 處理資料，轉換扭力單位、狀態、控制器名稱
+            foreach ($info_final as $kk => $vv) {
+                $info_final[$kk]['torque_unit']  = $torque_change[$vv['torque_unit']];
+                $info_final[$kk]['fasten_status'] = $status_arr['status_type'][$vv['fasten_status']];
+                $info_final[$kk]['cc_equipment'] = $res_controller_arr[$vv['cc_equipment']];
             }
-
-            #CSV檔名
+    
+            // 設定 CSV 檔名
             $filename = 'data.csv';
-            $file = fopen($filename, 'w');
-            fputcsv($file,  array('id','cc_barcodesn','cc_station','cc_job_id','cc_seq_id','cc_task_id','cc_program_id','cc_equipment','cc_operator','system_sn','data_time','device_type','device_id','device_sn','tool_type','tool_sn','tool_status','job_id','job_name','sequence_id','sequence_name','step_id','fasten_torque','torque_unit','fasten_time','fasten_angle','count_direction','last_screw_count','max_screw_count','fasten_status','error_message','step_targettype','step_tooldirection','step_rpm','step_targettorque','step_hightorque','step_lowtorque','step_targetangle','step_highangle','step_lowangle','step_delayttime','threshold_torque','step_threshold_angle','downshift_torque','downshift_speed','step_prr_rpm','step_prr_angle','barcode','total_angle','on_flag','cc_task_name'));
+            $csv_data = [];
+    
+            // 標題行
+            //$column_names = $this->get_table_columns('fasten_data');  
+            $csv_data[] = ['id', 'cc_barcodesn', 'cc_station', 'cc_job_id', 'cc_seq_id', 'cc_task_id', 'cc_program_id', 'cc_equipment', 'cc_operator', 'system_sn', 'data_time', 'device_type', 'device_id', 'device_sn', 'tool_type', 'tool_sn', 'tool_status', 'job_id', 'job_name', 'sequence_id', 'sequence_name', 'step_id', 'fasten_torque', 'torque_unit', 'fasten_time', 'fasten_angle', 'count_direction', 'last_screw_count', 'max_screw_count', 'fasten_status', 'error_message', 'step_targettype', 'step_tooldirection', 'step_rpm', 'step_targettorque', 'step_hightorque', 'step_lowtorque', 'step_targetangle', 'step_highangle', 'step_lowangle', 'step_delayttime', 'threshold_torque', 'step_threshold_angle', 'downshift_torque', 'downshift_speed', 'step_prr_rpm', 'step_prr_angle', 'barcode', 'total_angle', 'on_flag', 'cc_task_name'];
+            
+            // 生成 CSV 資料
             foreach ($info_final as $row) {
-                fputcsv($file, $row);
+                $csv_data[] = $row;
             }
-            fclose($file);
-            header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
-            readfile($filename);
-
-            unlink($filename);
-
-        }     
+    
+            // 輸出 CSV
+            $this->output_csv($filename, $csv_data);
+        }
+    }
+    
+    /**
+     * 輸出 CSV 到瀏覽器
+     */
+    private function output_csv($filename, $data) {
+        // 設定標頭
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        
+        // 打開 PHP 輸出緩衝區，不寫入文件
+        $output = fopen('php://output', 'w');
+        
+        // 輸出資料
+        foreach ($data as $row) {
+            fputcsv($output, $row);
+        }
+    
+        // 關閉輸出
+        fclose($output);
     }
 
   
@@ -400,6 +410,14 @@ class Historicals extends Controller
             #取得unitvalue,驗證是否為數字，否則設置為默認值
             $unitvalue = filter_var($_GET['unitvalue'] ?? $data['job_info'][0]['torque_unit'], FILTER_VALIDATE_INT, ["options" => ["default" => $data['job_info'][0]['torque_unit']]]);    
             $data['unitvalue'] = $unitvalue;
+     
+            if($data['unitvalue']!= 1){
+                //才要進行 扭力轉換
+
+            }
+            //var_dump($data['unitvalue']);die();
+
+            
     
             #曲線圖模式
             $chat_mode_arr = $this->Historicals_newModel->details('chart_type');

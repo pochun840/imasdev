@@ -1144,3 +1144,31 @@ svg
     }
 }
 
+
+/* 這將改變該輸入框的背景顏色為白色 */
+.custom-flatpickr-input {
+    background-color: white !important;
+    color: black;  /* 你可以修改文字顏色 */
+}
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+}
+.pagination li {
+    margin-right: 5px;
+}
+.pagination li a,
+.pagination li span {
+    padding: 5px 10px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.current-page {
+    font-weight: bold;
+}
