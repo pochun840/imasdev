@@ -110,4 +110,6 @@
                                 </div>
                             <?php } ?>
 
+                            <div id="pagination_new"></div>
+
                         </div>

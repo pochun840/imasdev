@@ -141,12 +141,6 @@ class Historicals extends Controller
 
         if (!empty($info_tmp)) {
             $info_data = "";
-
-            
-            /*$data = array(
-               'info' => $info_tmp
-            );*/
-
             //$this->view('historicals/search_index_info', $data);
             foreach ($info_tmp as $k => $v) {
                 

@@ -130,7 +130,7 @@ function csv_download(){
 }
 
 //搜尋
-function search_info(){
+function search_info(page = 1){
 
     var barcodesn    = document.getElementById('barcodesn').value;
     var fromdate     = document.getElementById('FromDate').value;
@@ -203,7 +203,8 @@ function search_info(){
                 checkedjobidarr:checkedjobidarr,
                 checkedseqidarr:checkedseqidarr,
                 checkedtaskidarr:checkedtaskidarr,
-                operator: operator
+                operator: operator,
+                page: page
               },
         url: '?url=Historicals/search_info_list',
         success: function(response) {
@@ -220,6 +221,7 @@ function search_info(){
                 if (paginationElement) {
                     paginationElement.remove();
                 }
+                updatePagination(data.totalPages, page);  
 
             }
         },
@@ -228,6 +230,15 @@ function search_info(){
     }).fail(function () {
     });
 
+}
+
+function updatePagination(totalPages, currentPage) {
+    // 根据 totalPages 和 currentPage 更新分页控件
+    let paginationHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `<button onclick="search_info(${i})">${i}</button>`;
+    }
+    document.getElementById("pagination_new").innerHTML = paginationHTML;
 }
 
 function JobCheckbox_seq(){
