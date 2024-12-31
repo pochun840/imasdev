@@ -624,110 +624,12 @@ if(!empty($_COOKIE['chat_mode_change'])){
                     </div>
                 </div>
 
-                <!-- Work Flow Log Info -->
-                <div id="WorkFlowLogInfoDisplay" style="display: none">
-                    <div class="topnav">
-                        <label type="text" style="font-size: 20px; padding-left: 1%; margin: 6px">Work Flow Log &#62; Info</label>
-                        <button id="back-setting" type="button" onclick="cancelSetting()">
-                            <img id="img-back" src="./img/back.svg" alt="">Back
-                        </button>
-                    </div>
-                    <table class="table table-borderless" style="font-size: 15px; width: 80%">
-                        <tr>
-                            <td>Index: <input class="t6 input-ms" type="text" size="10" value="2"></td>
-                            <td>Barcode: <input class="t6 input-ms" type="text" size="20" value="123456"></td>
-                            <td>job Info: <input class="t6 input-ms" type="text" size="25" value="job-1 > seq-2 > task-2" style="width: 190px"></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>Member: <input class="t6 input-ms" type="text" size="10" value="Esther" disabled="disabled"></td>
-                            <td>Type: <input class="t6 input-ms" type="text" size="20" value="Select point"></td>
-                            <td>Event: <input class="t6 input-ms" type="text" size="25" value="task1[2]>task2[1]" style="width: 190px"></td>
-                            <td>Arm position: <input class="t6 input-ms" type="text" size="25" value="(111,120)[200]>(222,120)[200]" disabled="disabled" style="width: auto"></td>
-                        </tr>
-                    </table>
-                    <hr style="width: 100%; height: 4px;">
-                    <b style="font-size: 20px">Diagram Display</b>
-                    <div class="w3-center">
-                        <img src="./img/pick-A-screw.svg" style=" height: 40vh; width: 70vw" alt="Nature" class="w3-margin-bottom">--<
-                    </div>
-
-                    <button class="Save-button" id="saveButton" onclick="Save_job()">Save</button>
-                </div>
+             
             </div>
 
-            <!-- User Access Setting -->
-            <div id="useraccessContent" class="content" style="display: none">
-                <div style="padding-left: 2%; margin-top: 40px">
-                    <table class="table" style="font-size: 15px; margin-bottom: 0px; border-bottom: hidden; width: 70%">
-                        <tr>
-                            <td>Member Name : <input type="text" class="t3" id="Member-Name" maxlength="" value="Esther" style="float: none;width: 130px"></td>
-                            <td>Role Name : <select id="unit" class="t3" style="width: 130px;float: none">
-                                                <option value="1">Super Admin</option>
-                                                <option value="2">Admin</option>
-                                                <option value="2">Operator</option>
-                                                <option value="2">Leader</option>
-                                            </select>
-                            </td>
-                            <td>From : <input type="datetime" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC;float: none"> </td>
-                            <td>To : <input type="datetime" class="t3" id="ToDate" name="ToDate" style="width: 190px; border-radius: 5px;border: 1px solid #CCCCCC;float: none"></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="topnav-menu">
-                    <div class="search-container">
-                        <form>
-                            <input type="text" placeholder="Search.." name="search" size="40" style="height: 35px">&nbsp;
-                            <button id="Search" type="submit" class="Search-button">Search</button>
-                        </form>
-                    </div>
-                    <div class="topnav-right">
-                        <button id="Export_Excel" type="button" class="ExportButton">Export Excel</button>
-                        <button id="Export_Report" type="button" class="ExportButton">Export Report</button>
-                        <button id="Reset_btn" type="button">Reset</button>
-                    </div>
-                </div>
-
-                <div class="scrollbar-UserAccess" id="style-UserAccess">
-                    <div class="force-overflow-UserAccess">
-                        <table class="table table-bordered table-hover" id="UserAccess-table">
-                            <thead id="header-table" style="text-align: center; vertical-align: middle">
-                                <tr>
-                                    <th>Index</th>
-                                    <th>Time</th>
-                                    <th>Member Namne</th>
-                                    <th>Type</th>
-                                    <th>Page</th>
-                                    <th>Event</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody1" style="background-color: #F2F1F1;text-align: center; font-size: 1.8vmin; vertical-align: middle;">
-                                <tr>
-                                    <td>1</td>
-                                    <td>2024/02/19 13:30:20</td>
-                                    <td>Esther</td>
-                                    <td>Tightening</td>
-                                    <td>Job</td>
-                                    <td style="text-align: left">0.6 N.m\223 Deg\P1\OK</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>2024/02/19 13:30:20</td>
-                                    <td>Peter</td>
-                                    <td>Select point</td>
-                                    <td>Operation</td>
-                                    <td style="text-align: left">task1[2]>task2[1]\(111,120)[200]>(222,120)[200]</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Modals Job Select -->
     <!-- Modals Job Select -->
     <div id="modalJobSelect" class="modal">
         <div class="modal-dialog modal-lg">
@@ -855,36 +757,7 @@ function WorkFlowLogInfo()
     document.getElementById('WorkFlowLogDisplay').style.display = 'none';
 }
 
-/*function cancelSetting()
-{
-    var FasteningDisplay = document.getElementById('FasteningDisplay');
-    var detailInfo = document.getElementById('DetailInfoDisplay');
-    var combinedata = document.getElementById('CombineDataDisplay');
-    var workflowlog = document.getElementById('WorkFlowLogInfoDisplay');
 
-    // Check the current state and toggle accordingly
-    if (detailInfo.style.display === 'block')
-    {
-        FasteningDisplay.style.display = 'block';
-        detailInfo.style.display = 'none';
-    }
-    else if (combinedata.style.display === 'block')
-    {
-        // If cmombinedata is currently displayed, switch to FasteningDisplay
-        FasteningDisplay.style.display = 'block';
-        combinedata.style.display = 'none';
-    }
-    else if (workflowlog.style.display === 'block')
-    {
-        // If WorkFlowLogInfoDisplay is currently displayed, switch to WorkFlowLogDisplay
-        WorkFlowLogDisplay.style.display = 'block';
-        workflowlog.style.display = 'none';
-    }
-    else
-    {
-        // If FasteningDisplay is currently displayed or both are hidden, do nothing or handle it as needed
-    }
-}*/
 
 function toggleMenu() {
     var menuContent = document.getElementById("myMenu");
