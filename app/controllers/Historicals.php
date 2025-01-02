@@ -151,7 +151,7 @@ class Historicals extends Controller
                 $system_sns[] = $v['system_sn'];  
     
                 $info_data = "<tr>";
-                $info_data .= '<td style="text-align: center;"><input class="form-check-input" type="checkbox" name="test1" id="test1"  value="' . $v['id'] . '" style="zoom:1.2;vertical-align: middle;"></td>';
+                $info_data .= '<td><input class="form-check-input" type="checkbox" name="test1" id="test1"  value="' . $v['id'] . '" style="zoom:1.2;vertical-align: middle;"></td>';
                 $info_data .= "<td id='system_sn'>" . $v['system_sn'] . "</td>";
                 $info_data .= "<td>" . $v['data_time'] . "</td>";
                 $info_data .= "<td></td>";
