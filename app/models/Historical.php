@@ -350,7 +350,7 @@ class Historical{
     
     public function get_info_data_by_sid($index){
 
-        $sql = "SELECT * FROM `fasten_data` WHERE   system_sn = ? ";
+        $sql = "SELECT * FROM `fasten_data` WHERE   id = ? ";
         $statement = $this->db->prepare($sql);
         $statement->execute([$index]);
         $res = $statement->fetchAll(PDO::FETCH_ASSOC);

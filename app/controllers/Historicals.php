@@ -445,7 +445,7 @@ class Historicals extends Controller
                 $step_prr_rpm   = $data['job_info'][0]['step_prr_rpm'];
                 #尋牙角度
                 $step_prr_angle = $data['job_info'][0]['step_prr_angle'];
-                $data['chart_info'] = $this->ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle );
+                $data['chart_info'] = $this->ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle,$index);
                 
                 #設定曲線圖的座標名稱
                 $titles = $this->Historicals_newModel->extractXYTitles($data['chart_info']['chat_title']);
@@ -936,9 +936,9 @@ class Historicals extends Controller
     }
 
     #nextinfo 整理曲線圖
-    private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle){
+    private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle,$index){
 
-        $temp_info = $this->Historicals_newModel->get_info_data_by_sid($no);
+        $temp_info = $this->Historicals_newModel->get_info_data_by_sid($index);
         $threshold_torque_temp  = floatval($temp_info[0]['threshold_torque']);
         $downshift_torque_temp  = floatval($temp_info[0]['downshift_torque']);
         $threshold_angle_temp   = intval($temp_info[0]['step_threshold_angle']);
