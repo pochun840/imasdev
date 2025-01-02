@@ -1069,7 +1069,6 @@ class Historical{
         ], '', $_SERVER['REQUEST_URI']);
 
 
-
         $url = "http://" . $_SERVER['HTTP_HOST'] . $file_url . "/api/get_data_api.php?type=json";
         if (!empty($new_query_string)) {
             $url .= "&" . $new_query_string;
@@ -1077,14 +1076,12 @@ class Historical{
 
         $url = str_replace('%2C+', ',', $url);
 
-
         #使用 CURL 發送請求
         $ch = curl_init();
         curl_setopt_array($ch, [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
         ]);
-
 
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
@@ -1099,7 +1096,7 @@ class Historical{
             echo '<script type="text/javascript">alert("NO Data");</script>';
             exit;
         }
-        
+
 
         $info_tmp = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -1108,9 +1105,5 @@ class Historical{
 
         return $info_tmp;
     }
-
-
-    
-
 
 }
