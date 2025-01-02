@@ -1095,6 +1095,12 @@ class Historical{
             throw new Exception("CURL Error: $curl_error");
         }
 
+        if (empty($response)) {
+            echo '<script type="text/javascript">alert("NO Data");</script>';
+            exit;
+        }
+        
+
         $info_tmp = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception("JSON Decode Error: " . json_last_error_msg());

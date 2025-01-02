@@ -394,7 +394,6 @@ class Historicals extends Controller
                 exit();
             }
 
-
             $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
             $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
  
@@ -405,8 +404,10 @@ class Historicals extends Controller
             $unitvalue = filter_var($_GET['unitvalue'] ?? $data['job_info'][0]['torque_unit'], FILTER_VALIDATE_INT, ["options" => ["default" => $data['job_info'][0]['torque_unit']]]);    
             $data['unitvalue'] = $unitvalue;
      
-            if($data['unitvalue']!= 1){
+            if($data['job_info'][0]['torque_unit']!= 1){
                 //才要進行 扭力轉換
+
+                $unitvalue;
 
             }
             //var_dump($data['unitvalue']);die();
@@ -807,7 +808,6 @@ class Historicals extends Controller
                     $downshift_torque_temp  = floatval($item['downshift_torque']);
                     $threshold_angle_temp   = $item['step_threshold_angle'];
 
-            
                     if (!empty($threshold_torque_temp) && $threshold_torque_temp > 0.1) {
                         $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 3); // angle
                         $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); // speed
@@ -857,13 +857,10 @@ class Historicals extends Controller
                             $prr_key  = $this->find_last_key($y_val_angle, $y_val_speed);  
                             $keyToFind = $key;
                             
-
-
                         }
                         
                     }
 
-                    
                     if($data['chat_mode'] == 3 ){
                         $y_val_speed  = $this->Historicals_newModel->get_column_values_by_index($item['system_sn'], 4); // speed
                         $y_val_speed  = json_encode(array_values(array_map('floatval', array_slice($y_val_speed, 1))));
@@ -903,39 +900,6 @@ class Historicals extends Controller
                 $data['last_speed_y_val_rpm'] = $last_speed_y_val;
             }
 
-
-            if(!empty($prr_key)){
-          
-                /*$decodedArray = json_decode($data['chart_xcoordinates'][$keyToFind], true); 
-                if (!empty($decodedArray) && isset($prr_key)) {
-                    // 使用 array_search() 查找該值在陣列中的位置
-                    $keyPosition = array_search($prr_key, $decodedArray);  // 查找數值
-                
-                    // 如果找到了該值，刪除該索引之前的所有元素
-                    if ($keyPosition !== false) {
-                        // 使用 array_slice() 從找到的位置開始重整陣列
-                        $decodedArray = array_slice($decodedArray, $keyPosition);
-                        
-                        // 將修改後的陣列轉換為 JSON 字符串
-                        $jsonResult = json_encode($decodedArray);
-                        $data['chart_xcoordinates'][$keyToFind] = $jsonResult;
-                    } 
-                }*/
-
-                /*$name = 'chart'.$keyToFind.'_ycoordinate';
-                $array = json_decode($data[$name], true);  
-
-                if (array_key_exists($prr_key, $array)) {
-                    $keyPosition_1 = array_search($prr_key, array_keys($array));
-                    $array = array_slice($array, $keyPosition_1 + 1, null, true);
-                    $values = array_values($array);  
-                    $jsonResult_1 = json_encode($values);
-                    $data[$name] = $jsonResult_1;
-                } */
-               
-            }
-
-
             $this->view('historicals/index', $data);
         
         }
@@ -974,8 +938,6 @@ class Historicals extends Controller
     #nextinfo 整理曲線圖
     private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle){
 
-        //
-
         $temp_info = $this->Historicals_newModel->get_info_data_by_sid($no);
         $threshold_torque_temp  = floatval($temp_info[0]['threshold_torque']);
         $downshift_torque_temp  = floatval($temp_info[0]['downshift_torque']);
@@ -986,10 +948,6 @@ class Historicals extends Controller
         if($chat_mode == "5"){
     
             if(!empty($csvdata_arr['angle'])){
-
-                //$data['x_val'] = json_encode($this->filterArray($csvdata_arr['angle'], "0", 'string'));
-                //$data['y_val'] = json_encode($this->filterArray($csvdata_arr['torque'], '0.0', 'float'));
-
 
                 $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($no, 3); //angle
                 $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($no, 4); //speed
@@ -1072,12 +1030,6 @@ class Historicals extends Controller
             }
 
 
-
-           
-
-            //$data['y_val'] = json_encode($temp_val);
-
-            //var_dump($data['y_val']);die();
             $y_val_angle = $this->Historicals_newModel->get_column_values_by_index($no, 3); //angle
             $y_val_speed = $this->Historicals_newModel->get_column_values_by_index($no, 4); //speed
 

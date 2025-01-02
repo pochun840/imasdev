@@ -852,6 +852,7 @@ addMessage();
 
     var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
     var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
+
     var job_type = '<?php echo $data['job_type'];?>';
     var control_torque = (typeof <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?>) 
         ? parseFloat('<?php echo htmlspecialchars($data['chart_info']['control_torque'], ENT_QUOTES, 'UTF-8'); ?>') 
@@ -951,11 +952,10 @@ addMessage();
     }
 
 
-
     //type = normalstep && chat_mode = 1   &&  threshold_torque != '0' 處理  threshold_torque
     if (chat_mode == '1'  && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+     
         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
-
         // 精確尋找 threshold_torque
         var exactMatchIndex = -1;
             for (var i = y_data_val.length - 1; i >= 0; i--) {  // 從後往前遍歷
@@ -972,8 +972,7 @@ addMessage();
             var exactYValue = y_data_val[exactMatchIndex];
 
             //已找到點標註圓點
-            addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
-
+            addMarkPoint(exactMatchIndex, exactYValue, threshold_torque,'blue','threshold_torque:');
         }
     }
 
@@ -1014,7 +1013,6 @@ addMessage();
         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
         var y_val_torque = <?php echo isset($data['chart_info']['y_val_torque']) ? $data['chart_info']['y_val_torque'] : '[]'; ?>;
-
 
         //精確尋找threshold_torque
         var exactMatchIndex = -1;
@@ -1430,7 +1428,6 @@ addMessage();
         });
     }
 
-    
     function findExactMatch(data, targetValue) {
         for (let i = 0; i < data.length; i++) {
             if (data[i] === targetValue) {
@@ -1451,10 +1448,6 @@ addMessage();
         }
         return -1; // 如果沒有找到，返回 -1
     }
-
-
-
-
     </script>
 <?php }?>
 <!----nextinfo ed----->
@@ -2172,22 +2165,26 @@ const language = '<?php echo $data['language'];?>';
 
 // 點擊按鈕觸發的函數：全選或取消全選
 function selectAllCheckboxes() {
-    const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked); // 判斷是否所有複選框都已選中
+    // 獲取所有複選框
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][name="test1"]');
     
-    // 根據當前選中狀態切換全選/取消全選
-    checkboxes.forEach(function(checkbox) {
-        checkbox.checked = !allChecked; // 反轉每個複選框的選中狀態
-    });
+    // 判斷是否所有複選框都已選中
+    const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked); 
     
-    // 更新按鈕文字
-    updateButtonText(!allChecked);
-
+    // 強制當所有複選框都沒有被選中時，將所有的複選框設定為選中
     if (!allChecked) {
-        return; // 如果取消全選，直接跳出
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = true;  // 強制設置為選中
+        });
+    } else {
+        // 根據當前選中狀態切換全選/取消全選
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = false;  // 如果全部已選中，則取消選中
+        });
     }
 
-    //deleteinfo();
-
+    // 更新按鈕文字
+    updateButtonText(!allChecked);
 }
 
 function initButtonText() {
