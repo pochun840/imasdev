@@ -1315,7 +1315,7 @@ addMessage();
 
 
 
-        if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {    
+          if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {    
             option.series[0].markPoint = option.series[0].markPoint || { data: [] };
             // 精確尋找 threshold_torque
             var exactMatchIndex = -1;
@@ -1329,13 +1329,16 @@ addMessage();
 
             // 如果找到精確匹配的點，則將其標註
             if (exactMatchIndex !== -1) {
+              
                 var exactXValue = x_data_val[exactMatchIndex];
                 var exactYValue = y_data_val[exactMatchIndex];
 
                 //已找到點標註圓點
-                addMarkPoint(last_key, exactYValue, threshold_torque,'blue','threshold_torque:');
+                addMarkPoint(exactMatchIndex, exactYValue, threshold_torque,'blue','threshold_torque:');
             }
         }
+
+
 
         if (chat_mode == '6' && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(downshift_torque)) {
             option.series[0].markPoint = option.series[0].markPoint || { data: [] };
@@ -1344,30 +1347,30 @@ addMessage();
             var downshiftTorqueFloat = parseFloat(downshift_torque);
 
             // 嘗試精確匹配
+            console.log(y_data_val);
             var exactMatchIndex = findExactMatch(y_data_val, downshiftTorqueFloat);
-
             if (exactMatchIndex !== -1) {
                 // 找到精確匹配
                 var exactXValue = x_data_val[exactMatchIndex];
                 var exactYValue = y_data_val[exactMatchIndex];
 
-                //已找到點標註圓點
-                addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:'); 
+                // 已找到點標註圓點
+                addMarkPoint(exactMatchIndex, exactYValue, downshift_torque, 'green', 'downshift_torque:');
             } else {
                 // 如果沒有精確匹配，則進行範圍匹配
                 var rangeMatchIndex = findRangeMatch(y_data_val, downshiftTorqueFloat);
 
                 if (rangeMatchIndex !== -1) {
-                    // 找到範圍匹配
                     var rangeXValue = x_data_val[rangeMatchIndex];
                     var rangeYValue = y_data_val[rangeMatchIndex];
 
-                    //已找到點標註圓點
-                    addMarkPoint(last_key_downshift_torque, rangeYValue, downshift_torque,'green','downshift_torque:');
-
+                    // 已找到點標註圓點
+                    addMarkPoint(rangeMatchIndex, rangeYValue, downshift_torque, 'green', 'downshift_torque:');
                 }
             }
+
         }
+        
 
         if(chat_mode == '6' && job_type == 'normalstep' && step_threshold_angle > 0 ){
             option.series[0].markPoint = option.series[0].markPoint || { data: [] };
