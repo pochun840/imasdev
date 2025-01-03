@@ -385,10 +385,10 @@ class Historical{
         if($mode =="torque"){
             $details  = array(
                 1 => 'N.m',
-                0 => 'Kgf.m',
-                2 => 'Kgf.cm',
-                3 => 'In.lbs',
-                4 => 'cN.m'
+                //0 => 'Kgf.m',
+                //2 => 'Kgf.cm',
+                //3 => 'In.lbs',
+                //4 => 'cN.m'
             );
         }
 
@@ -890,45 +890,45 @@ class Historical{
         $TransType = (int)$TransType;
 
         $new_TorqueUnit = array(
-            "kgf.cm" => 0,
+            "kgf.cm" => 2,
             "N.m"    => 1,
-            "lbf.in" => 2,
-            "kgf.m"  => 3,
+            "lbf.in" => 3,
+            "kgf.m"  => 0,
             "cN.m"   => 4
         );
-
-        $convertedValues = array();
 
         $convertedValues = array();
         if (!is_array($torValue)) {
             $torValue = [$torValue];
         }
-
+   
         foreach($torValue as $torValue){
             $torValue = floatval($torValue);
 
             #當輸入的單位是N.m
             if($inputType == $new_TorqueUnit["N.m"]){
-
+          
                 if($TransType == $new_TorqueUnit["kgf.m"]){
                     $convertedValues[] = round($torValue * 0.102, 4); // N.m 轉換成 kgf.m
                 }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
-                    $convertedValues[] = round($torValue * 10.2, 2); // N.m 轉換成 Kgf·cm
+                    $convertedValues[] = round($torValue * 10.2, 3); // N.m 轉換成 Kgf·cm
                 }elseif($TransType == $new_TorqueUnit["lbf.in"]){
                     $convertedValues[] = round($torValue * 10.2 * 0.86805, 2); // N.m 轉換成 lbf.in
                 }elseif($TransType == $new_TorqueUnit["N.m"]){
                     $convertedValues[] = round($torValue, 3); // N.m 轉換成 N.m（保持不變）
                 }elseif($TransType == $new_TorqueUnit["cN.m"]){
+         
                     $convertedValues[] = round(round($torValue * 10.2, 2) * 9.80392156, 1); //N.m 轉換成 cN.m
                 }
             } 
 
             #當輸入的單位是kgf.m
             elseif($inputType == $new_TorqueUnit["kgf.m"]){
-                
+       
                 if($TransType == $new_TorqueUnit["kgf.m"]){
                     $convertedValues[] = round($torValue, 4); // kgf.m 轉換成 kgf.m（保持不變）
                 }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
+      
                     $convertedValues[] = round($torValue * 100, 2); // kgf.m 轉換成 Kgf·cm
                 }elseif($TransType == $new_TorqueUnit["lbf.in"]){
                     $convertedValues[] = round($torValue * 100 * 0.86805, 2); // kgf.m 轉換成 lbf.in
@@ -941,7 +941,7 @@ class Historical{
 
             #當輸入的單位是Kgf·cm
             elseif ($inputType == $new_TorqueUnit["kgf.cm"]){
-
+                
                 if($TransType == $new_TorqueUnit["kgf.m"]){
                     $convertedValues[] = round($torValue * 0.01, 4); // Kgf·cm 轉換成 kgf.m
                 }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
@@ -954,11 +954,11 @@ class Historical{
                     $convertedValues[]  =  round($torValue * 9.80392156, 1);  // kgf.cm 轉換成 cN·m
                 }
 
-            }
+            }   
 
             #當輸入的單位是lbf.in
             elseif ($inputType == $new_TorqueUnit["lbf.in"]){
-
+           
                 if($TransType == $new_TorqueUnit["kgf.m"]){
                     $convertedValues[] = round($torValue * 1.152 * 0.01, 4); // lbf.in 轉換成 kgf.m
                 }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
@@ -974,7 +974,6 @@ class Historical{
 
             #當輸入的單位是cN·m
             elseif($inputType == $new_TorqueUnit["cN.m"]){
-                
                 if($TransType == $new_TorqueUnit["kgf.m"]){
                     $convertedValues[] =  round(round($torValue * 0.102, 2) * 0.01, 4); // cN·m 轉換成 kgf.m
                 }elseif($TransType == $new_TorqueUnit["kgf.cm"]){
@@ -991,6 +990,8 @@ class Historical{
         }
         return $convertedValues;
     }
+
+    
 
     #處理chart的X軸&Y軸的座標
     public function extractXYTitles($titleString){

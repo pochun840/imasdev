@@ -171,7 +171,6 @@ class Historicals extends Controller
                 $info_data .= "</tr>";
     
                 echo $info_data;
-                //echo '<script>window.systemSnList = ' . json_encode($system_sns) . ';</script>';
             }
         } 
     }
@@ -206,7 +205,6 @@ class Historicals extends Controller
             $csv_data = [];
     
             // 標題行
-            //$column_names = $this->get_table_columns('fasten_data');  
             $csv_data[] = ['id', 'cc_barcodesn', 'cc_station', 'cc_job_id', 'cc_seq_id', 'cc_task_id', 'cc_program_id', 'cc_equipment', 'cc_operator', 'system_sn', 'data_time', 'device_type', 'device_id', 'device_sn', 'tool_type', 'tool_sn', 'tool_status', 'job_id', 'job_name', 'sequence_id', 'sequence_name', 'step_id', 'fasten_torque', 'torque_unit', 'fasten_time', 'fasten_angle', 'count_direction', 'last_screw_count', 'max_screw_count', 'fasten_status', 'error_message', 'step_targettype', 'step_tooldirection', 'step_rpm', 'step_targettorque', 'step_hightorque', 'step_lowtorque', 'step_targetangle', 'step_highangle', 'step_lowangle', 'step_delayttime', 'threshold_torque', 'step_threshold_angle', 'downshift_torque', 'downshift_speed', 'step_prr_rpm', 'step_prr_angle', 'barcode', 'total_angle', 'on_flag', 'cc_task_name'];
             
             // 生成 CSV 資料
@@ -394,8 +392,6 @@ class Historicals extends Controller
                 exit();
             }
 
-            $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
-            $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
  
             #檢查chat_mode cookie,驗證是否為數字，否則設置為默認值
             $chat_mode = filter_var($_COOKIE['chat_mode_change'] ?? 1, FILTER_VALIDATE_INT, ["options" => ["default" => 1, "min_range" => 1]]);
@@ -404,16 +400,37 @@ class Historicals extends Controller
             $unitvalue = filter_var($_GET['unitvalue'] ?? $data['job_info'][0]['torque_unit'], FILTER_VALIDATE_INT, ["options" => ["default" => $data['job_info'][0]['torque_unit']]]);    
             $data['unitvalue'] = $unitvalue;
      
-            if($data['job_info'][0]['torque_unit']!= 1){
+         
+            $torque_change = $this->Historicals_newModel->details('torque');
+            if($unitvalue != 1){
                 //才要進行 扭力轉換
+                //實際扭力
+                $data['job_info'][0]['fasten_torque'] = $this->Historicals_newModel->unitarr_change($data['job_info'][0]['fasten_torque'], 1, $unitvalue)[0];
+                $data['torque_unit'] = $torque_change[$unitvalue];
 
-                $unitvalue;
+                $data['job_info'][0]['step_hightorque'] = $this->Historicals_newModel->unitarr_change($data['job_info'][0]['step_hightorque'], 1, $unitvalue)[0];
+                $data['job_info'][0]['step_lowtorque']  = $this->Historicals_newModel->unitarr_change($data['job_info'][0]['step_lowtorque'], 1, $unitvalue)[0];
+                $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
+                $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
 
-            }
-            //var_dump($data['unitvalue']);die();
-
+                if(!empty($data['job_info'][0]['threshold_torque'])){
+                    $data['job_info'][0]['threshold_torque'] = $this->Historicals_newModel->unitarr_change($data['job_info'][0]['threshold_torque'], 1, $unitvalue)[0];
+                }
             
-    
+                
+            }else{
+                $data['torque_unit'] = "N.m";
+
+                $data['chat_y_max_val'] = $data['job_info'][0]['step_hightorque'];
+                $data['chat_y_min_val'] = $data['job_info'][0]['step_lowtorque'];
+            
+                
+            }
+            
+
+
+
+        
             #曲線圖模式
             $chat_mode_arr = $this->Historicals_newModel->details('chart_type');
             $data['chat_mode_arr'] = $chat_mode_arr;
@@ -466,7 +483,6 @@ class Historicals extends Controller
             $data['path'] = __FUNCTION__;
 
             $data['res_controller_arr'] = array(1 => 'GTCS', 2 =>'TCG'); 
-
             $this->view('historicals/index', $data);
     
         }
@@ -939,9 +955,17 @@ class Historicals extends Controller
     private function ChartData($chat_mode, $csvdata_arr, $unitvalue, $chat_mode_arr,$temp_x_val,$no,$step_prr_rpm,$step_prr_angle,$index){
 
         $temp_info = $this->Historicals_newModel->get_info_data_by_sid($index);
-        $threshold_torque_temp  = floatval($temp_info[0]['threshold_torque']);
-        $downshift_torque_temp  = floatval($temp_info[0]['downshift_torque']);
+
+        $unitvalue = filter_var($_GET['unitvalue'] ?? $temp_info[0]['torque_unit'], FILTER_VALIDATE_INT, ["options" => ["default" => $temp_info[0]['torque_unit']]]);    
+        
         $threshold_angle_temp   = intval($temp_info[0]['step_threshold_angle']);
+
+        $temp_info[0]['threshold_torque'] = floatval($this->Historicals_newModel->unitarr_change($temp_info[0]['threshold_torque'], 1, $unitvalue)[0]);
+        $threshold_torque_temp  = $temp_info[0]['threshold_torque'];
+
+        $temp_info[0]['downshift_torque'] = floatval($this->Historicals_newModel->unitarr_change($temp_info[0]['threshold_torque'], 1, $unitvalue)[0]);
+        $downshift_torque_temp  = $temp_info[0]['downshift_torque'];
+
         
         $data = array();
         
@@ -1010,10 +1034,10 @@ class Historicals extends Controller
 
         }else{
 
-            if (($chat_mode == "1" || $chat_mode == "3" || $chat_mode == "4") && $unitvalue != "1") {
+            if (($chat_mode == "1" || $chat_mode == "3" || $chat_mode == "4")) {
                 $TransType = $unitvalue;
                 $torValues = $csvdata_arr;
-                $temp_val = $this->Historicals_newModel->unitarr_change($torValues, 1, $TransType);
+                $temp_val = $this->Historicals_newModel->unitarr_change($torValues, 1, 1);
 
                 
                 $data['y_val'] = json_encode($temp_val);
@@ -1109,10 +1133,11 @@ class Historicals extends Controller
         
         //這是要取得 threshold_torque
         if($threshold_torque_temp > 0.1 ){
+
             if(!empty($y_val_angle)){
                 #用 $y_val_angle 取得 value = 0 的 最後一筆的key值
                 $last_key = $this->getLastZeroKey($y_val_angle);
-                $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2); //torque
+                $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2); //torque        
                 $data['control_torque'] = $y_val_torque[$last_key];
                 $data['last_key'] = $last_key;
             }else{
@@ -1128,6 +1153,7 @@ class Historicals extends Controller
         if ($downshift_torque_temp > 0.1) {
             // 取得與 torque 相關的數據
             $y_val_torque = $this->Historicals_newModel->get_column_values_by_index($no, 2);
+           
         
             // 計算範圍
             $min_value = round($downshift_torque_temp, 3);  // 取小數點後3位
@@ -1149,7 +1175,15 @@ class Historicals extends Controller
         }
         
 
-        $data['y_val'] = json_encode(array_values(array_diff_key(json_decode($data['y_val'], true) ?: [], [0 => null])));
+        if($unitvalue == 1){
+            $data['y_val'] = json_encode(array_values(array_diff_key(json_decode($data['y_val'], true) ?: [], [0 => null])));
+        }else{
+            $y_val_torque = $this->Historicals_newModel->unitarr_change($y_val_torque, 1, $unitvalue);    
+
+            $data['y_val'] = json_encode(array_values(array_diff_key(is_array($y_val_torque) ? $y_val_torque : json_decode($y_val_torque, true), [0 => null])));
+
+        }
+        //$data['y_val'] = json_encode(array_values(array_diff_key(json_decode($data['y_val'], true) ?: [], [0 => null])));
         $data['chat_title'] = $chat_mode_arr[(int)$chat_mode] ?? '';
 
         return $data;
