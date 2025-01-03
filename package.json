@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "cookie-parser": "^1.4.7",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "flatpickr": "^4.6.13",
     "fs": "^0.0.1-security",
     "modbus-serial": "^8.0.17",
