@@ -410,6 +410,29 @@ class Calibration{
         
         return (int)$result['total_records'];
     }
+
+    public function torque_unit_code($last_unit){
+        if($last_unit ==0){
+            $torque_name = "Kgf.m";
+        }
+        if($last_unit ==1){
+            $torque_name = "N.m";
+        }
+
+        if($last_unit ==2){
+            $torque_name = "Kgf.cm";
+        }
+
+        if($last_unit ==3){
+            $torque_name = "In.lbs";
+        }
+
+        if($last_unit ==4){
+            $torque_name = "cN.m";
+        }
+
+        return $torque_name;
+    }
     
 
     

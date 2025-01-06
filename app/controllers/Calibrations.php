@@ -36,7 +36,21 @@ class Calibrations extends Controller
         }else{
             $tools_sn = '';
         }
- 
+        
+
+        $device_version_json = $this->Get_Device_version();
+        $device_array = json_decode($device_version_json, true);
+        if(!empty($device_array)){
+            $device_version = $device_array['device_version'];
+            $res_unit  = $this->unit_no();
+            $last_unit = end($res_unit);
+            $torque_name = $this->CalibrationModel->torque_unit_code($last_unit);
+        }else{
+            $torque_name = '';
+            $last_unit   = '';
+        }
+        
+
     
 
         $ktm = $this->CalibrationModel->details('torquemeter');
@@ -112,7 +126,9 @@ class Calibrations extends Controller
             'current_torquemeter' => $ktm[$_SESSION['torqueMeter']],
             'user' => $_SESSION['user'],
             'skipTurnRev' => $skipTurnRev,
-            'language' => $_SESSION['language']
+            'language' => $_SESSION['language'],
+            'torque_name' => $torque_name,
+            'last_unit' => $last_unit
             
         );
         $this->view('calibration/index', $data);
@@ -618,6 +634,40 @@ class Calibrations extends Controller
 
     public function current_save(){
 
+        // 取得 device_version 的版本
+        $device_version_json = $this->Get_Device_version();
+        $device_array = json_decode($device_version_json, true);
+
+        $device_version = $device_array['device_version'] ?? null;
+
+        if ($device_version =="1.27") {
+
+            $res_unit = $this->unit_no();
+            $last_unit = end($res_unit);
+
+            // 使用 switch 處理 multiple 的對應邏輯
+            switch ($last_unit) {
+                case 0:
+                    $multiple = 10000;
+                    break;
+                case 1:
+                    $multiple = 1000;
+                    break;
+                case 2:
+                case 3: // 合併相同結果的條件
+                    $multiple = 100;
+                    break;
+                case 4:
+                    $multiple = 10;
+                    break;
+                default:
+                    $multiple = 10000; // 預設值，防止未定義的情況
+            }
+        }else{
+            $multiple = 100;
+        }
+
+
 
         $input = file_get_contents('php://input');
         $data = json_decode($input, true);
@@ -630,9 +680,11 @@ class Calibrations extends Controller
                 $modbus->port = 502;
                 $modbus->timeout_sec = 10;
 
-                $data['target_q'] = (int)((float)$data['target_q'] * 100);
+                $data['target_q'] = (int)((float)$data['target_q'] * $multiple);
 
-                $percentage = $data['tolerance'] / 100; 
+
+
+                $percentage = $data['tolerance'] / $multiple; 
 
                 $lower_limit = $data['target_q']  - ($data['target_q']  * $percentage); //下限
                 $upper_limit = $data['target_q']  + ($data['target_q']  * $percentage); // 上限
@@ -656,7 +708,8 @@ class Calibrations extends Controller
                 $number_val = (int)((float) $number * 100);
       
 
-                $data_targqt_q = array(0,$data['target_q']);
+                $data_targqt_q = array(0,$data['target_q'],$last_unit);
+
                 $data_rpm = array($data['rpm']);
                 $data_offset = array($number_val);
 
@@ -677,7 +730,6 @@ class Calibrations extends Controller
                 $modbus->writeMultipleRegister(0, 1155, $upper_limit_arr, $dataTypes); //上限
                 $modbus->writeMultipleRegister(0, 1157, $lower_limit_arr, $dataTypes); //下限
                 $modbus->writeMultipleRegister(0, 463,  $data_job, $dataTypes); //切換job
-                //$modbus->writeMultipleRegister(0, 4167,  $tools_start, $dataTypes); //起子啟動
                 $modbus->writeMultipleRegister(0, 461, $tools_start, $dataTypes);//起子啟用
 
 
@@ -843,6 +895,79 @@ class Calibrations extends Controller
                                      'error_message' => $error_message));
 
 
+    }
+
+    private function unit_no(){
+        $controller_ip = $this->EquipmentModel->GetControllerIP(1);
+        require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
+        $modbus = new ModbusMaster($controller_ip, "TCP");
+        try {
+            $modbus->port = 502;
+            $modbus->timeout_sec = 2;
+
+            $unit_no = $modbus->readMultipleRegisters(0, 4157, 1);
+            return $unit_no;
+    
+        } catch (Exception $e) {
+            return array('error' => $modbus->status);
+        }
+
+
+    }
+
+    #取得控制器的版本
+    public function Get_Device_version() {
+
+        $controller_ip = $this->EquipmentModel->GetControllerIP(1);
+
+        $remote_file = '/mnt/ramdisk/tcsdev.db';   ### 遠端檔案
+        $local_file = '../tcsdev.db';   ### 本機儲存檔案名稱
+
+        $tool_sn = '';
+        $error_message = '';
+
+        $conn_id = ftp_connect($controller_ip,21,3);
+
+        if ($conn_id) {
+
+            $handle = fopen($local_file, 'w');
+            $USERNAME = FTP_USER;
+            $PASSWORD = FTP_PASSWORD;
+            $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
+
+            if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
+                // echo "下載成功, 並儲存到 $local_file\n";
+            } else {
+                // echo "下載 $remote_file 到 $local_file 失敗\n";
+            }
+            ftp_close($conn_id);
+            fclose($handle);
+        }
+        
+        $dbPath = '../tcsdev.db';
+        try {
+            // 创建 PDO 连接
+            $pdo = new PDO("sqlite:$dbPath");
+
+            // 设置 PDO 错误模式为异常
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            $sql = 'SELECT * FROM device_info';
+            $statement = $pdo->prepare($sql);
+            $statement->execute();
+            $results = $statement->fetch(PDO::FETCH_ASSOC);
+
+            $tool_sn = $results['device_version'];
+
+            // 关闭连接
+            $pdo = null;
+
+        } catch(PDOException $e) {
+            $error_message = $e->getMessage();
+        }
+
+        return  json_encode(array('device_version' => $tool_sn,'error_message' => $error_message));
+        
     }
     
 }

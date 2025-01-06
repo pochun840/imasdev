@@ -209,7 +209,15 @@
 
                 <div class="w3-center" style="font-size: 18px; color: #000">CM/CMK Bar</div>
              
+                <div class="row t1">
+                    <div class="col-7 t1"><b><?php echo $text['Torque_Unit_text'];?></b></div>
+                    <div class="col-4 t1">
+                        <input id="last_unit"   type="hidden" class="t2 form-control" value='<?php echo $data['last_unit'];?>'>
+                        <input id="tarque_unit" type="text" class="t2 form-control" value='<?php echo $text[$data['torque_name']];?>'>
+                    </div>
+                </div>
 
+                
                 <div class="row t1">
                     <div class="col-7 t1"><b><?php echo $text['Target_Torque_text'];?></b></div>
                     <div class="col-4 t1">
@@ -241,12 +249,6 @@
                 <div class="row t1" style="display: flex; justify-content: flex-end; margin-top: 15px;">
                     <button class="btn" id="export-report" type="button" onclick="current_save()"><?php echo $text['Save_text'];?></button>
                 </div>
-
-
-
-
-              
-            
             </div>
 
 
@@ -698,8 +700,28 @@ function current_save() {
     const offset = document.getElementById('current_offset').value;
     const tolerance = document.getElementById('tolerance').value;
     const implement_count = document.getElementById('implement_count').value;
-    const skip_turn_rev = document.getElementById('skip_turn_rev').checked;
+    const skip_turn_rev = document.getElementById('skip_turn_rev').checked; 
+    const last_unit = document.getElementById('last_unit').value;
 
+    let multiple;
+
+    switch (last_unit) {
+        case 0:
+            multiple = 10000;
+            break;
+        case 1:
+            multiple = 1000;
+            break;
+        case 2:
+        case 3: 
+            multiple = 100;
+            break;
+        case 4:
+            multiple = 10;
+            break;
+        default:
+            multiple = 1000; 
+    }
     const adapter_type = document.getElementById('adapter_type').value;
     let new_skip;
 
@@ -719,10 +741,12 @@ function current_save() {
     setCookie('new_skip', new_skip, 7);
 
 
-    let percentage = tolerance / 100; 
+    let percentage = tolerance / multiple; 
+
+
     let temp = targetQ  * percentage ;
-    let upper_limit = (Number(targetQ) + Number(temp)).toFixed(2);
-    let lower_limit = (Number(targetQ) - Number(temp)).toFixed(2); 
+    let upper_limit = (Number(targetQ) + Number(temp)).toFixed(3);
+    let lower_limit = (Number(targetQ) - Number(temp)).toFixed(3); 
 
     const data = {
         target_q: targetQ,  //目標扭力
