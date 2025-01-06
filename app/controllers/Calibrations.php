@@ -669,8 +669,10 @@ class Calibrations extends Controller
 
 
 
-        $input = file_get_contents('php://input');
+        //$input = file_get_contents('php://input');
+        $input = '{"target_q": "0.6", "rpm": "100", "joint_offset": "0.1", "tolerance": "10"}';
         $data = json_decode($input, true);
+      
         if (isset($data['target_q'], $data['rpm'], $data['joint_offset'],$data['tolerance'])) {
 
             $controller_ip = $this->EquipmentModel->GetControllerIP(1);
@@ -705,13 +707,15 @@ class Calibrations extends Controller
                    
                 }
 
-                $number_val = (int)((float) $number * 100);
-      
 
+                $number_val = (int)((float) $number * $multiple);
                 $data_targqt_q = array(0,$data['target_q'],$last_unit);
 
                 $data_rpm = array($data['rpm']);
-                $data_offset = array($number_val);
+                //$data_offset = array($number_val);
+                $data_offset = array(0);
+                $data_offset_sec = array($number_val);
+
 
                 $lower_limit_arr = array(0,$lower_limit);
                 $upper_limit_arr = array(0,$upper_limit);
@@ -727,6 +731,7 @@ class Calibrations extends Controller
                 $modbus->writeMultipleRegister(0, 1151, $data_rpm, $dataTypes); //轉速
                 $modbus->writeMultipleRegister(0, 1152, $data_sign, $dataTypes); //補償值
                 $modbus->writeMultipleRegister(0, 1153, $data_offset, $dataTypes); //補償值(只有數值)
+                $modbus->writeMultipleRegister(0, 1154, $data_offset_sec, $dataTypes); //補償值(只有數值)
                 $modbus->writeMultipleRegister(0, 1155, $upper_limit_arr, $dataTypes); //上限
                 $modbus->writeMultipleRegister(0, 1157, $lower_limit_arr, $dataTypes); //下限
                 $modbus->writeMultipleRegister(0, 463,  $data_job, $dataTypes); //切換job
