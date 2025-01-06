@@ -639,8 +639,8 @@ class Calibrations extends Controller
         $device_array = json_decode($device_version_json, true);
 
         $device_version = $device_array['device_version'] ?? null;
-
-        if ($device_version =="1.27") {
+        $device_version = (float)$device_version; 
+        if ($device_version >=1.27) {
 
             $res_unit = $this->unit_no();
             $last_unit = end($res_unit);
@@ -670,7 +670,6 @@ class Calibrations extends Controller
 
 
         $input = file_get_contents('php://input');
-        //$input = '{"target_q": "0.6", "rpm": "100", "joint_offset": "0.1", "tolerance": "10"}';
         $data = json_decode($input, true);
       
         if (isset($data['target_q'], $data['rpm'], $data['joint_offset'],$data['tolerance'])) {
@@ -684,9 +683,7 @@ class Calibrations extends Controller
 
                 $data['target_q'] = (int)((float)$data['target_q'] * $multiple);
 
-
-
-                $percentage = $data['tolerance'] / $multiple; 
+                $percentage = $data['tolerance'] / 100; 
 
                 $lower_limit = $data['target_q']  - ($data['target_q']  * $percentage); //下限
                 $upper_limit = $data['target_q']  + ($data['target_q']  * $percentage); // 上限
@@ -697,8 +694,9 @@ class Calibrations extends Controller
 
                     $sign = $matches[1];   // 取正負號
                     $number = $matches[2]; // 取數字 
+                    
 
-                    if( $sign == '+'){
+                    if( $sign == '+'  || $sign == ''){
                         $data_sign = array(0);
                     }else{
                         $data_sign = array(1);
@@ -909,7 +907,7 @@ class Calibrations extends Controller
             $modbus->port = 502;
             $modbus->timeout_sec = 2;
 
-            $unit_no = $modbus->readMultipleRegisters(0, 4157, 1);
+            $unit_no = $modbus->readMultipleRegisters(0, 264, 1);
             return $unit_no;
     
         } catch (Exception $e) {

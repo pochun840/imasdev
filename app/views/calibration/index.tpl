@@ -741,7 +741,7 @@ function current_save() {
     setCookie('new_skip', new_skip, 7);
 
 
-    let percentage = tolerance / multiple; 
+     let percentage = tolerance / 100
 
 
     let temp = targetQ  * percentage ;
