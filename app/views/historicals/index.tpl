@@ -215,8 +215,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
             <!-- Fastening Setting -->
             <div id="fasteningContent" class="content">
                 <div id="FasteningDisplay" style="margin-top: 40px">
-                 
-                    <!---search bar op ----->
+                    <!-- Lana Edit input-group date 2024/10/15 -->
                     <div class="mt-2" style="margin-right: 20%; margin-left: 3%">
                         <div class="input-group mb-2">
                             <span class="input-group-text"><?php echo $text['BarcodeSN_text']; ?>:</span>
@@ -271,13 +270,81 @@ if(!empty($_COOKIE['chat_mode_change'])){
                         
                     </div>                
 
+<!--                
+                    <div style="padding-left: 2%">
+                        <div class="row">
+                            <div for="BarcodeSN" class="col-2 t1"><?php echo $text['BarcodeSN_text']; ?>:</div>
+                            <div class="col-2 t2" style="margin-left: -100px">
+                                <input type="text" class="t3 form-control input-ms" id="barcodesn" name="barcodesn" maxlength="" style="width: 190px;">
+                            </div>
 
+                            <div for="Operator" class="col-2 t1"><?php echo $text['Operator_text']; ?>:</div>
+                            <div class="col-2 t2" style="margin-left: -100px">
+                               <!--<input type="text" class="t3 form-control input-ms" id="Operator" maxlength="" value="" style="width: 190px;">-->
+                               <!--<select>
+                                    <?//php foreach($data['all_roles'] as $key =>$val){ ?>
+                                            <!--<option value='<?//php echo $val['ID'];?>'> <?//php echo $val['Title'];?> </option>
+                                    <?//php } ?>
+                               </select>
+                            </div>
+
+                            <div for="SelectJob" class="col-2 t1"><?php echo $text['Select_Job_text']; ?>:</div>
+                            <div class="col-2 t3" style="margin-left: -100px">
+                                <input type="text" class="t3 form-control input-ms" id="JobSelect" placeholder="<?php echo $text['Click_here_text']; ?>.." onfocus="openModal('JobSelect')" onclick="this.blur()">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-2 t1" for="FromDate"><?php echo $text['From_text']; ?>:</div>
+                            <div class="col-2 t1" style="margin-left: -100px">
+                                <input type="datetime" class="t3" id="FromDate" name="FromDate" style="width: 190px;border-radius: 5px;border: 1px solid #CCCCCC; ">
+                            </div>
+
+                            <div class="col-2 t1" for="ToDate"><?php echo $text['To_text']; ?>:</div>
+                            <div class="col-2 t1" style="margin-left: -100px">
+                                <input type="datetime" class="t3" id="ToDate" name="ToDate" style="width: 190px; border-radius: 5px;border: 1px solid #CCCCCC;">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div for="result-status" class="col-2 t1"><?php echo $text['Result_Status_text']; ?>:</div>
+                            <div class="col-2 t2" style="margin-left: -100px">
+                                <select id="status" style="width: 190px">
+                                    <?php foreach($data['res_status_arr'] as $key_res =>$val_res){?>
+                                            <option value="<?php echo $key_res;?>"><?php echo $val_res;?></option>
+                                    <?php }?>
+
+                                </select>
+                            </div>
+
+                            <div for="Controller" class="col-2 t1"><?php echo $text['Controller_text']; ?>:</div>
+                            <div class="col-2 t3" style="margin-left: -100px">
+                                <select id="controller" style="width: 190px;">
+                                    <option value="-1"><?php echo "select";?></option>
+                                    <?php foreach($data['res_controller_arr'] as $key_res_1 =>$val_res_1){?>
+                                            <option value="<?php echo $key_res_1;?>"><?php echo $val_res_1;?></option>
+                                    <?php }?>
+                                </select>
+                            </div>
+
+                            <div for="Program" class="col-2 t1"><?php echo $text['Program_text']; ?>:</div>
+                            <div class="col-2 t3"  style="margin-left: -100px">
+                                <select id="Program" style="width: 190px;">
+                                    <option value="-1"><?php echo "select";?></option>
+                                     <?php foreach($data['res_program'] as $key_res_2 => $val_res_2){?>
+                                            <option value="<?php echo $val_res_2['template_program_id'];?>"><?php echo $val_res_2['template_program_id'];?></option>
+                                    <?php }?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+-->
                     <div class="topnav-menu">
                         <div class="search-container">
                             <input type="text" placeholder="<?php echo $text['Search_text']; ?>.." name="sname" id="search_name" size="40" style="height: 35px">&nbsp;
                             <button id="Search" type="button" class="Search-button" onclick="search_info()"><?php echo $text['Search_text']; ?></button>
                         </div>
-                        <!---search bar ed ----->
+
 
                         <div class="topnav-right">
 
@@ -315,7 +382,7 @@ if(!empty($_COOKIE['chat_mode_change'])){
                                 <td><?php echo $text['Status_text']; ?> : <a style="background-color: <?php echo $data['status_arr']['status_color'][$data['job_info'][0]['fasten_status']];?>; padding: 0 10px"><?php echo $data['status_arr']['status_type'][$data['job_info'][0]['fasten_status']];?></a></td>
                             </tr>
                             <tr>
-                                <td><?php echo $text['Actual_Torque_text']; ?>: <?php echo $data['job_info'][0]['fasten_torque'];?> <?php echo $text[$data['torque_unit']];?></td>
+                                <td><?php echo $text['Actual_Torque_text']; ?>: <?php echo $data['job_info'][0]['fasten_torque'];?> N.m</td>
                                 <td><?php echo $text['BarcodeSN_text']; ?>: <?php echo $data['job_info'][0]['cc_barcodesn'];?></td>
                                 <td><?php echo $text['Direction_text']; ?>: <?php echo  $data['status_arr']['direction'][$data['job_info'][0]['count_direction']];?></td>
                                 <td><?php echo $text['Program_text']; ?>: <?php echo $data['job_info'][0]['cc_program_id'];?></td>
@@ -786,8 +853,6 @@ addMessage();
     var downshift_torque = '<?php echo $data['job_info'][0]['downshift_torque'];?>';
     var threshold_torque = '<?php echo $data['job_info'][0]['threshold_torque'];?>';
 
-
-
     var job_type = '<?php echo $data['job_type'];?>';
     var control_torque = (typeof <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?> !== 'undefined' && <?php echo isset($data['chart_info']['control_torque']) ? 'true' : 'false'; ?>) 
         ? parseFloat('<?php echo htmlspecialchars($data['chart_info']['control_torque'], ENT_QUOTES, 'UTF-8'); ?>') 
@@ -968,6 +1033,8 @@ addMessage();
     }
 
     if ((chat_mode == '3'  ||  chat_mode == '4')  && downshift_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {
+
+  
         option.series[0].markPoint = option.series[0].markPoint || { data: [] };
 
         var y_val_torque = <?php echo isset($data['chart_info']['y_val_torque']) ? $data['chart_info']['y_val_torque'] : '[]'; ?>;
@@ -1103,6 +1170,10 @@ addMessage();
     function findRangeMatch(data, targetValue) {
         let rangeStart = targetValue;
         let rangeEnd = targetValue + 0.099; // 設定範圍上限
+
+        console.log(rangeStart);
+        console.log(rangeEnd);
+
 
         for (let i = 0; i < data.length; i++) {
             if (data[i] >= rangeStart && data[i] <= rangeEnd) {
@@ -1250,7 +1321,7 @@ addMessage();
 
 
 
-          if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {    
+        if (chat_mode == '6' && threshold_torque != '0' && job_type == 'normalstep' && !isNaN(control_torque)) {    
             option.series[0].markPoint = option.series[0].markPoint || { data: [] };
             // 精確尋找 threshold_torque
             var exactMatchIndex = -1;
@@ -1305,7 +1376,7 @@ addMessage();
             }
 
         }
-        
+
 
         if(chat_mode == '6' && job_type == 'normalstep' && step_threshold_angle > 0 ){
             option.series[0].markPoint = option.series[0].markPoint || { data: [] };
@@ -2133,7 +2204,28 @@ function initButtonText() {
 // 初始化按鈕文字
 initButtonText();
 
+flatpickr("#FromDate", {
+    enableTime: true,  // 啟用時間選擇
+    dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
+    time_24hr: true,  // 使用24小時制（可選）
+    className: "custom-flatpickr-input"
+});
+
+
+flatpickr("#ToDate", {
+    enableTime: true,  // 啟用時間選擇
+    dateFormat: "Y-m-d H:i",  // 設定日期與時間的顯示格式
+    time_24hr: true,  // 使用24小時制（可選）
+    className: "custom-flatpickr-input"
+});
 
 
 
 </script>
+<style>
+    /* 這將改變該輸入框的背景顏色為白色 */
+    .custom-flatpickr-input {
+        background-color: white !important;
+        color: black;  /* 你可以修改文字顏色 */
+    }
+</style>

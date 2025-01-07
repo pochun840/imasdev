@@ -372,7 +372,31 @@ class Calibrations extends Controller
     }
 
     public function del_all(){
+        
         $result = $this->CalibrationModel->del_all();
+
+        //移除檔案 
+        $file_tmp = __DIR__; 
+        $file_tmp = dirname($file_tmp); 
+        $file_tmp = dirname($file_tmp); //再往上一層
+        $file_path = $file_tmp . "/api/final_val.txt";
+
+        // 檢查文件是否存在
+        if (!file_exists($file_path)) {
+            // 如果未顯示過文件未找到的消息，則顯示並設置標誌
+            if (!isset($_SESSION['file_not_found'])) {
+                echo json_encode(array('success' => false, 'message' => '文件未找到'));
+                $_SESSION['file_not_found'] = true; // 設置標誌
+            }
+            return;
+        } else {
+            // 如果文件存在，則刪除文件
+            if (unlink($file_path)) {
+                echo json_encode(array('success' => true, 'message' => '文件已成功刪除'));
+            } else {
+                echo json_encode(array('success' => false, 'message' => '文件刪除失敗'));
+            }
+        }
 
         if(isset($_COOKIE['implement_count'])) {
             setcookie('implement_count', '', time() - 3600, '/');
@@ -959,6 +983,10 @@ class Calibrations extends Controller
 
         return  json_encode(array('device_version' => $tool_sn,'error_message' => $error_message));
         
+    }
+
+    public function del_val_file(){
+
     }
     
 }
