@@ -821,7 +821,7 @@ class Calibrations extends Controller
                 echo "Session set to: " . $_SESSION['skipTurnRev']; // 返回消息
             }
         }else{
-            echo "eewe";
+            //echo "eewe";
         }
         
         // 输出 session 值
@@ -867,10 +867,7 @@ class Calibrations extends Controller
 
         $dbPath = '../'.$db_name;
            try {
-               // 创建 PDO 连接
                $pdo = new PDO("sqlite:$dbPath");
-   
-               // 设置 PDO 错误模式为异常
                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
    
                $sql = 'SELECT * FROM data order by system_sn desc limit 0,1';
@@ -881,15 +878,11 @@ class Calibrations extends Controller
          
                $system_sn = $results['system_sn'];
                $fasten_torque = $results['fasten_torque'];
-   
-
-               // 关闭连接
                $pdo = null;
    
            } catch(PDOException $e) {
                echo "Error: " . $e->getMessage();
                $error_message = $e->getMessage();
-               // return 'null';
            }
    
            return  json_encode(array('system_sn' => $system_sn,
@@ -948,10 +941,8 @@ class Calibrations extends Controller
         
         $dbPath = '../tcsdev.db';
         try {
-            // 创建 PDO 连接
+          
             $pdo = new PDO("sqlite:$dbPath");
-
-            // 设置 PDO 错误模式为异常
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             $sql = 'SELECT * FROM device_info';
@@ -960,8 +951,6 @@ class Calibrations extends Controller
             $results = $statement->fetch(PDO::FETCH_ASSOC);
 
             $tool_sn = $results['device_version'];
-
-            // 关闭连接
             $pdo = null;
 
         } catch(PDOException $e) {

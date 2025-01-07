@@ -731,7 +731,6 @@ function current_save() {
         new_skip = 'no';  // 如果沒有被選中，顯示 0
     }
 
-
     localStorage.setItem('rpm', rpm);
     localStorage.setItem('offset', offset);
     localStorage.setItem('implement_count', implement_count);
@@ -740,9 +739,7 @@ function current_save() {
     setCookie('implement_count', implement_count, 7);
     setCookie('new_skip', new_skip, 7);
 
-
-     let percentage = tolerance / 100
-
+    let percentage = tolerance / 100
 
     let temp = targetQ  * percentage ;
     let upper_limit = (Number(targetQ) + Number(temp)).toFixed(3);
@@ -778,7 +775,6 @@ function current_save() {
 
         },
         error: function(xhr, status, error) {
-            //alert('保存失敗：' + error);
             console.error('Error:', error);
         }
     });
@@ -798,7 +794,6 @@ function undo() {
         confirmMessage = "Are you sure you want to delete all the data?"; // 默認為英文
     }
 
-    // 問題用戶是否確認執行
     var userConfirmed = confirm(confirmMessage);
     
     // 如果用戶點選「確定」，則執行撤銷邏輯
@@ -813,61 +808,59 @@ function undo() {
             },
             url: '?url=Calibrations/del_all',
             success: function(response) {
-                // 顯示 'analysis-system-KTM' 並隱藏 'Torque-Collection'
-                document.getElementById('analysis-system-KTM').style.display = 'block';
-                document.getElementById('Torque-Collection').style.display = 'none';
 
-                // 1. 將 final_count 設定為 0
-                var final_count = 0;
+                // 1. 畫面重整 
+                window.location.reload();
+
+                // 顯示 'analysis-system-KTM' 並隱藏 'Torque-Collection'
+                document.getElementById('analysis-system-KTM').style.display = 'none';
+                document.getElementById('Torque-Collection').style.display = 'block';
+
+                // 2. 將 final_count 設定為 0
+                final_count = 0;
                 
-                // 2. 移除 localStorage 中的 implement_count
+                // 3. 移除 localStorage 中的 implement_count
                 localStorage.removeItem('implement_count');
             },
             error: function(error) {
-                // 處理錯誤（如果需要）
+             
             }
         }).fail(function () {
-            // 處理 AJAX 請求失敗（如果需要）
+           
         });
     } else {
-        // 如果用戶點選「取消」，則什麼也不做，或可紀錄取消操作
-        console.log("error");
+        // 如果用戶點選「取消」，則什麼也不做
+        //console.log("error");
     }
 }
 
-
-let final_count = 0; // 新增 final_count 計數器
-let intervalId; 
+let final_count = 0;
+let intervalId;
 let implementCount = localStorage.getItem('implement_count');
-implementCount = Number(implementCount); 
 
+// 確保 implementCount 是數字，如果 localStorage 中沒有值，則預設為 0
+implementCount = Number(implementCount) || 0;
 async function fetchData() {
     const url1 = '?url=Calibrations/get_val';
-    
     try {
         const response1 = await fetch(url1, {
-            method: 'GET', 
+            method: 'GET',
         });
 
         if (response1.ok) {
-            const textResponse = await response1.text(); 
-            
+            const textResponse = await response1.text();
+
             if (textResponse.trim()) {
                 try {
                     const data = JSON.parse(textResponse);
                     console.log('API 回應:', data);
-                    
-                    // 檢查回應的 message 是否是 '數據整理成功'
+
                     if (data.success && data.message === '數據整理成功') {
-                        final_count += 1; // 如果匹配，則 final_count 自增 1
+                        final_count++; // 使用 ++ 簡化自增
                         console.log('final_count 更新為:', final_count);
                         console.log('localStorage 為:', implementCount);
-
-                        
                     }
-
                 } catch (jsonError) {
-                    // 處理 JSON 解析錯誤
                     console.error('無法解析回應為 JSON:', jsonError);
                 }
             }
@@ -879,35 +872,21 @@ async function fetchData() {
     }
 }
 
-// 每 0.3 秒調用一次 fetchData
-var alertShown = false;
-
-intervalId = setInterval(function() {
+intervalId = setInterval(() => { // 使用箭頭函式簡化
     fetchData();
-    // 判斷 implementCount 是否有值且不為空，並檢查是否達到次數上限
-    
-    final_count = Number(final_count);
 
-
-
-    implementCount_new = localStorage.getItem('implement_count');
-    implementCount_new = Number(implementCount_new);
+    // 取得最新的 implementCount 值
+    const implementCountNew = Number(localStorage.getItem('implement_count')) || 0;
 
     console.log("final_count:", final_count, "Type:", typeof final_count);
-    console.log("implementCount_new:", implementCount_new, "Type:", typeof implementCount_new);
+    console.log("implementCountNew:", implementCountNew, "Type:", typeof implementCountNew);
 
-
-    if( final_count > 0 && implementCount_new > 0  &&  final_count - implementCount_new === 1){
-        if (!alertShown) {
-            alertShown = true; 
-            
-            setTimeout(function() {
-                //alert('已達到次數的上限');
-                clearInterval(intervalId);  
-            }, 0);  
-        }
+    // 正確的判斷條件：final_count >= implementCountNew
+    if (final_count >= implementCountNew && implementCountNew > 0) {
+        alert('已達到次數的上限');
+        clearInterval(intervalId);
+        console.log("計時器已停止"); // 增加 log 方便除錯
     }
-
 }, 300);
 
 
@@ -980,7 +959,7 @@ function updateTable(data) {
             </tr>`);
         });
     } else {
-        tbody.append('<tr><td colspan="12" style="text-align: center;">No data available.</td></tr>');
+        tbody.append('<tr><td colspan="13" style="text-align: center;">No data available.</td></tr>');
     }
 }
 
@@ -1193,8 +1172,6 @@ renderChart(x_val, y_val_torque_1,y_val_torque_2);
 }
 
 
-
-
 function convertToNumberArray(data) {
     // 檢查是否已經是數組，如果是則直接返回，如果不是則解析並轉換
     if (Array.isArray(data)) {
@@ -1220,7 +1197,6 @@ window.onload = function() {
     document.getElementById('target-torque').value = 0.5;
     document.getElementById('high-limit-torque').value = 0.55;
     document.getElementById('low-limit-torque').value = 0.45;
-
     document.cookie = "new_skip=1; path=/;";  
 
 };
@@ -1244,11 +1220,6 @@ function setCookie(name, value, days) {
     expiresDate.setTime(expiresDate.getTime() + (days * 24 * 60 * 60 * 1000));
     document.cookie = `${name}=${value}; path=/; expires=${expiresDate.toUTCString()}`;
 }
-
-
-
-
-
 </script>
 
 
