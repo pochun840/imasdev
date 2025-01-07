@@ -877,6 +877,7 @@ class Calibrations extends Controller
             $USERNAME = FTP_USER;
             $PASSWORD = FTP_PASSWORD;
             $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
+            ftp_pasv($conn_id, true);
 
             if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
                 // echo "下載成功, 並儲存到 $local_file\n";
@@ -953,6 +954,7 @@ class Calibrations extends Controller
             $USERNAME = FTP_USER;
             $PASSWORD = FTP_PASSWORD;
             $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
+            ftp_pasv($conn_id, true);
 
             if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
                 // echo "下載成功, 並儲存到 $local_file\n";
