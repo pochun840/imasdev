@@ -28,8 +28,9 @@ class Calibration{
         if($mode =="torquemeter"){
             $details = array(
                 0 => 'KTM-6',
-                1 => 'KTM-150',
-                2 => 'KTM-250'
+                1 => 'KTM-15',
+                2 => 'KTM-150',
+                3 => 'KTM-250'
 
             );
 

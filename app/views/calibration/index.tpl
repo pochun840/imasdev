@@ -540,6 +540,7 @@ function NextToAnalysisSystemKTM() {
 
     const details = [
         'KTM-6',
+        'KTM-15',
         'KTM-150',
         'KTM-250',
     ];
