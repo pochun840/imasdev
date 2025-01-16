@@ -183,7 +183,13 @@
                     <div class="row t1">
                        <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['Adapter_type_text'];?>:</div>
                         <div class="col-4 t1">
-                            <input id="adapter_type" type="text" class="t2 form-control" value="">
+                            <!--<input id="adapter_type" type="text" class="t2 form-control" value="">-->
+                            <?php 
+                                foreach ($data['screw_joint_list'] as $k_s =>$v_s) {
+                            
+                                }
+                            ?>
+
                         </div>
                     </div>
                 </div>
@@ -327,6 +333,15 @@
                                             <input id="item" type="text" class="t2 form-control" value="<?php echo $data['current_torquemeter'].'(N.m)';?>">
                                         </div>
                                     </div>
+
+                                    <div class="row t1">
+                                        <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Item_text'];?>:</div>
+                                        <div class="col-5 t1">
+                                            <input id="item" type="text" class="t2 form-control" value="<?php echo $data['current_torquemeter'].'(N.m)';?>">
+                                        </div>
+                                    </div>
+
+                                    
                                     <div class="row t1">
                                         <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Target_Torque_text'];?>:</div>
                                         <div class="col-5 t1">
@@ -499,27 +514,6 @@ function exportCSV(modalId)
 
     closeModal(modalId);
 }
-
-//
-function handlePageRedirect(timeout, redirectUrl) {
-    let isLoaded = false;
-    
-    // 網頁載入完成後設置 flag
-    window.onload = function() {
-    isLoaded = true;
-    };
-
-    // 設定超過 timeout 毫秒後自動跳轉
-    setTimeout(function() {
-    if (!isLoaded) {
-        alert('請確認設備連線');
-        //window.location.href = redirectUrl;  // 超過指定時間後跳轉
-    }
-    }, timeout); // 設定時間
-}
-
-// 呼叫函數，20秒後跳轉到當前網站的 ?url=Equipments 頁面
-//handlePageRedirect(20000, window.location.origin + window.location.pathname + '?url=Equipments');
 
 function NextToAnalysisSystemKTM() {
 
@@ -701,7 +695,7 @@ function selectSingle(checkbox) {
 
     checkboxes.forEach((item) => {
         if (item !== checkbox) {
-            item.checked = false; // 取消其他复选框的选中状态
+            item.checked = false; 
         }
     });
 }
