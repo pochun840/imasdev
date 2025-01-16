@@ -22,7 +22,7 @@ $text['main_calibration_text'] = 'Calibration';
 $text['main_user_text'] = 'User';
 $text['main_historical_text'] = 'Historical';
 $text['main_template_text'] = 'Program'; //GTCS-DB Sync
-$text['main_DB_SYNC_text'] = 'GTCS-DB Sync';
+$text['main_DB_SYNC_text'] = 'DB Sync';
 
 //product page
 $text['Barcode_text'] = 'Barcode';
@@ -752,4 +752,10 @@ $log_status['equipment-2'] = 'edit tower light pin';
 $log_status['historicals-1'] = 'delete record';
 $log_status['historicals-2'] = 'export report';
 $log_status['historicals-3'] = 'export CSV';
+
+$log_status['calibrations-1']  = 'add record';
+$log_status['calibrations-2']  = 'delete all data';
+$log_status['calibrations-3']  = 'delete single record';
+
+$log_status['dbsync-1'] = $text['main_DB_SYNC_text'];
 //log status-----------------------------------------------------------------------------------------------------

@@ -673,5 +673,9 @@ $log_status['historicals-1'] = '删除记录';
 $log_status['historicals-2'] = '导出报告';
 $log_status['historicals-3'] = '导出CSV';
 
+$log_status['calibrations-1']  = '新增记录';
+$log_status['calibrations-2']  = '删除全部数据';
+$log_status['calibrations-3']  = '删除单笔数据';
 
+$log_status['dbsync-1'] = $text['main_DB_SYNC_text'];
 //log status-----------------------------------------------------------------------------------------------------

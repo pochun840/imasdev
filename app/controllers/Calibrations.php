@@ -26,6 +26,9 @@ class Calibrations extends Controller
         #select
         $info = $this->CalibrationModel->datainfo();
 
+        #screw_joint_list
+        $screw_joint_list = $this->CalibrationModel->screw_joint_list();
+
         $job_arr = $this->CalibrationModel->getjobid();
         $torque_type = $this->CalibrationModel->details('torque');
         
@@ -128,7 +131,8 @@ class Calibrations extends Controller
             'skipTurnRev' => $skipTurnRev,
             'language' => $_SESSION['language'],
             'torque_name' => $torque_name,
-            'last_unit' => $last_unit
+            'last_unit' => $last_unit,
+            'screw_joint_list' => $screw_joint_list
             
         );
         $this->view('calibration/index', $data);
@@ -362,7 +366,17 @@ class Calibrations extends Controller
             }
 
             #紀錄log
-            $this->logMessage('del_calibrations', $response['type'],'success: id:'.$click_id);
+            $del_info_sn_string = implode(',', $click_id);
+            $narrate = "calibrations:" . $del_info_sn_string;
+            $data_array = explode(":", $narrate);
+
+            if($res == true){
+                //成功
+                $this->logMessage('calibrations-3','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+            }else{
+                //失敗
+                $this->logMessage('calibrations-3','result-2',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+            }
             echo json_encode($response);
 
            
@@ -855,66 +869,91 @@ class Calibrations extends Controller
     }
 
 
-    public function get_controller_data(){
+    public function get_controller_data() {
 
-        $controller_ip = $this->EquipmentModel->GetControllerIP(1);    
-        $db_name = 'data'.date("Y").'.db';
-        $remote_file = '/var/www/html/database/'.$db_name;   ### 遠端檔案
-        $local_file = '../'.$db_name;   ### 本機儲存檔案名稱
-
+        $controller_ip = $this->EquipmentModel->GetControllerIP(1);
+        $db_name = 'data' . date("Y") . '.db';
+        $remote_file = '/var/www/html/database/' . $db_name;
+        $local_file = '../' . $db_name;
+    
         $system_sn = '';
         $fasten_torque = '';
         $error_message = '';
-
-        ### 連接的 FTP 伺服器是 localhost
-        $conn_id = ftp_connect($controller_ip,21,3);
-
+    
+        $ftp_timeout = 10; // 設定 FTP 逾時 (秒)
+    
+        $conn_id = @ftp_connect($controller_ip, 21, $ftp_timeout); // 使用 @ 抑制警告
+    
         if ($conn_id) {
-
-            $handle = fopen($local_file, 'w');
-            // code...
-            ### 登入 FTP, 帳號是 USERNAME, 密碼是 PASSWORD
             $USERNAME = FTP_USER;
             $PASSWORD = FTP_PASSWORD;
-            $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
-            ftp_pasv($conn_id, true);
-
-            if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
-                // echo "下載成功, 並儲存到 $local_file\n";
+    
+            ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
+            $login_result = @ftp_login($conn_id, $USERNAME, $PASSWORD);
+    
+            if (!$login_result) {
+                $error_message = "FTP Login Failed.";
             } else {
-                // echo "下載 $remote_file 到 $local_file 失敗\n";
+                ftp_pasv($conn_id, true);
+    
+                $remote_filesize = ftp_size($conn_id, $remote_file);
+                if ($remote_filesize === -1) {
+                    $error_message = "Could not get remote file size.";
+                } else {
+                    $handle = fopen($local_file, 'wb'); // 使用 wb (二進位模式)
+    
+                    if ($handle) {
+                        ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
+                        if (ftp_fget($conn_id, $handle, $remote_file, FTP_BINARY, 0)) { // 使用 FTP_BINARY
+                            $local_filesize = filesize($local_file);
+                            if ($local_filesize != $remote_filesize) {
+                                $error_message = "File download incomplete. Remote size: " . $remote_filesize . ", Local size: " . $local_filesize;
+                                unlink($local_file);
+                            }
+                        } else {
+                            $error_message = "Download $remote_file failed: " . error_get_last()['message'];
+                            unlink($local_file);
+                        }
+                        fclose($handle);
+                    } else {
+                        $error_message = "Failed to open local file for writing.";
+                    }
+                }
             }
             ftp_close($conn_id);
-            fclose($handle);
+        } else {
+            $error_message = "FTP Connect Failed to " . $controller_ip;
         }
-
-        //----開始get sn name
-
-        $dbPath = '../'.$db_name;
-           try {
-               $pdo = new PDO("sqlite:$dbPath");
-               $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-   
-               $sql = 'SELECT * FROM data order by system_sn desc limit 0,1';
-               $statement = $pdo->prepare($sql);
-               $statement->execute();
-               $results = $statement->fetch(PDO::FETCH_ASSOC);
-
-         
-               $system_sn = $results['system_sn'];
-               $fasten_torque = $results['fasten_torque'];
-               $pdo = null;
-   
-           } catch(PDOException $e) {
-               echo "Error: " . $e->getMessage();
-               $error_message = $e->getMessage();
-           }
-   
-           return  json_encode(array('system_sn' => $system_sn,
-                                     'fasten_torque' => $fasten_torque,
-                                     'error_message' => $error_message));
-
-
+    
+        if (empty($error_message)) { // 只有在 FTP 操作成功後才嘗試讀取資料庫
+            $dbPath = '../' . $db_name;
+            try {
+                $pdo = new PDO("sqlite:$dbPath");
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+                $sql = 'SELECT system_sn, fasten_torque FROM data ORDER BY system_sn DESC LIMIT 1'; // 優化 SQL 查詢
+                $statement = $pdo->prepare($sql);
+                $statement->execute();
+                $results = $statement->fetch(PDO::FETCH_ASSOC);
+    
+                if ($results) {
+                    $system_sn = $results['system_sn'];
+                    $fasten_torque = $results['fasten_torque'];
+                } else {
+                    $error_message = "No data found in data table.";
+                }
+    
+                $pdo = null;
+            } catch (PDOException $e) {
+                $error_message = "Database error: " . $e->getMessage();
+            }
+        }
+    
+        return json_encode(array(
+            'system_sn' => $system_sn,
+            'fasten_torque' => $fasten_torque,
+            'error_message' => $error_message
+        ));
     }
 
     private function unit_no(){
@@ -939,56 +978,91 @@ class Calibrations extends Controller
     public function Get_Device_version() {
 
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);
-
-        $remote_file = '/mnt/ramdisk/tcsdev.db';   ### 遠端檔案
-        $local_file = '../tcsdev.db';   ### 本機儲存檔案名稱
-
+    
+        $remote_file = '/mnt/ramdisk/tcsdev.db';
+        $local_file = '../tcsdev.db';
+    
         $tool_sn = '';
         $error_message = '';
-
-        $conn_id = ftp_connect($controller_ip,21,3);
-
+    
+        // 設定 FTP 連線逾時 (秒)
+        $ftp_timeout = 10;
+    
+        $conn_id = ftp_connect($controller_ip, 21, $ftp_timeout);
+    
         if ($conn_id) {
-
-            $handle = fopen($local_file, 'w');
             $USERNAME = FTP_USER;
             $PASSWORD = FTP_PASSWORD;
-            $login_result = ftp_login($conn_id, $USERNAME, $PASSWORD);
-            ftp_pasv($conn_id, true);
-
-            if (ftp_fget($conn_id, $handle, $remote_file, FTP_ASCII, 0)) {
-                // echo "下載成功, 並儲存到 $local_file\n";
+    
+            // 設定登入逾時
+            ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
+    
+            $login_result = @ftp_login($conn_id, $USERNAME, $PASSWORD); // 使用 @ 抑制警告訊息
+    
+            if (!$login_result) {
+                $error_message = "FTP Login Failed.";
             } else {
-                // echo "下載 $remote_file 到 $local_file 失敗\n";
+                ftp_pasv($conn_id, true);
+    
+                // 取得遠端檔案大小
+                $remote_filesize = ftp_size($conn_id, $remote_file);
+                if ($remote_filesize === -1) {
+                    $error_message = "Could not get remote file size.";
+                } else {
+    
+                    $handle = fopen($local_file, 'wb'); // 使用 wb 以二進位模式寫入
+    
+                    if ($handle) {
+                        // 設定檔案傳輸逾時
+                        ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
+                        if (ftp_fget($conn_id, $handle, $remote_file, FTP_BINARY, 0)) { // 使用 FTP_BINARY 確保檔案完整性
+                            $local_filesize = filesize($local_file);
+                            if ($local_filesize != $remote_filesize) {
+                                $error_message = "File download incomplete. Remote size: " . $remote_filesize . ", Local size: " . $local_filesize;
+                                unlink($local_file); // 刪除不完整的檔案
+                            }
+                        } else {
+                            $error_message = "Download $remote_file to $local_file failed: " . error_get_last()['message'];
+                            unlink($local_file); // 刪除下載失敗的檔案
+                        }
+                        fclose($handle);
+                    } else {
+                        $error_message = "Failed to open local file for writing.";
+                    }
+                }
             }
             ftp_close($conn_id);
-            fclose($handle);
+        } else {
+            $error_message = "FTP Connect Failed to " . $controller_ip;
         }
-        
-        $dbPath = '../tcsdev.db';
-        try {
-          
-            $pdo = new PDO("sqlite:$dbPath");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            $sql = 'SELECT * FROM device_info';
-            $statement = $pdo->prepare($sql);
-            $statement->execute();
-            $results = $statement->fetch(PDO::FETCH_ASSOC);
-
-            $tool_sn = $results['device_version'];
-            $pdo = null;
-
-        } catch(PDOException $e) {
-            $error_message = $e->getMessage();
+    
+        if (empty($error_message)) { // 只有在 FTP 操作成功後才嘗試讀取資料庫
+            $dbPath = '../tcsdev.db';
+            try {
+                $pdo = new PDO("sqlite:$dbPath");
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+                $sql = 'SELECT device_version FROM device_info LIMIT 1'; // 只取一筆資料，提升效率
+                $statement = $pdo->prepare($sql);
+                $statement->execute();
+                $results = $statement->fetch(PDO::FETCH_ASSOC);
+    
+                if ($results) {
+                    $tool_sn = $results['device_version'];
+                } else {
+                    $error_message = "No data found in device_info table.";
+                }
+    
+                $pdo = null;
+    
+            } catch (PDOException $e) {
+                $error_message = "Database error: " . $e->getMessage();
+            }
         }
-
-        return  json_encode(array('device_version' => $tool_sn,'error_message' => $error_message));
-        
+    
+        return json_encode(array('device_version' => $tool_sn, 'error_message' => $error_message));
     }
 
-    public function del_val_file(){
-
-    }
+   
     
 }

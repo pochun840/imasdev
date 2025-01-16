@@ -468,10 +468,7 @@
             </div>
         </div>
     </div>
-
-       
-  
-
+ 
 <script>
 let lastData = null; 
 var myChart; 
@@ -503,6 +500,26 @@ function exportCSV(modalId)
     closeModal(modalId);
 }
 
+//
+function handlePageRedirect(timeout, redirectUrl) {
+    let isLoaded = false;
+    
+    // 網頁載入完成後設置 flag
+    window.onload = function() {
+    isLoaded = true;
+    };
+
+    // 設定超過 timeout 毫秒後自動跳轉
+    setTimeout(function() {
+    if (!isLoaded) {
+        alert('請確認設備連線');
+        //window.location.href = redirectUrl;  // 超過指定時間後跳轉
+    }
+    }, timeout); // 設定時間
+}
+
+// 呼叫函數，20秒後跳轉到當前網站的 ?url=Equipments 頁面
+//handlePageRedirect(20000, window.location.origin + window.location.pathname + '?url=Equipments');
 
 function NextToAnalysisSystemKTM() {
 
@@ -620,7 +637,6 @@ function highlight_row(tableId) {
             //出現彈跳視窗
             if (confirm(confirmMessagePrefix + selectedId + '?')) {
                 console.log('Deleting item with ID:', selectedId);
-
                 deleteRow(selectedId); 
             } else {
                 console.log('Deletion canceled.');
@@ -636,15 +652,21 @@ function deleteRow(selectedId) {
         method: 'POST',
         data: { chicked_id: selectedId }, 
         success: function(response) {
-            // 处理成功响应
             console.log('Row with ID ' + selectedId + ' has been deleted.');
             console.log('Server response:', response);
             if (response.success) {
-                //alert(response.message); 
+
+                // 更新 final_count 到 localStorage
+
+                let final_count = parseInt(localStorage.getItem('final_count')) || 0;
+
+                final_count--;
+                localStorage.setItem('final_count', final_count);
+                localStorage.setItem('final_count11', final_count);
+
                 window.location.reload();
 
-            } else {
-                //alert(response.message); 
+
             }
         },
         error: function(xhr, status, error) {
@@ -857,9 +879,11 @@ async function fetchData() {
                     console.log('API 回應:', data);
 
                     if (data.success && data.message === '數據整理成功') {
-                        final_count++; // 使用 ++ 簡化自增
+                        final_count++; // 自增 final_count
+                        localStorage.setItem('final_count', final_count); // 更新 localStorage 中的值
                         console.log('final_count 更新為:', final_count);
-                        console.log('localStorage 為:', implementCount);
+
+                        console.log('eeqwer');
                     }
                 } catch (jsonError) {
                     console.error('無法解析回應為 JSON:', jsonError);
@@ -873,22 +897,25 @@ async function fetchData() {
     }
 }
 
-intervalId = setInterval(() => { // 使用箭頭函式簡化
+intervalId = setInterval(() => {
     fetchData();
 
-    // 取得最新的 implementCount 值
+    // 取得最新的 final_count 和 implementCount 值
     const implementCountNew = Number(localStorage.getItem('implement_count')) || 0;
+    const finalCountNew = Number(localStorage.getItem('final_count')) || 0;
+    
 
-    console.log("final_count:", final_count, "Type:", typeof final_count);
-    console.log("implementCountNew:", implementCountNew, "Type:", typeof implementCountNew);
+    //console.log("final_count:", finalCountNew, "Type:", typeof finalCountNew);
+    //console.log("implementCountNew:", implementCountNew, "Type:", typeof implementCountNew);
 
     // 正確的判斷條件：final_count >= implementCountNew
-    if (final_count >= implementCountNew && implementCountNew > 0) {
+    if (finalCountNew >= implementCountNew && implementCountNew > 0) {
         alert('已達到次數的上限');
         clearInterval(intervalId);
-        console.log("計時器已停止"); // 增加 log 方便除錯
+        console.log("計時器已停止");
     }
 }, 300);
+
 
 
 function fetchLatestInfo() {
@@ -1203,7 +1230,6 @@ window.onload = function() {
 };
 
 
-
 // 刪除 localstorage
 function clearlocalstorage_keys() {
     localStorage.removeItem('highLimitTorque');
@@ -1213,6 +1239,7 @@ function clearlocalstorage_keys() {
     localStorage.removeItem('offset');
     localStorage.removeItem('rpm');
     localStorage.removeItem('targetTorque');
+    localStorage.removeItem('final_count');
 
 }
 

@@ -15,15 +15,12 @@ class Historicals extends Controller
         $this->Historicals_newModel = $this->model('Historical');
     }
 
-    public function index($page)
-    {
-
+    public function index($page){
 
         $nopage = isset($_COOKIE["nopage"]) ? $_COOKIE["nopage"] : "0";
         $limit = 30;
         $offset = 0;
         $totalPages = 0;
-
 
         if($nopage == "1") {
             $page = isset($_GET['p']) ? $_GET['p'] : 1;
@@ -186,7 +183,6 @@ class Historicals extends Controller
         $info_arr = $_SESSION['info_arr'];
         $info_final = $this->Historicals_newModel->get_data($info_arr);
 
-
         if(!empty($info_final)){
             // 扭力、狀態、控制器轉換
             $torque_change = $this->Historicals_newModel->details('torque');
@@ -244,8 +240,6 @@ class Historicals extends Controller
         $data_array = array('True');
         $this->logMessage('historicals-2','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
 
-
-        
         $data = array();
         $status_arr = $this->Historicals_newModel->status_code_change();
 

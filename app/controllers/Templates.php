@@ -17,7 +17,7 @@ class Templates extends Controller
         $isMobile = $this->isMobileCheck();
         $nav = $this->NavsController->get_nav();
         $tools = $this->CFG_reader();
-        // var_dump($tools);
+        //var_dump($tools);
 
         $data = [
             'isMobile' => $isMobile,
@@ -1096,6 +1096,11 @@ class Templates extends Controller
                         if (isset($tool_info[8])) {
                             $tools[$tool_name]['slope'] = $tool_info[8];
                         }
+
+                        if (isset($tool_info[10])) {
+                            $tools[$tool_name]['controller'] = $tool_info[9];
+                        }
+
                     }
                 }
             }

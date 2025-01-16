@@ -114,7 +114,7 @@
             <div class="row" style="margin-bottom: 5px;">
                 <div for="controller-type" class="col-1 t1"><?php echo $text['Controller_text']; ?> :</div>
                 <div class="col-1 t2" style="margin-right: 3%">
-                    <input type="text" class="form-control input-ms" id="controller-type" value="GTCS" maxlength="" disabled="disabled">
+                    <input type="text" class="form-control input-ms" id="controller-type" value="<?php echo CONTROLLER_GTCS; ?>" maxlength="" disabled="disabled">
                 </div>
 
                 <div for="controller-type" class="col-1 t1"><?php echo $text['Screw_Tool_text']; ?> :</div>
@@ -122,10 +122,12 @@
                     <select id="tool_selected" class="form-select" onchange="chagne_tool()">
                         <?php 
                             foreach ($data['tools'] as $key => $value) {
-                                if($data['tools_info']['tool_name'] == $value['tool_name']){
-                                    echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
-                                }else{
-                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
+                                if($value['controller'] == "GTCS"){
+                                    if($data['tools_info']['tool_name'] == $value['tool_name']){
+                                        echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
+                                    }else{
+                                        echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
+                                    }
                                 }
                             }
                         ?>
@@ -1467,6 +1469,11 @@ function cancel_action(){
             downshift_angle_max = 30600
             downshift_angle_min = 0
 
+            //如果downshift關閉，直接把downshft speed帶入預設值
+            if(+document.getElementById("Downshift-ON-OFF").checked == 0){
+                document.getElementById('downshift-speed').value = Tool_Min_RPM    
+            }
+
             conditions = [
                 { id: 'program-name', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]+$/, min: null, max: null },
                 { id: 'target-torque', pattern: /^\d{0,6}(\.\d{0,4})?$/, min: Tool_Min_Torque, max: Tool_Max_Torque },
@@ -1515,6 +1522,11 @@ function cancel_action(){
             angle_threshold_min = 0
             downshift_angle_max = 30600
             downshift_angle_min = 0
+
+            //如果downshift關閉，直接把downshft speed帶入預設值
+            if(+document.getElementById("Downshift-ON-OFF-a").checked == 0){
+                document.getElementById('downshift-speed-a').value = Tool_Min_RPM    
+            }
 
             conditions = [
                 { id: 'program-name-a', pattern: /^[a-zA-Z0-9\u4E00-\u9FA5\-_\.\s]+$/, min: null, max: null },

@@ -693,4 +693,12 @@ $log_status['equipment-2'] = '編輯塔燈腳位';
 $log_status['historicals-1'] = '删除紀錄';
 $log_status['historicals-2'] = '匯出報告';
 $log_status['historicals-3'] = '匯出CSV';
+
+
+$log_status['calibrations-1']  = '新增紀錄';
+$log_status['calibrations-2']  = '删除全部資料';
+$log_status['calibrations-3']  = '删除單筆資料';
+
+
+$log_status['dbsync-1'] = $text['main_DB_SYNC_text'];
 //log status-----------------------------------------------------------------------------------------------------

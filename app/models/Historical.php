@@ -384,11 +384,11 @@ class Historical{
 
         if($mode =="torque"){
             $details  = array(
+                0 => 'Kgf.m',
                 1 => 'N.m',
-                //0 => 'Kgf.m',
-                //2 => 'Kgf.cm',
-                //3 => 'In.lbs',
-                //4 => 'cN.m'
+                2 => 'Kgf.cm',
+                3 => 'In.lbs',
+                4 => 'cN.m'
             );
         }
 

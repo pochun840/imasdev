@@ -95,8 +95,8 @@
                     <div class="custom-select">
                         <select id="ControllerSelect">
                             <option value="" disabled selected><?php echo $text['Select_text']; ?></option>
-                            <option value="GTCS">GTCS</option>
-                            <option value="TCG">TCG</option>
+                            <option value="<?php echo CONTROLLER_GTCS; ?>"><?php echo CONTROLLER_GTCS; ?></option>
+                            <option value="<?php echo CONTROLLER_TCG; ?>"><?php echo CONTROLLER_TCG; ?></option>
                         </select>
                     </div>
                 </div>
@@ -108,8 +108,12 @@
                             <option value="" disabled selected><?php echo $text['Select_text']; ?></option>
                             <!-- <option value="tool1">SGT-CS303</option> -->
                             <?php 
+
                                 foreach ($data['tools'] as $key => $value) {
-                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';
+                                    if($value['controller'] == "GTCS"){
+                                        echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';
+                                    }
+                                   
                                 }
                             ?>
                             <!-- <option value="tool2">3-01007-7L-H</option> -->
@@ -143,9 +147,10 @@
         </div>
     </div>
 <script>
+    var tools_info = <?php echo json_encode($data['tools']); ?>;
     $(document).ready(function () {
         //預設帶入GTCS與第一支起子，智能模式
-        document.getElementById('ControllerSelect').value = 'GTCS'
+        document.getElementById('ControllerSelect').value = '<?php echo CONTROLLER_GTCS; ?>'
         document.getElementById('tool_selected').selectedIndex = 1
         document.getElementById('normal-job').checked = true
         const event_change = new Event("change"); // 創建一個該元素綁定的事件
@@ -157,13 +162,50 @@
         var selectedValue = this.value;
         var jobTypeContainer = document.getElementById('jobTypeContainer');
 
+
         // Check if the selected value is "GTCS"
-        if (selectedValue === 'GTCS') {
+        if (selectedValue === '<?php echo CONTROLLER_GTCS; ?>') {
             // Display the job type container
             jobTypeContainer.style.display = 'block';
+
+            //把 select id="tool_selected" 的option 都空
+            var tool_selected = document.getElementById('tool_selected');
+            tool_selected.innerHTML = '';
+
+            //tools total(包含了所有的controller)
+            var filteredToolsGTCS = removeToolIfController(tools_info, "GTCS");
+            //console.log(filteredToolsGTCS);
+
+            for (var tool in filteredToolsGTCS) {
+                if (filteredToolsGTCS.hasOwnProperty(tool)) {
+                    var option = document.createElement('option'); 
+                    option.value = tool; 
+                    option.textContent = filteredToolsGTCS[tool].tool_name; 
+                    tool_selected.appendChild(option); 
+                }
+            }
+
+
         } else {
             // Hide the job type container if the selected value is different
             jobTypeContainer.style.display = 'none';
+            
+            //把 select id="tool_selected" 的option 都空
+            var tool_selected = document.getElementById('tool_selected');
+            tool_selected.innerHTML = '';
+
+            //tools total(包含了所有的controller)
+            var filteredToolsTCG = removeToolIfController(tools_info, "TCG");
+
+            for (var tool in filteredToolsTCG) {
+                if (filteredToolsTCG.hasOwnProperty(tool)) {
+                    var option = document.createElement('option'); 
+                    option.value = tool; 
+                    option.textContent = filteredToolsTCG[tool].tool_name; 
+                    tool_selected.appendChild(option); 
+                }
+            }
+
         }
 
         // Rest of your code (radio buttons creation, etc.)
@@ -223,6 +265,19 @@ function ClickNotification() {
 }
 
 addMessage();
+
+
+function removeToolIfController(tools,controller_name) {
+    var filteredTools = {};  
+    for (var tool in tools) {
+        //依據  controller_name 的值 檢查 controller 是否匹配
+        if (tools[tool].controller === controller_name) {
+            filteredTools[tool] = tools[tool];  
+        }
+    }
+
+    return filteredTools;  
+}
 
 </script>
 

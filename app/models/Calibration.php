@@ -21,7 +21,8 @@ class Calibration{
             $details = array(
                 0 => 'GTCS',
                 1 => 'TCG',
-                2 => '其他'
+                2 => 'CTDS',
+                3 => '其他'
             );
         }
 
@@ -45,6 +46,20 @@ class Calibration{
                 3 => 'In.lbs',
             );
     
+        }
+
+        if($mode =="Screw Joint"){
+
+        }
+
+        if($mode =="tcg_tools"){
+           $details = array(
+                1=> array('CGS10','980','100','1','0.001'),
+                2=> array('CGS30','980','100','3','0.3'),
+                3=> array('CGS30S1','980','100','3','0.5'),
+                
+                
+           );
         }
 
         return $details;
@@ -434,7 +449,24 @@ class Calibration{
 
         return $torque_name;
     }
-    
 
-    
+    public function screw_joint_list(){
+        $details = array(
+            1 =>  'SJ-3 (Max 3.0 kgf.cm)',
+            2 =>  'SJ-10N (3.0-10.0 kgf.cm)',
+            3 =>  'SJ-10 (3.0-10.0 kgf.cm)',
+            4 =>  'SJ-50 (10-50 kgf.cm)',
+            5 =>  'AJ-3 (0.15-3.0 kgf.cm)',
+            6 =>  'AJ-15 (3.0-15.0 kgf.cm)',
+            7 =>  'AJ-15K (3.0-15.0 kgf.cm)',
+            8 =>  'AJ-50 (15.0-50.0 kgf.cm)',
+            9 =>  'AJ-150 (50.0-150.0 kgf.cm)',
+            10 => 'AJ-250 (50.0-250.0 kgf.cm)',
+            11 => 'KTM-1000 (50-1000 kgf.cm)'
+        );
+
+        return $datails;
+
+    }
+        
 }

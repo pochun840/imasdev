@@ -107,7 +107,7 @@
             <div class="row" style="margin-bottom: 5px;">
                 <div for="controller-type" class="col-1 t1"><?php echo $text['Controller_text']; ?> :</div>
                 <div class="col-1 t2" style="margin-right: 3%">
-                    <input type="text" class="form-control input-ms" id="controller-type" value="GTCS" maxlength="" disabled="disabled">
+                    <input type="text" class="form-control input-ms" id="controller-type" value="<?php echo CONTROLLER_GTCS; ?>" maxlength="" disabled="disabled">
                 </div>
 
                 <div for="tool-type" class="col-1 t1"><?php echo $text['Screw_Tool_text'];?> :</div>
@@ -115,11 +115,14 @@
                     <select id="tool_selected" class="form-select" onchange="chagne_tool()">
                         <?php 
                             foreach ($data['tools'] as $key => $value) {
-                                if($data['tools_info']['tool_name'] == $value['tool_name']){
-                                    echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
-                                }else{
-                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
+                                if($value['controller'] == "GTCS"){
+                                     if($data['tools_info']['tool_name'] == $value['tool_name']){
+                                        echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
+                                    }else{
+                                        echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
+                                    }
                                 }
+                               
                             }
                         ?>
                     </select>
