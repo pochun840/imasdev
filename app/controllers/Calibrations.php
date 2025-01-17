@@ -16,6 +16,8 @@ class Calibrations extends Controller
         $this->CalibrationModel = $this->model('Calibration');
         $this->EquipmentModel = $this->model('Equipment');
         $this->SettingsController = $this->controller_new('Settings'); 
+        $this->TemplatesController = $this->controller_new('Templates'); 
+
     }
 
     // 取得所有Jobs
@@ -26,12 +28,15 @@ class Calibrations extends Controller
         #select
         $info = $this->CalibrationModel->datainfo();
 
-        #screw_joint_list
+        #彈簧測試座
         $screw_joint_list = $this->CalibrationModel->screw_joint_list();
 
-        $job_arr = $this->CalibrationModel->getjobid();
+        #取得起子的型號
+        $tools_model = $this->TemplatesController->CFG_reader(); 
+
         $torque_type = $this->CalibrationModel->details('torque');
-        
+
+
         $data_json = $this->SettingsController->Get_Device_Name(); 
         if(!empty($data_json)){
             $dataArray = json_decode($data_json, true);  
@@ -39,6 +44,7 @@ class Calibrations extends Controller
         }else{
             $tools_sn = '';
         }
+
         
 
         $device_version_json = $this->Get_Device_version();
@@ -53,21 +59,17 @@ class Calibrations extends Controller
             $last_unit   = '';
         }
         
-
-    
-
         $ktm = $this->CalibrationModel->details('torquemeter');
         $job_id = 221;
 
-        $echart_data = $this->CalibrationModel->datainfo_search($job_id);
-
-
         $skipTurnRev = isset($_COOKIE['skipTurnRev']) ? intval($_COOKIE['skipTurnRev']) : 1;
         
-
         $avg = $this->CalibrationModel->get_last_record();
 
         $meter = $this->val_traffic();
+
+        #曲線圖的資料
+        $echart_data = $this->CalibrationModel->datainfo_search($job_id);
         if(!empty($echart_data)){
             #整理圖表所需要的資料
             $tmp['x_val'] = json_encode(array_column($echart_data, 'id'));
@@ -111,6 +113,7 @@ class Calibrations extends Controller
             $avg_torque = null; 
         }
 
+
         $data = array(
             'isMobile' => $isMobile,
             'nav' => $this->NavsController->get_nav(),
@@ -120,7 +123,7 @@ class Calibrations extends Controller
             'avg_torque' => $avg,
             'info' => $info,
             'echart'=> $tmp,
-            'job_arr' => $job_arr,
+            //'job_arr' => $job_arr,
             'meter' =>$meter,
             'count' =>$count,
             'torque_type ' => $torque_type,
@@ -132,7 +135,8 @@ class Calibrations extends Controller
             'language' => $_SESSION['language'],
             'torque_name' => $torque_name,
             'last_unit' => $last_unit,
-            'screw_joint_list' => $screw_joint_list
+            'screw_joint_list' => $screw_joint_list,
+            'tools_model' => $tools_model
             
         );
         $this->view('calibration/index', $data);
@@ -471,8 +475,6 @@ class Calibrations extends Controller
     }
     
     
-
-
     public function val_traffic() {
         $a = 0.6;
         $b = 0.06;
@@ -520,8 +522,6 @@ class Calibrations extends Controller
 
         #select
         $info = $this->CalibrationModel->datainfo();
-
-        $job_arr = $this->CalibrationModel->getjobid();
 
         #echarts
         $echart_data = $this->CalibrationModel->echarts_data();
@@ -574,7 +574,6 @@ class Calibrations extends Controller
             'res_Torquetype' => $this->CalibrationModel->details('torque'),
             'info' => $info,
             'echart'=> $tmp,
-            'job_arr' => $job_arr,
             'meter' =>$meter,
             'count' =>$res_total,
             'tools_sn' => $tools_sn,
@@ -592,9 +591,6 @@ class Calibrations extends Controller
             $data['type'] = '';
         }
         
-
-
-
         $this->view('calibration/excel',$data);
 
 
@@ -787,55 +783,7 @@ class Calibrations extends Controller
         }
 
     }
-    public function saveSessionData() {
-
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start(); 
-        }
-        
-
-
-        if (isset($_POST['torqueMeter']) && isset($_POST['controller'])) {
-            
-            // 清理不必要的 Session 資料，避免 Session 資料過多
-            /*if (isset($_SESSION['torqueMeter'])) {
-                unset($_SESSION['torqueMeter']);
-            }
-            if (isset($_SESSION['controller'])) {
-                unset($_SESSION['controller']);
-            }*/
-            
-            echo "ewewwe";
-
-            $_SESSION['torqueMeter'] = $_POST['torqueMeter'];
-            $_SESSION['controller'] = $_POST['controller'];
     
-            //$this->cleanupSessionData();
-    
-            echo json_encode(['success' => true, 'message' => 'Session data saved and cleaned up.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'empty data.']);
-        }
-    }
-    
-    // 自動清理 Session 資料的函數
-    private function cleanupSessionData() {
-        // 如果 Session 中的資料超過某個條件，可以進行清理
-        // 這裡舉例為清理存儲時間過長的資料
-        if (isset($_SESSION['lastActivity']) && (time() - $_SESSION['lastActivity']) > 1800) {  // 超過 30 分鐘
-            // 若資料超過 30 分鐘未更新，則清除 Session 資料
-            session_unset();
-            session_destroy();
-            echo json_encode(['success' => false, 'message' => 'Session expired and cleaned up.']);
-            exit();
-        }
-    
-        // 更新最後活動時間
-        $_SESSION['lastActivity'] = time();
-    }
-    
-
-
     public function stopNodeApp() {
         $output = shell_exec("pkill -f 'node app.js'");
     
@@ -956,6 +904,7 @@ class Calibrations extends Controller
         ));
     }
 
+
     private function unit_no(){
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);
         require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
@@ -978,7 +927,6 @@ class Calibrations extends Controller
     public function Get_Device_version() {
 
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);
-    
         $remote_file = '/mnt/ramdisk/tcsdev.db';
         $local_file = '../tcsdev.db';
     
@@ -1063,6 +1011,4 @@ class Calibrations extends Controller
         return json_encode(array('device_version' => $tool_sn, 'error_message' => $error_message));
     }
 
-   
-    
 }

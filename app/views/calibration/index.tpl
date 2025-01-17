@@ -180,18 +180,47 @@
                             <input id="tool-sn" type="text" class="t2 form-control" value="<?php echo $data['tools_sn'];?>">
                         </div>
                     </div>
+              
+
+                    <div class="row t1">
+                       <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['Screw_Tool_text']; ?>:</div>
+                        <div class="col-4 t1">
+                            <select id="adapter_type" class="t2 form-control">
+                                <?php
+                                    if (isset($data['tools_model']) && is_array($data['tools_model'])) {
+                                        foreach($data['tools_model'] as $key =>$value){
+                                            if($value['controller'] == "GTCS"){
+                                                if($data['tools_info']['tool_name'] == $value['tool_name']){
+                                                    echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
+                                                }else{
+                                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
+                                                }
+                                            }    
+                                        }
+                                    }
+                                ?>
+                            </select>
+
+                        </div>
+                    </div>
+
                     <div class="row t1">
                        <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['Adapter_type_text'];?>:</div>
                         <div class="col-4 t1">
                             <!--<input id="adapter_type" type="text" class="t2 form-control" value="">-->
-                            <?php 
-                                foreach ($data['screw_joint_list'] as $k_s =>$v_s) {
-                            
-                                }
-                            ?>
+                            <select id="adapter_type" class="t2 form-control">
+                                <?php
+                                    if (isset($data['screw_joint_list']) && is_array($data['screw_joint_list'])) {
+                                        echo implode('', array_map(function($v_s) {
+                                            return "<option value='" . htmlspecialchars($v_s, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($v_s, ENT_QUOTES, 'UTF-8') . "</option>";
+                                        }, $data['screw_joint_list']));
+                                    }
+                                ?>
+                            </select>
 
                         </div>
                     </div>
+
                 </div>
 
                 <div class="w3-center" style="font-size: 18px; color: #000"><?php echo $text['Instant_data_setting_text'];?></div>
@@ -236,7 +265,7 @@
                     <div class="col-4 t1">
                         <input id="tolerance" type="text" class="t2 form-control" value="">
                     </div>
-                </div>
+                </div>                                                       
 
                 <div class="row t1">
                     <div class="col-7 t1"><b><?php echo $text['Joint_Offset_text'];?></b></div>
@@ -335,9 +364,9 @@
                                     </div>
 
                                     <div class="row t1">
-                                        <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Item_text'];?>:</div>
+                                        <div class="col-5 t1" style=" padding-left: 5%; color: #000"><?php echo $text['Controller_Type_text'];?>:</div>
                                         <div class="col-5 t1">
-                                            <input id="item" type="text" class="t2 form-control" value="<?php echo $data['current_torquemeter'].'(N.m)';?>">
+                                            <input id="controller_item" type="text" class="t2 form-control" value="">
                                         </div>
                                     </div>
 
@@ -487,6 +516,10 @@
 <script>
 let lastData = null; 
 var myChart; 
+
+let torqueMeter;
+let controller;
+
 $(document).ready(function() {
     fetchLatestInfo();
     setInterval(fetchLatestInfo, 1000); // 每 1 秒更新
@@ -494,60 +527,24 @@ $(document).ready(function() {
 });
 
 // Open modal
-function openModal(modalId)
-{
+function openModal(modalId){
     document.getElementById(modalId).style.display = "flex";
 }
 
 // Close modal
-function closeModal(modalId)
-{
+function closeModal(modalId){
     document.getElementById(modalId).style.display = "none";
 }
 
-function exportCSV(modalId)
-{
-
+function exportCSV(modalId){
     var fileName = document.getElementById("fileName" + modalId[5]).value;
     var pageSize = document.getElementById("pageSize" + modalId[5]).value;
-
-
     closeModal(modalId);
 }
 
 function NextToAnalysisSystemKTM() {
-
-    // 紀錄ktm及controller型號
-    const torqueMeter = document.getElementById('TorqueMeter').value;
-    const controller = document.getElementById('controller_info').value;
-
-    
-    $.ajax({
-        url: '?url=Calibrations/saveSessionData', 
-        method: 'POST',
-        data: {
-            torqueMeter: torqueMeter,
-            controller: controller
-        },
-        dataType: 'json',
-        success: function(data) {
-            if (data.success) {
-               
-                window.location.reload();
-                document.getElementById('analysis-system-KTM').style.display = 'block';
-                document.getElementById('Torque-Collection').style.display = 'none';
-            } else {
-                console.error(data.message);
-                // 处理错误情况
-                //alert(data.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            //console.error('Error saving session data:', error);
-            //alert('请求失败，请稍后重试。');
-        }
-    });
-
+    const torqueMeter = document.getElementById('TorqueMeter').value;  
+    const controller = document.getElementById('controller_info').value;  
 
     const details = [
         'KTM-6',
@@ -556,21 +553,22 @@ function NextToAnalysisSystemKTM() {
         'KTM-250',
     ];
 
-    // 显示分析系统KTM
+    const details_controller= [
+        'GTCS',
+        'TCG',
+        'CTDS',
+        '其他',
+    ]
+
     document.getElementById('analysis-system-KTM').style.display = 'block';
-    // 隐藏Torque-Collection
     document.getElementById('Torque-Collection').style.display = 'none';
     document.getElementById('item').value = details[torqueMeter] + '(N.m)';
-
-    //移除localstorage
+    document.getElementById('controller_item').value = details_controller[controller];
     clearlocalstorage_keys();
-
-    
-
 }
 
-function backSetting()
-{
+
+function backSetting(){
     var TorqueCollection = document.getElementById('Torque-Collection');
     var analysisSystemKTM = document.getElementById('analysis-system-KTM');
 
@@ -585,8 +583,7 @@ function backSetting()
 }
 
 
-function toggleMenu()
-{
+function toggleMenu(){
     var menuContent = document.getElementById("myMenu");
     menuContent.style.display = (menuContent.style.display === "block") ? "none" : "block";
 }
@@ -946,7 +943,6 @@ function fetchLatestInfo() {
                 $('#min-torque').val(data.meter['min-torque'].torque); // 取得 min-torque 的值
             }
 
-
             //更新扭力平均值//avg_torque
             document.getElementById('avg-torque').value = data.avg_torque;
 
@@ -1221,6 +1217,7 @@ window.onload = function() {
     document.getElementById('low-limit-torque').value = 0.45;
     document.cookie = "new_skip=1; path=/;";  
 
+
 };
 
 
@@ -1247,6 +1244,13 @@ function setCookie(name, value, days) {
 
 <style>
 .selected {
-    background-color: #FFCCCB; /* 高亮的背景色 */
+    background-color: #FFCCCB;
+}
+
+#adapter_type {
+    width: 190px;  
+    height: 40px;  
+    font-size: 14px; 
+    padding: 8px;
 }
 </style>

@@ -465,7 +465,8 @@ class Calibration{
             11 => 'KTM-1000 (50-1000 kgf.cm)'
         );
 
-        return $datails;
+
+        return $details;
 
     }
         
