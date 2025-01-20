@@ -283,19 +283,24 @@ class Calibrations extends Controller
                 $res = $this->CalibrationModel->tidy_data($final, $tools_sn,$system_sn,$fasten_torque);
             }
 
+            #取得最新的筆數
+            $temp_count = $this->CalibrationModel->getTotalRecords();
+
         
             // 返回整理結果
             if ($res == true) {
                 $response = array(
                     'success' => true,
                     'type'    => 'success',
-                    'message' => '數據整理成功'
+                    'message' => '數據整理成功',
+                    'count'   => $temp_count
                 );
             } else {
                 $response = array(
                     'success' => false,
                     'type'    => 'fail',
-                    'message' => '未找到數據'
+                    'message' => '未找到數據',
+                    'count'   => $temp_count
                 );
             }
 
@@ -303,11 +308,7 @@ class Calibrations extends Controller
             // 刪除文件
             unlink($file_path);
 
-            
-            #取得最新的筆數
-            $temp_count = $this->CalibrationModel->getTotalRecords();
-            #紀錄log
-            $this->logMessage('add_calibrations', $response['type'],'success: id:'.$temp_count);
+            $this->logMessage('calibrations-1','result-1',json_encode($response, JSON_UNESCAPED_UNICODE));
 
             echo json_encode($response);
         } else {
@@ -370,16 +371,18 @@ class Calibrations extends Controller
             }
 
             #紀錄log
-            $del_info_sn_string = implode(',', $click_id);
-            $narrate = "calibrations:" . $del_info_sn_string;
-            $data_array = explode(":", $narrate);
-
+            $response = array(
+                'success' => true,
+                'type'    => 'success',
+                'message' => '刪除單筆紀錄:'.$click_id
+            );
+        
             if($res == true){
                 //成功
-                $this->logMessage('calibrations-3','result-1',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+                $this->logMessage('calibrations-3','result-1',json_encode($response, JSON_UNESCAPED_UNICODE));
             }else{
                 //失敗
-                $this->logMessage('calibrations-3','result-2',json_encode($data_array, JSON_UNESCAPED_UNICODE));
+                $this->logMessage('calibrations-3','result-2',json_encode($response, JSON_UNESCAPED_UNICODE));
             }
             echo json_encode($response);
 
@@ -392,6 +395,10 @@ class Calibrations extends Controller
     public function del_all(){
         
         $result = $this->CalibrationModel->del_all();
+
+        //紀錄log
+        $this->logMessage('calibrations-2', 'result-1','success: del total');
+        
 
         //移除檔案 
         $file_tmp = __DIR__; 
@@ -420,10 +427,7 @@ class Calibrations extends Controller
             setcookie('implement_count', '', time() - 3600, '/');
         }
 
-        //紀錄log
-        $this->logMessage('del_calibrations', $result,'success: del total');
-
-
+       
 
     }
  
