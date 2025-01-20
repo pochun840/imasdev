@@ -395,8 +395,6 @@ class Calibrations extends Controller
     public function del_all(){
         
         $result = $this->CalibrationModel->del_all();
-
-        //紀錄log
         $this->logMessage('calibrations-2', 'result-1','success: del total');
         
 
