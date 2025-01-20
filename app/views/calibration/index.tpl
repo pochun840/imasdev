@@ -558,7 +558,6 @@ function populateAdapterType(controller, tools_info, adapterTypeSelect) {
     adapterTypeSelect.innerHTML = '';
 
     let filterType;
-
     switch (controller) {
 
         case '0':
@@ -567,8 +566,8 @@ function populateAdapterType(controller, tools_info, adapterTypeSelect) {
 
         case '1':
             filterType = "TCG";
-        
         break;
+
         case '2':
             filterType = "CTDS";
         break;
@@ -579,7 +578,6 @@ function populateAdapterType(controller, tools_info, adapterTypeSelect) {
     }
 
     const filteredTools = removeToolIfController(tools_info, filterType);
-
     for (const tool in filteredTools) {
         if (filteredTools.hasOwnProperty(tool)) {
             const option = document.createElement('option');
@@ -591,6 +589,7 @@ function populateAdapterType(controller, tools_info, adapterTypeSelect) {
 }
 
 function NextToAnalysisSystemKTM() {
+    
     const torqueMeter = document.getElementById('TorqueMeter').value;
     const controller = document.getElementById('controller_info').value;
     const adapterTypeSelect = document.getElementById('adapter_type');
