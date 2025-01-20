@@ -187,17 +187,19 @@
                         <div class="col-4 t1">
                             <select id="adapter_type" class="t2 form-control">
                                 <?php
-                                    if (isset($data['tools_model']) && is_array($data['tools_model'])) {
-                                        foreach($data['tools_model'] as $key =>$value){
-                                            if($value['controller'] == "GTCS"){
-                                                if($data['tools_info']['tool_name'] == $value['tool_name']){
-                                                    echo '<option value="'.$value['tool_name'].'" selected>'.$value['tool_name'].'</option>';
-                                                }else{
-                                                    echo '<option value="'.$value['tool_name'].'">'.$value['tool_name'].'</option>';    
-                                                }
-                                            }    
+                                if (isset($data['tools_model']) && is_array($data['tools_model'])) {
+                                    foreach ($data['tools_model'] as $key => $value) {
+                                        if ($value['controller'] == "GTCS") {
+                                            // Check if tools_info is an array before accessing it
+                                            if (isset($data['tools_info']) && is_array($data['tools_info'])) {
+                                                $selected = ($data['tools_info']['tool_name'] == $value['tool_name']) ? 'selected' : '';
+                                                echo '<option value="' . $value['tool_name'] . '" ' . $selected . '>' . $value['tool_name'] . '</option>';
+                                            } else {
+                                                echo '<option value="' . $value['tool_name'] . '">' . $value['tool_name'] . '</option>';
+                                            }
                                         }
                                     }
+                                }
                                 ?>
                             </select>
 
@@ -514,11 +516,18 @@
     </div>
  
 <script>
+
+
+
+
+
 let lastData = null; 
 var myChart; 
 
 let torqueMeter;
 let controller;
+
+var tools_info = <?php echo json_encode($data['tools_model']); ?>;
 
 $(document).ready(function() {
     fetchLatestInfo();
@@ -542,9 +551,49 @@ function exportCSV(modalId){
     closeModal(modalId);
 }
 
+
+function populateAdapterType(controller, tools_info, adapterTypeSelect) {
+
+    //清空option
+    adapterTypeSelect.innerHTML = '';
+
+    let filterType;
+
+    switch (controller) {
+
+        case '0':
+            filterType = "GTCS";
+        break;
+
+        case '1':
+            filterType = "TCG";
+        
+        break;
+        case '2':
+            filterType = "CTDS";
+        break;
+        
+        default:
+            console.error("Unknown controller value:", controller);
+        return;
+    }
+
+    const filteredTools = removeToolIfController(tools_info, filterType);
+
+    for (const tool in filteredTools) {
+        if (filteredTools.hasOwnProperty(tool)) {
+            const option = document.createElement('option');
+            option.value = tool;
+            option.textContent = filteredTools[tool].tool_name;
+            adapterTypeSelect.appendChild(option);
+        }
+    }
+}
+
 function NextToAnalysisSystemKTM() {
-    const torqueMeter = document.getElementById('TorqueMeter').value;  
-    const controller = document.getElementById('controller_info').value;  
+    const torqueMeter = document.getElementById('TorqueMeter').value;
+    const controller = document.getElementById('controller_info').value;
+    const adapterTypeSelect = document.getElementById('adapter_type');
 
     const details = [
         'KTM-6',
@@ -553,20 +602,22 @@ function NextToAnalysisSystemKTM() {
         'KTM-250',
     ];
 
-    const details_controller= [
+    const details_controller = [
         'GTCS',
         'TCG',
         'CTDS',
         '其他',
-    ]
+    ];
 
     document.getElementById('analysis-system-KTM').style.display = 'block';
     document.getElementById('Torque-Collection').style.display = 'none';
     document.getElementById('item').value = details[torqueMeter] + '(N.m)';
     document.getElementById('controller_item').value = details_controller[controller];
+
+    populateAdapterType(controller, tools_info, adapterTypeSelect);
+
     clearlocalstorage_keys();
 }
-
 
 function backSetting(){
     var TorqueCollection = document.getElementById('Torque-Collection');
@@ -1218,6 +1269,9 @@ window.onload = function() {
     document.cookie = "new_skip=1; path=/;";  
 
 
+
+
+
 };
 
 
@@ -1239,6 +1293,20 @@ function setCookie(name, value, days) {
     expiresDate.setTime(expiresDate.getTime() + (days * 24 * 60 * 60 * 1000));
     document.cookie = `${name}=${value}; path=/; expires=${expiresDate.toUTCString()}`;
 }
+
+
+function removeToolIfController(tools,controller_name) {
+    var filteredTools = {};  
+    for (var tool in tools) {
+        //依據  controller_name 的值 檢查 controller 是否匹配
+        if (tools[tool].controller === controller_name) {
+            filteredTools[tool] = tools[tool];  
+        }
+    }
+
+    return filteredTools;  
+}
+
 </script>
 
 
