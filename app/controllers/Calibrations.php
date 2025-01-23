@@ -36,16 +36,7 @@ class Calibrations extends Controller
 
         $torque_type = $this->CalibrationModel->details('torque');
 
-
-        $data_json = $this->SettingsController->Get_Device_Name(); 
-        if(!empty($data_json)){
-            $dataArray = json_decode($data_json, true);  
-            $tools_sn=trim($dataArray['tool_sn']);
-        }else{
-            $tools_sn = '';
-        }
-
-        
+        $tools_sn = '';
 
         $device_version_json = $this->Get_Device_version();
         $device_array = json_decode($device_version_json, true);
@@ -54,6 +45,15 @@ class Calibrations extends Controller
             $res_unit  = $this->unit_no();
             $last_unit = end($res_unit);
             $torque_name = $this->CalibrationModel->torque_unit_code($last_unit);
+            if(!empty($torque_name)){
+                $data_json = $this->SettingsController->Get_Device_Name(); 
+                if(!empty($data_json)){
+                    $dataArray = json_decode($data_json, true);  
+                    $tools_sn=trim($dataArray['tool_sn']);
+                }else{
+                    $tools_sn = '';
+                }
+            } 
         }else{
             $torque_name = '';
             $last_unit   = '';
@@ -121,9 +121,8 @@ class Calibrations extends Controller
             'res_Torquemeter_arr' => $this->CalibrationModel->details('torquemeter'),
             'res_Torquetype' => $this->CalibrationModel->details('torque'),
             'avg_torque' => $avg,
-            'info' => $info,
-            'echart'=> $tmp,
-            //'job_arr' => $job_arr,
+            'info' => $info, //扭力list 
+            'echart'=> $tmp, //曲線圖
             'meter' =>$meter,
             'count' =>$count,
             'torque_type ' => $torque_type,
@@ -135,10 +134,11 @@ class Calibrations extends Controller
             'language' => $_SESSION['language'],
             'torque_name' => $torque_name,
             'last_unit' => $last_unit,
-            'screw_joint_list' => $screw_joint_list,
-            'tools_model' => $tools_model
+            'screw_joint_list' => $screw_joint_list, //彈簧測試座
+            'tools_model' => $tools_model //起子的型號
             
         );
+
         $this->view('calibration/index', $data);
 
 
@@ -174,7 +174,6 @@ class Calibrations extends Controller
 
         }
     
-      
         $combinedData = array(
             'info' => $info,
             'echart_data' => $tmp,
@@ -191,8 +190,6 @@ class Calibrations extends Controller
 
     public function get_val() {
 
- 
-        // 檢查會話是否已經啟動，若未啟動則啟動會話
         if (session_status() == PHP_SESSION_NONE) {
             session_start(); 
         }
@@ -264,7 +261,6 @@ class Calibrations extends Controller
             }
 
             //轉換浮點數
-
             $final = floatval($finalNumber);
 
             if($skipTurnRev  == "1"){
@@ -286,8 +282,7 @@ class Calibrations extends Controller
             #取得最新的筆數
             $temp_count = $this->CalibrationModel->getTotalRecords();
 
-        
-            // 返回整理結果
+            #返回整理結果
             if ($res == true) {
                 $response = array(
                     'success' => true,
@@ -308,6 +303,7 @@ class Calibrations extends Controller
             // 刪除文件
             unlink($file_path);
 
+            #紀錄log
             $this->logMessage('calibrations-1','result-1',json_encode($response, JSON_UNESCAPED_UNICODE));
 
             echo json_encode($response);
@@ -397,7 +393,6 @@ class Calibrations extends Controller
         $result = $this->CalibrationModel->del_all();
         $this->logMessage('calibrations-2', 'result-1','success: del total');
         
-
         //移除檔案 
         $file_tmp = __DIR__; 
         $file_tmp = dirname($file_tmp); 
@@ -425,58 +420,56 @@ class Calibrations extends Controller
             setcookie('implement_count', '', time() - 3600, '/');
         }
 
-       
-
     }
  
     #產生XML的API
     public function get_xml(){
 
-            $info = $this->CalibrationModel->datainfo();
-            $torque_type = $this->CalibrationModel->details('torque');
-            $controller_type = $this->CalibrationModel->details('controller');
-            $ktm_total = $this->CalibrationModel->details('torquemeter');
-    
-            $xml = new XMLWriter();
-            $xml->openMemory();
-            $xml->setIndent(true);
-            $xml->startDocument('1.0', 'UTF-8');
-            $xml->startElement('calibrations');
-    
-            foreach ($info as $row) {
-                $xml->startElement('item');
-                foreach ($row as $key => $value) {
-                    $xml->startElement($key);
-                    if ($key == 'unit') {
-                        $value = "N.m";
-                    }
-    
-                    if ($key == 'high_percent' ||  $key == 'low_percent') {
-                        $value = $value ." % ";
-                    }
-                    if($key == 'controller_type'){
-                        $value = isset($controller_type[$value]) ? $controller_type[$value] : ''; 
-                    }   
-                    if($key == 'ktm_type'){
-                        $value = isset($ktm_total[$value]) ? $ktm_total[$value] : ''; 
-                    }  
-    
-                    $xml->writeCData($value);
-                    $xml->endElement();
+        $info = $this->CalibrationModel->datainfo();
+        $torque_type = $this->CalibrationModel->details('torque');
+        $controller_type = $this->CalibrationModel->details('controller');
+        $ktm_total = $this->CalibrationModel->details('torquemeter');
+
+        $xml = new XMLWriter();
+        $xml->openMemory();
+        $xml->setIndent(true);
+        $xml->startDocument('1.0', 'UTF-8');
+        $xml->startElement('calibrations');
+
+        foreach ($info as $row) {
+            $xml->startElement('item');
+            foreach ($row as $key => $value) {
+                
+                $xml->startElement($key);
+                if ($key == 'unit') {
+                    $value = "N.m";
                 }
-                $xml->endElement(); 
+
+                if ($key == 'high_percent' ||  $key == 'low_percent') {
+                    $value = $value ." % ";
+                }
+                if($key == 'controller_type'){
+                    $value = isset($controller_type[$value]) ? $controller_type[$value] : ''; 
+                }   
+                if($key == 'ktm_type'){
+                    $value = isset($ktm_total[$value]) ? $ktm_total[$value] : ''; 
+                }  
+
+                $xml->writeCData($value);
+                $xml->endElement();
             }
-        
             $xml->endElement(); 
-            $xml->endDocument();
-            header('Content-type: text/xml; charset=utf-8');
-            echo $xml->outputMemory();
+        }
+    
+        $xml->endElement(); 
+        $xml->endDocument();
+        header('Content-type: text/xml; charset=utf-8');
+        echo $xml->outputMemory();
 
     
     
     }
-    
-    
+
     public function val_traffic() {
         $a = 0.6;
         $b = 0.06;
@@ -484,7 +477,7 @@ class Calibrations extends Controller
         $temp = array();
         $info = $this->CalibrationModel->meter_info();
     
-        // 检查 info 是否有数据
+        //檢查info 是否有data
         if (!empty($info)) {
             foreach ($info as $sub_array) {
                 if (array_key_exists('torque', $sub_array)) {
@@ -506,12 +499,11 @@ class Calibrations extends Controller
             ? number_format(($temp['hi_limit_torque'] - $temp['low_limit_torque']) / (6 * $temp['stddev1']), 2) 
             : 0; 
 
-
             $temp['cmk'] = number_format($this->calculatezscore($temp['hi_limit_torque'], $temp['low_limit_torque'], $temp['stddev1']), 2);
     
             $temp['res_total'] = $info;
         } else {
-            // 如果没有数据，可以选择返回一个特定的消息或空数组
+            // 如果没有data，回傳訊息
             return array('error' => 'No data available.');
         }
     
@@ -540,8 +532,20 @@ class Calibrations extends Controller
         }
         
         // 計算平均值
-        $average_torque = $sum_torque / $count;
-        $average_fasten_torque = $sum_fasten_torque / $count;
+        if(!empty($sum_torque)){
+            $average_torque = $sum_torque / $count;
+        }else{
+            $average_torque = '';
+        }
+
+        if(!empty($sum_fasten_torque)){
+            $average_fasten_torque = $sum_fasten_torque / $count;
+        }else{
+            $average_fasten_torque = '';
+        }
+
+        //$average_torque = $sum_torque / $count;
+        //$average_fasten_torque = $sum_fasten_torque / $count;
         
 
         $data_json = $this->SettingsController->Get_Device_Name(); 
@@ -598,6 +602,7 @@ class Calibrations extends Controller
 
     }
 
+    #CSV 下載
     public function csv_download(){
         
         $job_id = 221;
@@ -668,6 +673,7 @@ class Calibrations extends Controller
         return min($part1, $part2);
     }
 
+    
     public function current_save(){
 
         // 取得 device_version 的版本
@@ -907,6 +913,7 @@ class Calibrations extends Controller
     }
 
 
+    #透過MODBUS 取得控制器的扭力單位
     private function unit_no(){
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);
         require_once '../modules/phpmodbus-master/Phpmodbus/ModbusMaster.php';
@@ -927,90 +934,93 @@ class Calibrations extends Controller
 
     #取得控制器的版本
     public function Get_Device_version() {
-
         $controller_ip = $this->EquipmentModel->GetControllerIP(1);
         $remote_file = '/mnt/ramdisk/tcsdev.db';
         $local_file = '../tcsdev.db';
     
-        $tool_sn = '';
-        $error_message = '';
+        $result = [
+            'device_version' => '', // 初始化 device_version 為空字串
+            'error_message' => ''
+        ];
     
-        // 設定 FTP 連線逾時 (秒)
         $ftp_timeout = 10;
     
-        $conn_id = ftp_connect($controller_ip, 21, $ftp_timeout);
+        $conn_id = @ftp_connect($controller_ip, 21, $ftp_timeout);
     
-        if ($conn_id) {
-            $USERNAME = FTP_USER;
-            $PASSWORD = FTP_PASSWORD;
+        if (!$conn_id) {
+            // FTP 連線失敗，直接返回，device_version 已初始化為空字串
+            $result['error_message'] = "FTP Connect Failed to " . $controller_ip;
+            return json_encode($result);
+        }
     
-            // 設定登入逾時
-            ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
+        $USERNAME = FTP_USER;
+        $PASSWORD = FTP_PASSWORD;
     
-            $login_result = @ftp_login($conn_id, $USERNAME, $PASSWORD); // 使用 @ 抑制警告訊息
-    
-            if (!$login_result) {
-                $error_message = "FTP Login Failed.";
-            } else {
-                ftp_pasv($conn_id, true);
-    
-                // 取得遠端檔案大小
-                $remote_filesize = ftp_size($conn_id, $remote_file);
-                if ($remote_filesize === -1) {
-                    $error_message = "Could not get remote file size.";
-                } else {
-    
-                    $handle = fopen($local_file, 'wb'); // 使用 wb 以二進位模式寫入
-    
-                    if ($handle) {
-                        // 設定檔案傳輸逾時
-                        ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
-                        if (ftp_fget($conn_id, $handle, $remote_file, FTP_BINARY, 0)) { // 使用 FTP_BINARY 確保檔案完整性
-                            $local_filesize = filesize($local_file);
-                            if ($local_filesize != $remote_filesize) {
-                                $error_message = "File download incomplete. Remote size: " . $remote_filesize . ", Local size: " . $local_filesize;
-                                unlink($local_file); // 刪除不完整的檔案
-                            }
-                        } else {
-                            $error_message = "Download $remote_file to $local_file failed: " . error_get_last()['message'];
-                            unlink($local_file); // 刪除下載失敗的檔案
-                        }
-                        fclose($handle);
-                    } else {
-                        $error_message = "Failed to open local file for writing.";
-                    }
-                }
-            }
+        ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
+        $login_result = @ftp_login($conn_id, $USERNAME, $PASSWORD);
+        
+        if (!$login_result) {
+            $result['error_message'] = "FTP Login Failed.";
             ftp_close($conn_id);
-        } else {
-            $error_message = "FTP Connect Failed to " . $controller_ip;
+            return json_encode($result);
         }
     
-        if (empty($error_message)) { // 只有在 FTP 操作成功後才嘗試讀取資料庫
+        ftp_pasv($conn_id, true);
+    
+        $remote_filesize = @ftp_size($conn_id, $remote_file);
+        if ($remote_filesize === -1) {
+            $result['error_message'] = "Could not get remote file size.";
+            ftp_close($conn_id);
+            return json_encode($result);
+        }
+    
+        $handle = @fopen($local_file, 'wb');
+        if (!$handle) {
+            $result['error_message'] = "Failed to open local file for writing.";
+            ftp_close($conn_id);
+            return json_encode($result);
+        }
+    
+        ftp_set_option($conn_id, FTP_TIMEOUT_SEC, $ftp_timeout);
+        if (!@ftp_fget($conn_id, $handle, $remote_file, FTP_BINARY, 0)) {
+            $result['error_message'] = "Download $remote_file failed: " . error_get_last()['message'];
+            fclose($handle);
+            unlink($local_file);
+            ftp_close($conn_id);
+            return json_encode($result);
+        }
+    
+        $local_filesize = filesize($local_file);
+        if ($local_filesize != $remote_filesize) {
+            $result['error_message'] = "File download incomplete. Remote size: " . $remote_filesize . ", Local size: " . $local_filesize;
+            fclose($handle);
+            unlink($local_file);
+            ftp_close($conn_id);
+            return json_encode($result);
+        }
+    
+        fclose($handle);
+        ftp_close($conn_id);
+    
+        // 只有在 FTP 連線成功後才嘗試讀取資料庫
+        try {
             $dbPath = '../tcsdev.db';
-            try {
-                $pdo = new PDO("sqlite:$dbPath");
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = new PDO("sqlite:$dbPath");
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-                $sql = 'SELECT device_version FROM device_info LIMIT 1'; // 只取一筆資料，提升效率
-                $statement = $pdo->prepare($sql);
-                $statement->execute();
-                $results = $statement->fetch(PDO::FETCH_ASSOC);
-    
-                if ($results) {
-                    $tool_sn = $results['device_version'];
-                } else {
-                    $error_message = "No data found in device_info table.";
-                }
-    
-                $pdo = null;
-    
-            } catch (PDOException $e) {
-                $error_message = "Database error: " . $e->getMessage();
+            $stmt = $pdo->query('SELECT device_version FROM device_info LIMIT 1');
+            if ($stmt && ($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
+                $result['device_version'] = $row['device_version'];
+            } else {
+                $result['error_message'] = "No data found in device_info table.";
             }
+    
+            $pdo = null;
+        } catch (PDOException $e) {
+            $result['error_message'] = "Database error: " . $e->getMessage();
         }
     
-        return json_encode(array('device_version' => $tool_sn, 'error_message' => $error_message));
+        return json_encode($result);
     }
 
 }

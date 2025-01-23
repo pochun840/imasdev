@@ -40,7 +40,7 @@ class Historicals extends Controller
         $nav = $this->NavsController->get_nav();
         $all_roles = array_slice($this->UserModel->GetAllRole(), 0, 3);
         $res_status_arr = ['ALL', 'OK', 'OKALL', 'NG'];
-        $res_controller_arr = array(1 => 'GTCS', 2 =>'TCG'); 
+        $res_controller_arr = array(1 => 'GTCS', 2 =>'TCG', 3 => 'CTDS'); 
         $all_users = $this->UserModel->GetAllUser(); //取得還活著USER
         $torque_arr = $this->Historicals_newModel->details('torque');
         $res_program = $this->Historicals_newModel->details('program');

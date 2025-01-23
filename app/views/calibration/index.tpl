@@ -185,7 +185,7 @@
                     <div class="row t1">
                        <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['Screw_Tool_text']; ?>:</div>
                         <div class="col-4 t1">
-                            <select id="adapter_type" class="t2 form-control">
+                            <select id="tools_model" class="t2 form-control larger-select" onchange='get_tools()'>
                                 <?php
                                 if (isset($data['tools_model']) && is_array($data['tools_model'])) {
                                     foreach ($data['tools_model'] as $key => $value) {
@@ -210,18 +210,33 @@
                        <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['Adapter_type_text'];?>:</div>
                         <div class="col-4 t1">
                             <!--<input id="adapter_type" type="text" class="t2 form-control" value="">-->
-                            <select id="adapter_type" class="t2 form-control">
-                                <?php
+                            <select id="adapter_type" class="t2 form-control larger-select" >
+                                <?php 
                                     if (isset($data['screw_joint_list']) && is_array($data['screw_joint_list'])) {
-                                        echo implode('', array_map(function($v_s) {
-                                            return "<option value='" . htmlspecialchars($v_s, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($v_s, ENT_QUOTES, 'UTF-8') . "</option>";
-                                        }, $data['screw_joint_list']));
+                                        foreach ($data['screw_joint_list'] as $key1 => $value1) {
+                                             echo '<option value="' . $value1 . '">' . $value1 . '</option>';
+                                        }
                                     }
                                 ?>
                             </select>
 
                         </div>
                     </div>
+
+                    <div class="row t1">
+                        <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['RPM_text']."(H/L)";?>:</div>
+                        <div class="col-4 t1">
+                            <input id="rpm_range" type="text" class="t2 form-control" value="">
+                        </div>
+                    </div>
+
+                     <div class="row t1">
+                        <div class="col-5 t1" style="padding-left: 2%; color: #000"><?php echo $text['Torque_range_text']."(H/L)";?>:</div>
+                        <div class="col-4 t1">
+                            <input id="torque_range" type="text" class="t2 form-control" value="">
+                        </div>
+                    </div>
+
 
                 </div>
 
@@ -517,16 +532,11 @@
  
 <script>
 
-
-
-
-
 let lastData = null; 
 var myChart; 
 
 let torqueMeter;
 let controller;
-
 var tools_info = <?php echo json_encode($data['tools_model']); ?>;
 
 $(document).ready(function() {
@@ -551,11 +561,10 @@ function exportCSV(modalId){
     closeModal(modalId);
 }
 
-
-function populateAdapterType(controller, tools_info, adapterTypeSelect) {
+function populateAdapterType(controller, tools_info, tools_modelSelect) {
 
     //清空option
-    adapterTypeSelect.innerHTML = '';
+    tools_modelSelect.innerHTML = '';
 
     let filterType;
     switch (controller) {
@@ -583,16 +592,16 @@ function populateAdapterType(controller, tools_info, adapterTypeSelect) {
             const option = document.createElement('option');
             option.value = tool;
             option.textContent = filteredTools[tool].tool_name;
-            adapterTypeSelect.appendChild(option);
+            tools_modelSelect.appendChild(option);
         }
     }
 }
 
 function NextToAnalysisSystemKTM() {
-    
+
     const torqueMeter = document.getElementById('TorqueMeter').value;
     const controller = document.getElementById('controller_info').value;
-    const adapterTypeSelect = document.getElementById('adapter_type');
+    const tools_modelSelect = document.getElementById('tools_model'); //
 
     const details = [
         'KTM-6',
@@ -613,7 +622,7 @@ function NextToAnalysisSystemKTM() {
     document.getElementById('item').value = details[torqueMeter] + '(N.m)';
     document.getElementById('controller_item').value = details_controller[controller];
 
-    populateAdapterType(controller, tools_info, adapterTypeSelect);
+    populateAdapterType(controller, tools_info, tools_modelSelect);
 
     clearlocalstorage_keys();
 }
@@ -631,7 +640,6 @@ function backSetting(){
         // If AddRoleSetting is currently displayed or both are hidden, do nothing or handle it as needed
     }
 }
-
 
 function toggleMenu(){
     var menuContent = document.getElementById("myMenu");
@@ -767,6 +775,7 @@ function current_save() {
     const skip_turn_rev = document.getElementById('skip_turn_rev').checked; 
     const last_unit = document.getElementById('last_unit').value;
 
+    const tools_model_selected = document.getElementById('tools_model').value;
     let multiple;
 
     switch (last_unit) {
@@ -802,6 +811,8 @@ function current_save() {
     localStorage.setItem('adapter_type',adapter_type);
     setCookie('implement_count', implement_count, 7);
     setCookie('new_skip', new_skip, 7);
+    localStorage.setItem('tools_model_selected',tools_model_selected);
+
 
     let percentage = tolerance / 100
 
@@ -835,6 +846,7 @@ function current_save() {
             localStorage.setItem('bias', tolerance);
             localStorage.setItem('implement_count',implement_count);
             localStorage.setItem('adapter_type',adapter_type);
+            localStorage.setItem('tools_model_selected',tools_model_selected);
             alert('saved');
 
         },
@@ -1241,13 +1253,13 @@ renderChart(x_val, y_val_torque_1,y_val_torque_2);
 
 
 function convertToNumberArray(data) {
-    // 檢查是否已經是數組，如果是則直接返回，如果不是則解析並轉換
+    // 檢查是否已經是array，如果是則直接返回，如果不是則解析並轉換
     if (Array.isArray(data)) {
-        return data.map(Number);  // 已經是數組，直接轉換每個元素為數字
+        return data.map(Number);  // 已經是array，直接轉換每個元素為數字
     }
     
     try {
-        // 如果 data 不是數組，則嘗試將其作為 JSON 字符串解析
+        // 如果 data 不是array，則嘗試將其作為 JSON 字符串解析
         return JSON.parse(data).map(Number);
     } catch (e) {
         console.error('Invalid JSON format:', e);
@@ -1255,6 +1267,7 @@ function convertToNumberArray(data) {
     }
 }
 
+//重load畫面 帶入的預設值 
 window.onload = function() {
     document.getElementById('tolerance').value = 10;
     document.getElementById('bias').value = 10;
@@ -1267,13 +1280,9 @@ window.onload = function() {
     document.getElementById('low-limit-torque').value = 0.45;
     document.cookie = "new_skip=1; path=/;";  
 
-
-
-
-
 };
 
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 // 刪除 localstorage
 function clearlocalstorage_keys() {
     localStorage.removeItem('highLimitTorque');
@@ -1306,6 +1315,27 @@ function removeToolIfController(tools,controller_name) {
     return filteredTools;  
 }
 
+function get_tools(){
+ 
+    const selectedValue = document.getElementById('tools_model')?.value;
+    console.log("選取的 value:", selectedValue); //SGT-CS718
+    console.log(tools_info); 
+
+    if (selectedValue && tools_info && tools_info[selectedValue]) { // 檢查 selectedValue、tools_info 是否存在，以及 tools_info[selectedValue] 是否存在
+        const selectedToolInfo = tools_info[selectedValue];
+        const maxrpm = selectedToolInfo.maxrpm;
+        const minrpm = selectedToolInfo.minrpm;
+        const maxtorque = selectedToolInfo.maxtorque;
+        const mintorque = selectedToolInfo.mintorque;
+
+        document.getElementById('rpm_range').value = maxrpm + '/' + minrpm;
+        document.getElementById('torque_range').value = maxtorque + '/' + mintorque;
+
+    }
+
+
+}
+
 </script>
 
 
@@ -1314,10 +1344,11 @@ function removeToolIfController(tools,controller_name) {
     background-color: #FFCCCB;
 }
 
-#adapter_type {
-    width: 190px;  
-    height: 40px;  
-    font-size: 14px; 
-    padding: 8px;
+.larger-select {
+    font-size: 14px;
+    height: 40px;
+    padding: 0.5rem;
 }
+
+
 </style>

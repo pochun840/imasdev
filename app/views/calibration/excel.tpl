@@ -15,8 +15,6 @@
     <script src="js/jszip.min.js"></script>
     <script src="js/FileSaver.min.js"></script>
 
-
-
     <title><?php echo SITENAME; ?></title>
     <style>
         .t2 {
@@ -43,7 +41,7 @@
 
         <div style="font-size: 14px; padding-bottom: 10px; padding-top: 10px">
             <label for="Tool-SN" style="width: 24%"><?php echo $text['Tool_Model_text'];?> : <?php echo $data['tools_sn'];?></label>
-            <label for="Serial-Number" style="width: 24%"><?php echo $text['Serial_Number_text'];?> : TPS192865</label>
+            <label for="Serial-Number" style="width: 24%"><?php echo $text['Serial_Number_text'];?> : <span id='tools_model_selected'></span></label>
             <label  id="target_torque" style="width: 27%"><?php echo $text['Target_Torque_text'];?> : <span id='torque_val'></span> (<?php echo $text['N.m'];?>)</label>
             <label for="RPM" id="rpm" style="width: 11%"><?php echo $text['RPM_text']?> :<span id='rpm_val'></span></label>
         </div>
@@ -63,9 +61,8 @@
             
         </div>
 
-        
         <div style="font-size: 14px; padding-bottom: 10px; width: 100%">
-            <label style="width: 24%"><?php echo $text['Adapter_type_text'];?> : <span id='adapter_type_val'></span> </label>
+            <label style="width: 50%"><?php echo $text['Adapter_type_text'];?> : <span id='adapter_type_val'></span> </label>
         </div>
 
         <div class="container-table">
@@ -123,11 +120,25 @@
                             </tr>
                             <tr>
                                 <td><?php echo $text['Deviation_text'];?></td>
-                                <td><?php echo round(($data['torque'] - $data['fasten_torque']) / $data['fasten_torque'], 2); ?></td>
+                                <td>
+                                    <?php
+                                        echo (isset($data['torque'], $data['fasten_torque']) && is_numeric($data['torque']) && is_numeric($data['fasten_torque']) && $data['fasten_torque'] != 0)
+                                        ? round(($data['torque'] - $data['fasten_torque']) / $data['fasten_torque'], 2)
+                                        : '';
+                                    ?>
+                                </td>
                             </tr>
                             <tr>
                                 <td><?php echo $text['Range_text'];?></td>
-                                <td><?php echo isset($data['meter']['max_torque'], $data['meter']['min_torque']) ? number_format($data['meter']['max_torque'] - $data['meter']['min_torque'], 2) : ''; ?></td>
+                                <td>
+                                    <?php
+                                        echo (isset($data['meter']['max_torque']) && is_numeric($data['meter']['max_torque']) &&
+                                        isset($data['meter']['min_torque']) && is_numeric($data['meter']['min_torque']))
+                                        ? number_format($data['meter']['max_torque'] - $data['meter']['min_torque'], 2)
+                                        : '';
+                                    ?>
+                                </td>
+
                             </tr>
                             <tr>
                                 <td>Cm</td>
@@ -139,11 +150,16 @@
                             </tr>
                             <tr>
                                 <td><?php echo $text['Positive_Tolerance_text'];?></td>
-                                <td><?php echo round(($data['meter']['max_torque'] - $data['meter']['avg_torque']) / $data['meter']['avg_torque'], 2); ?>%</td>
+                                <?php if(!empty($data['meter']['max_torque']) || !empty($data['meter']['avg_torque'])){?>
+                                    <td><?php echo round(($data['meter']['max_torque'] - $data['meter']['avg_torque']) / $data['meter']['avg_torque'], 2); ?>%</td> 
+                                <?php } ?>
+                                
                             </tr>
                             <tr>
                                 <td><?php echo $text['Negative_Tolerance_text'];?></td>
-                                <td><?php echo round(($data['meter']['min_torque'] - $data['meter']['avg_torque']) / $data['meter']['avg_torque'], 2); ?>%</td>
+                                <?php if(!empty($data['meter']['min_torque']) || !empty($data['meter']['avg_torque'])){?>
+                                                                    <td><?php echo round(($data['meter']['min_torque'] - $data['meter']['avg_torque']) / $data['meter']['avg_torque'], 2); ?>%</td>
+                                <?php } ?>
                             </tr>
                         </tbody>
                     </table>
@@ -169,12 +185,13 @@
     let rpm = localStorage.getItem('rpm') || 100;
     let offset = localStorage.getItem('offset') || 0;
     let adapter_type = localStorage.getItem('adapter_type') || '';
+    let tools_model_selected = localStorage.getItem('tools_model_selected') || '';
 
 
     if(targetTorque !== null){
         document.getElementById('torque_val').innerText  = targetTorque;
-
     } 
+    
 
     if(highLimitTorque !== null){
         document.getElementById('highLimitTorque_val').innerText = highLimitTorque ;
@@ -199,6 +216,11 @@
     if(adapter_type !== null){
         document.getElementById('adapter_type_val').innerText = adapter_type;
     }
+
+     if(tools_model_selected !== null){
+        document.getElementById('tools_model_selected').innerText = tools_model_selected;
+    }
+
 
 
 
