@@ -1002,6 +1002,7 @@ class Historical{
         ];
     }
 
+    
     #判斷瀏覽器的種類
     /*public function getBrowserType() {
         
